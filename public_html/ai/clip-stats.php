@@ -52,8 +52,10 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 //	$number = $db->getOne("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'gridimage_embedding'");
 	//TABLE_ROWS is very inaccurate!
 
-	if (empty($db->readonly)) //by running this, we can actully get accurate stat!
-		$db->Execute("INSERT INTO embedding_progress_clip (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     gridimage_embedding WHERE     type = 'image'     AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM embedding_progress_clip)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = embedding_progress_clip.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
+	if (empty($db->readonly)) { //by running this, we can actully get accurate stat!
+		$db->Execute("SELECT @max_done := COALESCE(MAX(max_id), 0) FROM embedding_progress_clip");
+		$db->Execute("INSERT INTO embedding_progress_clip (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     gridimage_embedding WHERE     type = 'image'     AND seq_id > @max_done  GROUP BY  day ON DUPLICATE KEY UPDATE     count = embedding_progress_clip.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
+	}
 
 	$number = $db->getOne("select SUM(count)*2 from embedding_progress_clip"); //only counts type=image
 

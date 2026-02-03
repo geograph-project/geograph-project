@@ -27,7 +27,7 @@ $param=array(
 	'table'=>'embedding_progress_pe',
 	'type'=>'image',
 	'model'=>'pe',
-	'group'=>'SUBSTRING(updated, 1, 10) AS day',
+	'group'=>'SUBSTRING(updated, 1, 10) AS day', //for _by_id, would be 'gridimage_id div 100000 as shard' for example (applied automatically!)
 	'execute'=>false,
 );
 
@@ -38,6 +38,10 @@ $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 ############################
+
+if(strpos($param['table'],'_by_id') !== FALSE && $param['group'] == 'SUBSTRING(updated, 1, 10) AS day') //-- ie still the original default
+        $param['group'] = 'gridimage_id div 100000 as shard';
+
 
 // 1. Query the table comment from the schema
 $checkSql = "SELECT TABLE_COMMENT
@@ -148,7 +152,9 @@ function upsertEmbeddingProgress(
     }
 
     //Handle Static Filter (No '?' here, so no param added)
-    $whereClauses[] = "seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM `$progressTable`)";
+//the query optimizer no longer uses the key with a query ! (it used to!)
+$db->Execute("SELECT @max_done := COALESCE(MAX(max_id), 0) FROM $progressTable");
+    $whereClauses[] = "seq_id > @max_done";
 
     $whereSql = implode(" AND ", $whereClauses);
 

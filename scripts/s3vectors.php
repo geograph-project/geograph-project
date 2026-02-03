@@ -140,9 +140,11 @@ if (!empty($param['insert'])) {
 		$db = GeographDatabaseConnection(false);
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-		if (empty($db->readonly)) //by running this, we can actully get accurate stat!
-			$db->Execute("INSERT INTO $table_progress (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     $table_embedding WHERE     type = 'image' AND model = '$model'    AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM $table_progress)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = $table_progress.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
-
+		if (empty($db->readonly)) { //by running this, we can actully get accurate stat!
+			//the query optimizer no longer uses the key with a query ! (it used to!)
+			$db->Execute("SELECT @max_done := COALESCE(MAX(max_id), 0) FROM $table_progress");
+			$db->Execute("INSERT INTO $table_progress (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     $table_embedding WHERE     type = 'image' AND model = '$model'    AND seq_id > @max_done  GROUP BY  day ON DUPLICATE KEY UPDATE     count = $table_progress.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
+		}
 
 		//create table embedding_progress_clip select substring(updated,1,10) as day,count(*) as count,min(seq_id) as min_id,max(seq_id) as max_id from gridimage_embedding where type='image' group by substring(updated,1,10) order by null;
 		//alter table embedding_progress_clip add done datetime default null
@@ -195,7 +197,7 @@ if (!empty($param['insert'])) {
 
 ##################################
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 //$memcache = false;
@@ -225,7 +227,7 @@ if (!empty($param['delta'])) {
 		//in partcilar this is going to need to know have a way of keeping track of progress.
 
 	} elseif ($type === 'test' || $type == 'image') {
-	    echo "Fetching and inserting 'image' data into '{$param['index']}'...\n";
+	    echo "Fetching and inserting 'image' data into {$awsRegion}/{$param['index']} ...\n";
 
 		$sql = "SELECT gridimage_id AS id, user_id,
 			grid_reference AS gridref, SUBSTRING(grid_reference,1,LENGTH(grid_reference)-4) AS myriad,
@@ -244,8 +246,10 @@ if (!empty($param['delta'])) {
             if ($type == 'image') {
 		if ($model != 'clip' && $model != 'pe') die("only clip/pe supported for now");
 
-		if (empty($db->readonly)) //by running this, we can actully get accurate stat!
-			$db->Execute("INSERT INTO $table_progress (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     $table_embedding WHERE     type = 'image' AND model = '$model'    AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM $table_progress)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = $table_progress.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
+		if (empty($db->readonly)) { //by running this, we can actully get accurate stat!
+			$db->Execute("SELECT @max_done := COALESCE(MAX(max_id), 0) FROM $table_progress");
+			$db->Execute("INSERT INTO $table_progress (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     $table_embedding WHERE     type = 'image' AND model = '$model'    AND seq_id > @max_done GROUP BY  day ON DUPLICATE KEY UPDATE     count = $table_progress.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
+		}
 
 		//keep track with embedding_progress_clip. the 'done' column is updated by the main one, we have our own delta_max to keep track!
 		// note, if update above, finds new rows, it resets done, which means we can carry on...
@@ -272,7 +276,7 @@ $sql .= " LIMIT ".$param['limit'];
 	    die(1);
 	}
 
-print "$sql;\n\n";
+//print "$sql;\n\n";
 
 	// Process data in batches
 	$batchSize = 500; //s3vector limit!
@@ -352,14 +356,15 @@ print "$sql;\n\n";
 // Function to test index, although hardcoded for testing an 'image' index!
 
 if ($param['test']) {
-	$topK = 30; // might as well!
+	$topK = 10; // might as well!
 
-	$rows = $db->getAll("SELECT * FROM $table_progress INNER JOIN $table_embedding ON (seq_id = min_id) ORDER BY day DESC limit 5");
+//	$rows = $db->getAll("SELECT * FROM $table_progress INNER JOIN $table_embedding ON (seq_id = min_id) WHERE (delta_max IS NOT NULL OR done IS NOT NULL) ORDER BY day DESC limit 5");
+	$rows = $db->getAll("SELECT * FROM $table_progress INNER JOIN $table_embedding ON (seq_id  IN (min_id,max_id,delta_max) ) WHERE delta_max IS NOT NULL AND type = 'image' ORDER BY day DESC limit 20");
 	foreach ($rows as $idx => $row) {
 		$queryEmbedding = array_values(unpack('g*', $row['embeddings']));
 		$needle = $row['gridimage_id'];
 
-		print "$idx. looking for $needle for {$row['day']}\n";
+		print "$idx. seq:{$row['seq_id']} looking for image $needle for {$row['day']}\n";
 
 		    $queryPayload = [
 		        'vectorBucketName' => $s3VectorBucketName,
@@ -380,6 +385,8 @@ if ($param['test']) {
 	        foreach ($results['vectors'] as $i => $vector) {
 			if ($vector['key'] == $needle) {
 				print "  Found $needle as $i and {$vector['distance']}\n";
+				if (!empty($vector['metadata']))
+			            echo "  Metadata: " . json_encode($vector['metadata'] ?? []) . "\n";
 				$found = true;
 			}
 	        }
@@ -406,8 +413,12 @@ if ($param['test']) {
    } else {
        $queryEmbedding = example_vector();
    }
+$topK = 100; //new max
+$topK = 30; //old max
 
     $topK = 5;
+
+
     $queryFilter = null; // Example: '{"genre": "scifi"}'
 
     $parts = array(); //will be specifically a list if ANDed criteria
@@ -451,7 +462,7 @@ if ($param['test']) {
            $queryFilter = $parts[0];
 	}
     }
-    print json_encode($queryFilter)."\n";
+    print "Filter:".json_encode($queryFilter)."\n";
 
 ##################################
 
