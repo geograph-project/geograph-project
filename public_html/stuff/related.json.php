@@ -31,7 +31,36 @@ if (!empty($_GET['id'])) {
 
 #########################################
 
-if (!empty($CONF['s3_cache_bucket_path'])) {
+if (!empty($_GET['http'])) {
+	$cachefile = null; //to ensure just uses outputJSON()
+
+	$allowed_origins = [
+	    'https://www.geograph.org.uk',
+	    'https://schools.geograph.org.uk',
+	    'https://www.geograph.ie',
+	];
+	$origin = $_SERVER['HTTP_ORIGIN'] ?? null;
+
+	if ($origin) {
+	    if (in_array($origin, $allowed_origins)) {
+	        header("Access-Control-Allow-Origin: $origin");
+	        header("Vary: Origin");
+	    } else {
+	        http_response_code(403);
+	        exit('Access Denied: Origin not allowed.');
+	    }
+	}
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+	    header("Access-Control-Allow-Methods: GET, OPTIONS");
+	    header("Access-Control-Allow-Headers: Content-Type, X-Requested-With");
+	    header("Access-Control-Max-Age: 3600");
+	    http_response_code(204);
+	    exit;
+	}
+
+	customExpiresHeader(3600*24*7, true, true);
+
+} elseif (!empty($CONF['s3_cache_bucket_path'])) {
 	header("Content-Type:application/json"); //need to set the header first!
 
 	$filesystem = new FileSystem();
