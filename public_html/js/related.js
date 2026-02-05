@@ -62,9 +62,20 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 
 		$('#related').append('<div class="thumbs shadow" style="padding:5px">Loading...</div>');
 
-		if (related && related.rows) {
+		if (typeof related !== 'undefined' && related && related.rows) {
 			//if related data was already provided by host page, can skip direct to rendering thumbs
 			renderThumbs(related.row, related, related.match);
+
+		} else if (typeof related_single !== 'undefined' && related_single && supportsLazyLoad) {
+			//a single script that encupsulaes the logic below, but importantly cached on cloudflare as one
+			var params = {
+				data: {http:1, id: gridimage_id},
+				cache: true,
+				dataType: 'json'
+			};
+			$.ajax('/stuff/related.json.php',params).done(function(related) {
+				renderThumbs(related.row, related, related.match);
+                        });
 
 		} else if (supportsLazyLoad) {
 			renderRelatedImage();

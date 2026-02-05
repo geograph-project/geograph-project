@@ -996,26 +996,38 @@ $str[] = "
                 	$str[] = '<script src="'.smarty_modifier_revision("/js/links.js").'" defer="defer"></script>';
 
 		if (preg_match('/photo\/(\d+)/',$_SERVER["REQUEST_URI"],$m) && $GLOBALS['image']->isValid()) { //so dont display on 404/rejected (in case still cached on CDN!)
-			$cached = $memcache->name_get('reljs',$m[1]);
-			//bots that known to use 'rendering'
-			if (preg_match('/Googlebot|GoogleOther|Bingbot|Baiduspider/', @$_SERVER['HTTP_USER_AGENT']) || $cached) { //if created, might as well use it!
-				if ($cached) {
-					//as we know it already in cached, might as well read directly, avoiding a self API call!
-					global $filesystem;
-					if (empty($filesystem))
-						$filesystem = new FileSystem();
-				        $cachefile = "/mnt/s3/cache/related/{$m[1]}.json";
-					if ($filesystem->file_exists($cachefile, true)) //true to download the file and put in a temp file
-				                $content = $filesystem->file_get_contents($cachefile); //will read from the temp file
-				}
-				if (empty($content)) {
-					$url = "{$CONF['CONTENT_HOST']}/stuff/related.json.php?id={$m[1]}";
-					$content = get_internal_url($url);
-				}
-				if (strlen($content) > 5) {
-					$str[] = '<script>var related = '.$content.';</script>';
-					$one = 1; //its passed by reference
-					$memcache->name_set('reljs',$m[1],$one,false,$memcache->period_long);
+			if (preg_match('/Googlebot|GoogleOther|Bingbot|Baiduspider/', @$_SERVER['HTTP_USER_AGENT'])) {
+				$url = "https://www.geograph.org.uk/stuff/related.json.php?http=1&id=".intval($_GET['http']);
+	                        //$content = get_internal_url($url); //this would bypass cloudflare (finds internal ingress IP!)
+			        ini_set("user_agent","Internal Request");
+				$content = file_get_contents($url);
+				$str[] = '<script>var related = '.$content.';</script>';
+
+			} elseif (true) {
+				//specifies, should now use "/stuff/related.json.php" - which can be cached by cloudflare!
+				$str[] = '<script>var related_single = true;</script>';
+			} else {
+				$cached = $memcache->name_get('reljs',$m[1]);
+				//bots that known to use 'rendering'
+				if (preg_match('/Googlebot|GoogleOther|Bingbot|Baiduspider/', @$_SERVER['HTTP_USER_AGENT']) || $cached) { //if created, might as well use it!
+					if ($cached) {
+						//as we know it already in cached, might as well read directly, avoiding a self API call!
+						global $filesystem;
+						if (empty($filesystem))
+							$filesystem = new FileSystem();
+					        $cachefile = "/mnt/s3/cache/related/{$m[1]}.json";
+						if ($filesystem->file_exists($cachefile, true)) //true to download the file and put in a temp file
+					                $content = $filesystem->file_get_contents($cachefile); //will read from the temp file
+					}
+					if (empty($content)) {
+						$url = "{$CONF['CONTENT_HOST']}/stuff/related.json.php?id={$m[1]}"; //note - this API automatially WRITES to the cache!
+						$content = get_internal_url($url);
+					}
+					if (strlen($content) > 5) {
+						$str[] = '<script>var related = '.$content.';</script>';
+						$one = 1; //its passed by reference
+						$memcache->name_set('reljs',$m[1],$one,false,$memcache->period_long);
+					}
 				}
 			}
         	        $str[] = '<script src="'.smarty_modifier_revision("/js/related.js").'" type="text/javascript" defer="defer"></script>';
