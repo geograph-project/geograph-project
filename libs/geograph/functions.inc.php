@@ -1065,19 +1065,19 @@ function customNoCacheHeader($type = 'nocache',$disable_auto = false) {
 }
 
 function customExpiresHeader($diff,$public = false,$overwrite = false) {
-	$private = ($public)?'':', private';
+	$directive = $public ? 'public' : 'private';
 	if ($diff > 0) {
 		//if (strpos($_SERVER['HTTP_USER_AGENT'], 'bingbot')!==FALSE)
 		//	return;
-		$expires=gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+$diff);
+		$expires = gmdate("D, d M Y H:i:s", time() + $diff) . " GMT";
 		header("Expires: $expires");
-		header("Cache-Control: max-age=$diff$private",$overwrite);
+		header("Cache-Control: $directive, max-age=$diff",$overwrite);
 		if ($overwrite) {
 			header("Pragma:"); //sessions by default set this
 		}
 	} else {
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past
-		header("Cache-Control: max-age=0$private",$overwrite);
+		header("Cache-Control: no-store, no-cache, must-revalidate",$overwrite);
 	}
 	//via http://redbot.org -
 	// Therefore, SSL-protected or HTTP-authenticated (NOT cookie-authenticated) resources may have use for public to improve cacheability, if used judiciously.
