@@ -320,7 +320,7 @@ touch-action:inherit;
 		<h3 class="full-version">More</h3>
 
 		<p class="full-version">Or maybe looking for original <a href="/search.php?form=text">Advanced Search</a>? Note however for 
-		many queries the <a href="https://development.geograph.org.uk/browser/#!start">Image Browser</a> 
+		many queries the <a href="/browser/#!start">Image Browser</a> 
 		offers even more options.</p>
 
 	</div>
