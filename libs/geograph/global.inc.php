@@ -996,7 +996,7 @@ $str[] = "
                 	$str[] = '<script src="'.smarty_modifier_revision("/js/links.js").'" defer="defer"></script>';
 
 		if (preg_match('/photo\/(\d+)/',$_SERVER["REQUEST_URI"],$m) && $GLOBALS['image']->isValid()) { //so dont display on 404/rejected (in case still cached on CDN!)
-			if (preg_match('/Googlebot|GoogleOther|Bingbot|Baiduspider/', @$_SERVER['HTTP_USER_AGENT'])) {
+			if (preg_match('/Googlebot|GoogleOther|bingbot|Baiduspider/', @$_SERVER['HTTP_USER_AGENT'])) {
 				$url = "https://www.geograph.org.uk/stuff/related.json.php?http=1&id=".intval($m[1]);
 	                        //$content = get_internal_url($url); //this would bypass cloudflare (finds internal ingress IP!)
 			        ini_set("user_agent","Internal Request");
