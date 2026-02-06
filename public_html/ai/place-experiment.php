@@ -52,6 +52,8 @@ foreach ($towns as $t) {
 }
 echo '</div>';
 
+if (empty($_GET['sample'])) {
+
 $available_types = ['top' => 'Context Tags', 'subject' => 'Subject', 'cluster' => 'Auto Clusters', 'clip' => 'AI Context', 'clipzero'=>'AI Labels', 'md3'=>'AI Tags'];
 
 $sources = array(
@@ -71,7 +73,7 @@ foreach ($available_types as $t_key => $t_label) {
 }
 echo '</div>';
 
-
+}
 
 // 2. Build SQL
 ##################################################################
@@ -464,6 +466,10 @@ foreach ($grouped as $tag => $images) {
             $truncated = true;
 	    break;
         }
+
+if (!empty($_GET['sample']))
+$images = array_slice($images, 0, 5);
+
         echo '<div class="image-entry';
 	if (count($images) < 10) {
 		//allow small groups to 'tile', rather than using whole width
