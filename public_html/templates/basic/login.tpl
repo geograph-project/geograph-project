@@ -60,9 +60,20 @@
 	<script>{literal}
 		//hide with JS, it visible even without JS!
 		function hidetickbox() {
-			document.getElementById("showbox").style.display='none';
-			document.getElementById("hidebox").style.display='';
+			if ('BroadcastChannel' in window) {
+				document.getElementById("showbox").style.display='none';
+				document.getElementById("hidebox").style.display='';
+
+				const channel = new BroadcastChannel('terms_viewer');
+				channel.onmessage = (event) => {
+				    if (event.data === 'terms_opened') {
+					showtickbox();
+				        console.log("User successfully opened the terms.");
+				    }
+				};
+			}
 		}
+
 		AttachEvent(window,window.addEventListener?'DOMContentLoaded':'load',hidetickbox,false);
 		function showtickbox() {
 			document.getElementById("showbox").style.display='';

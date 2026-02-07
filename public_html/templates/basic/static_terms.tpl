@@ -372,5 +372,25 @@ class="nowrap">by <a href="/article/About-Geograph-page">Geograph Project Limite
 class="nowrap">Registered in England and Wales</span>, no <b>1145621</b>. <span class="nowrap">Company no 7473967</span>.
 The registered office is <span class="nowrap">Dept 1706, 43 Owston Road,</span> Carcroft, Doncaster, South Yorkshire. DN6 8DA.</p>
 
+<script>{literal}
+if ('BroadcastChannel' in window) {
+	const channel = new BroadcastChannel('terms_viewer');
+
+	const sendIfVisible = () => {
+	    if (document.visibilityState === 'visible') {
+	        channel.postMessage('terms_opened');
+	    }
+	};
+
+	if (document.readyState === 'loading') {
+	    document.addEventListener('DOMContentLoaded', sendIfVisible);
+	} else {
+	    sendIfVisible();
+	}
+
+	document.addEventListener("visibilitychange", sendIfVisible);
+}
+</script>{/literal}
+
 {include file="_std_end.tpl"}
 
