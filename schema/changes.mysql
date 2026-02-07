@@ -2945,8 +2945,16 @@ set p.name1 = IF(n.name2_lang = 'eng' AND n.name1_lang != 'eng', n.name2, n.name
 #################################################
 
 
-
+-- updating user for terms (and lets start capturing login) 
 
 alter table user add last_login datetime default null, add aggre_terms datetime default null, add agree_company datetime default null;
+
+
+-- updating profile to record some more registration metadata
+
+alter table user add http_referer varchar(255) default null, add birth_year year default null, add register_timing float default null;
+
+
+#################################################
 
 
