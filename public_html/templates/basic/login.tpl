@@ -6,7 +6,11 @@
 
 <form action="{$script_uri}" method="post">
 
-{if $inline}
+{if $forced}
+   <h2>Please confirm new Terms of Service</h2>
+   <p>Please login again with your username and password once you have read and completed this form
+
+{elseif $inline}
    <h2>Login Required</h2>
    <p>You must log in to access this page. 
 {else}
@@ -18,7 +22,7 @@
 	<div style="border:1px solid black; border-radius:20px;padding:20px;margin-bottom:20px">
 	<h3 style="margin-top:0">Geograph Project Limited - updated Terms of Service (2026)</h3>
 
-	<p>Before continuing to the website, you need to review and accept Geograph's revised Terms of Service <a href="/help/terms" 
+	<p>Before continuing to the website, you need to review and accept Geograph's revised Terms of Service <a href="/help/terms" onclick="showtickbox()"
 	target="_blank">{$self_host}/help/terms</a>.  We have updated these in light of recent legislation, particularly the 
 	Online Safety Act (2023) and to ensure they are current and accurate.  There have been no substantive changes to what we expect of you 
 	or what you can expect of us. 
@@ -39,14 +43,32 @@
                 <li>General updating and removal of inconsistencies, including use of simpler language where possible
 	</ul>
 
-	<input type=checkbox name=agree_terms required id=agree>
-	<label for=agree> I accept the <a href="/help/terms" target="_blank">Terms of Service</a></label> <i>(opens in new tab/window)</i><br>
+	<div id="showbox">
+		<input type=checkbox name=agree_terms required id=agree>
+		<label for=agree> I accept the <a href="/help/terms" target="_blank" onclick="showtickbox()">Terms of Service</a></label> <i>(opens in new tab/window)</i>
+	</div>
+	<div id="hidebox" style="display:none">
+		<b>Please open and review the <a href="/help/terms" target="_blank" onclick="showtickbox()">Terms of Service</a> document</b> <i>(opens in new tab/window)</i>
+	</div>
 
 	{if $company}
+		<br>
 		<input type=checkbox name=agree_company id=company>
 		<label for=company> I wish to remain a Company Member of Geograph Project Limited</label>
 	{/if}
 	</div>
+	<script>{literal}
+		//hide with JS, it visible even without JS!
+		function hidetickbox() {
+			document.getElementById("showbox").style.display='none';
+			document.getElementById("hidebox").style.display='';
+		}
+		AttachEvent(window,window.addEventListener?'DOMContentLoaded':'load',hidetickbox,false);
+		function showtickbox() {
+			document.getElementById("showbox").style.display='';
+			document.getElementById("hidebox").style.display='none';
+		}
+	</script>{/literal}
 {else}
 	If you haven't registered yet, <a title="register now" href="/register.php">go and register</a>, it's quick and free!</p>
 {/if}
@@ -71,7 +93,7 @@
 <span class="formerror">{$errors.general}</span>
 <br/>
 
-<input type="submit" name="login" value="Login"/>
+<input type="submit" name="login" value="Login" {if $forced} onclick="showtickbox()"{/if}/>
 
 <br/><br/>
 
