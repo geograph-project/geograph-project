@@ -24,7 +24,7 @@
 	or what you can expect of us. 
 
 	{if $company}
-		<p>We also ask to confirm that you wish to remain a company member. This is just to ensure we are keeping our member databasee updated. We will contact you if no longer wish to remain a member
+		<p>We also ask to confirm that you wish to remain a company member. This is just to ensure we are keeping our member databasee updated. We will contact you if no longer wish to remain a member.
 	{/if}
 
 	<p>Here is a summary of what has changed:
@@ -40,7 +40,7 @@
 	</ul>
 
 	<input type=checkbox name=agree_terms required id=agree>
-	<label for=agree> I accept the <a href="/help/terms" target="_blank"">Terms of Service</a></label> (opens in new tab/window)<br>
+	<label for=agree> I accept the <a href="/help/terms" target="_blank">Terms of Service</a></label> <i>(opens in new tab/window)</i><br>
 
 	{if $company}
 		<input type=checkbox name=agree_company id=company>
