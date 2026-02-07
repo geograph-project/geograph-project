@@ -72,7 +72,8 @@ staging/geograph:
   extends: .k8s_deploy_staging
   needs:
     - build/geograph
-  when: on_success
+  #  when: on_success
+  when: manual
 
 staging/geograph-cron:
   extends: .k8s_deploy_staging
