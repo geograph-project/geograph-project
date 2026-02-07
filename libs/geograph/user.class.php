@@ -1363,6 +1363,35 @@ class GeographUser
 						//passwords match?
 						if ($arr['password']==$md5password)
 						{
+
+							#########################
+							// force to agree to the terms. ONCE
+							// - this is when logging in as 'normal'
+
+							if (empty($_POST['agree_terms']) && (empty($arr['agree_terms']) || $arr['agree_terms'] < '2026-02-07')) {
+								$smarty = new GeoGraphPage;
+								$this->is_login_form = true; //trap so can detect a login page in pagefooter!
+
+								pageMustBeHTTPS();
+
+								$smarty->assign('remember_me', $remember_me);
+								$smarty->assign('inline', $inline);
+								$smarty->assign('forced', 1); //this is to show the terms updated message!
+								if (strpos($arr['rights'],'member') !== FALSE)
+									$smarty->assign('company', 1);
+
+								//we can prefill these boxes, as we know they logging in
+								$smarty->assign('email', $_POST['email']);
+								$smarty->assign('password', $_POST['password']);
+								if (!empty($_POST) && $inline)
+									$smarty->assign_by_ref('_post', $_POST);
+
+								$smarty->display('login.tpl');
+								$this->is_login_form = false;//need to reset, as user is peristed in sessioN!
+								exit;
+							}
+							#########################
+
 							//final test = if they have no rights, they haven't confirmed
 							//their registration
 							if (strlen($arr['rights']))
@@ -1398,6 +1427,17 @@ class GeographUser
 									setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/',
 										"", !empty($_COOKIE['securetest']) && ($CONF['PROTOCOL'] == 'https://'), true); //now we have SSL, the cookie should be httpsOnly, note use CONF, not _SERVER['HTTPS'], because might not work via proxie etc, CONF['protocol' has application specific stuff to deal!
 								}
+
+								//update last login - and if they have now agreed to terms
+								$updates = array();
+								$updates[] = 'last_login';
+								if (!empty($_POST['agree_terms']))
+									$updates[] = 'agree_terms';
+								if (!empty($_POST['agree_company']))
+									$updates[] = 'agree_company';
+								$where = "user_id = ".intval($arr['user_id']);
+								//dont want to update the general updated timestamp, there is no actual change to 'user data'
+								$db->Execute('UPDATE user SET `'.implode('` = NOW(),`',$updates)."` = NOW(),updated=updated WHERE $where");
 
 					                        if (isset($_SESSION) && empty($_SESSION['session1']))
 					                                $_SESSION['session1'] = session_id(); //store the previous id for log purposes
@@ -1448,14 +1488,6 @@ class GeographUser
 
 				pageMustBeHTTPS();
 
-				//HACK for CDN - people trying to login should be redirected to the real domain.
-				if ($_SERVER['HTTP_HOST'] == 'real.www.geograph.org.uk') {
-					$smarty->assign('script_uri', "http://www.geograph.org.uk".$_SERVER['REQUEST_URI']);
-				}
-                                if (!empty($_GET['email']) && empty($email)) {
-                                        $email = $_GET['email'];
-                                }
-
 				$smarty->assign('remember_me', isset($_COOKIE['autologin'])?1:0);
 				$smarty->assign('inline', $inline);
 				if (!empty($email))
@@ -1464,6 +1496,7 @@ class GeographUser
 					$smarty->assign('password', $password);
 				$smarty->assign('errors', $errors);
 				$smarty->assign_by_ref('_post', $_POST);
+
 				$smarty->display('login.tpl');
 
 				$this->is_login_form = false;//need to reset, as user is peristed in sessioN!
@@ -1515,6 +1548,12 @@ class GeographUser
 
 		if(isset($_COOKIE['autologin']))
 		{
+			//this is needed when agreeing to terms. as it became an forced 'inline' login
+			if (!empty($_POST['email']) && !empty($_POST['agree_terms'])) {
+				if ($this->login(true)) //inline=true
+					return; //they logged in using normal process!
+				//if they faild to actully login, will be taken back to login form below anyway!
+			}
 			$db = $this->_getDB();
 			
 			$errorNumber = -1;
@@ -1547,6 +1586,31 @@ class GeographUser
 
 					if (!empty($user))
 					{
+						#########################
+						// force to agree to the terms. ONCE
+						// - this is when returning, via autologin
+
+						if (empty($user['agree_terms']) || $user['agree_terms'] < '2026-02-07') {
+							$smarty = new GeoGraphPage;
+							$this->is_login_form = true; //trap so can detect a login page in pagefooter!
+
+							pageMustBeHTTPS();
+
+							$smarty->assign('remember_me', 1); //we know they used it!
+							$smarty->assign('inline', 1);
+							$smarty->assign('forced', 1); //this is to show the terms updated message!
+							if (strpos($user['rights'],'member') !== FALSE)
+								$smarty->assign('company', 1);
+							//note we do NOT prefill the username/password!!
+							if (!empty($_POST))
+								$smarty->assign_by_ref('_post', $_POST);
+
+							$smarty->display('login.tpl');
+							$this->is_login_form = false;//need to reset, as user is peristed in sessioN!
+							exit;
+						}
+						#########################
+
 						$valid=true;
 
 						foreach($user as $name=>$value)
