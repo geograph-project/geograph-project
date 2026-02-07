@@ -21,11 +21,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if (empty($_SERVER['HTTP_USER_AGENT']))
+if (empty($_SERVER['HTTP_USER_AGENT'])) {
+	header("Vary: User-Agent"); //careful about caching, need this when using init_session_or_cache
+	header("Cache-Control: no-store, private");
         die("no scraping");
+}
 
-if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'Baiduspider')!==FALSE && empty($_GET['label'])) {
+if (strpos($_SERVER['HTTP_USER_AGENT'], 'Baiduspider')!==FALSE && empty($_GET['label'])) {
         header('HTTP/1.0 403 Forbidden');
+	header("Cache-Control: no-store, private");
         exit;
 }
 
