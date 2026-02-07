@@ -12,7 +12,7 @@
        <span class="sep">|</span>
        <a href="/help/credits" title="Who built this and how?">Credits</a>
        <span class="sep">|</span>
-       <a href="/help/terms" title="Terms and Conditions">Terms of use</a>
+       <a href="/help/terms" title="Terms of Service and Privacy Policy">Terms of Service</a>
               
        <br/>
        <br/>
