@@ -118,7 +118,8 @@ production/carrot2-dcs:
 production/geograph:
   extends: .k8s_deploy_production
   needs:
-    - staging/geograph
+    # - staging/geograph
+    - build/geograph
 
 production/geograph-cron:
   extends: .k8s_deploy_production
