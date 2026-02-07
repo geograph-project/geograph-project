@@ -466,54 +466,50 @@ class GeographUser
 			}
 			else
 			{
+				$salt = $this->randomSalt(8);
+
+				$updates = array();
+				$updates['realname'] = $name;
+				$updates['email'] = $email;
+				$updates['password'] = md5($salt.$password1);
+				$updates['salt'] = $salt;
+				$updates['signup_date'] = $db->getOne("SELECT NOW()");
+				$updates['http_host'] = $_SERVER['HTTP_HOST'];
+
+				if (isset($_POST['agree_terms']))
+					$updates['agree_terms'] = $updates['signup_date'];
+				if (isset($_POST['http_referer']))
+					$updates['http_referer'] = $_POST['http_referer'];
+				if (isset($_POST['register_timing']))
+					$updates['register_timing'] = floatval($_POST['register_timing']);
+				if (!empty($_POST['age_diff']))
+					//we store a year, to make ongoing calculations easier
+					$updates['birth_year'] = date('Y')-intval(trim($_POST['age_diff']));
+
 				//we know there is no confirmed user with email address, so if we have
 				//an unconfirmed one, we can overwrite it with the new details
-				$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' and rights is null limit 1');	
-				if (count($arr))
-				{
+				$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' and rights is null limit 1');
+				if (count($arr)) {
 					//user already exists, but didn't respond to email - probably trying
 					//to send a fresh one so lets just refresh the existing record
 					$user_id=$arr['user_id'];
-					$salt = $this->randomSalt(8);
-					
-					$sql = sprintf("update user set realname=%s,email=%s,password=%s,salt=%s,signup_date=now(),http_host=%s where user_id=%s",
-						$db->Quote($name),
-						$db->Quote($email),
-						$db->Quote(md5($salt.$password1)),
-						$db->Quote($salt),
-						$db->Quote($_SERVER['HTTP_HOST']),
-						$db->Quote($user_id));
-						
-					if ($db->Execute($sql) === false) 
-					{
+					$where = "rights IS NULL and user_id = ".intval($arr['user_id']);
+					$result = $db->Execute("UPDATE user SET `".implode('` = ?,`',array_keys($updates))."` = ? WHERE $where", array_values($updates));
+					if (!$result) {
 						$errors['general']='error updating: '.$db->ErrorMsg();
 						$ok=false;
 					}
-				
-				}
-				else
-				{
+				} else {
 					//ok, user doesn't exist, insert a new row
-					$salt = $this->randomSalt(8);
-					$sql = sprintf("insert into user (realname,email,password,salt,signup_date,http_host) ".
-						"values (%s,%s,%s,%s,now(),%s)",
-						$db->Quote($name),
-						$db->Quote($email),
-						$db->Quote(md5($salt.$password1)),
-						$db->Quote($salt),
-						$db->Quote($_SERVER['HTTP_HOST']));
-					
-					if ($db->Execute($sql) === false) 
-					{
+					$result = $db->Execute('INSERT INTO user SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+					if (!$result)  {
 						$errors['general']='error inserting: '.$db->ErrorMsg();
 						$ok=false;
-					}
-					else
-					{
+					} else {
 						$user_id=$db->Insert_ID();
 					}
 				}
-				
+
 				if ($ok)
 				{
 					$db->Execute(sprintf("insert into user_change set 

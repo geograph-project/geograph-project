@@ -40,6 +40,11 @@ if ($USER->hasPerm("basic") && substr($_GET['u'],0,1)!='m' && substr($_GET['u'],
 $smarty = new GeographPage;
 $template='register.tpl';
 
+if (isset($_REQUEST['http_referer']))
+      	$smarty->assign('http_referer',$_REQUEST['http_referer']);
+elseif (isset($_SERVER['HTTP_REFERER']))
+      	$smarty->assign('http_referer',$_SERVER['HTTP_REFERER']);
+
 if (isset($_GET['confirm']))
 {
 	if (substr($_GET['u'],0,1)=='m')
@@ -109,6 +114,7 @@ elseif (isset($_POST['name']))
 		$smarty->assign('email', stripslashes(trim($_POST['email'])));
 		$smarty->assign('password1', stripslashes(trim($_POST['password1'])));
 		$smarty->assign('password2', stripslashes(trim($_POST['password2'])));
+		$smarty->assign('age_diff', stripslashes(trim($_POST['age_diff'])));
 		$smarty->assign('errors', $errors);
 	}
 }
