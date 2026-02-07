@@ -154,7 +154,7 @@ Cookies are required to manage Your use of the Site. Disabling the use of cookie
 </ul>
 
 <p>We moderate all User Generated Content. If We consider You to be in breach of these rules,
- We reserve the right to remove any part of Your User Generated Content and/or Your user
+ We reserve the right to remove any part of Your User Generated Content and/or Your User
  registration, without notice.</p>
 
 <h3>5. Concerns and Complaints</h3>
@@ -165,7 +165,7 @@ Cookies are required to manage Your use of the Site. Disabling the use of cookie
  post in question.</p>
 
 <p>If You have a complaint about anything covered in this Agreement or about how We have acted
- to remove User Generated Content or a User registration, You can <a href="/contact.php">contact us</a>
+ to remove User Generated Content or a User registration, You can <a href="/contact.php">contact Us</a>
  using the same links. You must provide a valid email address. We will investigate the matter 
  in accordance with Our Complaints Policy.</p>
 
@@ -194,7 +194,7 @@ Cookies are required to manage Your use of the Site. Disabling the use of cookie
 
 <p>This means that anyone can download, copy and/or distribute and/or modify a photograph
  and descriptive text, as long as they abide by the terms of the Creative Commons licence,
- using the same license and acknowledging you as the photographer.
+ using the same license and acknowledging the photographer.
  It is important to note that the Creative Commons licence allows
  commercial use, including offering Your images for sale. You cannot object
  to anyone using Your photograph when that use is allowed by the Creative Commons licence.
@@ -367,7 +367,10 @@ Cookies are required to manage Your use of the Site. Disabling the use of cookie
 
 <hr/>
 
-<p><small><i>Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</i></small></p>
+<p align="center" style="font-size:0.9em;"><i class="nowrap">Geograph<sup>&reg</sup> Britain and Ireland</i> is a project <span 
+class="nowrap">by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, a Charity <span 
+class="nowrap">Registered in England and Wales</span>, no <b>1145621</b>. <span class="nowrap">Company no 7473967</span>.
+The registered office is <span class="nowrap">Dept 1706, 43 Owston Road,</span> Carcroft, Doncaster, South Yorkshire. DN6 8DA.</p>
 
 {include file="_std_end.tpl"}
 
