@@ -65,6 +65,8 @@ if (empty($_SERVER['HTTP_USER_AGENT'])
 || (strpos($_SERVER['HTTP_USER_AGENT'], 'Baiduspider')!==FALSE)
 || (strpos($_SERVER['HTTP_USER_AGENT'], 'MegaIndex.ru')!==FALSE) ) {
      header('HTTP/1.0 403 Forbidden');
+     header("Vary: User-Agent"); //careful about caching, need this when using init_session_or_cache
+     header("Cache-Control: max-age=360000");
      exit;
 }
 

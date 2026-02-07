@@ -23,6 +23,8 @@
 
 if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
 	header('HTTP/1.0 403 Forbidden');
+        header("Vary: User-Agent"); //careful about caching, need this when using init_session_or_cache
+        header("Cache-Control: max-age=360000");
 	exit;
 }
 

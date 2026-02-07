@@ -22,13 +22,15 @@
  */
 
 if (strpos($_SERVER['HTTP_USER_AGENT'],'http:') > -1) {
-	header("HTTP/1.0 401 Forbidden");
+	header("HTTP/1.0 403 Forbidden");
+	header("Vary: User-Agent"); //careful about caching, need this when using init_session_or_cache
+	header("Cache-Control: max-age=360000");
 	print "401 forbidden";
 	exit;
 }
 
 if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie') {
-	header("HTTP/1.0 401 Forbidden");
+	header("HTTP/1.0 403 Forbidden");
 	if (!empty($_SERVER['HTTP_REFERER'])) {
 		$url = htmlentities(str_replace('www.geograph.ie','www.geograph.org.uk',$_SERVER['HTTP_REFERER']));
 	} else {
@@ -41,7 +43,9 @@ if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie') {
 
 if (!empty($_SERVER['HTTP_REFERER']) && !preg_match('/^https?:\/\/(www|m|schools)\.geograph\.(org\.uk|ie)\//',$_SERVER['HTTP_REFERER'])	) {
 
-	header("HTTP/1.0 401 Forbidden");
+	header("HTTP/1.0 403 Forbidden");
+	header("Cache-Control: no-store, private");
+
         print "<h3>Access Denied</h3>" ;
 
 	print "<p><b>This popup is for internal use of Geograph Project websites</b>. <br><br>Make your own with the <a href=\"https://osdatahub.os.uk/\">OS DataHub</a>.</p>";
