@@ -42,6 +42,8 @@ if (!empty($_GET['t']) && $token->parse($_GET['t']) && $token->hasValue('id') &&
 	} else {
 		$sql = "UPDATE user SET rights = REPLACE(rights,'member','') WHERE user_id = ".intval($user_id);
 	}
+	$db->Execute($sql);
+	print $db->Affected_Rows();
 
 	if (isset($_GET['director'])) {
 		if ($_GET['director'] == 'add') {
@@ -49,9 +51,9 @@ if (!empty($_GET['t']) && $token->parse($_GET['t']) && $token->hasValue('id') &&
 		} else {
 			$sql = "UPDATE user SET rights = REPLACE(rights,'director','') WHERE user_id = ".intval($user_id);
 		}
+		$db->Execute($sql);
+		print $db->Affected_Rows();
 	}
-	$db->Execute($sql);
-	print $db->Affected_Rows();
 	exit;
 }
 
