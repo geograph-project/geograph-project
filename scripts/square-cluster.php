@@ -320,29 +320,30 @@ function print_r2($var) {
 
 function should_discard_label($label) {
     $label_lower = strtolower(trim($label));
-    
 
-// 1. "Pure Scaffolding" - Words that never contribute subject value
-$scaffolding = [
-    'looking', 'towards', 'view', 'viewed', 'viewing', 'from', 'the', 'opposite', 
-    'direction', 'centre', 'center', 'middle', 'contains', 'includes', 'shows', 
-    'photo', 'image', 'picture', 'styles', 'taken', 'on', 'at', 'with', 'and',
-    'opposite', 'beside', 'facing', 'across', 'side', 'part', 'area'
-];
+    // 1. "Pure Scaffolding" - Words that never contribute subject value
+    static $scaffolding = [
+        'looking', 'towards', 'view', 'viewed', 'viewing', 'from', 'the', 'opposite', 
+        'direction', 'centre', 'center', 'middle', 'contains', 'includes', 'shows', 
+        'photo', 'image', 'picture', 'styles', 'taken', 'on', 'at', 'with', 'and',
+        'opposite', 'beside', 'facing', 'across', 'side', 'part', 'area'
+    ];
 
-// Nouns that are only useful when paired with something else
-$generic_nouns = [
-    'north', 'south', 'east', 'west', 'ireland', 'scotland', 'uk', 'britain', 
-    'typical', 'usual', 'background', 'foreground', 'various', 'certain', 'approx'
-];
+    // Nouns that are only useful when paired with something else
+    static $generic_nouns = [
+        'north', 'south', 'east', 'west', 'ireland', 'scotland', 'uk', 'britain', 
+        'typical', 'usual', 'background', 'foreground', 'various', 'certain', 'approx'
+    ];
 
-// Not good starts for a title cluster
-$dead_roots = ['on', 'the', 'a', 'an', 'at', 'by', 'from', 'with', 'in', 'of', 'great', 'small', 'near'];
+    // Not good starts for a title cluster
+    static $dead_roots = ['on', 'the', 'a', 'an', 'at', 'by', 'from', 'with', 'in', 'of', 'great', 'small', 'near'];
 
-    $noise = array_merge($scaffolding, $generic_nouns, $dead_roots);
+    static $noise;
+    if (empty($noise))
+        $noise = array_merge($scaffolding, $generic_nouns, $dead_roots);
 
     $words = preg_split('/\s+/', $label_lower, -1, PREG_SPLIT_NO_EMPTY);
-    
+
     $has_substance = false;
     foreach ($words as $w) {
         // A word has "substance" if it's NOT in our noise lists
