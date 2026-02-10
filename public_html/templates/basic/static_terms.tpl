@@ -16,7 +16,7 @@
 <h2>Terms of Service and Privacy Policy</h2>
 <h3>Geograph Project Ltd Terms of Service Agreement and Privacy</h3>
 
-<p>Last updated: 10th Feb 2026</p>
+<p>Last updated: 11th Feb 2026</p>
 
 <h3>1. Welcome and definitions</h3>
 

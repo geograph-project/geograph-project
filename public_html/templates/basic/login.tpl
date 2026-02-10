@@ -19,7 +19,7 @@
 {/if}
 
 {if $forced}
-	<div style="border:1px solid black; border-radius:20px;padding:20px;margin-bottom:20px">
+	<div style="border:1px solid black; border-radius:20px;padding:10px;margin-bottom:20px">
 	<h3 style="margin-top:0">Geograph Project Limited - updated Terms of Service (2026)</h3>
 
 	<p>Before continuing to the website, you need to review and accept Geograph's revised Terms of Service <a href="/help/terms" onclick="showtickbox()"
@@ -28,7 +28,7 @@
 	or what you can expect of us. 
 
 	{if $company}
-		<p>We also ask to confirm that you wish to remain a company member. This is just to ensure we are keeping our member databasee updated. We will contact you if no longer wish to remain a member.
+		<p>We are taking this opportunity to ensure our member database is up to date. If you wish to remain a member, simply leave the membership box selected. If you deselect it, we will contact you separately about your membership.
 	{/if}
 
 	<p>Here is a summary of what has changed:
@@ -43,18 +43,20 @@
                 <li>General updating and removal of inconsistencies, including use of simpler language where possible
 	</ul>
 
-	<div id="showbox">
+	<div id="showbox" style="background-color: #e5f5e5; padding:5px;border-radius:10px">
 		<input type=checkbox name=agree_terms required id=agree>
 		<label for=agree> I accept the <a href="/help/terms" target="_blank" onclick="showtickbox()">Terms of Service</a></label> <i>(opens in new tab/window)</i>
 	</div>
-	<div id="hidebox" style="display:none">
-		<b>Please open and review the <a href="/help/terms" target="_blank" onclick="showtickbox()">Terms of Service</a> document</b> <i>(opens in new tab/window)</i>
+	<div id="hidebox" style="display:none; background-color:#fdfdde; padding:5px;border-radius:10px">
+		<b>Please <a href="/help/terms" target="_blank" onclick="showtickbox()">open</a> and review the <a href="/help/terms" target="_blank" onclick="showtickbox()">Terms of Service</a> document</b> <i class=nowrap>(opens in new tab/window)</i>
 	</div>
 
 	{if $company}
 		<br>
-		<input type=checkbox name=agree_company id=company>
+		<div style="background-color: #e5f5e5; padding:5px;border-radius:10px">
+		<input type=checkbox name=agree_company id=company checked>
 		<label for=company> I wish to remain a Company Member of Geograph Project Limited</label>
+		</div>
 	{/if}
 	</div>
 	<script>{literal}
