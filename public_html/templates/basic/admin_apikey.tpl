@@ -5,26 +5,44 @@
 <h2>API Key Request</h2>
 
 <ul>
-	<li>Our APIs are best suited for retrieving information on a small scale. For example grabbing details for a handful of sample images near a specific location to display on a webpage.<br><br>
+    <li>
+        <strong>Small-Scale Needs:</strong> Our APIs are optimized for real-time, small-scale queries such as fetching a few sample images near a specific location for a web display. Signup for a key below.<br><br>
+    </li>
 
-	<li> For larger-scale needs (thousands of images or more), especially one-time jobs, downloading pre-compiled data dumps might be a better option.<ul>
-		<li>You can find these dumps at  <a href="https://data.geograph.org.uk/">https://data.geograph.org.uk/</a>.  Note that some datasets are actively maintained, while others are not. 
-	</ul><br>
+    <li>
+        <strong>Bulk Data:</strong> For large-scale requirements (thousands of records) or one-time projects, we recommend our pre-compiled data dumps. 
+        <ul>
+            <li>Access them at <a href="https://data.geograph.org.uk/">data.geograph.org.uk</a>. <em>Note: Maintenance levels vary across datasets.</em></li>
 
-	<li>Looking for data with pixel information? We have that too! These datasets are ideal for tasks like AI classification. <ul>
-		<li> Check out our pre-compiled options here: <a href="https://data.geograph.org.uk/datasets.html">https://data.geograph.org.uk/datasets.html</a>
-	</ul><br>
+	    <li>Need something even more specific? <a href="https://docs.google.com/forms/d/e/1FAIpQLSdhtlmb7OGM_QrLKtJLbeg1-eVIErCzQrTDJQL7NXJTz45UfA/viewform">Fill out this form</a> to request a custom dataset.</li>
+        </ul><br>
+    </li>
 
-	<li>Need something even more specific? <a href="https://docs.google.com/forms/d/e/1FAIpQLSdhtlmb7OGM_QrLKtJLbeg1-eVIErCzQrTDJQL7NXJTz45UfA/viewform">Fill out this form</a> to request a custom dataset.<br><br>
+    <li>
+        <strong>AI & Machine Learning:</strong> If you require data with pixel information for tasks like AI classification, check out our specialized datasets:
+        <ul>
+            <li><a href="https://data.geograph.org.uk/datasets.html">View Image Datasets</a></li>
+        </ul><br>
+    </li>
+
+    <li>
+        <strong>Advanced Research:</strong> We are currently exploring Image Similarity using encoding models like CLIP and Perception Encoder. These pre-computed embeddings are available for classification training or academic research. 
+        <ul>
+            <li>Some datasets are already available on <a href="https://www.kaggle.com/barrybhunter/datasets">Kaggle</a>. 
+            For specific collaboration or access to additional models, please <a href="/contact.php">contact us</a> directly.</li>
+        </ul><br>
+   </li>
 </ul>
 
+<hr>
 
 <p>Use this page to request a key to use one of the Geograph APIs...</p>
 
  {if $message}
 	<div style="border:1px solid red; padding:20px;margin:20px;">{$message}</div> {/if}
 	
-<form action="{$script_name}" method="post"> <input type="hidden" name="id" value="{$id}">
+<form action="{$script_name}" method="post" style="background-color:#eee;padding:20px">
+	 <input type="hidden" name="id" value="{$id}">
 
 		<table cellpadding="3" cellspacing="0">
 		  <tr>
