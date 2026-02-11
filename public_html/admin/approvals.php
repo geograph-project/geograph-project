@@ -138,7 +138,7 @@ if (!empty($_GET['preview_user'])) {
 
 	print "<h3>Preview for user - links are not clickable</h3>";
 	print "<table cellspacing=0 cellpadding=3 border=1 bordercolor=#eee style=max-width:60em>";
-	$keys = explode(',', 'user_id,realname,nickname,email,rights,website,about_yourself,message_sig,signup_date,images');
+	$keys = explode(',', 'user_id,realname,nickname,email,rights,website,about_yourself,message_sig,signup_date,images,last,home_gridsquare,http_host,http_referer,last_login,agree_terms,birth_year,register_timing');
 	foreach ($keys as $key) {
 		print "<tr><th>$key</th>";
 		print "<td>";

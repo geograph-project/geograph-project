@@ -29,7 +29,7 @@
  <li><a href="/help/bbcodes">Forum BBcodes Help</a><br/><br/></li>
  {/if}
  <li><a href="/help/freedom">Geograph Freedom</a></li>
- <li><a href="/help/terms">Terms &amp; Conditions</a><br/><br/></li>
+ <li><a href="/help/terms">Terms of Service</a><br/><br/></li>
  <li><a href="/contact.php">Contact Us</a><br/><br/></li>
  <li><a href="/team.php">The Team</a> &amp; <a href="/help/credits">Credits</a><br/><br/></li>
  <li>... <b>more in the <br/><a href="/content/documentation.php">Information Section</a></b></li>
