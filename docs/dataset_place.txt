@@ -1,0 +1,305 @@
+-- The 'singular' is just ONE example of that type, whereas the plural counts how many different
+-- ... if only one then the example is particully useful as says where that tag is!
+create table tag_named_stat (PRIMARY KEY(tag_id))
+select tag_id, prefix, tag, COUNT(gi.gridimage_id) as images, 
+	place,   COUNT(distinct placename_id) AS places,
+	gs.grid_reference AS gridref, COUNT(distinct gs.grid_reference) as gridrefs,
+	CONCAT(SUBSTRING(gs.grid_reference,1,LENGTH(gs.grid_reference)-3),SUBSTRING(gs.grid_reference,LENGTH(gs.grid_reference)-1,1)) AS hectad,
+	COUNT(DISTINCT CONCAT(SUBSTRING(gs.grid_reference,1,LENGTH(gs.grid_reference)-3),SUBSTRING(gs.grid_reference,LENGTH(gs.grid_reference)-1,1))) as hectads,
+	county,  COUNT(distinct County) AS countys,
+	country,  COUNT(distinct Country) AS countrys,
+	region,  COUNT(distinct Region) AS regions
+FROM gridimage_search gi
+	INNER JOIN gridsquare gs USING (grid_reference)
+	INNER JOIN sphinx_placenames USING (placename_id)
+	INNER JOIN gridimage_tag gt USING (gridimage_id)
+	INNER JOIN tag t USING (tag_id)
+WHERE t.status = 1
+AND gt.status = 2
+AND classification LIKE 'named%'
+GROUP BY tag_id;
+	
+	
+
+
+
++-----------------+-----------------------+------+-----+---------+-------+
+| Field           | Type                  | Null | Key | Default | Extra |
++-----------------+-----------------------+------+-----+---------+-------+
+| placename_id    | int(10) unsigned      | NO   | PRI | NULL    |       |
+| Place           | varchar(67)           | NO   | MUL |         |       |
+| County          | varchar(37)           | YES  |     | NULL    |       |
+| Country         | varchar(30)           | YES  |     | NULL    |       |
+| has_dup         | tinyint(4) unsigned   | YES  |     | NULL    |       |
+| km_ref          | varbinary(24)         | NO   |     |         |       |
+| reference_index | bigint(20)            | NO   |     | 0       |       |
+| squares         | mediumint(8) unsigned | YES  |     | NULL    |       |
+| images          | int(10) unsigned      | YES  |     | NULL    |       |
+| has_geographs   | int(10) unsigned      | YES  |     | NULL    |       |
+| postcode        | varchar(10)           | YES  |     | NULL    |       |
+| open_id         | int(10) unsigned      | YES  |     | NULL    |       |
+| Region          | varchar(32)           | YES  |     | NULL    |       |
++-----------------+-----------------------+------+-----+---------+-------+
+
+
+--- this is a material view, just to speed up the below query!
+-- will be a huge table!
+create table images_place_joined (PRIMARY KEY(gridimage_id))
+SELECT gridimage_id, gs.grid_reference, CONCAT(SUBSTRING(gs.grid_reference,1,LENGTH(gs.grid_reference)-3),SUBSTRING(gs.grid_reference,LENGTH(gs.grid_reference)-1,1)) AS hectad,
+placename_id, Place, County, Country, km_ref, Region, postcode, wgs84_lat, wgs84_long
+FROM gridimage_search gi
+	INNER JOIN gridsquare gs USING (grid_reference)
+	INNER JOIN sphinx_placenames USING (placename_id);
+
+	select @max := max(gridimage_id) from images_place_joined;
+	insert into images_place_joined
+	 SELECT gridimage_id, gs.grid_reference, CONCAT(SUBSTRING(gs.grid_reference,1,LENGTH(gs.grid_reference)-3),SUBSTRING(gs.grid_reference,LENGTH(gs.grid_reference)-1,1)) AS hectad,
+	 placename_id, Place, County, Country, km_ref, Region, postcode, wgs84_lat, wgs84_long FROM gridimage_search gi 
+	 INNER JOIN gridsquare gs USING (grid_reference)  
+         INNER JOIN sphinx_placenames USING (placename_id) where gridimage_id>@max;
+
+
+	
+	
+-- The 'singular' is just ONE example of that type, whereas the plural counts how many different
+-- ... if only one then the example is particully useful as says where that tag is!
+create table tag_named_stat (PRIMARY KEY(tag_id))
+select tag_id, prefix, tag, COUNT(gi.gridimage_id) as images, 
+	place,   COUNT(distinct placename_id) AS places,
+	grid_reference AS gridref, COUNT(distinct grid_reference) as gridrefs,
+	hectad, COUNT(DISTINCT hectad) as hectads,
+	county,  COUNT(distinct County) AS countys,
+	country,  COUNT(distinct Country) AS countrys,
+	region,  COUNT(distinct Region) AS regions,
+	AVG(wgs84_lat ) as latc, STDDEV(wgs84_lat ) as latd,
+	AVG(wgs84_long) as lonc, STDDEV(wgs84_long) as lond,
+	classification
+FROM images_place_joined gi
+	INNER JOIN gridimage_tag gt USING (gridimage_id)
+	INNER JOIN tag t USING (tag_id)
+WHERE t.status = 1
+AND gt.status = 2
+AND classification LIKE 'named%'
+GROUP BY tag_id;
+
+
+
+Seems should create a dataset with 
+gridimage_id, tag_id, lat,long, clip_embedding, distance 
+which mimicks the datasets for the previous classification tasks, as this would form part of the raw data for the training process. 
+(having first 'curated' the tags to be the subset of all tags, that represent named-places/poi etc) 
+... and curated it only tags with enough data, and also a nice sample (ie aim for a good sample of images for each individual tag) 
+
+but shoudl also include this tag_named_stat table (in effect), as it provides very useful metadata, to stratify the tags? (ie so can train the different 'scale' tags into different heads seperately? )
+
+COme back to what the model would produce (ie produce a vector, rather than just a tag id/index) later, first look at setting up the dataset. 
+
+
+-- kinda recreateing tag_public, but adding some materialized columns for ease of use, and filtered to only 'places' (ie named entities)
+create table places_dataset_1 (primary key(gridimage_id,tag_id))
+select gridimage_id,tag_id, hectad, region
+FROM images_place_joined gi
+	INNER JOIN gridimage_tag gt USING (gridimage_id)
+	INNER JOIN tag t USING (tag_id)
+WHERE t.status = 1
+AND gt.status = 2
+AND classification LIKE 'named%' and  classification != 'named-person';
+
+
+alter table places_dataset_1 add rnd1 float not null, add rnd2 float not null;
+update places_dataset_1 set rnd1=RAND(), rnd2=RAND();
+alter table places_dataset_1 add split enum('tra','val','tes') default null, add v tinyint unsigned default 0, add index(v);
+
+update places_dataset_1 SET split = 'tra' WHERE rnd1 < 0.8;
+update places_dataset_1 SET split = 'val' WHERE rnd1 > 0.8;
+update places_dataset_1 SET split = 'tes' WHERE rnd1 > 0.9;
+
+-- sample by hectad first
+UPDATE places_dataset_1
+JOIN (
+    SELECT gridimage_id,
+           ROW_NUMBER() OVER (PARTITION BY hectad ORDER BY rnd2) as rank_idx
+    FROM places_dataset_1 WHERE v=0
+) AS sampled ON places_dataset_1.gridimage_id = sampled.gridimage_id
+SET v = 1
+WHERE sampled.rank_idx <= 100;
+
+
+-- then add images for under provisioned tags!
+UPDATE places_dataset_1
+JOIN (
+    SELECT p.gridimage_id,
+           ROW_NUMBER() OVER (PARTITION BY p.tag_id ORDER BY p.rnd2) as tag_rank,
+           stats.already_selected
+    FROM places_dataset_1 p
+    JOIN (
+        -- Calculate how many we already have for each tag
+        SELECT tag_id, COUNT(*) as already_selected 
+        FROM places_dataset_1 
+        WHERE v = 1 
+        GROUP BY tag_id
+    ) AS stats ON p.tag_id = stats.tag_id
+    WHERE p.v = 0
+) AS topper ON places_dataset_1.gridimage_id = topper.gridimage_id
+SET v = 1
+WHERE topper.tag_rank <= (200 - topper.already_selected);
+
+
+
+Primary.geograph_live>select tag_id,count(*),sum(split='tra'),sum(split='val'),sum(split='tes') from places_dataset_1 where v=1 group by tag_id having count(*) > 5 order by count(*) limit 40;
++--------+----------+------------------+------------------+------------------+
+| tag_id | count(*) | sum(split='tra') | sum(split='val') | sum(split='tes') |
++--------+----------+------------------+------------------+------------------+
+|  27462 |        6 |                4 |                2 |                0 |
+|  11888 |        6 |                3 |                1 |                2 |
+| 187164 |        6 |                6 |                0 |                0 |
+| 231563 |        6 |                5 |                1 |                0 |
+| 242172 |        6 |                6 |                0 |                0 |
+|  80696 |        6 |                5 |                0 |                1 |
+|  86533 |        6 |                5 |                1 |                0 |
+|  92341 |        6 |                5 |                0 |                1 |
+|  53916 |        6 |                4 |                1 |                1 |
+| 197270 |        6 |                4 |                0 |                2 |
+| 162516 |        6 |                6 |                0 |                0 |
+| 251414 |        6 |                6 |                0 |                0 |
+| 175344 |        6 |                3 |                1 |                2 |
+|  95407 |        6 |                6 |                0 |                0 |
+| 136891 |        6 |                4 |                2 |                0 |
+| 151128 |        6 |                5 |                0 |                1 |
+| 194010 |        6 |                5 |                0 |                1 |
+
+
+UPDATE places_dataset_1
+SET v = 99
+WHERE tag_id IN (
+    SELECT tag_id 
+    FROM (SELECT tag_id FROM places_dataset_1 WHERE v = 1 GROUP BY tag_id HAVING COUNT(*) <= 5) AS sub
+);
+
+
+-- Fix Missing Validation (val)
+UPDATE places_dataset_1
+JOIN (
+    SELECT gridimage_id,
+           ROW_NUMBER() OVER (PARTITION BY tag_id ORDER BY rnd1) as rank_idx
+    FROM places_dataset_1 p
+    WHERE v = 1 AND split = 'tra'
+    AND tag_id IN (
+        SELECT tag_id FROM places_dataset_1 
+        WHERE v = 1 GROUP BY tag_id HAVING SUM(split = 'val') = 0
+    )
+) AS to_move ON places_dataset_1.gridimage_id = to_move.gridimage_id
+SET split = 'val'
+WHERE to_move.rank_idx = 1;
+
+-- Fix Missing Test (tes)
+--- NOTE this SHOULD of used ORDER BY rnd1 DESC -- so that it wouldnt just select the same images (move->val->tes) 
+UPDATE places_dataset_1
+JOIN (
+    SELECT gridimage_id,
+           ROW_NUMBER() OVER (PARTITION BY tag_id ORDER BY rnd1) as rank_idx
+    FROM places_dataset_1 p
+    WHERE v = 1 AND split = 'tra'
+    AND tag_id IN (
+        SELECT tag_id FROM places_dataset_1 
+        WHERE v = 1 GROUP BY tag_id HAVING SUM(split = 'tes') = 0
+    )
+) AS to_move ON places_dataset_1.gridimage_id = to_move.gridimage_id
+SET split = 'tes'
+WHERE to_move.rank_idx = 1;
+
+
+
+Primary.geograph_live>UPDATE places_dataset_1
+    -> SET v = 99
+    -> WHERE tag_id IN (
+    ->     SELECT tag_id
+    ->     FROM (SELECT tag_id FROM places_dataset_1 WHERE v = 1 GROUP BY tag_id HAVING COUNT(*) <= 5) AS sub
+    -> );
+Query OK, 160255 rows affected (3.273 sec)
+Rows matched: 160255  Changed: 160255  Warnings: 0
+
+Primary.geograph_live>select count(*),v,count(distinct tag_id),count(distinct gridimage_id) from places_dataset_1 group by v;
++----------+------+------------------------+------------------------------+
+| count(*) | v    | count(distinct tag_id) | count(distinct gridimage_id) |
++----------+------+------------------------+------------------------------+
+|   284504 |    0 |                  22458 |                       227688 |
+|  1172701 |    1 |                  30989 |                       648318 |
+|   160255 |   99 |                  67744 |                       129214 |
++----------+------+------------------------+------------------------------+
+3 rows in set (1.898 sec)
+
+
+
+SELECT 
+    split, 
+    COUNT(*) as total_rows, 
+    COUNT(DISTINCT tag_id) as unique_tags,
+    ROUND(COUNT(*) / COUNT(DISTINCT tag_id), 2) as avg_per_tag
+FROM places_dataset_1 
+WHERE v = 1 
+GROUP BY split;
+
+
+select tag_id, hectads,count(distinct d.hectad)
+from places_dataset_1 d
+INNER JOIN tag_named_stat USING (tag_id)
+WHERE v = 1 
+GROUP BY tag_id LIMIT 50;
+
+
+
+Primary.geograph_live>alter table places_dataset_1 add distance varchar(23) after region;
+Query OK, 0 rows affected (0.150 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+Primary.geograph_live>update places_dataset_1 inner join subjects_dataset_1 using (gridimage_id) set places_dataset_1.distance = subjects_dataset_1.distance;
+Query OK, 1364996 rows affected (50.058 sec)
+Rows matched: 1616930  Changed: 1364996  Warnings: 0
+
+
+--	region, if(s=1,, CONCAT('Example: ',)) as ,
+
+select tag_id,prefix,tag,images, latc,lonc, latd,lond,
+	places, if(places=1,place, CONCAT('Example: ',place)) as place,
+	countys, if(countys=1,county, CONCAT('Example: ',county)) as county,
+	regions, if(regions=1,region, CONCAT('Example: ',region)) as region,
+	tag.classification, classification2
+
+	from tag_named_stat where images > 5 limit 10;
+	
+	
+alter table tag_named_stat add classification2 varchar(48) default null;
+update tag_named_stat inner join tag using (tag_id) set tag_named_stat.classification2 = tag.classification2 where tag.classification2 is not null;
+
+
+
+php scripts/export_dataset.php --config=live --source=places_dataset_1 --col=tag_id --cols="split, tag_id, wgs84_lat as lat, wgs84_long as lng, places_dataset_1.hectad, coalesce(distance,'0') as distance" --status="geograph"
+
+php scripts/export_taxonomy.php --config=live --execute --limit=1000000
+
+
+Epoch 47: Train Loss: 0.0282 | Val Loss: 0.0384
+Model saved to best_geograph_model_place.pth
+Epoch 48: Train Loss: 0.0280 | Val Loss: 0.0385
+
+48 is the first one id DIDNT save a new file
+
+Epoch 49: Train Loss: 0.0278 | Val Loss: 0.0383
+Model saved to best_geograph_model_place.pth
+
+
+
+
+
+-- just grab some more images, been cheaky to use my images, so I will reconsize the location during testing
+insert into places_dataset_1
+select gridimage_id, 0 as tag_id, i.hectad, i.region, s.distance, rand() as rnd1, rand() as rnd2, 'tes' as split, 100 as v
+from images_place_joined i -- mainly for the hectad!
+inner join gridimage_search using (gridimage_id) -- just so can filter by user_id
+inner join subjects_dataset_1 s using (gridimage_id) -- just to get distance!
+left join places_dataset_1 p using (gridimage_id)
+where user_id = 3 and p.gridimage_id is null
+group by hectad; -- to get a sample of results
+
+
+php scripts/export_dataset.php --config=live --source=places_dataset_1 --col=tag_id --cols="split, tag_id, wgs84_lat as lat, wgs84_long as lng, places_dataset_1.hectad, coalesce(distance,'0') as distance" --paths --status="" --execute
