@@ -31,52 +31,76 @@
 	Please <a href="/contact.php">contact us</a> if the problem persists.</p>
 {else}
 
-	<form action="register.php" method="post">
+	<form action="register.php" method="post" id="register_form">
 
 {if $empty_referer}
-<div  class="interestBox" id="msgg">
-	<h1>Important Notice</h1>
-	<p>We do not tolerate spam - images are moderated, and all forum posts (particularly from new users) are subject to moderation.</p>
-	<p>Also note that we have instigated a new policy that new users don't get functional links on their profile page (making the page invisible to search engines).</p>
-<img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
-	<p style="color:red">This makes Geograph a useless target for spammers attempting to use Geograph profile pages to get links to their site.</p>
-</div>
-<script type="text/javascript">
-{literal}
-function hide_message() {
-	hide_tree(101);
-	document.getElementById('msgg').style.width='350px';
-	document.getElementById('msgg').style.float='right';
-}
-{/literal}
-</script>
-<a href="javascript:void(hide_message());" id="show101">close message</a>
-<div id="hide101" style="display:none">
+	<div class="interestBox" id="msgg">
+		<h1>Important Notice</h1>
+		<p>We do not tolerate spam - images are moderated, and all forum posts (particularly from new users) are subject to moderation.</p>
+		<p>Also note that we have instigated a new policy that new users don't get functional links on their profile page (making the page invisible to search engines).</p>
+		<img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
+		<p style="color:red">This makes Geograph a useless target for spammers attempting to use Geograph profile pages to get links to their site.</p>
+	</div>
+	<script type="text/javascript">
+	{literal}
+	function hide_message() {
+		hide_tree(101);
+		document.getElementById('msgg').style.display = 'none'; //maybe best just to hide
+		document.getElementById('msgg').style.width='350px';
+		document.getElementById('msgg').style.float='right';
+	}
+	{/literal}
+	</script>
+	<a href="javascript:void(hide_message());" id="show101">close message</a>
+	<div id="hide101" style="display:none">
 {else}
-<div class="interestBox">
+	<div class="interestBox">
 	Our websites:
 	<ul>
 		<li><b>Geograph Britain and Ireland</b></li>
 		<li><b>Geograph Ireland</b></li>
 	</ul>
-	... share the same database. You can use either login here.
-</div>
+	... share the same database. <a href="/login.php">Login</a> if already have an account.
+	</div>
 {/if}
 
 	<p>You need to register before you can upload photos or use the forums. Registration is simple, quick
 	and free. </p>
 
-	<p>We will send you a one-off email, to confirm your registration.</p>
+	<ul>
+		<li>Please read our <a href="/help/terms" target="_blank">Terms of Service</a> - you will be required to accept these before you can create a new account.<br><br>
 
-	<label for="name">Your name</label><br/>
-	<input size="15" id="name" name="name" value="{$name|escape:'html'}"/>
+		<li>We hope you will submit your own photos, but we use this <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">Creative Commons licence</a>, 
+		which means that others will be able to re-use your photos for any purpose as long as they acknowledge you as the photographer.<br><br>
+
+		<li>You are welcome to register, whether or not you intend to submit photos. 
+		Please note that we moderate all user generated content and do not accept any harmful, illegal or spam/advertising material. <br><br>
+
+		<li>We will send you a one-off email, to confirm your registration.</li>
+	</ul>
+
+	<hr><br>
+
+	<label for="name">Your name (will be used as credit for any images submit)</label><br/>
+	<input size="25" id="name" name="name" value="{$name|escape:'html'}"/>
 	<span class="formerror">{$errors.name}</span>
 
 	<br/><br/>
 
 	<label for="email">Your email address</label><br/>
-	<input size="15" id="email" name="email" value="{$email|escape:'html'}"/>
+	<input size="45" id="email" name="email" value="{$email|escape:'html'}"/>
 	<span class="formerror">{$errors.email}</span>
+
+	<br/><br/>
+	<label for="age_diff">Current Age</label><br/>
+	<input type=number id="age_diff" name="age_diff" value="{$age_diff|escape:'html'}" style="width:5em">
+	{if $errors.age_diff}
+		<span class="formerror">{$errors.age_diff}</span>
+	{else}
+		<span style="color:gray;display:inline-block">Please provide your current age in years. 
+		This information will only ever be used by Geograph for internal demographic analysis and to help us fulfil our obligations under the Online Safety Act (2024)
+		</span>
+	{/if}
 
 	<br/><br/>
 
@@ -107,15 +131,31 @@ function hide_message() {
 		<br>
 	{/if}
 
+	<input type=checkbox name=agree_terms required id=agree>
+	<label for="agree">I agree to the Geograph Website <a href="/help/terms" target="_blank">Terms of Service</a></label> (<i>opens in new window/tab</i>)
+	<br/>
+	<br/>
+
+	<input type=hidden name="http_referer" value="{$http_referer|escape:'html'}">
+	<input type=hidden id="register_timing" name="register_timing" value="-1">
 	<input type="submit" name="register" value="Register"/>
 </div>
 	</form>  
 
-	<p>We won't sell or distribute your
-	email address, we hate spam, we really do.</p>
+	<p>We won't sell or distribute your email address, we hate spam, we really do.</p>
 {/if}
 
 {/dynamic}
 </div>
+
+<script>{literal}
+const startTime = performance.now();
+const form = document.getElementById('register_form');
+form.addEventListener('submit', function(event) {
+    const endTime = performance.now();
+    let timeInput = document.getElementById('register_timing');   
+    timeInput.value = (endTime - startTime) / 1000; 
+});
+</script>{/literal}
     
 {include file="_std_end.tpl"}
