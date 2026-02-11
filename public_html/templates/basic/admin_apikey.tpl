@@ -48,6 +48,7 @@
 					<option>commercial project</option>
 					<option>non-profit project</option>
 					<option>hobby project</option>
+					<option>university coursework</option>
 					<option>personal use only</option>
 					<option>other</option>
 				</select></td>
