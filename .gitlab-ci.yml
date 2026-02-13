@@ -72,8 +72,7 @@ staging/geograph:
   extends: .k8s_deploy_staging
   needs:
     - build/geograph
-  #  when: on_success
-  when: manual
+  when: on_success
 
 staging/geograph-cron:
   extends: .k8s_deploy_staging
@@ -126,14 +125,14 @@ production/geograph-cron:
   variables:
     SOURCE_IMAGE: geograph
   needs:
-    - staging/geograph-cron
+    - build/geograph
 
 production/geograph-bot:
   extends: .k8s_deploy_production
   variables:
     SOURCE_IMAGE: geograph
   needs:
-    - staging/geograph-bot
+    - build/geograph
 
 production/manticore:
   extends: .k8s_deploy_production
