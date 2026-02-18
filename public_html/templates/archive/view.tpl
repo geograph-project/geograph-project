@@ -104,7 +104,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 
 <dt>Grid Square</dt>
- <dd><a title="Grid Reference {$image->grid_reference}" href="{$sitemap}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} images{/if}
+ <dd><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} images{/if}
 </dd>
 
 {if $image->credit_realname}
