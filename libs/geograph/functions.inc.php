@@ -756,6 +756,10 @@ function replace_tags($text) {
 }
 
 
+ if (!empty($_SERVER['HTTP_CF_VISITOR']) && $_SERVER['HTTP_CF_VISITOR'] == '{"scheme":"https"}')
+	$_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
+
+
 function pageMustBeHTTPS($status = 301) {
 	global $CONF;
 
@@ -770,6 +774,10 @@ function pageMustBeHTTPS($status = 301) {
 
 	if (!empty($_SERVER['HTTPS']))
 		return; //page is already HTTPS!
+
+	if (!empty($_SERVER['HTTP_CF_VISITOR']) && $_SERVER['HTTP_CF_VISITOR'] == '{"scheme":"https"}')
+		return;
+
 
 	if (!empty($CONF['server_ip']) && strpos($_SERVER['REMOTE_ADDR'],$CONF['server_ip']) === 0 //checks that we the request is from local proxy
 		&& !empty($_SERVER['HTTP_X_FORWARDED_FOR']) //checks its a forwarded request!
