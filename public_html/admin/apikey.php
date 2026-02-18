@@ -33,7 +33,7 @@ $arr= array();
 
 rate_limiting('apikey.php', 2, true);
 
-	if (!empty($_POST['submit']) && $_POST['number'] === '2') {
+	if (!empty($_POST['submit']) && $_POST['number'] === '2' && $_POST['email'] != 'sample@email.tst') {
 
 		if (empty($_POST['email']) || !isValidEmailAddress($_POST['email'])) {
 			$arr = $_POST;
@@ -46,7 +46,7 @@ rate_limiting('apikey.php', 2, true);
 			$updates[] = "`crt_timestamp` = NOW()";
 
 			//loop though all and create the update array
-			foreach (array('homepage_url','comments','email','type') as $key)
+			foreach (array('homepage_url','comments','email','type','name') as $key)
 				if (!empty($_POST[$key])) {
 					$updates[] = '`'.$key.'` = '.$db->Quote($_POST[$key]);
 				}

@@ -37,6 +37,11 @@
 				optional - could be used to provide a page listing users of the api</td>
 		  </tr>
 		  <tr>
+			 <td><b>name</b></td>
+			 <td><input type="text" name="name" value="{$arr.name}">
+				(note was <b>not</b> recorded before 2026)</td>
+		  </tr>
+		  <tr>
 			 <td><b>email</b></td>
 			 <td><input type="text" name="email" value="{$arr.email}">
 				optional - contact developer</td>
