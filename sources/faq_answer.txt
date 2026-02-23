@@ -34,12 +34,13 @@ FROM answer_answer a
 
 creation:
 SELECT  'answer' AS source,
-	`answer_id` AS foreign_id,
+	a.`answer_id` AS foreign_id,
         'creation' as event_type,
-	`created` as event_date,
-	`user_id` as user_id,
-        TRIM(title) AS title,
+	a.`created` as event_date,
+	a.`user_id` as user_id,
+        TRIM(IF(a.title='',q.question,a.title)) AS title,
 	CONCAT('/faq3.php?a=',a.answer_id,'#',a.answer_id) AS url
 FROM answer_answer a
-WHERE status>0 AND created > date_sub(now(),interval 7 day)
+        INNER JOIN answer_question q USING (question_id)
+WHERE a.status>0 AND a.created > date_sub(now(),interval 7 day)
 
