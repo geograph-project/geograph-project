@@ -423,6 +423,10 @@ $offset = 0;
 			if (preg_match('/^user/',$row['source']) && !empty($row['user_id']))
 				$row['url'] = "?preview_user=".intval($row['user_id']); //the actual profile may not show all details!
 			$row['url'] = str_replace('view.php?','view.php?login=true&',$row['url']); //encourage media server to request login!
+			if (empty($row['url']))
+				$row['url'] = 'javascript:void()';
+			if (empty($row['title']))
+				$row['title'] = 'untitled'; //to ensure can see the link!
 
 
 			$confirm = '';
