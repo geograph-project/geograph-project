@@ -1,0 +1,16 @@
+name: API Key
+table_name: apikeys
+
+creation:
+SELECT  'apikey' AS source,
+	`id` AS foreign_id,
+        'creation' as event_type,
+	`crt_timestamp` as event_date,
+	0 as user_id,
+        CONCAT(apikey,' (',type,') ',substring(comments,1,50),IF(LENGTH(comments>50),'...','')) AS title,
+	comments as content,
+        CONCAT('/admin/apikeys.php?id=',id) AS url
+FROM apikeys
+WHERE crt_timestamp > date_sub(now(),interval 7 day)
+
+
