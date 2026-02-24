@@ -86,11 +86,19 @@ if ($acc=='m') return $forb; else return $acc;
 }
 
 //--------------->
-function getIP(){
-$ip1=getenv('REMOTE_ADDR');$ip2=getenv('HTTP_X_FORWARDED_FOR');
-if ($ip2!='' and ip2long($ip2)!=-1) $finalIP=$ip2; else $finalIP=$ip1;
-$finalIP=substr($finalIP,0,45);
-return $finalIP;
+function getIP() {
+	if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+		$cf_ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
+		if (filter_var($cf_ip, FILTER_VALIDATE_IP)) return $cf_ip;
+	}
+	if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+		$ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+		$forward_ip = trim($ips[0]);
+		if (filter_var($forward_ip, FILTER_VALIDATE_IP)) return $forward_ip;
+	}
+	$remote_ip = $_SERVER['REMOTE_ADDR'] ?? '';
+	if (filter_var($remote_ip, FILTER_VALIDATE_IP)) return $remote_ip;
+	return "0";
 }
 
 //--------------->
