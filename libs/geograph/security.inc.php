@@ -246,8 +246,12 @@ function isSpam($msg)
 function getRemoteIP()
 {
 	//get IP address of user
-	//todo, could use HTTP_CF_CONNECTING_IP - but CF does set X_FORWARDED_FOR anyway
-	if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+	if (!empty($_SERVER['HTTP_CF_CONNECTING_IP']))
+	{
+		//for now trust this, in case X-Forwarded-For was not maintained by intermediate proxies
+		$ip=$_SERVER['HTTP_CF_CONNECTING_IP'];
+	}
+	elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
 	{
 		$ips=explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
 		$ip=trim($ips[0]);
