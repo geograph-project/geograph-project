@@ -37,7 +37,7 @@ $forumName=$row[0]; $forumIcon=$row[1];
 
                 //lets give registered users a bit more leaway!
                 if ($USER->registered) {
-                        $threshold *= 2;
+                        $threshold *= 4;
                 }
 
 		$load = get_loadavg();
