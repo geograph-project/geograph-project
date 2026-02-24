@@ -146,22 +146,44 @@ register_shutdown_function('trigger_post');
 function process_list($list, $log = null) {
 	global $server_id, $done, $pid, $param;
 
+	//todo, shoud NOT do --rotate if running in the init-container, but probably doesnt matter!
 	$cmd = "indexer --config /etc/sphinxsearch/sphinx.conf ".implode(" ",array_keys($list))." --rotate"; //--sighup-each if large indexes?
 
 	##################
+	$return_code = null; //as passed by reference
 
+	ob_start();
 	$start = microtime(true);
-	passthru($cmd);
+	passthru($cmd, $return_code);
 	$end = microtime(true);
+	$output = ob_get_contents();
+	ob_end_flush();
+
+	// 2. Check both the exit code and the text for "ERROR"
+	// This catches the 'write error' issues shown in your logs
+	$has_error = ($return_code !== 0 || stripos($output, 'ERROR:') !== false);
 
 	foreach ($list as $index => $dummy) {
-
 		$name = db_Quote(trim($index));
+		$errorMessage = null;
 
-		$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = NOW()";
-		db_Execute($sql);
+		// Matches: ERROR: index 'your_index': some error message until newline
+		if (preg_match("/ERROR: index '$index': (.*)/i", $output, $matches)) {
+		        $errorMessage = trim($matches[1]);
+		} elseif ($return_code !== 0) {
+			$errorMessage = "Process exited with code $return_code (check logs)";
+		}
 
+		//only update if successful
+		if ($errorMessage === null && $return_code === 0) {
+			$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = NOW()";
+			db_Execute($sql);
+		}
+
+		//always log, even failures
 		$sql = "INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW(), pid = $pid";
+		if (!empty($errorMessage))
+			$sql .=", error_message = ".db_Quote($errorMessage);
 		if ($index == $log)
 			$sql .=", taken = ".($end-$start);
 		db_Execute($sql);
