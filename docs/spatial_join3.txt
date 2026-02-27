@@ -1,0 +1,139 @@
+DELIMITER $$
+
+-- --------------------------------------------------------------
+
+DROP FUNCTION IF EXISTS `GetBestPlaceOS`$$
+
+CREATE FUNCTION `GetBestPlaceOS`(p POINT) RETURNS TEXT CHARSET utf8mb4
+    DETERMINISTIC
+    READS SQL DATA
+BEGIN
+    DECLARE ret TEXT;
+
+    -- The function parameter 'p' acts as a constant, triggering the index
+    SET ret = (
+        SELECT CONCAT_WS('|', s.name1, ST_Distance(p, s.point_en), s.geometry_x, s.geometry_y)
+        FROM os_spatial_index s FORCE INDEX (search_area)
+        WHERE MBRContains(s.search_area, p)
+        ORDER BY 
+            IF(MBRContains(s.os_mbr_geometry, p), 0, 1) ASC,
+            ST_Distance(p, s.point_en) / 
+            CASE 
+                WHEN s.local_type = 'City' AND ST_Distance(p, s.point_en) > 5000 THEN 1 
+                ELSE SQRT(s.area_m) 
+            END ASC
+        LIMIT 1
+    );
+
+    RETURN ret;
+END$$
+
+-- --------------------------------------------------------------
+
+DROP FUNCTION IF EXISTS `GetRemotePlaceOS`$$
+
+CREATE FUNCTION `GetRemotePlaceOS`(p POINT) RETURNS TEXT CHARSET utf8mb4
+    DETERMINISTIC
+    READS SQL DATA
+BEGIN
+    DECLARE ret TEXT;
+    -- Create a search box (Envelope) of the buffer to force MBR index usage
+    -- A 50,000m buffer creates a 100km x 100km square search area
+    DECLARE search_mbr GEOMETRY;
+    -- SET search_mbr = ST_Envelope(ST_Buffer(p, 50000));
+    DECLARE px INT;
+    DECLARE py INT;
+    SET px = ST_X(p);
+    SET py = ST_Y(p);
+
+    -- Manually build the MBR string (Polygon) for a 100km square (±50km)
+    -- This avoids the overhead of ST_Buffer
+    SET search_mbr = ST_GeomFromText(CONCAT(
+        'POLYGON((', 
+        px-50000, ' ', py-50000, ',', 
+        px+50000, ' ', py-50000, ',', 
+        px+50000, ' ', py+50000, ',', 
+        px-50000, ' ', py+50000, ',', 
+        px-50000, ' ', py-50000, '))'
+    ));
+
+    SET ret = (
+        SELECT CONCAT_WS('|', s.name1, ST_Distance(p, s.point_en), s.geometry_x, s.geometry_y)
+        FROM os_spatial_index s FORCE INDEX (point_en)
+        WHERE MBRContains(search_mbr, s.point_en)
+        ORDER BY ST_Distance(p, s.point_en) ASC
+        LIMIT 1
+    );
+    RETURN ret;
+END$$
+
+-- --------------------------------------------------------------
+
+DROP FUNCTION IF EXISTS `GetBestPlaceIE`$$
+
+CREATE FUNCTION `GetBestPlaceIE`(p POINT) RETURNS TEXT CHARSET utf8mb4
+    DETERMINISTIC
+    READS SQL DATA
+BEGIN
+    DECLARE ret TEXT;
+
+    -- The function parameter 'p' acts as a constant, triggering the index
+    SET ret = (
+        SELECT CONCAT_WS('|', s.name1, ST_Distance(p, s.point_en), s.geometry_x, s.geometry_y)
+        FROM ie_spatial_index s FORCE INDEX (search_area)
+        WHERE MBRContains(s.search_area, p)
+        ORDER BY
+            ST_Distance(p, s.point_en) ASC
+        LIMIT 1
+    );
+
+    RETURN ret;
+END$$
+
+-- --------------------------------------------------------------
+
+DROP FUNCTION IF EXISTS `GetRemotePlaceIE`$$
+
+CREATE FUNCTION `GetRemotePlaceIE`(p POINT) RETURNS TEXT CHARSET utf8mb4
+    DETERMINISTIC
+    READS SQL DATA
+BEGIN
+    DECLARE ret TEXT;
+    -- Create a search box (Envelope) of the buffer to force MBR index usage
+    -- A 50,000m buffer creates a 100km x 100km square search area
+    DECLARE search_mbr GEOMETRY;
+    -- SET search_mbr = ST_Envelope(ST_Buffer(p, 50000));
+    DECLARE px INT;
+    DECLARE py INT;
+    SET px = ST_X(p);
+    SET py = ST_Y(p);
+
+    -- Manually build the MBR string (Polygon) for a 100km square (±50km)
+    -- This avoids the overhead of ST_Buffer
+    SET search_mbr = ST_GeomFromText(CONCAT(
+        'POLYGON((', 
+        px-50000, ' ', py-50000, ',', 
+        px+50000, ' ', py-50000, ',', 
+        px+50000, ' ', py+50000, ',', 
+        px-50000, ' ', py+50000, ',', 
+        px-50000, ' ', py-50000, '))'
+    ));
+
+    SET ret = (
+        SELECT CONCAT_WS('|', s.name1, ST_Distance(p, s.point_en), s.geometry_x, s.geometry_y)
+        FROM ie_spatial_index s FORCE INDEX (point_en)
+        WHERE MBRContains(search_mbr, s.point_en)
+        ORDER BY ST_Distance(p, s.point_en) ASC
+        LIMIT 1
+    );
+    RETURN ret;
+END$$
+
+-- --------------------------------------------------------------
+
+DELIMITER ;
+
+
+
+
+

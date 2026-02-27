@@ -1,0 +1,162 @@
+-- 1. Create the table with exact data types and constraints
+
+CREATE TABLE os_spatial_index (
+    id CHAR(20) NOT NULL,
+    name1 VARCHAR(37) NOT NULL,
+    local_type ENUM('City','Hamlet','Other Settlement','Suburban Area','Town','Village') NOT NULL,
+    region ENUM('East Midlands','Eastern','London','North East','North West','Scotland','South East','South West','Wales','West Midlands','Yorkshire and the Humber') NOT NULL,
+    geometry_x MEDIUMINT(8) UNSIGNED NOT NULL,
+    geometry_y MEDIUMINT(8) UNSIGNED NOT NULL,
+    mbr_xmin MEDIUMINT(8) UNSIGNED NOT NULL,
+    mbr_ymin MEDIUMINT(8) UNSIGNED NOT NULL,
+    mbr_xmax MEDIUMINT(8) UNSIGNED NOT NULL,
+    mbr_ymax MEDIUMINT(8) UNSIGNED NOT NULL,
+    most_detail_view_res MEDIUMINT(8) UNSIGNED NOT NULL,
+    least_detail_view_res MEDIUMINT(8) UNSIGNED NOT NULL,
+    point_en POINT NOT NULL,
+    search_area GEOMETRY NOT NULL,
+    os_mbr_geometry GEOMETRY NOT NULL,
+    area_m INT(10) UNSIGNED DEFAULT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+-- 2. Pull base data from source table
+-- Note: Adjust column names if they differ in os_open_places
+INSERT INTO os_spatial_index (
+    id, name1, local_type, region, 
+    geometry_x, geometry_y, 
+    mbr_xmin, mbr_ymin, mbr_xmax, mbr_ymax,
+    most_detail_view_res, least_detail_view_res,
+    point_en, search_area, os_mbr_geometry
+)
+SELECT 
+    id, name1, local_type, region,
+    geometry_x, geometry_y,
+    mbr_xmin, mbr_ymin, mbr_xmax, mbr_ymax,
+    most_detail_view_res, least_detail_view_res,
+    POINT(geometry_x, geometry_y), -- Initial point_en
+    ST_Envelope(LineString(        -- Generate search_area (20km box)
+        POINT(geometry_x - 10000, CAST(geometry_y AS SIGNED) - 10000),
+        POINT(geometry_x + 10000, geometry_y + 10000)
+    )),
+    ST_Envelope(LineString(        -- Generate os_mbr_geometry
+        POINT(mbr_xmin, CAST(mbr_ymin AS SIGNED)),
+        POINT(mbr_xmax, mbr_ymax)
+    ))
+FROM geograph_live.os_open_places;
+
+-- 3. Calculate the area column
+UPDATE os_spatial_index 
+SET area_m = (mbr_ymax - mbr_ymin) * (mbr_xmax - mbr_xmin);
+
+-- 4. Add Spatial Indexes
+ALTER TABLE os_spatial_index ADD SPATIAL INDEX(point_en);
+ALTER TABLE os_spatial_index ADD SPATIAL INDEX(search_area);
+ALTER TABLE os_spatial_index ADD SPATIAL INDEX(os_mbr_geometry);
+
+
+-- ----------------------------------------------
+-- Isle of Man (as not in OS Open Names!)
+
+alter table os_spatial_index modify
+    region ENUM('East Midlands','Eastern','London','North East','North West','Scotland','South East','South West','Wales','West Midlands','Yorkshire and the Humber','Isle of Man') NOT NULL;
+
+
+INSERT INTO os_spatial_index (
+    id, name1, local_type, region, 
+    geometry_x, geometry_y, 
+    mbr_xmin, mbr_ymin, mbr_xmax, mbr_ymax,
+    most_detail_view_res, least_detail_view_res,
+    point_en, search_area, os_mbr_geometry, area_m
+)
+SELECT 
+    CONCAT('IOM-', seq), 
+    -- 2. Normalization logic
+    IF(BINARY def_nam = UPPER(def_nam),
+        REPLACE(REPLACE(REPLACE(
+            CONCAT(UPPER(LEFT(def_nam, 1)), LOWER(SUBSTRING(def_nam, 2))),
+            ' st ', ' St '),
+            ' erin', ' Erin'),
+            ' mary', ' Mary'),
+        def_nam -- For Villages, keep original casing as they are already mixed-case
+    ),
+    -- Type Mapping
+    IF(radius = 1800, 'Town', 'Village'),
+    'Isle of Man', 
+    east, north,
+    -- 6. MBR Data using Radius
+    east - radius, 
+    north - radius, 
+    east + radius, 
+    north + radius,
+    -- 7. Default resolutions
+    5000, 25000,
+    point_en,
+    -- 8. Search Area (Fixed 10km buffer)
+    ST_Envelope(LineString(
+        POINT(east - 10000, CAST(north AS SIGNED) - 10000),
+        POINT(east + 10000, north + 10000)
+    )),
+    -- OS MBR Geometry based on Radius
+    ST_Envelope(LineString(
+        POINT(east - radius, CAST(north AS SIGNED) - radius),
+        POINT(east + radius, north + radius)
+    )),
+    -- 9. Area based on Radius ( (radius*2)^2 )
+    POW(radius * 2, 2)
+FROM (
+    SELECT 
+        seq, 
+        def_nam, 
+        east, 
+        north, 
+        point_en,
+        IF(BINARY def_nam = UPPER(def_nam), 1800, 250) AS radius
+    FROM os_gaz_250 
+    WHERE full_county = 'Isle of Man'
+) t2;
+
+-- ----------------------------------------------
+-- IRELAND
+
+CREATE TABLE ie_spatial_index (
+    id MEDIUMINT(8) UNSIGNED NOT NULL,
+    name1 VARCHAR(128) NOT NULL,
+    name2 VARCHAR(128) NOT NULL,
+    county VARCHAR(128) NOT NULL,
+    town_class VARCHAR(128) NOT NULL,
+    country VARCHAR(64) NOT NULL,
+    geometry_x MEDIUMINT(8) UNSIGNED NOT NULL,
+    geometry_y MEDIUMINT(8) UNSIGNED NOT NULL,
+    point_en POINT NOT NULL,
+    search_area GEOMETRY NOT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+INSERT INTO ie_spatial_index (
+    id, name1, name2, county, town_class, country, geometry_x, geometry_y, point_en, search_area
+)
+SELECT 
+    id, 
+    name,   -- maps to name1
+    irish,  -- maps to name2
+    county, 
+    town_class, 
+    country, 
+    e, 
+    n,
+    POINT(e, n),
+    ST_Envelope(LineString(
+        POINT(e - 10000, CAST(n AS SIGNED) - 10000),
+        POINT(e + 10000, n + 10000)
+    ))
+FROM ie_open_data;
+
+-- 3. Add Spatial Indexes for performance
+ALTER TABLE ie_spatial_index ADD SPATIAL INDEX(point_en);
+ALTER TABLE ie_spatial_index ADD SPATIAL INDEX(search_area);
+
+
+-- reminder (so this prints if use 'source' to load thig file!)
+SELECT 'NOTE: Should now run script/os_spatial_index.php which makes name1 unique on the two tables' as comment;
+
