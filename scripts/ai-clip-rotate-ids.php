@@ -119,7 +119,7 @@ if ($param['purge']) {
 	exit;
 }
 
-##################################
+######################################################################################################
 
 //we should work though all 'incomplete' shards. Interestingly this should still include the 'current' active shard (recent submissions!)
 // although 99000 is an arbitary cutoff allows for 1000 rejects, but might need to mop up the few remaining ones!
@@ -135,7 +135,23 @@ if ($param['model'] == 'pe' && $param['start'] == 8000000 && $param['end'] == 90
 	}
 }
 
+//this is intended a lightweight 'nibbler', note it intended for use with 'score', to sweap though everything in order
+//the important bt is to do this BEFORE delete!
+if ($param['start'] == 0) {
+	$param['start'] = $db->getOne("SELECT max(gridimage_id) FROM {$param['table']}");
+
+	//although as a safety net that the table ie empty!
+	if ($param['start'] == 0)
+		$param['start'] = 8100000;
+
+	$param['end'] = $param['start'] + $param['minimum']; //but set this in case!
+
+	print "Starting from {$param['start']}\n";
+}
+
 ##################################
+//first delete rows already done
+
 $table = $param['table'];
 $model = $db->Quote($param['model']);
 $minimum = intval($param['minimum']);
@@ -151,6 +167,13 @@ if ($db->getOne("SHOW TABLES LIKE '$table'")) {
 
 	$count = $db->getOne("SELECT COUNT(*) FROM $table");
 } else  $count = -1;
+
+
+print "Deleted: $deleted; Count: $count; ";
+
+
+##################################
+//then add some more!
 
 if ($count < $minimum) {
 	//$minimum -= $count; -- COULD only insert rows to being back to count!
@@ -182,6 +205,41 @@ print "WHERE=$where\n";
 		 left join {$param['dest_table']} l on (l.gridimage_id = d.gridimage_id and `model` = $model)
 		 where l.gridimage_id is null and $where and d.gridimage_id between {$param['start']} and {$param['end']} limit $minimum";
 
+	} elseif ($param['model'] == 'score') {
+		//this one also uses embedding as input, but its really used to keep track for 'embeddings-set' model!
+		//hence needs all the embedings!
+
+			//other datasets have precomputed the distance!
+		$distance = "IF(natnorthings>0 AND viewpoint_eastings>0,
+pow(2,floor(log2(SQRT(
+pow(cast(nateastings as signed)-cast(viewpoint_eastings as signed),2)
++pow(cast(natnorthings as signed)-cast(viewpoint_northings as signed),2)
+))))
+,'Unknown') AS distance";
+
+		//worth making sure the values are varbinary (cant rely on group_concat - will probabl result in long column)
+		$sql = ($count < 0)?"create table $table (embeddings varbinary(2048) not null, embeddings_ct varbinary(2048) not null, embeddings_pe varbinary(4096) not null,  primary key(gridimage_id))":"insert ignore into $table";
+
+
+			//we need to compute the distance, but might as well create the embeddings NOW too!
+		$sql.= " select gi.gridimage_id, $distance,
+				GROUP_CONCAT(if(e.type = 'image',e.embeddings,null)) AS embeddings,
+	                        GROUP_CONCAT(if(e.type = 'title',e.embeddings,null)) AS embeddings_ct,
+        	                e2.embeddings AS embeddings_pe
+			from gridimage gi
+			inner join gridimage_embedding e USING (gridimage_id)
+                        inner join gridimage_embedding_1024 e2 USING (gridimage_id)
+			left join {$param['dest_table']} l on (l.gridimage_id = gi.gridimage_id and l.`model` = $model)
+			where l.gridimage_id IS NULL and e.model = 'clip' AND e2.type ='image' and e2.model = 'pe'
+			and gi.gridimage_id >= {$param['start']}
+			group by gi.gridimage_id order by gi.gridimage_id limit $minimum";
+
+		//this looks dangorous, without using 'end', that it would pentially end up getting all rows then 'filesort'.
+		//... but in it seems it WILL be done as a index-scan with no filesort
+		//the order by is required to make it a index scan, without that it more dangerous.
+		// although it still best set start eg start = (select max(gridimage_id) from dest_table)
+
+
 	} else {
 		$sql.= " select distinct gi.gridimage_id, user_id ,realname, width, height, original_width, title, grid_reference, if(ii.gridimage_id is null, 0, 1) as skip_fs
 		 from gridimage_search gi inner join gridimage_size using (gridimage_id)
@@ -196,14 +254,15 @@ print "WHERE=$where\n";
 
 		$db->Execute($sql);
 		$added = $db->Affected_Rows();
-	} else print "$sql;\n";
 
+		print "Added: $added;";
+
+	} else print "\n$sql;\n";
+
+	print "\n";
+} else {
+	print "count = $count, so skipping add\n";
 }
-
-if ($deleted || $added) {
-	print "Deleted: $deleted; Added: $added;\n";
-}
-
 
 
 
