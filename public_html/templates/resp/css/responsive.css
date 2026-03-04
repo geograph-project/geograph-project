@@ -514,15 +514,32 @@ details[open] summary {
   grid-column-gap: 5px;
   margin-bottom: 5px;
   background-color: #3AD271;
-  padding:10px;
-  text-align:center;
+  padding: 10px;
+  text-align: center;
   position: -webkit-sticky;
   position: sticky;
   bottom: 0;
+
+ /* This creates the 'feather' starting 20px above the footer */
+ box-shadow: 0 -20px 20px -5px rgba(255, 255, 255, 0.8);
+ border-top: 1px solid #eee;
+ z-index: 100;
   
   a {
   color: #00008b;
   }
+}
+/* The "Inner Fade" transition element */
+.reuse-donate-grid::before {
+ content: "";
+ position: absolute;
+ top: -16px;
+ left: 0;
+ right: 0;
+ height: 16px;
+ background: linear-gradient(to bottom, rgba(58, 210, 113, 0), rgba(58, 210, 113, 1));
+ pointer-events: none;
+ z-index: 101;
 }
 @media all and (max-width: 800px) {
   .reuse-donate-grid {
