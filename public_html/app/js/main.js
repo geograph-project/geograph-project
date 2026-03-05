@@ -11,17 +11,19 @@ function init() {
 
     // Setup routes
     const routes = {
-        'home': { module: '/app/js/modules/home-view.js', title: 'PMA' },
+        'home': { module: '/app/js/modules/home-view.js', title: 'Geograph' },
         'search': { module: '/app/js/modules/search-view.js', title: 'Search' },
+//        'search': { isIframe: true, url: '/finder/finder.php?inner=1', title: 'Search' },
         'profile': { module: '/app/js/modules/profile-view.js', title: 'Profile' },
-        'upload': { module: '/app/js/modules/upload-view.js', title: 'Upload' },
-        'map': { module: '/app/js/modules/map-view.js', title: 'Map' },
+//        'upload': { module: '/app/js/modules/upload-view.js', title: 'Upload' },
+        'upload': { isIframe: true, url: '/submit-mobile.php?inner=1', title: 'Submit' },
+        'map': { isIframe: true, url: '/mapper/combined.php?mobile=1&inner=1', title: 'Map' },
         'settings': { module: '/app/js/modules/settings-view.js', title: 'Settings' },
         'recent': { module: '/app/js/modules/recent-view.js', title: 'Recent Submissions' },
         'help': { module: '/app/js/modules/help-view.js', title: 'Help' },
         'contact': { module: '/app/js/modules/contact-view.js', title: 'Contact' },
         'tos': { module: '/app/js/modules/tos-view.js', title: 'Terms' },
-        'iframe-demo': { isIframe: true, url: 'about:blank', title: 'Iframe Demo' }
+        'iframe-demo': { isIframe: true, url: '/mapper/combined.php?mobile=1&inner=1', title: 'Iframe Demo' }
     };
 
     const router = new Router(routes);

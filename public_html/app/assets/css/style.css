@@ -74,6 +74,13 @@ footer {
     background-color: var(--app-bg);
 }
 
+#app-container {
+    z-index:100;
+}
+#app-container a {
+    color: var( --content-text); /* todo! */
+}
+
 #iframe-container {
     pointer-events: none; /* Only the active iframe should be interactive */
 }
@@ -253,12 +260,140 @@ body.dark-mode .view h2 {
     height: 20px;
 }
 
+/* 1. The Container: Handles the layout of the tiles */
+.content-body {
+    display: grid;
+    /* This creates as many 100px columns as will fit, then stops */
+    grid-template-columns: repeat(auto-fill, 100px); 
+    gap: 15px; /* The "nice gap" between buttons */
+    padding: 20px;
+}
+
+/* 2. The Buttons: Defined as 100px squares */
 .demo-btn {
-    margin-top: 20px;
-    padding: 10px 15px;
+    width: 100px;
+    height: 100px;
+    
+    /* Layout inside the button to center text/icons */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.2;
+    padding: 10px; /* Internal breathing room for long text */
+    
     background-color: var(--primary-bg);
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 12px; /* Slightly rounder for a modern look */
     cursor: pointer;
+    transition: transform 0.1s ease, background-color 0.2s ease;
+    
+    /* Ensures padding doesn't break the 100px limit */
+    box-sizing: border-box; 
+}
+
+/* Hover & Active states for a "touch-friendly" feel */
+.demo-btn:hover {
+    filter: brightness(1.1);
+}
+
+.demo-btn:active {
+    transform: scale(0.95); /* Tactile "press" effect */
+}
+
+input[type="search"] {
+	padding:10px;
+	border-radius:3px;
+	font-size:1.1em;
+}
+
+
+.submissions-grid {
+    display: grid;
+    /* Aligns with your 100px button logic */
+    grid-template-columns: repeat(auto-fill, 100px);
+    gap: 10px;
+    padding-top: 20px;
+}
+
+.submission-tile {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #eee; /* Fallback color while loading */
+}
+
+.submission-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crops the image to fill the 100x100 square */
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+.submission-tile:hover img {
+    transform: scale(1.1); /* Subtle zoom on hover */
+}
+
+/* Optional: Small label for the Grid Ref */
+.tile-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 10px;
+    padding: 2px 0;
+    text-align: center;
+}
+
+.photo-modal {
+    border: none;
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 90vw;
+    max-height: 90vh;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* The backdrop (dimmed background) */
+.photo-modal::backdrop {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.modal-content img {
+    max-width: 100%;
+    max-height: 70vh; /* Leave room for buttons */
+    border-radius: 4px;
+    object-fit: contain;
+}
+
+.modal-controls {
+    display: flex;
+    gap: 10px;
+}
+
+/* Secondary button style for Close */
+.demo-btn.secondary {
+    background-color: #666;
+}
+
+/* Styling the 'View Full Page' link to look like your buttons */
+#full-page-link {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
 }

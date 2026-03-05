@@ -5,7 +5,7 @@
 const AppState = {
     isInnerPage: false,
     currentRoute: '/app/',
-    pageTitle: 'PMA',
+    pageTitle: 'Geograph',
     settings: {
         darkMode: false
     },
