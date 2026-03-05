@@ -42,7 +42,7 @@ header, footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    z-index: 100;
+    z-index: 200;
     transition: all 0.3s ease;
 }
 
@@ -62,7 +62,7 @@ footer {
     padding: 0 10px;
 }
 
-#app-container, #iframe-container {
+#app-container {
     position: absolute;
     top: var(--bar-size);
     bottom: var(--bar-size);
@@ -72,9 +72,20 @@ footer {
     transition: all 0.3s ease;
     padding: 20px;
     background-color: var(--app-bg);
+    z-index: 100;
 }
 
 #iframe-container {
+    position: absolute;
+    top: var(--bar-size);
+    bottom: var(--bar-size);
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    padding: 20px;
+    background-color: var(--app-bg);
+    z-index: 90;
     pointer-events: none; /* Only the active iframe should be interactive */
 }
 
@@ -129,7 +140,7 @@ footer {
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.5);
-    z-index: 200;
+    z-index: 300;
     display: flex;
     justify-content: flex-end;
     transition: opacity 0.3s ease;
