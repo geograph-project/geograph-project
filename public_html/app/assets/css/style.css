@@ -1,0 +1,223 @@
+:root {
+    --primary-bg: #000066;
+    --text-color: #ffffff;
+    --bar-size: 50px;
+    --icon-size: 24px;
+}
+
+body.is-inner {
+    --bar-size: 35px;
+    --icon-size: 18px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+header, footer {
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+header {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--bar-size);
+    padding: 0 10px;
+}
+
+footer {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--bar-size);
+    padding: 0 10px;
+}
+
+#app-container, #iframe-container {
+    position: absolute;
+    top: var(--bar-size);
+    bottom: var(--bar-size);
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    padding: 20px;
+}
+
+#iframe-container {
+    pointer-events: none; /* Only the active iframe should be interactive */
+}
+
+#iframe-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: none;
+    pointer-events: auto;
+}
+
+#iframe-container iframe.active {
+    display: block;
+}
+
+/* Nav Buttons */
+.nav-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn svg {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    fill: currentColor;
+}
+
+.nav-left, .nav-right {
+    display: flex;
+    gap: 10px;
+}
+
+#page-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Menu Overlay */
+#menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 200;
+    display: flex;
+    justify-content: flex-end;
+    transition: opacity 0.3s ease;
+}
+
+#menu-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#drawer-menu {
+    width: 250px;
+    height: 100%;
+    background-color: white;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+#menu-overlay:not(.hidden) #drawer-menu {
+    transform: translateX(0);
+}
+
+#drawer-menu ul {
+    list-style: none;
+}
+
+#drawer-menu li {
+    margin-bottom: 15px;
+}
+
+#drawer-menu a {
+    text-decoration: none;
+    color: #333;
+    font-size: 1.1rem;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#drawer-menu a:hover {
+    background-color: #eee;
+}
+
+/* Landscape Rotation for Small Screens */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    header {
+        top: 0;
+        left: 0;
+        width: var(--bar-size);
+        height: 100%;
+        flex-direction: column;
+        padding: 10px 0;
+    }
+
+    footer {
+        top: 0;
+        right: 0;
+        left: auto;
+        bottom: auto;
+        width: var(--bar-size);
+        height: 100%;
+        flex-direction: column;
+        padding: 10px 0;
+    }
+
+    #app-container, #iframe-container {
+        top: 0;
+        bottom: 0;
+        left: var(--bar-size);
+        right: var(--bar-size);
+    }
+
+    .nav-left, .nav-right {
+        flex-direction: column;
+    }
+
+    #page-title {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        transform: rotate(180deg);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+.view h2 {
+    margin-bottom: 1rem;
+    color: var(--primary-bg);
+}
+
+.demo-btn {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: var(--primary-bg);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
