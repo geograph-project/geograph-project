@@ -2,7 +2,7 @@
 
 {include file="_std_begin.tpl"}
 
-<h2>Supporting Geograph through donations</h2>
+<h2 align="center">Supporting Geograph through donations</h2>
 
 <div style="width:80ch;max-width:100%; margin:auto;">
 <img src="/img/geograph-logo.svg" alt="Geograph Britain and Ireland" style="width:300px; height:auto; max-width:100%; background:#000066; padding:10px; display: block; margin:auto;">
@@ -245,36 +245,36 @@ See {external text="our page on <b>Give as you Live</b>" href="https://www.givea
 
 <hr>
 
+<div style="max-width:80ch; margin:auto; box-sizing: border-box; margin-bottom:20px">
+<p align="center">We are also reliant on non-financial support from the following organizations:</p>
 
-<p>We are also reliant on non-financial support from the following organizations:</p>
 
-
-<div style="display: inline-block; text-align:center; padding:20px">
+<div style="display: inline-block; width:48%;text-align:center">
 <a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/" rel="nofollow"><img src="{$static_host}/img/os-logo-p85.png" width="85" height="67" alt="Ordnance Survey"/></a>
 <br/><br/>
 {external href="https://www.ordnancesurvey.co.uk/education/" text="Ordnance Survey"}
 <br/><br/>
 National Mapping Agency of Great Britain.
 <br/>
-OS Sponsor Geograph.
+OS Sponsor and provide mapping to Geograph.
 </div>
 
-<div style="display: inline-block; text-align:center; padding:20px">
+<div style="display: inline-block; width:48%; text-align:center">
 <a href="https://www.tiger-computing.co.uk/" rel="nofollow"><img src="{$static_host}/img/tiger-logo-tl.png" width="200"/></a>
 <br/><br/>
 {external href="https://www.tiger-computing.co.uk/" text="Tiger Computing"}
 <br/><br/>
 Linux Support Services.
 <br/>
-Tiger keep our servers running in tip-top condition.
+Tiger keep our cloud infrastructure<br> running in tip-top condition.
 </div>
 
-<br style="clear:both"/>
+</div>
 
 
 <hr>
 
-<p align="center" style="font-size:0.9em;"><i class="nowrap">Geograph<sup>&reg;</sup> Britain and Ireland</i> is a project <span 
+<p align="center"><i class="nowrap">Geograph<sup>&reg;</sup> Britain and Ireland</i> is a project <span 
 class="nowrap">by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, a Charity <span 
 class="nowrap">Registered in England and Wales</span>, no <b>1145621</b>. <span class="nowrap">Company no 7473967</span>.<br>
 The registered office is <span class="nowrap">Dept 1706, 43 Owston Road,</span> Carcroft, Doncaster, South Yorkshire. DN6 8DA.</p>
