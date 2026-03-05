@@ -1,16 +1,12 @@
 <?php
-// Mock revisions for local development if not provided
-if (!isset($REVISIONS)) {
-    $REVISIONS = [];
-}
 
-// Ensure $CONF and $LIVE exist for the revision function
-if (!isset($CONF)) {
-    $CONF = ['STATIC_HOST' => ''];
-}
-if (!isset($LIVE)) {
-    $LIVE = [];
-}
+require_once('geograph/global.inc.php');
+init_session();
+
+
+//$smarty = new GeographPage;
+
+$USER->mustHavePerm('basic');
 
 /**
  * Helper to get versioned URLs mirroring the site's logic
@@ -18,19 +14,11 @@ if (!isset($LIVE)) {
 function pma_revision($filename) {
     global $REVISIONS, $CONF, $LIVE;
 
-    // Normalize path for lookup
-    $lookupPath = $filename;
-    if (strpos($lookupPath, '/app/') === 0) {
-        $lookupPath = substr($lookupPath, 4); // Remove /app prefix if present in REVISIONS keys
-    }
-
     if (isset($LIVE[$filename])) {
         $fullPath = $_SERVER['DOCUMENT_ROOT'] . $filename;
         return $filename . "?" . (file_exists($fullPath) ? filemtime($fullPath) : time());
     } elseif (isset($REVISIONS[$filename])) {
         return $CONF['STATIC_HOST'] . preg_replace('/\.(js|css)$/', ".v{$REVISIONS[$filename]}.$1", $filename);
-    } elseif (isset($REVISIONS[$lookupPath])) {
-        return $CONF['STATIC_HOST'] . preg_replace('/\.(js|css)$/', ".v{$REVISIONS[$lookupPath]}.$1", $filename);
     } else {
         // Fallback to filemtime for development
         $fullPath = $_SERVER['DOCUMENT_ROOT'] . $filename;
@@ -67,7 +55,7 @@ function generate_import_map($dir, $basePath = '/app/js/') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PMA - Personal Management Application</title>
+    <title>Geograph App</title>
     <link rel="stylesheet" href="<?= pma_revision('/app/assets/css/style.css') ?>">
 
     <script type="importmap">
@@ -82,7 +70,7 @@ function generate_import_map($dir, $basePath = '/app/js/') {
             </button>
         </div>
         <div class="nav-center">
-            <h1 id="page-title">PMA</h1>
+            <a data-route="/app/" id="page-title">Geograph</a>
         </div>
         <div class="nav-right">
             <button id="btn-search" class="nav-btn" data-route="/app/search">
@@ -104,7 +92,10 @@ function generate_import_map($dir, $basePath = '/app/js/') {
 
     <footer id="main-footer">
         <div class="nav-left">
-             <button id="btn-upload" class="nav-btn" data-route="/app/upload">
+            <button id="btn-upload" class="nav-btn" data-route="/app/upload">
+                <span class="icon-container"></span>
+            </button>
+            <button id="btn-uploads" class="nav-btn" data-route="/app/uploads">
                 <span class="icon-container"></span>
             </button>
             <button id="btn-map" class="nav-btn" data-route="/app/map">
