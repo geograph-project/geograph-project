@@ -64,6 +64,12 @@ if ($_GET['group'] == 'top') {
 				$tag = $query = $row['label'];
 			}
 
+		} elseif (!empty($_GET['ai'])) {
+			$tag = $query = $_GET['tag'];
+			$row = $db->getRow("SELECT * FROM curated_label WHERE name = ".$db->Quote($_GET['tag']));
+			if (!empty($row['clip_query']))
+				$query = $row['clip_query'];
+
 		//just a place holder. Needs better logic! - for no new we need the embedding!
 		} else	if ($db->getOne("SELECT label FROM label_embedding WHERE label = ".$db->Quote($_GET['tag'])." AND model='clip'")) {
 			$tag = $query = $_GET['tag'];
