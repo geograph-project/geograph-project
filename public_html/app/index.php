@@ -61,6 +61,11 @@ function generate_import_map($dir, $basePath = '/app/js/') {
     <script type="importmap">
     <?= generate_import_map('/app/js/') ?>
     </script>
+
+    <link rel="shortcut icon" type="image/x-icon" href="<? echo $CONF['STATIC_HOST']; ?>/favicon.ico">
+    <link rel="manifest" href="/app/manifest.json">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
 </head>
 <body>
     <header id="main-header">
@@ -95,7 +100,7 @@ function generate_import_map($dir, $basePath = '/app/js/') {
             <button id="btn-upload" class="nav-btn" data-route="/app/upload">
                 <span class="icon-container"></span>
             </button>
-            <button id="btn-uploads" class="nav-btn" data-route="/app/uploads">
+            <button id="btn-submit" class="nav-btn" data-route="/app/submit">
                 <span class="icon-container"></span>
             </button>
             <button id="btn-map" class="nav-btn" data-route="/app/map">

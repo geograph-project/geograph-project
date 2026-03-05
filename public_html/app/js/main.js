@@ -16,7 +16,8 @@ function init() {
 //        'search': { isIframe: true, url: '/finder/finder.php?inner=1', title: 'Search' },
         'profile': { module: '/app/js/modules/profile-view.js', title: 'Profile' },
 //        'upload': { module: '/app/js/modules/upload-view.js', title: 'Upload' },
-        'upload': { isIframe: true, url: '/submit-mobile.php?inner=1', title: 'Submit' },
+        'upload': { isIframe: true, url: '/submit-mobile.php?inner=1', title: 'Upload' },
+        'submit': { module: '/app/js/modules/submit-view.js', title: 'Submit' },
         'map': { isIframe: true, url: '/mapper/combined.php?mobile=1&inner=1', title: 'Map' },
         'settings': { module: '/app/js/modules/settings-view.js', title: 'Settings' },
         'recent': { module: '/app/js/modules/recent-view.js', title: 'Recent Submissions' },
@@ -53,9 +54,9 @@ function init() {
 
     // Service Worker Boilerplate (Placeholder)
     if ('serviceWorker' in navigator) {
-        // navigator.serviceWorker.register('/app/sw.js')
-        //     .then(reg => console.log('Service Worker registered', reg))
-        //     .catch(err => console.error('Service Worker registration failed', err));
+        navigator.serviceWorker.register('/app/js/sw.js')
+             .then(reg => console.log('Service Worker registered', reg))
+             .catch(err => console.error('Service Worker registration failed', err));
     }
 }
 

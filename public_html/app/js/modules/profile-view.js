@@ -1,7 +1,7 @@
 export function render() {
     return `
         <div class="view profile-view">
-            <h2>Your Submissions</h2>
+            <h2>Your Submissions / <a href="#" data-route="/app/recent">Review</a></h2>
             <div id="submissions-grid" class="submissions-grid">
                 <p>Fetching your photos...</p>
             </div>
@@ -16,6 +16,7 @@ export function render() {
                 </div>
             </dialog>
         </div>
+	Only shows a submissions (including Pending) from last 3 days, view <a href="/profile.php">Full site Profile</a> for more.
     `;
 }
 
@@ -34,7 +35,7 @@ export async function onMount() {
                  data-large="${item.thumbnail.replace(/_\d+x\d+/, '')}" 
                  data-id="${item.gridimage_id}">
                 <img src="${item.thumbnail}" loading="lazy" alt="${item.title}">
-                <div class="tile-overlay"><span>${item.grid_reference}</span></div>
+                <div class="tile-overlay"><span>${item.moderation_status} / ${item.grid_reference}</span></div>
             </div>
         `).join('');
 

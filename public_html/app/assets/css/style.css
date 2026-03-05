@@ -279,7 +279,7 @@ body.dark-mode .view h2 {
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 500;
     line-height: 1.2;
     padding: 10px; /* Internal breathing room for long text */
@@ -317,6 +317,7 @@ input[type="search"] {
     grid-template-columns: repeat(auto-fill, 100px);
     gap: 10px;
     padding-top: 20px;
+    justify-content: center
 }
 
 .submission-tile {
@@ -396,4 +397,67 @@ input[type="search"] {
     text-decoration: none;
     display: inline-flex;
     align-items: center;
+}
+
+
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.review-item {
+    display: flex;
+    gap: 15px;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+@media screen and (max-width: 500px) {
+	#app-container {
+		padding:20px 2px;
+	}
+	.review-list {
+		padding:0;
+	}
+	.review-item {
+		padding:0;
+		gap:3px;
+	}
+	.review-item span {
+		white-space:nowrap;
+		max-width:190px;
+		overflow:hidden;
+	}
+}
+
+
+.review-item img {
+    width: 120px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.review-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.review-fields input, 
+.review-fields textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+.review-fields textarea {
+    height: 60px;
+    resize: vertical;
 }

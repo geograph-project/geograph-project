@@ -13,6 +13,10 @@ export function render() {
                         <a href="#" id="get-geo-btn">Use My Location</a>
                     </small>
                 </div>
+                <input type=hidden name="standalone" value="true"><br><br>
+
+		<input type=checkbox disabled>Only Search Your images (doesnt work yet)<br><br>
+
                 <button type="submit" style="margin-top: 15px;">Search</button>
             </form>
         </div>
