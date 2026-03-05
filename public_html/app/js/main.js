@@ -27,7 +27,7 @@ function init() {
     const router = new Router(routes);
 
     // Initial state sync
-    AppState.syncWithDOM();
+    AppState.init();
 
     // Menu toggle logic
     const menuBtn = document.getElementById('btn-menu');
