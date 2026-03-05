@@ -1,5 +1,15 @@
 
-log_format custom '$http_x_forwarded_for - $upstream_http_x_geograph_id [$time_local] "$request" "$host" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_time $http_x_forwarded_proto $upstream_http_x_session_id $http_sec_purpose';
+# Step 1: Verify the source is actually Cloudflare
+map $http_cdn_loop $real_client_ip {
+    # If the header contains "cloudflare", trust the CF header
+    "~*cloudflare"  $http_cf_connecting_ip;
+
+    # If the header is missing or different, use X-Forwarded-For
+    default         $http_x_forwarded_for;
+}
+
+# Step 2: Use your verified variable
+log_format custom '$real_client_ip - $upstream_http_x_geograph_id [$time_local] "$request" "$host" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_time $http_x_forwarded_proto $upstream_http_x_session_id $http_sec_purpose';
 
 # disable default internal logs, to save cluttering disk space (individual server blocks may add their own!)
 error_log off;
@@ -233,6 +243,12 @@ server {
   rewrite ^/superlayer.kml /kml-superlayer.php last;
 
   rewrite ^/(sitemap[\d\w\.-]*\.xml.*)$ /sitemap/root/$1 last;
+
+  rewrite ^/app/[\w-]+$ /app/index.php last;
+
+  location /app/manifest.json {
+    add_header Content-Type application/manifest+json;
+  }
 
   ###################################
 
