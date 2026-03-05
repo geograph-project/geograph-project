@@ -98,7 +98,7 @@
 
 	<a name="gazetteer"></a>    
     <h3>Reverse Geocoding Gazetter</h3>
-We have compiled an agorithm to show a 'near to' place, to help provide context when viewing a photo. 
+We have compiled an algorithm to show a 'near to' place, to help provide context when viewing a photo. 
 Compiled with with a range of Gazetteer Products
 
     <ul>

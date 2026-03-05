@@ -508,7 +508,7 @@ details[open] summary {
   grid-template-areas:
     'reuse-donate-button reuse-donate-useful reuse-donate-link'
     'reuse-donate-button reuse-donate-message reuse-donate-link';
-  grid-template-rows: max-content max-content;
+  grid-template-rows: max-content max-content;  
   grid-template-columns: 1fr 1fr 1fr;
   grid-row-gap: 2px;
   grid-column-gap: 5px;
@@ -520,28 +520,27 @@ details[open] summary {
   position: sticky;
   bottom: 0;
 
-  /* This creates the 'feather' starting 20px above the footer */
-  box-shadow: 0 -20px 20px -5px rgba(255, 255, 255, 0.8);
-  border-top: 1px solid #eee;
-  z-index: 100;
-
+ /* This creates the 'feather' starting 20px above the footer */
+ box-shadow: 0 -20px 20px -5px rgba(255, 255, 255, 0.8);
+ border-top: 1px solid #eee;
+ z-index: 100;
+  
   a {
-    color: #00008b;
+  color: #00008b;
   }
 }
 /* The "Inner Fade" transition element */
 .reuse-donate-grid::before {
-  content: "";
-  position: absolute;
-  top: -16px;
-  left: 0;
-  right: 0;
-  height: 16px;
-  background: linear-gradient(to bottom, rgba(58, 210, 113, 0), rgba(58, 210, 113, 1));
-  pointer-events: none;
-  z-index: 101;
+ content: "";
+ position: absolute;
+ top: -16px;
+ left: 0;
+ right: 0;
+ height: 16px;
+ background: linear-gradient(to bottom, rgba(58, 210, 113, 0), rgba(58, 210, 113, 1));
+ pointer-events: none;
+ z-index: 101;
 }
-
 @media all and (max-width: 800px) {
   .reuse-donate-grid {
   grid-template-areas: 
@@ -845,4 +844,130 @@ div.forum-gsd-search {
 {
   text-align: center;
   width: 100%
+}
+/*Donate page styling */
+.donate-tabs {
+  position:relative;
+  margin:auto;
+  max-width:80ch;
+}
+.donate-para {
+  margin-top: 5px;
+}
+.donate-box {
+  background-color: #e6e1ff;
+  border-radius: 10px;
+  padding: 2px;
+}
+.donate-bank-details {
+  box-sizing:border-box;
+  background-color: #e6e1ff;
+  border-radius: 10px;
+  padding: 10px;
+  width: 90%;
+  max-width:40ch;
+  margin:20px auto 20px auto;
+}
+.donate-gift-aid {
+  background-color: #e6e1ff;
+  border-radius: 10px;
+  padding: 10px;
+  width: 90%;
+  max-width:60ch;
+  margin:20px auto 20px auto;
+}
+.donate-giftaid-download {
+  background-color: #E9EFF4;
+  border-radius: 10px;
+  padding: 10px;
+  width: 90%;
+  max-width:40ch;
+  margin:20px auto 20px auto;
+  text-align: center;
+  font-weight: bold;
+}
+.donate-caf {
+  text-align: center;
+  a.btn {
+    display: inline-block;
+    background-color: #000066;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 4px;
+    color: white;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+}
+.donate-alternative-boxout {
+  background-color: #e6e1ff;
+  border-radius: 10px;
+  padding: 10px;
+  width: 90%;
+  max-width:60ch;
+  margin:20px auto 20px auto;
+}
+
+
+
+/*Generic tabbed content*/
+.tabs-container {
+  display: flex;
+  flex-wrap: wrap; /* Allows content to break to new line */
+  margin: 0 auto;
+  border-bottom: 1px solid #ccc; /* Line under the tabs */
+}
+
+/* Force all Links to appear at the TOP (Order 1) */
+.tab-link {
+  order: 1;
+  /* Visual styling for the tab button */
+  display: block;
+  padding: 5px 5px;
+  text-decoration: none;
+  background-color: #f4f4f4;
+  color: #333;
+  border: 1px solid #ccc;
+  border-bottom: none; /* Merge with content below */
+  border-radius: 5px 5px 0 0;
+  margin-right: 4px;
+  transition: background 0.2s;
+}
+
+/* Force all Content to appear at the BOTTOM (Order 2) */
+.tab-content {
+  order: 2;
+  width: 100%; /* Force it to take full width (breaking to next line) */
+  display: none; /* Hidden by default */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-top: 1px solid #ccc; 
+  background: white;
+}
+/* STATE A: An Item is Clicked (Active) */
+/* 1. Highlight the active link (The link itself is now the target) */
+.tab-link:target {
+  background-color: #000066;
+  color: white;
+  font-weight: bold;
+}
+
+/* 2. Show the content immediately following the active link */
+.tab-link:target + .tab-content {
+  display: block;
+  animation: fadeEffect 0.5s;
+}
+/* STATE B: Default State (Nothing Clicked) */
+/* Logic: "If the container has NO target inside it, treat the first link/content as active" */
+
+/* 1. Highlight first link by default */
+.tabs-container:not(:has(.tab-link:target)) .tab-link:first-of-type {
+  background-color: #000066;
+  color: white;
+  font-weight: bold;
+}
+
+/* 2. Show first content by default */
+.tabs-container:not(:has(.tab-link:target)) .tab-content:first-of-type {
+  display: block;
 }
