@@ -1,10 +1,78 @@
+<?php
+// Mock revisions for local development if not provided
+if (!isset($REVISIONS)) {
+    $REVISIONS = [];
+}
+
+// Ensure $CONF and $LIVE exist for the revision function
+if (!isset($CONF)) {
+    $CONF = ['STATIC_HOST' => ''];
+}
+if (!isset($LIVE)) {
+    $LIVE = [];
+}
+
+/**
+ * Helper to get versioned URLs mirroring the site's logic
+ */
+function pma_revision($filename) {
+    global $REVISIONS, $CONF, $LIVE;
+
+    // Normalize path for lookup
+    $lookupPath = $filename;
+    if (strpos($lookupPath, '/app/') === 0) {
+        $lookupPath = substr($lookupPath, 4); // Remove /app prefix if present in REVISIONS keys
+    }
+
+    if (isset($LIVE[$filename])) {
+        $fullPath = $_SERVER['DOCUMENT_ROOT'] . $filename;
+        return $filename . "?" . (file_exists($fullPath) ? filemtime($fullPath) : time());
+    } elseif (isset($REVISIONS[$filename])) {
+        return $CONF['STATIC_HOST'] . preg_replace('/\.(js|css)$/', ".v{$REVISIONS[$filename]}.$1", $filename);
+    } elseif (isset($REVISIONS[$lookupPath])) {
+        return $CONF['STATIC_HOST'] . preg_replace('/\.(js|css)$/', ".v{$REVISIONS[$lookupPath]}.$1", $filename);
+    } else {
+        // Fallback to filemtime for development
+        $fullPath = $_SERVER['DOCUMENT_ROOT'] . $filename;
+        if (file_exists($fullPath)) {
+            return $filename . "?v=" . filemtime($fullPath);
+        }
+        return $filename;
+    }
+}
+
+/**
+ * Generates an Import Map for all JS files in the app
+ */
+function generate_import_map($dir, $basePath = '/app/js/') {
+    $map = ['imports' => []];
+    $fullDir = $_SERVER['DOCUMENT_ROOT'] . $dir;
+
+    if (!is_dir($fullDir)) return json_encode($map);
+
+    $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($fullDir));
+    foreach ($iterator as $file) {
+        if ($file->isFile() && $file->getExtension() === 'js') {
+            $relativePath = str_replace($fullDir, '', $file->getPathname());
+            $appPath = $basePath . ltrim($relativePath, '/');
+            $map['imports'][$appPath] = pma_revision($appPath);
+        }
+    }
+    return json_encode($map, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PMA - Personal Management Application</title>
-    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="<?= pma_revision('/app/assets/css/style.css') ?>">
+
+    <script type="importmap">
+    <?= generate_import_map('/app/js/') ?>
+    </script>
 </head>
 <body>
     <header id="main-header">
@@ -62,6 +130,6 @@
         </nav>
     </div>
 
-    <script type="module" src="/app/js/main.js"></script>
+    <script type="module" src="<?= pma_revision('/app/js/main.js') ?>"></script>
 </body>
 </html>

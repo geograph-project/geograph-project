@@ -1,4 +1,4 @@
-import AppState from './app-state.js';
+import AppState from '/app/js/app-state.js';
 
 /**
  * Simple client-side router

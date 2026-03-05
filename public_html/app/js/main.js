@@ -1,6 +1,6 @@
-import AppState from './app-state.js';
-import Router from './router.js';
-import { injectIcons } from './icons.js';
+import AppState from '/app/js/app-state.js';
+import Router from '/app/js/router.js';
+import { injectIcons } from '/app/js/icons.js';
 
 /**
  * Main application entry point

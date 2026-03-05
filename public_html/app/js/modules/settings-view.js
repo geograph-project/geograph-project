@@ -1,7 +1,7 @@
 /**
  * Settings View Module
  */
-import AppState from '../app-state.js';
+import AppState from '/app/js/app-state.js';
 
 export function render() {
     return `
