@@ -97,6 +97,32 @@ $(document).ready(function() {
         }
     });
 
+    if ($('#aiEnhancedCheckbox').is(':visible')) { //todo, could emulate this even in non-ai mode
+
+	// Add a drop event listener - try a generic one!
+	$('#queryInput').on('drop', function(event) {
+	    event.preventDefault();
+	    const droppedData = event.originalEvent.dataTransfer.getData('text/plain');
+
+	    if (m = droppedData.match(/\/photo\/(\d+)/)) {
+	        // Set the value of the input element within the container
+	        newQuery = "id:" + m[1];
+
+                    $('#queryInput').val(newQuery);
+                    currentQuery = newQuery;
+
+                    if (!$('#aiEnhancedCheckbox').is(':checked')) {
+                         $('#aiEnhancedCheckbox').prop('checked', true);
+                    }
+
+                    $('#searchButton').click();
+	    }
+
+	    // Reset the cursor
+	    event.dataTransfer.dropEffect = 'none';
+	});
+    }
+
     // Initialize draggable and droppable
     function initializeDragAndDrop() {
         $('#searchResults .image-item').draggable({
@@ -127,6 +153,7 @@ $(document).ready(function() {
         });
 
         if ($('#aiEnhancedCheckbox').is(':visible')) { //todo, could emulate this even in non-ai mode
+
             $('#queryInput').droppable({
                 accept: '.image-item',
                 over: function(event, ui) {
@@ -152,7 +179,6 @@ $(document).ready(function() {
                 }
             });
 	}
-
         $('.container').off('mousedown', '.image-item'); // Prevent multiple bindings
         $('.container').on('mousedown', '.image-item', function() {
             const $this = $(this);
@@ -162,6 +188,7 @@ $(document).ready(function() {
             clearTimeout(longClickTimer);
 
             // Start a new timer
+	    /* --- turns out makes things very hard to use, will trigger during draggin!
             longClickTimer = setTimeout(function() {
                 // This simulates a mouseup on the document, which forces jQuery UI to clean up
                 // any active drag helper or revert state.
@@ -171,6 +198,7 @@ $(document).ready(function() {
                 window.open(`/photo/${imageId}`,'photo'); // Navigate to the photo page
                 longClickTimer = null; // Reset timer ID
             }, LONG_CLICK_DELAY);
+            */
         });
 
         // --- NEW: Mouseup handler (to cancel long click for short clicks) ---
@@ -237,6 +265,7 @@ $(document).ready(function() {
             submitSelectedImages([imageId], 'add');
 
             updateSearchDisplay();
+	    $('p#noImages').remove();
         }
     }
 
@@ -257,7 +286,7 @@ $(document).ready(function() {
             }
 
 		if (!image.thumbnail)
-			image.thumbnail = getGeographUrl(image.id, image.hash, 'med');
+			image.thumbnail = getGeographUrl(image.id, image.hash, 'sq');
 
             const imageHtml = `
                 <div class="image-item" data-id="${image.id}" data-title="${image.title}">
@@ -397,7 +426,7 @@ $(document).ready(function() {
                     });
                     renderImages('selectedImages', response.rows); // Render them in the right column
                 } else {
-                    $('#selectedImages').html('<p>No images currently selected for this tag.</p>');
+                    $('#selectedImages').html('<p id="noImages">No images currently selected for this tag.</p>');
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -617,6 +646,7 @@ function getGeographUrl(gridimage_id, hash, size) {
 
         switch(size) {
                 case 'full': return "https://s0.geograph.org.uk"+fullpath+".jpg"; break;
+                case 'sq': return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_224XX224.jpg"; break;
                 case 'med': return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_213x160.jpg"; break;
                 case 'small':
                 default: return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_120x120.jpg";
