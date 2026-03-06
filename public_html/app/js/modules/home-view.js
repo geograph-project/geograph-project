@@ -23,10 +23,9 @@ export function render() {
 		<button data-route="/app/recent" class="demo-btn">Review Submissions</button>
 
 		<button data-route="/app/map" class="demo-btn">View Map</button>
+		<button data-route="/app/quick" class="demo-btn">Quick Submit (test only)</button>
 
-	        <button id="install-btn" class="demo-btn" style="display: none;">
-                    Add to Home Screen
-                </button>
+	        <button id="install-btn" class="demo-btn" style="display: none;">Add to Home Screen</button>
             </div>
 
             <p align=center><a href=# data-route="/app/settings">Settings &gt;</a>
@@ -37,11 +36,17 @@ export function render() {
     `;
 }
 
+function isMobile() {
+    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+}
+
 export function onMount() {
     const installBtn = document.getElementById('install-btn');
 
     if (deferredPrompt) {
         installBtn.style.display = 'flex';
+        // Dynamically update the text
+        installBtn.innerHTML = isMobile() ? 'Add to Home Screen' : 'Install to Desktop';
     }
 
     installBtn.addEventListener('click', async () => {
