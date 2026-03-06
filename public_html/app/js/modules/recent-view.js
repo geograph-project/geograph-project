@@ -1,3 +1,5 @@
+import { escapeHTML } from '/app/js/utils.js';
+
 export function render() {
     return `
         <div class="view review-view">
@@ -6,12 +8,14 @@ export function render() {
                 <p>Loading submissions for review...</p>
             </div>
         </div>
+
+	<p>Currently just submissions from last 3 days</p>
     `;
 }
 
 export async function onMount() {
     const listContainer = document.getElementById('review-list');
-    
+
     try {
         const response = await fetch('/stuff/submissions.json.php?thumbs=1');
         const data = await response.json();
@@ -20,8 +24,8 @@ export async function onMount() {
             <div class="review-item">
                 <img src="${item.thumbnail}" alt="Thumbnail">
                 <div class="review-fields">
-                    <input type="text" value="${item.title || ''}" placeholder="Title">
-                    <textarea placeholder="No Description">${item.comment || ''}</textarea>
+                    <input type="text" value="${escapeHTML(item.title)}" placeholder="Title">
+                    <textarea placeholder="No Description">${escapeHTML(item.comment || '')}</textarea>
                     <!--button class="demo-btn" style="width: auto; padding: 5px 15px;">Save Changes</button-->
 		    <span>[[[${item.gridimage_id}]]] ${item.grid_reference} - ${item.imagetaken} - ${item.submitted}</span>
                 </div>
