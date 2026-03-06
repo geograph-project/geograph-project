@@ -20,83 +20,109 @@ class Router {
             if (link) {
                 e.preventDefault();
                 const path = link.getAttribute('data-route');
-                this.navigate(path);
+
+                const param = link.getAttribute('data-param');
+                const message = link.getAttribute('data-message');
+                this.navigate(path, { param, message });
+
             }
+        });
+
+        // Listen for navigation requests from iframes
+        window.addEventListener('request-navigation', (e) => {
+            const { path, options } = e.detail;
+            this.navigate(path, options);
         });
     }
 
     /**
-     * Navigates to a specific path
-     * @param {string} path
+     * @param {Object} options - { param: 'id=19', message: 'load(19)' }
      */
-    navigate(path) {
-        if (window.location.pathname === path) return;
-
-        window.history.pushState({}, '', path);
-        this.handleNavigation(path);
+    navigate(path, options = {}) {
+        // We push state even if path is same, if params changed
+        window.history.pushState(options, '', path);
+        this.handleNavigation(path, options);
     }
 
     /**
      * Handles the view rendering logic for a path
      * @param {string} path
      */
-    async handleNavigation(path) {
-        // Normalize path to remove base
+    async handleNavigation(path, options = {}) {
         let relativePath = path.startsWith(this.base) ? path.slice(this.base.length) : path;
         if (relativePath.startsWith('/')) relativePath = relativePath.slice(1);
         if (relativePath === '') relativePath = 'home';
 
         const route = this.routes[relativePath] || this.routes['home'];
 
-        // Close menu if open
+        // UI Updates
         const menuOverlay = document.getElementById('menu-overlay');
         if (menuOverlay) menuOverlay.classList.add('hidden');
 
-        // Update state
         AppState.setState({
             isInnerPage: relativePath !== 'home',
             currentRoute: path,
             pageTitle: route.title || 'PMA'
         });
 
-        // Clear app container for non-iframe routes
         if (!route.isIframe) {
+            this.renderModule(route, options);
+        } else {
+            this.appContainer.classList.add('hidden');
+            // Pass the options to the iframe handler
+            this.showIframe(relativePath, route.url, options);
+        }
+    }
+
+    async renderModule(route, options = {}) {
             this.appContainer.innerHTML = '<div class="loading">Loading...</div>';
             this.hideAllIframes();
             this.appContainer.classList.remove('hidden');
 
             try {
                 const module = await import(route.module);
-                const html = await module.render();
+                const html = await module.render(options);
                 this.appContainer.innerHTML = html;
-                if (module.onMount) module.onMount();
+                if (module.onMount) module.onMount(options);
             } catch (err) {
                 console.error('Failed to load module:', err);
                 this.appContainer.innerHTML = '<div class="error">View failed to load.</div>';
             }
-        } else {
-            // Handle persistent iframe
-            this.appContainer.classList.add('hidden');
-            this.showIframe(relativePath, route.url);
-        }
     }
 
     /**
      * Manages persistent iframes
      */
-    showIframe(id, url) {
+    showIframe(id, baseUrl, options = {}) {
         this.hideAllIframes();
 
-        if (!this.iframes[id]) {
-            const iframe = document.createElement('iframe');
-            iframe.src = url;
+        let iframe = this.iframes[id];
+
+        // 1. URL Param Logic: If data-param exists, we force a URL update/reload
+        let finalUrl = baseUrl;
+        if (options.param) {
+            const separator = baseUrl.includes('?') ? '&' : '?';
+            finalUrl = `${baseUrl}${separator}${options.param}`;
+        }
+
+        if (!iframe) {
+            iframe = document.createElement('iframe');
+            iframe.src = finalUrl;
             iframe.id = `iframe-${id}`;
             this.iframeContainer.appendChild(iframe);
             this.iframes[id] = iframe;
+        } else if (options.param) {
+            // Only update src if params are actually provided
+            iframe.src = finalUrl;
         }
 
-        this.iframes[id].classList.add('active');
-        this.iframes[id].style.display = 'block';
+        iframe.style.display = 'block';
+        iframe.classList.add('active');
+
+        // 2. postMessage Logic
+        if (options.message) {
+            this.sendMessageToIframe(iframe, options.message);
+        }
     }
 
     hideAllIframes() {
@@ -104,6 +130,27 @@ class Router {
             iframe.classList.remove('active');
             iframe.style.display = 'none';
         });
+    }
+
+    /**
+     * Ensures message is sent only when iframe is ready
+     */
+    sendMessageToIframe(iframe, message) {
+        const deliver = () => {
+            // Ensure targetOrigin is restricted in production for security
+            iframe.contentWindow.postMessage(message, '*');
+        };
+
+        // If iframe is still loading, wait for it
+        if (iframe.contentDocument && iframe.contentDocument.readyState !== 'complete') {
+            iframe.onload = () => {
+                deliver();
+                iframe.onload = null; // Clean up
+            };
+        } else {
+            // Iframe is already loaded, send immediately
+            deliver();
+        }
     }
 
     /**
