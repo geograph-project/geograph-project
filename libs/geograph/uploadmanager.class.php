@@ -655,11 +655,12 @@ if (filesize($file) > 4000000) {
 	function processDataURL($url) {
 		$ok = false;
 
-		//todo, we could allow other submissions, because _isJpeg will now convert some other formats TO jpeg!
-		if (strpos($url, "data:image/jpeg;base64,") !== 0) {
-			$this->error("We only accept JPEG images (base64 encoded) - your upload did not appear to be a valid JPEG file");
-			return false;
-		}
+		//Sanity check: verify the string is a data URI before invoking the stream wrapper
+		// This is fast and prevents PHP from trying to parse non-data URLs
+                if (strpos($url, "data:") !== 0 || strpos($url, ";base64,") === false) {
+                        $this->error("Invalid image upload format.");
+                        return false;
+                }
 
 		$upload_id=md5(uniqid('upload'));
 		$temp_file = tempnam("/tmp",'upload');
@@ -669,7 +670,7 @@ if (filesize($file) > 4000000) {
 		if (!filesize($temp_file)) {
 			$this->error("Was not able to decode file");
 
-		} elseif ($this->_isJpeg($temp_file)) {
+		} elseif ($this->_isJpeg($temp_file, true)) { //this will auto-convert heic (and other supported types to JPEG!)
                         $ok = $this->_processFile($upload_id,$temp_file,false);
 
 			if (file_exists($temp_file)) //it SHOULD of been moved!;

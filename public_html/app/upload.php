@@ -7,7 +7,6 @@ init_session();
 
 $USER->mustHavePerm('basic');
 
-
 if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a login request!
 	// Get the raw POST data
 	$input = file_get_contents('php://input');
@@ -28,6 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 	exit;
 }
 
+###############################
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,6 +45,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
         .card { background: white; padding: 24px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; }
+
+@media screen and (max-width: 500px) {
+        body {
+                padding:20px 2px;
+        }
+	.card {
+		padding:20px 2px;
+	}
+}
 
         /* Custom Buttons */
         .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
@@ -67,6 +77,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         .remove-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; opacity: 0.8; transition: 0.2s; cursor: pointer; }
         .img-wrapper:hover .remove-overlay { opacity: 1; }
         .remove-icon { background: white; color: red; border-radius: 50%; width: 24px; height: 24px; line-height: 24px; font-weight: bold; }
+
+        .warning { position: absolute; top: 5px; left: 5px; background: #ffcc00; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; pointer-events: none; }
 
         /* Uploaded State */
         .uploaded img { opacity: 0.3; filter: grayscale(100%); }
@@ -93,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
     <div id="post-upload-actions" class="hidden">
         <div id="multi-actions">
-            <button class="btn btn-secondary" id="btnFirst">Submit First Image</button>
+            <button class="btn btn-upload" id="btnFirst">Submit First Image</button>
             <button class="btn btn-secondary" id="btnLast">Submit Last Image</button>
         </div>
         <div id="single-actions" class="hidden">
@@ -136,6 +148,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         const files = Array.from(e.target.files);
         if (!files.length) return;
 
+        // Check for the limit (prevent overload!)
+        if (files.length > 25) {
+            alert("You selected " + files.length + " files. Only the first 25 will be processed.");
+            // 2. Slice to the allowed limit
+            files = files.slice(0, 25);
+        }
+
         fileQueue = files.map(file => ({
             id: 'img_' + Math.random().toString(36).substr(2, 9),
             file: file,
@@ -145,46 +164,90 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         renderUI();
     }
 
-    async function renderUI() {
-        displayArea.innerHTML = '';
-        postActions.classList.add('hidden');
-        progressCont.style.display = 'none';
+    // Helper to process a single item
+    async function processItem(item) {
+        const isHeic = item.file.name.toLowerCase().endsWith('.heic') || item.file.type === 'image/heic';
 
-        if (fileQueue.length === 0) {
-            uploadBtn.classList.add('hidden');
-            return;
-        }
+        // 1. Analyze EXIF
+        const exifData = await new Promise(resolve => EXIF.getData(item.file, function() {
+            resolve({
+                hasGeo: !!(EXIF.getTag(this, 'GPSLongitude') && EXIF.getTag(this, 'GPSLatitude')),
+                orientation: EXIF.getTag(this, 'Orientation')
+            });
+        }));
 
-        uploadBtn.classList.remove('hidden');
-        uploadBtn.disabled = false;
-        uploadBtn.innerText = `Upload ${fileQueue.length} ${fileQueue.length === 1 ? 'Image' : 'Files'}`;
-
-        if (fileQueue.length === 1) {
-            const dataUri = await toBase64(fileQueue[0].file);
-            fileQueue[0].dataUri = dataUri;
-            displayArea.innerHTML = `
-                <div class="hero-view" id="wrapper-${fileQueue[0].id}">
-                    <img src="${dataUri}">
-                </div>`;
-        } else {
-            const grid = document.createElement('div');
-            grid.className = 'grid';
-            for (const item of fileQueue) {
-                const dataUri = await toBase64(item.file);
-                item.dataUri = dataUri;
-                const div = document.createElement('div');
-                div.className = 'img-wrapper';
-                div.id = `wrapper-${item.id}`;
-                div.innerHTML = `
-                    <img src="${dataUri}">
-                    <div class="remove-overlay" onclick="removeItem('${item.id}')">
-                        <span class="remove-icon">&#10005;</span>
-                    </div>`;
-                grid.appendChild(div);
+        // 2. Resize if necessary
+        let dataUri = await new Promise(resolve => {
+            if (item.file.size > max_size && !isHeic) {
+                resizeFileWorker(item.file, max_size, (url) => {
+                    const finished = document.getElementById('messageDiv');
+                    if (finished) finished.remove();
+                    resolve(url);
+                });
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(item.file);
             }
-            displayArea.appendChild(grid);
-        }
+        });
+
+        item.dataUri = dataUri;
+        item.isHeic = isHeic;
+        return { item, exifData };
     }
+
+async function renderUI() {
+    displayArea.innerHTML = '';
+    postActions.classList.add('hidden');
+    progressCont.style.display = 'none';
+
+    if (fileQueue.length === 0) {
+        uploadBtn.classList.add('hidden');
+        return;
+    }
+
+    uploadBtn.classList.remove('hidden');
+    uploadBtn.disabled = true; // Disable until processing finishes
+    uploadBtn.innerText = "Processing images...";
+
+    const existing = document.getElementById('messageDiv');
+    if (existing) existing.remove();
+
+    // Process all images in the queue
+    const processedItems = await Promise.all(fileQueue.map(processItem));
+
+    // Render based on count
+    if (processedItems.length === 1) {
+        const { item, exifData } = processedItems[0];
+        displayArea.innerHTML = `
+            <div class="hero-view" id="wrapper-${item.id}">
+                <img src="${item.isHeic?'/app/assets/heic-placeholder.png':item.dataUri}">
+                ${exifData.hasGeo ? '' : '<div class="warning">Missing Geo-tags</div>'}
+                ${(exifData.orientation && exifData.orientation !== 1) ? '<div class="warning">Needs Rotating</div>' : ''}
+            </div>`;
+    } else {
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+        for (const { item, exifData } of processedItems) {
+            const div = document.createElement('div');
+            div.className = 'img-wrapper';
+            div.id = `wrapper-${item.id}`;
+            div.innerHTML = `
+                <img src="${item.isHeic?'/app/assets/heic-placeholder.png':item.dataUri}">
+                ${exifData.hasGeo ? '' : '<div class="warning">Missing Geo</div>'}
+                ${(exifData.orientation && exifData.orientation !== 1) ? '<div class="warning">Needs Rotating</div>' : ''}
+                <div class="remove-overlay" onclick="removeItem('${item.id}')">
+                    <span class="remove-icon">&#10005;</span>
+                </div>`;
+            grid.appendChild(div);
+        }
+        displayArea.appendChild(grid);
+    }
+
+    uploadBtn.disabled = false;
+    uploadBtn.innerText = `Upload ${fileQueue.length} ${fileQueue.length === 1 ? 'Image' : 'Images'}`;
+}
+
 
     function removeItem(id) {
         fileQueue = fileQueue.filter(f => f.id !== id);
@@ -195,73 +258,95 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         uploadBtn.disabled = true;
         progressCont.style.display = 'block';
 
-        for (let i = 0; i < fileQueue.length; i++) {
+        // Can't remove them anymore once upload begun
+        document.querySelectorAll('.remove-overlay').forEach(overlay => {
+            overlay.style.display = 'none';
+        });
+
+        // 1. Hide all overlays once
+        document.querySelectorAll('#display-area .remove-overlay').forEach(el => el.style.display = 'none');
+
+        // 2. Iterate by modifying the original queue
+        let i = 0;
+        let fileQueueLength = fileQueue.length; //capture at start
+        while (i < fileQueue.length) {
             const item = fileQueue[i];
 
-        // --- UPDATED: RESIZING STEP ---
-        // This will now use your worker logic and wait until it's finished
-        let finalDataUri = item.dataUri;
-        if (item.file.size > max_size) {
-            uploadBtn.innerText = `Resizing ${item.file.name}...`;
-            finalDataUri = await prepareImageForUpload(item.file, max_size);
-
-	    setTimeout(function() {
-		//resize left a message we need to hide!
-		const element = document.getElementById('messageDiv');
-                if (element)
-			element.style.display = 'none';
-	    }, 2000);
-        }
-        // ------------------------------
-
-            // Can't remove it anymore!
-	    const child = document.getElementById(`wrapper-${item.id}`).querySelector('.remove-overlay');
-	    if (child) {
-                child.style.display = 'none';
-            }
-
             // UI Update: Progress Bar
-            const percent = ((i + 1) / fileQueue.length) * 100;
-            progressFill.style.width = percent + '%';
-            uploadBtn.innerText = `Uploading ${i + 1}/${fileQueue.length}...`;
+            uploadBtn.innerText = `Uploading ${fileQueueLength - fileQueue.length + 1} / ${fileQueueLength}...`;
+            progressFill.style.width =       ((fileQueueLength - fileQueue.length + 1) / fileQueueLength) * 100 + '%';
 
             // Sequential POST request
-            const result = await sendToPHP(item.dataUri);
-
-            if (result && result.success) {
+            const result = await sendToPHP(item.uploadData);
+            if (result) {
+                // SUCCESS: Remove from queue and mark visually
                 document.getElementById(`wrapper-${item.id}`).classList.add('uploaded');
-		//todo, attach the result.upload_id to the 'continue' buttons!
+		// Add the UploadID to buttons
 		if (i == 0 && fileQueue.length == 1) {
-			//want to overite any existing click (from a previous call!)
-	                document.getElementById('btnSingle').onclick = function() {
-				navigateTo('/app/submit',{message: 'transfer_id='+result.upload_id});
-			};
+			addIdtoBtn('btnSingle', result.upload_id);
 		} else if (i == 0) {
-	                document.getElementById('btnFirst').onclick = function() {
-				navigateTo('/app/submit',{message: 'transfer_id='+result.upload_id});
-			};
+			addIdtoBtn('btnFirst', result.upload_id);
 		} else if (i == fileQueue.length-1) {
-	                document.getElementById('btnLast').onclick = function() {
-				navigateTo('/app/submit',{message: 'transfer_id='+result.upload_id});
-			};
+			addIdtoBtn('btnLast', result.upload_id);
 		}
-
-		//todo, delete from fileQueue (so if retry failures, doesnt resubmit!)
-            } // else alert??
+		upload_id = result.upload_id;
+                // Remove from array so it's gone if we click upload again
+                fileQueue.splice(i, 1);
+            } else {
+                // FAILURE: Keep in queue, move to next
+                alert(`Failed to upload ${item.file.name}. It will remain in the queue.`);
+                document.getElementById(`wrapper-${item.id}`).style.border = "2px solid red";
+                i++;
+            }
         }
 
-        uploadBtn.classList.add('hidden');
+        // 3. Reset UI state
+        uploadBtn.disabled = false;
         progressCont.style.display = 'none';
 
-        // Post-Upload Logic
-        if (fileQueue.length === 1 && autoProceedCheck.checked) {
-            submitChoice('only');
+        // All submitted OK!
+        if (fileQueue.length === 0) {
+            uploadBtn.classList.add('hidden');
+            if (fileQueueLength === 1 && autoProceedCheck.checked && document.visibilityState === 'visible') {
+                navigateTo('/app/submit',{message: 'transfer_id='+upload_id});
+	        postActions.classList.add('hidden');
+  	        displayArea.innerHTML = '';
+            } else {
+                postActions.classList.remove('hidden');
+                document.getElementById('multi-actions').classList.toggle('hidden', fileQueueLength === 1);
+                document.getElementById('single-actions').classList.toggle('hidden', fileQueueLength !== 1);
+            }
         } else {
-            postActions.classList.remove('hidden');
-            document.getElementById('multi-actions').classList.toggle('hidden', fileQueue.length === 1);
-            document.getElementById('single-actions').classList.toggle('hidden', fileQueue.length !== 1);
+            // If queue not empty, change button text to indicate retry
+            uploadBtn.innerText = `Retry ${fileQueue.length} Failed Uploads`;
         }
     };
+
+function addIdtoBtn(btnId, upload_id) {
+	//want to overite any existing click (from a previous call!)
+        document.getElementById(btnId).onclick = function() {
+		navigateTo('/app/submit',{message: 'transfer_id='+upload_id});
+		postActions.classList.add('hidden');
+		displayArea.innerHTML = '';
+	};
+}
+
+async function analyzeExif(file) {
+    return new Promise((resolve) => {
+        EXIF.getData(file, function() {
+            const date = EXIF.getTag(this, 'DateTimeOriginal') || EXIF.getTag(this, 'DateTime');
+            const long = EXIF.getTag(this, 'GPSLongitude');
+            const lat = EXIF.getTag(this, 'GPSLatitude');
+            const orientation = EXIF.getTag(this, 'Orientation');
+
+            resolve({
+                hasGeo: !!(long && lat),
+                orientation: orientation,
+                date: date
+            });
+        });
+    });
+}
 
 async function sendToPHP(dataUri) {
     try {
@@ -290,37 +375,6 @@ async function sendToPHP(dataUri) {
         console.error('Fetch error:', e);
         return { success: false, error: e.message };
     }
-}
-
-    function submitChoice(type) {
-        let finalImage;
-        if (type === 'first') finalImage = fileQueue[0];
-        if (type === 'last') finalImage = fileQueue[fileQueue.length - 1];
-        if (type === 'only') finalImage = fileQueue[0];
-
-        // Replace this with your actual navigation or final submission logic
-        console.log("Final Selection:", finalImage.file.name);
-        alert(`Finalized: ${finalImage.file.name}. Redirecting...`);
-    }
-
-/**
- * Wraps your existing legacy library logic into a Promise-based flow
- */
-async function prepareImageForUpload(file, max_size) {
-    // 1. If file is small enough, skip resizing
-    if (file.size <= max_size) {
-        return await toBase64(file);
-    }
-
-    // 2. Return a Promise that resolves when the legacy callback is fired
-    return new Promise((resolve, reject) => {
-        // resizeFileWorker automatically detects environment and calls 
-        // resizeFile as a fallback if the worker API isn't supported.
-        resizeFileWorker(file, max_size, (dataUrl, finalSize) => {
-            // This is the callback from your legacy library
-            resolve(dataUrl);
-        });
-    });
 }
 
     function toBase64(file) {
