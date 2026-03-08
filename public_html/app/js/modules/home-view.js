@@ -18,7 +18,7 @@ export function render() {
 
             <div class="content-body">
 		<button data-route="/app/upload" class="demo-btn">Upload Image</button>
-		<button data-route="/app/submit" class="demo-btn">Submit Image</button>
+		<button data-route="/app/uploaded" class="demo-btn">Submit Image</button>
 		<button data-route="/app/profile" class="demo-btn">Submitted Images</button>
 		<button data-route="/app/recent" class="demo-btn">Review Submissions</button>
 
@@ -29,8 +29,9 @@ export function render() {
             </div>
 
             <p align=center><a href=# data-route="/app/settings">Settings &gt;</a>
+
 		<br><br>
-	    <p align=center>Tip: Use 'Add to Home Screen' from the Chrome menu to install quick loading icon</p>
+	    <p align=center class="install-tip">Tip: Use 'Add to Home Screen' from the Chrome menu to install quick loading icon</p>
 
         </div>
     `;
@@ -42,23 +43,39 @@ function isMobile() {
 
 export function onMount() {
     const installBtn = document.getElementById('install-btn');
+    const installTip = document.querySelector('.install-tip');
 
+    // 1. If we are already running as an installed App, hide everything
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        if (installBtn) installBtn.style.display = 'none';
+        if (installTip) installTip.style.display = 'none';
+        return;
+    }
+
+    // 2. If the browser gave us the official install prompt
     if (deferredPrompt) {
         installBtn.style.display = 'flex';
         // Dynamically update the text
         installBtn.innerHTML = isMobile() ? 'Add to Home Screen' : 'Install to Desktop';
+
+	// Don't need the tip, now shown the button!
+	installTip.style.display = 'none';
+
+    } else if (!isMobile()) {
+	// otherwise show the tip on mobile only
+	installTip.style.display = 'none';
     }
 
     installBtn.addEventListener('click', async () => {
         if (!deferredPrompt) return;
-        
+
         // Show the prompt
         deferredPrompt.prompt();
-        
+
         // Wait for user choice
         const { outcome } = await deferredPrompt.userChoice;
         console.log(`User response: ${outcome}`);
-        
+
         deferredPrompt = null;
         installBtn.style.display = 'none';
     });

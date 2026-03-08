@@ -6,6 +6,7 @@
     --app-bg: #f0f0f0;
     --content-text: #333333;
     --card-bg: #ffffff;
+    --primary: #007AFF; /* the main 'continue' button */
 }
 
 body.dark-mode {
@@ -304,12 +305,37 @@ body.dark-mode .view h2 {
     transform: scale(0.95); /* Tactile "press" effect */
 }
 
+@media (display-mode: standalone) {
+    .install-tip, #install-btn {
+        display: none !important;
+    }
+}
+
 input[type="search"] {
 	padding:10px;
 	border-radius:3px;
 	font-size:1.1em;
 }
 
+        /* Custom Buttons */
+        .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; box-sizing: border-box; }
+        .btn-secondary { background: #e9ecef; color: #333; width: 100%; }
+
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    background: #f0f0f0;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.controls label {
+    cursor: pointer;
+    font-weight: bold;
+}
 
 .submissions-grid {
     display: grid;
@@ -385,11 +411,6 @@ input[type="search"] {
 .modal-controls {
     display: flex;
     gap: 10px;
-}
-
-/* Secondary button style for Close */
-.demo-btn.secondary {
-    background-color: #666;
 }
 
 /* Styling the 'View Full Page' link to look like your buttons */
