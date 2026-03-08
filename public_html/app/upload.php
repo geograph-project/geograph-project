@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         /* Custom Buttons */
         .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
         .btn-select { background: var(--primary); color: white; width: 100%; box-sizing: border-box; }
-        .btn-upload { background: #1a1a1a; color: white; width: 100%; }
+        .btn-upload { background: var(--primary); color: white; width: 100%; }
         .btn-upload:disabled { background: #ccc; cursor: not-allowed; }
         .btn-secondary { background: #e9ecef; color: #333; width: 100%; }
 
@@ -128,6 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
 <script>
     const fileInput = document.getElementById('file-input');
+    const selectLabel = document.getElementById('select-label');
     const displayArea = document.getElementById('display-area');
     const uploadBtn = document.getElementById('upload-btn');
     const postActions = document.getElementById('post-upload-actions');
@@ -198,6 +199,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
 async function renderUI() {
     displayArea.innerHTML = '';
+    selectLabel.style.opacity = 0.5;
     postActions.classList.add('hidden');
     progressCont.style.display = 'none';
 
@@ -277,7 +279,7 @@ async function renderUI() {
             progressFill.style.width =       ((fileQueueLength - fileQueue.length + 1) / fileQueueLength) * 100 + '%';
 
             // Sequential POST request
-            const result = await sendToPHP(item.uploadData);
+            const result = await sendToPHP(item.dataUri);
             if (result) {
                 // SUCCESS: Remove from queue and mark visually
                 document.getElementById(`wrapper-${item.id}`).classList.add('uploaded');
@@ -306,6 +308,7 @@ async function renderUI() {
 
         // All submitted OK!
         if (fileQueue.length === 0) {
+            selectLabel.style.opacity = 0.7;
             uploadBtn.classList.add('hidden');
             if (fileQueueLength === 1 && autoProceedCheck.checked && document.visibilityState === 'visible') {
                 navigateTo('/app/submit',{message: 'transfer_id='+upload_id});
@@ -365,7 +368,7 @@ async function sendToPHP(dataUri) {
         // 3. Handle your custom application-level success/error
         if (result.ok) {
             console.log('Upload successful! ID:', result.upload_id);
-            return { success: true, id: result.upload_id };
+            return { success: true, upload_id: result.upload_id };
         } else {
             console.error('Upload failed:', result.error);
             return { success: false, error: result.error };

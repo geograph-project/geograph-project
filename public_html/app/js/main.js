@@ -14,16 +14,20 @@ function init() {
         'home': { module: '/app/js/modules/home-view.js', title: 'Geograph' },
         'search': { module: '/app/js/modules/search-view.js', title: 'Search' },
 //        'search': { isIframe: true, url: '/finder/finder.php?inner=1', title: 'Search' },
-        'profile': { module: '/app/js/modules/profile-view.js', title: 'Profile' },
-        'upload': { isIframe: true, url: '/app/upload.php', title: 'Upload' },
-        'submit': { module: '/app/js/modules/submit-view.js', title: 'Submit' },
         'map': { isIframe: true, url: '/mapper/combined.php?mobile=1&inner=1', title: 'Map' },
-        'settings': { module: '/app/js/modules/settings-view.js', title: 'Settings' },
+
+        'upload': { isIframe: true, url: '/app/upload.php', title: 'Upload' },
+        'uploaded': { module: '/app/js/modules/uploaded-view.js', title: 'Submit' },
+        'submit': { isIframe: true, url: '/app/submit.php', title: 'Submission' },
+
+        'profile': { module: '/app/js/modules/profile-view.js', title: 'Profile' },
         'recent': { module: '/app/js/modules/recent-view.js', title: 'Recent Submissions' },
+
+        'settings': { module: '/app/js/modules/settings-view.js', title: 'Settings' },
         'help': { module: '/app/js/modules/help-view.js', title: 'Help' },
         'contact': { module: '/app/js/modules/contact-view.js', title: 'Contact' },
         'tos': { module: '/app/js/modules/tos-view.js', title: 'Terms' },
-        'iframe-demo': { isIframe: true, url: '/mapper/combined.php?mobile=1&inner=1', title: 'Iframe Demo' }
+        'quick': { isIframe: true, url: '/submit-mobile.php?mobile=1&inner=1', title: 'Submit Test' }
     };
 
     const router = new Router(routes);

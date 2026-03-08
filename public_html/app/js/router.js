@@ -107,11 +107,26 @@ class Router {
 
         if (!iframe) {
             iframe = document.createElement('iframe');
+
+            // Mark as "loading" before we change the source
+            iframe.dataset.isTransitioning = "true";
+            iframe.addEventListener('load', () => {
+                iframe.dataset.isTransitioning = "false";
+                // Process any pending messages once loaded
+                if (iframe.dataset.pendingMessage) {
+                    iframe.contentWindow.postMessage(iframe.dataset.pendingMessage, '*');
+                    iframe.dataset.pendingMessage = ""; // Clear
+                }
+            });
+
             iframe.src = finalUrl;
             iframe.id = `iframe-${id}`;
             this.iframeContainer.appendChild(iframe);
             this.iframes[id] = iframe;
+
         } else if (options.param) {
+            iframe.dataset.isTransitioning = "true";
+
             // Only update src if params are actually provided
             iframe.src = finalUrl;
         }
@@ -121,7 +136,11 @@ class Router {
 
         // 2. postMessage Logic
         if (options.message) {
-            this.sendMessageToIframe(iframe, options.message);
+            if (iframe.dataset.isTransitioning === 'true') {
+                iframe.dataset.pendingMessage = options.message;
+            } else {
+                iframe.contentWindow.postMessage(options.message, '*');
+            }
         }
     }
 
@@ -130,27 +149,6 @@ class Router {
             iframe.classList.remove('active');
             iframe.style.display = 'none';
         });
-    }
-
-    /**
-     * Ensures message is sent only when iframe is ready
-     */
-    sendMessageToIframe(iframe, message) {
-        const deliver = () => {
-            // Ensure targetOrigin is restricted in production for security
-            iframe.contentWindow.postMessage(message, '*');
-        };
-
-        // If iframe is still loading, wait for it
-        if (iframe.contentDocument && iframe.contentDocument.readyState !== 'complete') {
-            iframe.onload = () => {
-                deliver();
-                iframe.onload = null; // Clean up
-            };
-        } else {
-            // Iframe is already loaded, send immediately
-            deliver();
-        }
     }
 
     /**

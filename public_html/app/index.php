@@ -100,7 +100,7 @@ function generate_import_map($dir, $basePath = '/app/js/') {
             <button id="btn-upload" class="nav-btn" data-route="/app/upload">
                 <span class="icon-container"></span>
             </button>
-            <button id="btn-submit" class="nav-btn" data-route="/app/submit">
+            <button id="btn-submit" class="nav-btn" data-route="/app/uploaded">
                 <span class="icon-container"></span>
             </button>
             <button id="btn-map" class="nav-btn" data-route="/app/map">

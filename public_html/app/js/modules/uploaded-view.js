@@ -1,9 +1,13 @@
+import { escapeHTML } from '/app/js/utils.js';
+
 export function render() {
     return `
         <div class="view uploads-view">
             <h2>Uploaded Images</h2>
             <p>These images are uploaded but not yet submitted to the archive.</p>
-            
+
+            <button id="next-button" class="btn btn-primary">Submit First Image Now</button>
+
             <div id="uploads-grid" class="submissions-grid">
                 <p>Loading your drafts...</p>
             </div>
@@ -12,8 +16,8 @@ export function render() {
                 <div class="modal-content">
                     <img id="modal-img" src="" alt="Draft Preview">
                     <div class="modal-controls">
-                        <a id="finish-submission-link" href="#" class="demo-btn">Finish Submission</a>
-                        <button id="close-modal" class="demo-btn secondary">Close</button>
+                        <button id="finish-submission" class="btn btn-primary">Finish Submission</button>
+                        <button id="close-modal" class="btn btn-secondary">Close</button>
                     </div>
                 </div>
             </dialog>
@@ -23,9 +27,10 @@ export function render() {
 
 export async function onMount() {
     const gridContainer = document.getElementById('uploads-grid');
+    const btn = document.getElementById('next-button');
     const modal = document.getElementById('photo-modal');
     const modalImg = document.getElementById('modal-img');
-    const finishLink = document.getElementById('finish-submission-link');
+    const finishLink = document.getElementById('finish-submission');
 
     try {
         const response = await fetch('/stuff/uploads.json.php');
@@ -33,19 +38,26 @@ export async function onMount() {
 
         if (data.length === 0) {
             gridContainer.innerHTML = '<p>No pending uploads found.</p>';
+	    btn.style.display ='none';
             return;
         }
+
+        // Sort data by 'uploaded' in descending order (newest first) - todo add option!
+        data.sort((a, b) => b.uploaded - a.uploaded);
+
+        btn.dataset.route = "/app/submit";
+	btn.dataset.message = `transfer_id=${data[0].transfer_id}`;
 
         gridContainer.innerHTML = data.map(item => {
             const thumbUrl = `/submit.php?preview=${item.transfer_id}`;
             const displayLabel = item.grid_reference || ''; //No Gridref';
-            
+
             return `
-                <div class="submission-tile" 
-                     data-preview="${thumbUrl}" 
+                <div class="submission-tile"
+                     data-preview="${thumbUrl}"
                      data-id="${item.transfer_id}">
                     <img src="${thumbUrl}" loading="lazy" alt="Draft">
-                    <div class="tile-overlay"><span>${displayLabel}</span></div>
+                    <div class="tile-overlay"><span>${escapeHTML(displayLabel)}</span></div>
                 </div>
             `;
         }).join('');
@@ -58,11 +70,11 @@ export async function onMount() {
             const previewUrl = tile.dataset.preview;
             const id = tile.dataset.id;
 
-            // In this case, the preview URL is likely the best we have
-            modalImg.src = previewUrl; 
-            // Assuming finish page follows this pattern:
-            finishLink.href = `/submit2.php?transfer_id=${id}`;
-            
+            modalImg.src = previewUrl;
+
+	    finishLink.dataset.route = "/app/submit";
+	    finishLink.dataset.message = `transfer_id=${id}`;
+
             modal.showModal();
         });
 
