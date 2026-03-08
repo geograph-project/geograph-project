@@ -7,7 +7,9 @@ const AppState = {
     currentRoute: '/app/',
     pageTitle: 'Geograph',
     settings: {
-        darkMode: false
+        darkMode: false,
+	imagesPerScreen: 16,
+	uploadMaxSize: 65536 //effectively unlimited!
     },
 
     /**
