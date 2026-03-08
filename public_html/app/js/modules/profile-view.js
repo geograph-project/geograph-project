@@ -6,17 +6,27 @@ export function render() {
             <h2>Your Submissions / <a href="#" data-route="/app/recent">Review</a></h2>
 
             <div class="controls" style="margin-bottom: 20px;">
-                <label>
+                <label id="recent-label">
                     <input type="radio" name="view-filter" value="recent" checked> Last 3 Days <span id="counter"></span>
                 </label>
                 <label style="margin-left: 15px;">
-                    <input type="radio" name="view-filter" value="all"> Last 100 Images
+                    <input type="radio" name="view-filter" value="all" id="all-checkbox"> Last 100 Images
                 </label>
             </div>
 
             <div id="submissions-grid" class="submissions-grid">
                 <p>Fetching your photos...</p>
             </div>
+
+            <dialog id="photo-modal" class="photo-modal">
+                <div class="modal-content">
+                    <img id="modal-img" src="" alt="Draft Preview">
+                    <div class="modal-controls">
+			<a href="#" id="full-page-link" class="btn">View Photo Page</a>
+                        <button id="close-modal" class="btn btn-secondary">Close</button>
+                    </div>
+                </div>
+            </dialog>
         </div>
 
 	<br>
@@ -37,6 +47,12 @@ async function loadSubmissions(filter = 'recent') {
         const data = await response.json();
 
         if (data.length === 0) {
+            if (filter = 'recent') {
+                //well, if no results!
+                document.getElementById('recent-label').style.display='none';
+                document.getElementById('all-checkbox').checked = true;
+		loadSubmissions('all')
+            }
             gridContainer.innerHTML = '<p>No submissions found.</p>';
             return;
         }
@@ -69,6 +85,9 @@ export async function onMount() {
     });
 
     const gridContainer = document.getElementById('submissions-grid');
+    const modal = document.getElementById('photo-modal');
+    const modalImg = document.getElementById('modal-img');
+    const fullPageLink = document.getElementById('full-page-link');
 
         // Delegate click events to the grid
         gridContainer.addEventListener('click', (e) => {
