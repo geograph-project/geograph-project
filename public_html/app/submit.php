@@ -36,7 +36,8 @@
             margin: 0 auto; 
         }
         .controls { padding: 15px; }
-        .controls button { font-size:1.1em }
+        .controls button { line-height:1.0 }
+        .controls button span { font-size:1.9em }
 
         /* 2. The Sticky Bar (Hidden by default) */
         .sticky-bar {
@@ -60,7 +61,7 @@
         .sticky-bar.visible { transform: translateY(0); }
         
         .thumb-img { height: 45px; width: auto; border-radius: 4px; margin-right: 12px; }
-        .sticky-title { font-weight: bold; font-size: 0.9em; color: #333; }
+        .sticky-title { font-weight: bold; color: #333; }
 
         /* Map */
 
@@ -86,11 +87,14 @@
         input, textarea { 
             width: 100%; padding: 12px; margin-bottom: 10px; 
             border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; 
+            font-size:1.1em;
         }
 
     input, select, textarea {
         /* Set this to the height of your sticky header + a bit of padding */
-        scroll-margin-top: 120px; 
+        scroll-margin-top: 120px;
+
+	font-family: Georgia, Verdana, Arial, serif; /* set this as this is what used for display in main site!! */
     }
 
 input:invalid, select:invalid, #contexts:invalid {
@@ -106,7 +110,6 @@ input:invalid, select:invalid, #contexts:invalid {
 }
 
 .recent-select {
-    font-size: 0.8em;
     padding: 2px 5px;
     max-width: 150px;
     border-radius: 4px;
@@ -200,7 +203,7 @@ span.tag-pill button {
     .flag-container {
         background: #f9f9f9;
         border-radius: 8px;
-        border: 1px solid #eee;
+        --border: 1px solid #eee;
     }
 
     .flag-container label {
@@ -225,7 +228,6 @@ span.tag-pill button {
 
     .flag-item span {
         font-weight: normal;
-        font-size: 0.95em;
         line-height: 1.4;
     }
 
@@ -244,7 +246,6 @@ span.tag-pill button {
 		padding:5px;
 		margin-left:10px;
 		font-weight:700;
-		font-size:1.05em;
 	}
 	#licence input[type=radio] {
 	    width:inherit;
@@ -269,6 +270,7 @@ span.tag-pill button {
 	    border-radius: 12px;
 	    border: 1px solid #ccc;
 	    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+	    background-color:#e4e4fc;
 	}
 	.nowrap {
 		white-space:nowrap;
@@ -282,8 +284,8 @@ span.tag-pill button {
 <div class="main-header" id="mainHeader">
     <img id="imgLarge" class="preview-img-large" src="" alt="Full Preview">
     <div class="controls">
-        <button onclick="rotateImage(270)">&#8634; Rotate Left</button>
-        <button onclick="rotateImage(90)">Rotate Right &#8635;</button>
+        <button onclick="rotateImage(270)"><span>&#8634;</span> Rotate Left</button>
+        <button onclick="rotateImage(90)">Rotate Right <span>&#8635;</span></button>
     </div>
 
     <div style="display:none">
@@ -321,8 +323,8 @@ span.tag-pill button {
         </div>
 	    <textarea name="comment" placeholder="optional longer description" rows="5"></textarea>
 
-        <fieldset>
-            <legend>Date Taken</legend>
+        <label for="date-picker">Date Taken</label>
+        <div>
             <input type="date" id="date-picker" name="imagetaken" required>
             <input type="text" id="date-text" name="date_partial"
                    placeholder="e.g. 2025 or 2025-03"
@@ -330,7 +332,7 @@ span.tag-pill button {
                    style="display:none;" pattern="^\s*\d{4}([/ -]\d{1,2}){0,2}\s*$">
 
             <div id="date-controls">
-                <button type="button" onclick="switchToText()">I only know the approx Year/Month</button>
+                <button type="button" onclick="switchToText()">I only know approximately</button>
                 <button type="button" onclick="clearDate()">I don't know the date</button>
             </div>
 
@@ -358,8 +360,7 @@ span.tag-pill button {
                 document.getElementById('date-controls').innerHTML = '<p>Date unknown</p>';
             }
             </script>
-
-        </fieldset>
+        </div>
 
         <div class="field-header">
     	    <label>Geographical Contexts</label>
@@ -414,6 +415,10 @@ span.tag-pill button {
 
                 <div class=nowrap id="showvfov" style="display:none">(vfov: <input type=number step=0.01 name=vfov placeholder=120 style=width:70px;text-align:right>degrees wide)</div>
                 <div class=nowrap id="showhfov">(hfov: <input type=number step=0.01 name=hfov placeholder=90 style=width:70px;text-align:right>degrees high)</div>
+
+		<button type="button" onclick="openModal('pano-modal')"
+                style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer;">How to Submit Panoramas &gt;</button>
+
            </div>
            <script>
            function updatePanoDisplay() {
@@ -426,7 +431,37 @@ span.tag-pill button {
                     document.getElementById("showpano").style.display ="none";
                 }
            }
+function openModal(id) {
+    const modal = document.getElementById(id);
+    modal.showModal();
+    modal.querySelector('div').scrollTop = 0;
+}
            </script>
+
+<dialog id="pano-modal" onclick="document.getElementById('pano-modal').close()">
+    <div style="max-height: 80vh; overflow-y: auto; padding: 10px;">
+        <h3>About Panoramas & Photospheres</h3>
+
+        <p>Panoramas are enhanced with a special viewer that allows users to rotate and zoom into the scene.</p>
+
+        <h4>Getting the best display:</h4>
+        <p>To ensure your wide-angle work displays without stretching, we use your Field of View (FOV) settings. An approximate value (to the nearest 5&deg; or 10&deg;) is sufficient.</p>
+
+        <h4>Submission Guidelines (in particular for PhotoSpheres):</h4>
+        <ul>
+            <li><strong>Thumbnail:</strong> Please submit a "normal angle" image here first. If you stitched a panorama, use one of the original source images to ensure a clear thumbnail.</li>
+            <li><strong>High-Res:</strong> After submission, use the "Upload a larger version" feature to add the full-resolution panorama.</li>
+        </ul>
+
+        <p><em>Note: You only need to release a 640px version initially, as the interactive viewer will replace the standard larger-view functionality.</em></p>
+
+        <a href="/article/Panoramas-and-Photospheres-on-Geograph" target="_blank">Read more about Panoramas on Geograph</a> (New Window)
+        </a>
+
+        <br><br>
+        <button type="button" onclick="document.getElementById('pano-modal').close()">Close</button>
+    </div>
+</dialog>
 
     	</div>
 
