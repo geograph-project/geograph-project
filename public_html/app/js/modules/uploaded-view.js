@@ -79,6 +79,7 @@ export async function onMount() {
         });
 
         // Close handlers
+        finishLink.addEventListener('click', () => modal.close());
         document.getElementById('close-modal').addEventListener('click', () => modal.close());
         modal.addEventListener('click', (e) => { if (e.target === modal) modal.close(); });
 
