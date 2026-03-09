@@ -137,7 +137,7 @@ input:invalid, select:invalid, #contexts:invalid {
     font-weight: normal;
 }
 
-#tag-search {
+#subject-input, #tag-search {
     margin-bottom:0;
 }
 .tag-input-container {
@@ -374,9 +374,12 @@ span.tag-pill button {
                 <option value="">Recently Used</option>
             </select>
         </div>
-        <input type="text" id="subject-input" list="subject-list" placeholder="Search subjects...">
-        <datalist id="subject-list"></datalist>
-        <input type="hidden" name="subject_id" id="subject-id">
+	    <div class="tag-input-container">
+            <input type="search" id="subject-input" placeholder="Search subjects...">
+            <div id="suggestionsSubjects" class="dropdown"></div>
+            <datalist id="subject-list"></datalist>
+            <input type="hidden" name="subject_id" id="subject-id">
+        </div>
 
         <div class="field-header">
             <label>Free-form Tags</label>
@@ -570,6 +573,7 @@ function openModal(id) {
 	<br><br>
 </form>
 
+<script src="/js/to-title-case.js"></script>
 <script>
     const stickyBar = document.getElementById('stickyBar');
     const mainHeader = document.getElementById('mainHeader');
@@ -719,7 +723,7 @@ function openModal(id) {
                 const regex = new RegExp(`(${query})`, "gi");
                 // 2. Replace the match with a bold version
                 // $1 keeps the original casing from the database (e.g., "Road" stays "Road")
-                const highlighted = escapeHTML(tag).replace(regex, "<strong>$1</strong>");
+                const highlighted = escapeHTML(tag).toTitleCase().replace(regex, "<strong>$1</strong>");
                 return `<div class="suggestion-item">${highlighted}</div>`;
             }).join('');
 
@@ -794,22 +798,133 @@ function openModal(id) {
     }
 
 // --------------------------------
-// Contexts & Subjects
+// Subjects
 
     const subjectInput = document.getElementById('subject-input');
+    const subjectList  = document.getElementById('subject-list');
+    const suggestionsS = document.getElementById('suggestionsSubjects');
 
     async function loadSubjects() {
-        const response = await fetch("/tags/subject.json.php");
+        const response = await fetch("/tags/subject.json.php?v=2");
         const data = await response.json();
-        const list = document.getElementById('subject-list');
 
         data.forEach(item => {
             const option = document.createElement('option');
             option.value = item.tag; // This is what the user sees/types
             option.dataset.id = item.tag_id; // Store the ID for the form
-            list.appendChild(option);
+            option.dataset.count = parseInt(item.count,10);
+            subjectList.appendChild(option);
         });
     }
+
+    subjectInput.addEventListener('input', () => {
+        const query = subjectInput.value.trim().toLowerCase();
+
+        if (query.length < 1) {
+            suggestionsS.innerHTML = '';
+            return;
+        }
+
+        // 1. Get all options from your hidden datalist
+        const options = Array.from(subjectList.options);
+
+        // 2. Filter and Score
+        let matches = options
+            .map(opt => {
+                const val = opt.value.toLowerCase();
+                let score = 0;
+                if (val === query) score = 3; // Perfect match
+                else if (val.startsWith(query)) score = 2; // Priority 1: Starts with
+                else if (val.includes(query)) score = 1; // Priority 2: Contains
+                return { val: opt.value, id: opt.dataset.id, score };
+            })
+            .filter(match => match.score > 0)
+            .sort((a, b) => b.score - a.score); // Higher score first
+
+        // Optimized: If we have exactly one perfect match, clear the suggestions
+        if (matches.length === 1 && matches[0].score === 3) {
+            subjectInput.setCustomValidity("");
+            suggestionsS.innerHTML = '';
+            return;
+        }
+
+        // If there are many matches, trim!
+        if (matches.length > 100) {
+            // 1. Split by relevance
+            const highRelevance = matches.filter(m => m.score >= 2); // StartsWith
+            const lowRelevance = matches.filter(m => m.score === 1);  // Contains
+
+            // 2. Keep ALL high relevance, but limit low relevance
+            const limitedLowRelevance = lowRelevance.slice(0, 50);
+
+            matches = [...highRelevance, ...limitedLowRelevance];
+
+            // Add a visual indicator to the list so the user knows they should keep typing
+            if (lowRelevance.length > 50) {
+                matches.push({
+                    val: `...and ${lowRelevance.length - 50} more. Keep typing!`,
+                    id: null,
+                    isHint: true
+                });
+            }
+        }
+
+        // 3. Render
+        suggestionsS.innerHTML = matches.map(m => {
+                    const regex = new RegExp(`(${query})`, "gi");
+                    // 2. Replace the match with a bold version
+                    // $1 keeps the original casing from the database (e.g., "Road" stays "Road")
+                    const highlighted = escapeHTML(m.val).toTitleCase().replace(regex, "<strong>$1</strong>");
+                    return `<div class="suggestion-item">${highlighted}</div>`;
+            return `<div class="suggestion-item" data-id="${m.id}">${highlighted}</div>`
+        }).join('');
+    });
+
+    // 4. Click handling: Update the input and clear dropdown
+    suggestionsS.addEventListener('click', (e) => {
+        const item = e.target.closest('.suggestion-item');
+        if (item) {
+            subjectInput.value = item.textContent;
+            document.getElementById('subject-id').value = item.dataset.id;
+            suggestionsS.innerHTML = '';
+        }
+    });
+
+    subjectInput.addEventListener('focus', (e) => {
+        const query = subjectInput.value.trim().toLowerCase();
+        if (query.length < 1) {
+            subjectInput.placeholder = 'Start typing... (showing popular subjects)';
+            const options = Array.from(subjectList.options);
+
+            const matches = options
+            .map(opt => {
+                const val = opt.value.toLowerCase();
+                return { val: opt.value, id: opt.dataset.id, count: opt.dataset.count };
+            })
+            .sort((a, b) => b.count - a.count) // Higher score first
+            .slice(0, 25);
+
+            suggestionsS.innerHTML = matches.map(m => {
+                return `<div class="suggestion-item" data-id="${m.id}">${escapeHTML(m.val).toTitleCase()}</div>`
+            }).join('');
+        } else {
+            subjectInput.placeholder = 'Type to search subjects...'; //probably wont be seen, but resets the default above!
+        }
+
+        // Wait a tiny bit for the mobile keyboard to fully animate up
+        setTimeout(() => {
+            const rect = subjectInput.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+
+            // If the input is in the bottom 30% of the visible area
+            if (rect.top > viewportHeight * 0.7) {
+                subjectInput.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center' // This puts it in the middle, not the top
+                });
+            }
+        }, 300);
+    });
 
     subjectInput.addEventListener('change', () => {
         const options = document.querySelectorAll('#subject-list option');
@@ -820,6 +935,11 @@ function openModal(id) {
             subjectInput.setCustomValidity("");
         }
     });
+
+
+// ---------------------------------
+// Contexts
+
 
     async function loadContexts() {
         const select = document.getElementById('contexts');
@@ -874,7 +994,7 @@ function openModal(id) {
             return;
         }
 
-        // Clear existing (except first "Recent..." option)
+        // Clear existing
         dropdown.innerHTML = '<option value="">Recently Used</option>';
         items.forEach(item => {
             const opt = document.createElement('option');
@@ -891,12 +1011,13 @@ function openModal(id) {
         input.value = select.value;
         select.options[select.selectedIndex].style.color = 'silver';
         select.value = ""; // Reset dropdown
+        suggestionsS.innerHTML = ''; //just in case had search open!
     }
 
     // When a Recent Tag is picked
     function useRecentTag(select) {
         if (!select.value) return;
-        addTag(select.value);
+        addTag(select.value); //automatically clears
         select.options[select.selectedIndex].style.color = 'silver';
         select.value = ""; // Reset dropdown
     }
