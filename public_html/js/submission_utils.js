@@ -74,9 +74,9 @@ function check_jpeg(ele, max_size) {
     return true;
 }
 
-function resizeFileWorker(file, max_size, callback) {
+function resizeFileWorker(file, max_size, callback, max_dimension) {
 	if (!window.Worker || !OffscreenCanvas || !createImageBitmap || !window.fetch) { //fallback! the webworker version needs more advanced APIs
-		return resizeFile(file, max_size, callback);
+		return resizeFile(file, max_size, callback, max_dimension);
 	}
 
 	const message = document.createElement("div");
@@ -113,7 +113,7 @@ function resizeFileWorker(file, max_size, callback) {
 	reader.onload = function (e) {
 		message.innerText = "Loading image...";
 
-		myWorker.postMessage({ dataUrl: e.target.result, maxSize: max_size});
+		myWorker.postMessage({ dataUrl: e.target.result, maxSize: max_size, maxDimension: max_dimension});
         }
         reader.readAsDataURL(file);
 }
@@ -138,6 +138,7 @@ function resizeFile(file, max_size, callback) {
 
 function resizeImage(imageDataUrl, max_size, callback, max_dimension) {
 	const img = new Image();
+	img.style.imageOrientation = 'none'; // This applies CSS after it's in memory
 	img.onload = function() {
 		let canvas = document.createElement('canvas');
 		let ctx = canvas.getContext('2d');

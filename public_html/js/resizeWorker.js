@@ -1,7 +1,7 @@
 importScripts('/viewer/ExifRestorer.js');
 
 self.addEventListener('message', async function(event) {
-	const { dataUrl, maxSize } = event.data;
+	const { dataUrl, maxSize, maxDimension } = event.data;
 
 	try {
 		const blob = await (await fetch(dataUrl)).blob();
@@ -13,6 +13,19 @@ self.addEventListener('message', async function(event) {
 		let height = bitmap.height;
 		let quality = 0.96; // Initial quality
 		let attempt = 1;
+
+                //we can also explicity downsize (meaning it very unlikly to be over maxSize anyway!)
+                if (maxDimension && (width>maxDimension || height>maxDimension)) {
+                        var aspect = width/height;
+                        if (aspect > 1) { //wide (original is the width)
+                                width  = maxDimension;
+                                height = Math.floor(maxDimension / aspect);
+                        } else {
+                                width  = Math.floor(maxDimension * aspect);
+                                height = maxDimension;
+                        }
+                        quality = 0.87;
+                }
 
 		self.postMessage({message: 'Attempt '+attempt+': Resizing image to '+width+' x '+height+' ...'});
 		canvas.width = width;
