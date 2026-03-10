@@ -1,25 +1,61 @@
 export function render() {
     return `
-        <div class="view search-view">
-            <h2>Search Images</h2>
-            <form method="get" action="/finder/finder.php">
-                <div>
-                    Search for: <input type="search" name="q" placeholder="enter keywords">
-                </div>
-                <div style="margin-top: 10px;">
-                    Near: <input type="search" name="loc" id="loc" placeholder="placename, lat/long, etc.">
-                    <br>
-                    <small>
-                        <a href="#" id="get-geo-btn">Use My Location</a>
-                    </small>
-                </div>
-                <input type=hidden name="standalone" value="true"><br><br>
 
-		<input type=checkbox disabled>Only Search Your images (doesnt work yet)<br><br>
+<form method="get" action="/finder/finder.php" class="search-form">
+    <div class="form-group">
+        <label for="q">Search for:</label>
+        <input type="search" name="q" id="q" placeholder="enter keywords">
+    </div>
 
-                <button type="submit" style="margin-top: 15px;">Search</button>
-            </form>
+    <div class="form-group">
+        <label for="loc">Near:</label>
+        <div class="location-input">
+            <input type="search" name="loc" id="loc" placeholder="placename, lat/long, etc.">
+            <a href="#" id="get-geo-btn">Use My Location</a>
         </div>
+    </div>
+
+    <div class="checkbox-group">
+        <input type="checkbox" disabled id="my-images">
+        <label for="my-images">Only Search Your images (doesnt work yet)</label>
+    </div>
+
+    <input type="hidden" name="standalone" value="true">
+
+    <div class="form-group">
+	<label></label>
+        <div>
+	    <button type="submit" class="btn btn-primary">Search</button>
+	</div>
+    </div>
+</form>
+
+<style>
+    .search-form {
+        display: grid;
+        grid-template-columns: 80px 1fr; /* Defines a fixed width for labels */
+        gap: 15px;
+        align-items: center;
+        max-width: 500px;
+    }
+
+    .form-group {
+        display: contents; /* Allows children to participate in the parent grid */
+    }
+
+    .location-input {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .checkbox-group {
+        grid-column: span 2; /* Spans across the full width */
+	text-align:center;
+    }
+
+</style>
+
     `;
 }
 
