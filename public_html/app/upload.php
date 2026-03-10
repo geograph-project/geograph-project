@@ -161,6 +161,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
     fileInput.addEventListener('change', handleFiles);
 
+	function toDecimal(number) {
+        //oddly exif.js returns signed rationals as a plain number, but unsigned as a 'Number' object with numerator/denominator so need to cope with EITHER
+        // some old files seem to have lat/long in signed format (even tough the number wont be negative)
+        if (typeof number[0] == 'number')
+             return number[0] + (number[1]/60.0) + (number[2]/3600);
+
+        return number[0].numerator + number[1].numerator /
+            (60 * number[1].denominator) + number[2].numerator / (3600 * number[2].denominator);
+    }
+
     async function handleFiles(e) {
         const files = Array.from(e.target.files);
         if (!files.length) return;
@@ -187,9 +197,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
         // 1. Analyze EXIF
         const exifData = await new Promise(resolve => EXIF.getData(item.file, function() {
+            const lat = EXIF.getTag(this, 'GPSLatitude');
+            const long = EXIF.getTag(this, 'GPSLongitude');
+            const date = EXIF.getTag(this, 'DateTimeOriginal') || EXIF.getTag(this, 'DateTime');
+            const orientation = EXIF.getTag(this, 'Orientation');
+
+            let decimalLat = null;
+            let decimalLong = null;
+
+            if (lat && long) {
+                decimalLat = toDecimal(lat);
+                decimalLong = toDecimal(long);
+
+                if (EXIF.getTag(this, 'GPSLatitudeRef') === 'S') decimalLat *= -1;
+                if (EXIF.getTag(this, 'GPSLongitudeRef') === 'W') decimalLong *= -1;
+                // Handle 0-360 range if necessary
+                if (decimalLong > 180) decimalLong -= 360.0;
+            }
+
             resolve({
-                hasGeo: !!(EXIF.getTag(this, 'GPSLongitude') && EXIF.getTag(this, 'GPSLatitude')),
-                orientation: EXIF.getTag(this, 'Orientation')
+                hasGeo: !!(lat && long),
+                lat: decimalLat,
+                long: decimalLong,
+                date: date,
+                orientation: orientation
             });
         }));
 
@@ -256,6 +287,12 @@ async function renderUI() {
     // Process all images in the queue
     const processedItems = await Promise.all(fileQueue.map(processItem));
 
+    // Store EXIF data back to fileQueue
+    processedItems.forEach(({ item, exifData }) => {
+        const queueItem = fileQueue.find(f => f.id === item.id);
+        if (queueItem) queueItem.exifData = exifData;
+    });
+
     // Render based on count
     if (processedItems.length === 1) {
         const { item, exifData } = processedItems[0];
@@ -308,28 +345,38 @@ async function renderUI() {
 
         // 2. Iterate by modifying the original queue
         let i = 0;
-        let fileQueueLength = fileQueue.length; //capture at start
+        const fileQueueLength = fileQueue.length; //capture at start
+        let lastResult = null;
+        let lastItem = null;
+        let uploadedCount = 0;
+
         while (i < fileQueue.length) {
             const item = fileQueue[i];
 
             // UI Update: Progress Bar
-            uploadBtn.innerText = `Uploading ${fileQueueLength - fileQueue.length + 1} / ${fileQueueLength}...`;
-            progressFill.style.width =       ((fileQueueLength - fileQueue.length + 1) / fileQueueLength) * 100 + '%';
+            uploadBtn.innerText = `Uploading ${uploadedCount + 1} / ${fileQueueLength}...`;
+            progressFill.style.width = ((uploadedCount + 1) / fileQueueLength) * 100 + '%';
 
             // Sequential POST request
             const result = await sendToPHP(item.dataUri);
             if (result && result.success) {
                 // SUCCESS: Remove from queue and mark visually
                 document.getElementById(`wrapper-${item.id}`).classList.add('uploaded');
-		// Add the UploadID to buttons
-		if (i == 0 && fileQueue.length == 1) {
-			addIdtoBtn('btnSingle', result.upload_id, result.width, result.height);
-		} else if (i == 0) {
-			addIdtoBtn('btnFirst', result.upload_id, result.width, result.height);
-		} else if (i == fileQueue.length-1) {
-			addIdtoBtn('btnLast', result.upload_id, result.width, result.height);
-		}
-		upload_id = result.upload_id;
+
+                uploadedCount++;
+                lastResult = result;
+                lastItem = item;
+
+                // Add the UploadID to buttons
+                if (fileQueueLength === 1) {
+                    addIdtoBtn('btnSingle', result.upload_id, result.width, result.height, item.exifData);
+                } else if (uploadedCount === 1) {
+                    addIdtoBtn('btnFirst', result.upload_id, result.width, result.height, item.exifData);
+                } else if (uploadedCount === fileQueueLength) {
+                    addIdtoBtn('btnLast', result.upload_id, result.width, result.height, item.exifData);
+                }
+
+                upload_id = result.upload_id;
                 // Remove from array so it's gone if we click upload again
                 fileQueue.splice(i, 1);
             } else {
@@ -349,7 +396,15 @@ async function renderUI() {
             selectLabel.style.opacity = 0.7;
             uploadBtn.classList.add('hidden');
             if (fileQueueLength === 1 && autoProceedCheck.checked && document.visibilityState === 'visible') {
-                navigateTo('/app/submit',{message: JSON.stringify({transfer_id: upload_id, width: result.width, height: result.height})});
+                navigateTo('/app/submit',{message: JSON.stringify({
+                    transfer_id: upload_id,
+                    width: lastResult.width,
+                    height: lastResult.height,
+                    lat: lastItem.exifData?.lat,
+                    long: lastItem.exifData?.long,
+                    imagetaken: lastItem.exifData?.date,
+                    orientation: lastItem.exifData?.orientation
+                })});
 	        postActions.classList.add('hidden');
   	        displayArea.innerHTML = '';
             } else {
@@ -363,31 +418,23 @@ async function renderUI() {
         }
     };
 
-function addIdtoBtn(btnId, upload_id, width, height) {
+function addIdtoBtn(btnId, upload_id, width, height, exifData) {
 	//want to overite any existing click (from a previous call!)
         document.getElementById(btnId).onclick = function() {
-		navigateTo('/app/submit',{message: JSON.stringify({transfer_id: upload_id, width: width, height: height})});
+		navigateTo('/app/submit',{message: JSON.stringify({
+            transfer_id: upload_id,
+            width: width,
+            height: height,
+            lat: exifData?.lat,
+            long: exifData?.long,
+            imagetaken: exifData?.date,
+            orientation: exifData?.orientation
+        })});
 		postActions.classList.add('hidden');
 		displayArea.innerHTML = '';
 	};
 }
 
-async function analyzeExif(file) {
-    return new Promise((resolve) => {
-        EXIF.getData(file, function() {
-            const date = EXIF.getTag(this, 'DateTimeOriginal') || EXIF.getTag(this, 'DateTime');
-            const long = EXIF.getTag(this, 'GPSLongitude');
-            const lat = EXIF.getTag(this, 'GPSLatitude');
-            const orientation = EXIF.getTag(this, 'Orientation');
-
-            resolve({
-                hasGeo: !!(long && lat),
-                orientation: orientation,
-                date: date
-            });
-        });
-    });
-}
 
 async function sendToPHP(dataUri) {
     try {
