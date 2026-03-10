@@ -14,7 +14,7 @@ $USER->mustHavePerm('basic');
 function pma_revision($filename) {
     global $REVISIONS, $CONF, $LIVE;
 
-    if (isset($LIVE[$filename])) {
+    if (isset($LIVE[$filename]) || true) {
         $fullPath = $_SERVER['DOCUMENT_ROOT'] . $filename;
         return $filename . "?" . (file_exists($fullPath) ? filemtime($fullPath) : time());
     } elseif (isset($REVISIONS[$filename])) {
@@ -96,7 +96,7 @@ function generate_import_map($dir, $basePath = '/app/js/') {
     </div>
 
     <footer id="main-footer">
-        <div class="nav-left">
+        <div class="nav-left" style="opacity:0.1">
             <button id="btn-upload" class="nav-btn" data-route="/app/upload">
                 <span class="icon-container"></span>
             </button>
@@ -117,11 +117,14 @@ function generate_import_map($dir, $basePath = '/app/js/') {
     <div id="menu-overlay" class="hidden">
         <nav id="drawer-menu">
             <ul>
+                <li><a href="/" target="_blank">Open Main Site</a></li>
                 <li><a href="/app/settings" data-route="/app/settings">Settings</a></li>
                 <li><a href="/app/recent" data-route="/app/recent">Recent Submissions</a></li>
                 <li><a href="/app/help" data-route="/app/help">App Help</a></li>
                 <li><a href="/app/contact" data-route="/app/contact">Contact Us</a></li>
                 <li><a href="/app/tos" data-route="/app/tos">Terms of Service</a></li>
+                <li><a href="/discuss/" target="_blank">Open Discussion Forum</a></li>
+	        <li><a href="javascript:history.go(0)" style=color:silver>Reload App (during dev)</a></li>
             </ul>
         </nav>
     </div>

@@ -20,10 +20,8 @@ export function render() {
 		<button data-route="/app/upload" class="demo-btn">Upload Image</button>
 		<button data-route="/app/uploaded" class="demo-btn">Submit Image</button>
 		<button data-route="/app/profile" class="demo-btn">Submitted Images</button>
-		<button data-route="/app/recent" class="demo-btn">Review Submissions</button>
 
 		<button data-route="/app/map" class="demo-btn">View Map</button>
-		<button data-route="/app/quick" class="demo-btn">Quick Submit (test only)</button>
 
 	        <button id="install-btn" class="demo-btn" style="display: none;">Add to Home Screen</button>
             </div>

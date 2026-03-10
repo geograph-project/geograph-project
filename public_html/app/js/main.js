@@ -20,14 +20,15 @@ function init() {
         'uploaded': { module: '/app/js/modules/uploaded-view.js', title: 'Submit' },
         'submit': { isIframe: true, url: '/app/submit.php', title: 'Submission' },
 
+        'home2': { isIframe: true, url: '/app/home.php', title: 'Geograph' },
+
         'profile': { module: '/app/js/modules/profile-view.js', title: 'Profile' },
         'recent': { module: '/app/js/modules/recent-view.js', title: 'Recent Submissions' },
 
         'settings': { module: '/app/js/modules/settings-view.js', title: 'Settings' },
         'help': { module: '/app/js/modules/help-view.js', title: 'Help' },
         'contact': { module: '/app/js/modules/contact-view.js', title: 'Contact' },
-        'tos': { module: '/app/js/modules/tos-view.js', title: 'Terms' },
-        'quick': { isIframe: true, url: '/submit-mobile.php?mobile=1&inner=1', title: 'Submit Test' }
+        'tos': { module: '/app/js/modules/tos-view.js', title: 'Terms' }
     };
 
     const router = new Router(routes);
