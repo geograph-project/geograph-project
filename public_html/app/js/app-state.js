@@ -9,7 +9,7 @@ const AppState = {
     settings: {
         darkMode: false,
 	imagesPerScreen: 16,
-	uploadMaxSize: 65536 //effectively unlimited!
+	uploadMaxDimension: 65536 //effectively unlimited!
     },
 
     /**
@@ -23,6 +23,7 @@ const AppState = {
             // Default to system preference
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             this.settings.darkMode = prefersDark;
+	    //todo, uploadMaxDimension needs syncing from $USER->upload_size
         }
         this.syncWithDOM();
     },

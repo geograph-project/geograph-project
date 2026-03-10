@@ -18,8 +18,8 @@ export function render() {
 
             <div class="settings-group">
                 <div class="setting-item">
-                    <label for="uploadMaxSize">Maximum Size to release: (pixels)</label>
-                    <select id="uploadMaxSize" style="max-width:110px">
+                    <label for="uploadMaxDimension">Maximum Resolution to release: (pixels)</label>
+                    <select id="uploadMaxDimension" style="max-width:110px">
 	                <option value="640">640 x 640 (the minimum size)</option>
         	        <option value="800">800 x 800</option>
 	                <option value="1024">1024 x 1024 (recommended, if don't want to release full)</option>
@@ -35,18 +35,18 @@ export function render() {
 
 export function onMount() {
     const toggle = document.getElementById('dark-mode-toggle');
-    const select = document.getElementById('uploadMaxSize');
+    const select = document.getElementById('uploadMaxDimension');
     if (toggle) {
         // Initial state
         toggle.checked = AppState.settings.darkMode;
-        select.value = AppState.settings.uploadMaxSize;
+        select.value = AppState.settings.uploadMaxDimension;
 
         // Handle change
         toggle.addEventListener('change', (e) => {
             AppState.updateSettings({ darkMode: e.target.checked });
         });
         select.addEventListener('change', (e) => {
-            AppState.updateSettings({ uploadMaxSize: e.target.value });
+            AppState.updateSettings({ uploadMaxDimension: e.target.value });
         });
     }
 }
