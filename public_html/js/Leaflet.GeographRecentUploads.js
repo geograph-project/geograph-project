@@ -22,7 +22,7 @@
 
 L.GeographRecentUploads = L.FeatureGroup.extend({
 	options: {
-		endpoint: "https://www.geograph.org.uk/stuff/submissions.json.php",
+		endpoint: "/app/submissions.json.php",
 	},
 
 ///////////////////////////////////////////////////

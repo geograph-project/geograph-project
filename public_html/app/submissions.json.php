@@ -30,7 +30,13 @@ if (!empty($_GET['since'])) {
 	$db = GeographDatabaseConnection(false); //this is a small refresh, so go direct to master
 
 	$crit = "g.gridimage_id > ".intval($_GET['since']);
-	$crit .= " limit 1000";
+	$crit .= " order by g.gridimage_id asc limit 1000";
+
+} elseif (!empty($_GET['images'])) {
+	$db = GeographDatabaseConnection(3600);
+	$limit = min(100,$_GET['images']);
+
+	$crit = "1 order by g.gridimage_id desc limit $limit";
 } else {
 	$db = GeographDatabaseConnection(3600);
 
@@ -40,7 +46,7 @@ if (!empty($_GET['since'])) {
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 //needs to use gridimage/gridsquare because may be pending images. but join in gridimage_search, as may already be moderated, which case have the lat/long ready to use!
-$sql = "select gridimage_id,g.submitted,gs.grid_reference,g.title,nateastings,natnorthings,natgrlen,gs.reference_index,wgs84_lat,wgs84_long,g.imagetaken
+$sql = "select gridimage_id,g.submitted,gs.grid_reference,g.title,nateastings,natnorthings,natgrlen,gs.reference_index,wgs84_lat,wgs84_long,g.imagetaken, g.user_id, g.moderation_status
 	from gridimage g
 		inner join gridsquare gs using (gridsquare_id)
 		left join gridimage_search gi using (gridimage_id)
@@ -67,6 +73,12 @@ if ($count = $recordSet->RecordCount()) {
                 $r =& $recordSet->fields;
 
 		$r['title'] = latin1_to_utf8($r['title']);
+		if (!empty($_GET['thumbs'])) {
+
+	                $image = new GridImage;
+        	        $image->fastInit($r);
+	                $r['thumbnail'] = $image->getThumbnail(213,160,true);
+		}
 
 		if (empty($r['wgs84_lat']) || $r['wgs84_lat'] < 1) { //todo && !empty($r['nateastings']), because if 4fig subject, doesnt have nateastings!
 		        list($r['wgs84_lat'],$r['wgs84_long']) = $conv->national_to_wgs84($r['nateastings'],$r['natnorthings'],$r['reference_index']);

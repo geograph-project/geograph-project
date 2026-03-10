@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once('geograph/global.inc.php');
 require_once('geograph/uploadmanager.class.php');
@@ -7,9 +7,103 @@ init_session();
 
 $USER->mustHavePerm('basic');
 
+function failMessage($text) {
+        print "<p>".htmlentities($text)."</p>";
+        exit;
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a login request!
 
-//	...
+    $db = GeographDatabaseConnection(false);
+
+    $um = new UploadManager();
+    $gs = new GridSquare();
+
+    $um->setUploadId($_POST['upload_id']);
+
+    $gs->setByFullGridRef($_POST['grid_reference']);
+    if (!empty($gs->errormsg)) {
+        failMessage($gs->errormsg);
+    }
+
+    $takendate = strtotime($_POST['imagetaken']);
+    if ($takendate > time()) {
+        failMessage("Date taken in future");
+    }
+
+    // set up attributes from uploaded data
+    $um->setSquare($gs);
+    $um->setViewpoint($_POST['photographer_gridref']);
+    if (!empty($_POST['use6fig']))
+        $um->setUse6fig(stripslashes($_POST['use6fig']));
+    $um->setDirection($_POST['view_direction']);
+    $um->setTaken(date('Y-m-d',$takendate));
+    $um->setTitle($_POST['title']);
+    $um->setComment($_POST['comment']);
+
+    if (!empty($_POST['imageclass'])) {
+        if (preg_match('/subject:(.*)/',$_POST['imageclass'],$m)) {
+            $um->setSubject($m[1]);
+        } else
+            $um->setClass($_POST['imageclass']);
+    }
+
+    if (!empty($_POST['subject']))
+        $_POST['tags'][] = "subject:".$_POST['subject'];
+    if (!empty($_POST['vfov']))
+        $_POST['tags'][] = "vfov:".$_POST['vfov'];
+    if (!empty($_POST['hfov']))
+        $_POST['tags'][] = "hfov:".$_POST['vfov'];
+
+    if (!empty($_POST['tags'])) {
+        if (is_array($_POST['tags'])) {
+            $um->setTags($_POST['tags']);
+        } else {
+            $um->setTags(preg_split('/\s*;\s*/',trim(utf8_decode($_POST['tags']))));
+        }
+    }
+    if (!empty($_POST['contexts'])) {
+        $um->setContexts($_POST['contexts']);
+    }
+
+    if ($_POST['pattrib'] == 'other') {
+        $um->setCredit(stripslashes(utf8_decode($_POST['pattrib_name'])));
+    } elseif ($_POST['pattrib'] == 'self') {
+        $um->setCredit('');
+    }
+
+    $um->setLargestSize($_POST['largestsize']);
+
+
+    if (!empty($um->errormsg)) {
+        failMessage($um->errormsg);
+    } else {
+        // so far so good... can we commit the submission?
+        $method = 'app';
+        $rc = $um->commit($method);
+        if ($rc == "") {
+                        //clear user profile
+                        $ab=floor($USER->user_id/10000);
+                        $smarty = new GeographPage;
+                        $smarty->clear_cache(null, "user$ab|{$USER->user_id}");
+
+
+             print '<meta name="viewport" content="width=device-width, initial-scale=1">';
+
+             print "Submission Successful";
+             print "<hr>";
+             print "ID: <a href=\"https://www.geograph.org.uk/photo/{$um->gridimage_id}\">{$um->gridimage_id}</a>";
+
+                  print "<hr>";
+                  print "<a href=/app/ target=_top>Continue</a>";
+
+        } else {
+            failMessage($rc);
+        }
+    }
+
+
+    exit;
 }
 
 ?>
@@ -403,12 +497,11 @@ align-items: center;    /* This centers the 350px map horizontally */
     </div>
 
     <div id="orientation_message" style="display:none">
-    	<h4>Warning: <b>This image has EXIF 'Orientation' flag set.</b></h4>
+	<h4>Action Required: Fix Image Orientation</h3>
 
-        It's highly recommended to use the rotation function to reorientate the image, this resets the flag which prevents potential display 
-        issues, as not all Browsers etc will honor the flag.<br><br> So please rotate the image, <b>even if it actully displays 
-        <i>correctly</i> in the preview</b>! Rotate it sideways, and then <i>back</i> until displays correctly again.<br>Your browser might be 
-        ignoring the flag which is why the preview appears ok to you!<br><br>
+	This image uses an 'Orientation' flag that some browsers ignore, which can cause it to appear sideways for other users. Please
+	rotate the image sideways and back to upright using the tools provided, <b>even if it actully displays <i>correctly</i> in the
+	preview</b>. This resets the flag and ensures your image displays consistently across all devices.<br><br>
     </div>
 </div>
 
@@ -1141,6 +1234,7 @@ align-items: center;    /* This centers the 350px map horizontally */
         const item = e.target.closest('.suggestion-item');
         if (item) {
             subjectInput.value = item.textContent;
+            subjectInput.setCustomValidity("");
             document.getElementById('subject-id').value = item.dataset.id;
             suggestionsS.innerHTML = '';
         }
@@ -1150,6 +1244,7 @@ align-items: center;    /* This centers the 350px map horizontally */
         const query = subjectInput.value.trim().toLowerCase();
         if (query.length < 1) {
             subjectInput.placeholder = 'Start typing... (showing popular subjects)';
+            subjectInput.setCustomValidity("");
             const options = Array.from(subjectList.options);
 
             const matches = options
@@ -1356,9 +1451,11 @@ align-items: center;    /* This centers the 350px map horizontally */
 
             const hiddenId = document.getElementById('subject-id');
             const options = document.querySelectorAll('#subject-list option');
+            const valueLower = input.value.toLowerCase();
+
 
             // Find if the typed value matches a valid tag
-            const match = Array.from(options).find(o => o.value === input.value);
+            const match = Array.from(options).find(o => o.value.toLowerCase() === valueLower);
 
             if (match) {
                 hiddenId.value = match.dataset.id;
@@ -1371,6 +1468,8 @@ align-items: center;    /* This centers the 350px map horizontally */
                 input.focus();
                 return false;
             }
+        } else {
+            input.setCustomValidity(""); // Clear any previous error
         }
 
         ////////////////////
@@ -1540,7 +1639,6 @@ map.on('mousedown dragstart', function(e) {
             // Change/Input events
             ['input', 'change', 'keyup', 'paste'].forEach(evt => {
                 input.addEventListener(evt, function() {
-                    console.log(this.value);
                     window.disableAutoUpdate = true;
                     if (this.value) centerMap(this.value);
                     updateMapMarker(this, false);

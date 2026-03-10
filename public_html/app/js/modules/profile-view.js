@@ -37,8 +37,8 @@ export function render() {
 async function loadSubmissions(filter = 'recent') {
     const gridContainer = document.getElementById('submissions-grid');
     const url = filter === 'all'
-        ? '/stuff/submissions.json.php?thumbs=1&images=100'
-        : '/stuff/submissions.json.php?thumbs=1';
+        ? '/app/submissions.json.php?thumbs=1&images=100'
+        : '/app/submissions.json.php?thumbs=1';
 
     gridContainer.innerHTML = '<p>Loading...</p>';
 

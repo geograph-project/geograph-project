@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once('geograph/global.inc.php');
 require_once('geograph/uploadmanager.class.php');
@@ -328,6 +328,21 @@ async function renderUI() {
 function addIdtoBtn(btnId, upload_id) {
 	//want to overite any existing click (from a previous call!)
         document.getElementById(btnId).onclick = function() {
+
+/* TODO actully we going to have to provide (or we could send lat/long direcltyl!)
+ {
+        "transfer_id": "2f24bc8f3ce8c249bff61564d09022ed",
+        "photographer_gridref": "TQ3840294942",
+        "grid_reference": "TQ3894",
+        "imagetaken": "2024-12-14 15:01:02",
+        "orientation": 1
+ }
+
+          const itemString = JSON.stringify(item);
+
+*/
+
+
 		navigateTo('/app/submit',{message: 'transfer_id='+upload_id});
 		postActions.classList.add('hidden');
 		displayArea.innerHTML = '';

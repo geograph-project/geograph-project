@@ -17,7 +17,7 @@ export async function onMount() {
     const listContainer = document.getElementById('review-list');
 
     try {
-        const response = await fetch('/stuff/submissions.json.php?thumbs=1');
+        const response = await fetch('/app/submissions.json.php?thumbs=1');
         const data = await response.json();
 
         listContainer.innerHTML = data.map(item => `

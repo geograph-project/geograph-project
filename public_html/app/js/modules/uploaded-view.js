@@ -33,7 +33,7 @@ export async function onMount() {
     const finishLink = document.getElementById('finish-submission');
 
     try {
-        const response = await fetch('/stuff/uploads.json.php');
+        const response = await fetch('/app/uploads.json.php');
         const data = await response.json();
 
         if (data.length === 0) {
