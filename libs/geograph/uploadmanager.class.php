@@ -1414,6 +1414,14 @@ $this->db->raiseErrorFn = 'adodb_throw';
 
 					$row['orientation'] = $exif['IFD0']['Orientation'] ?? null;
 				}
+
+				// Also add the dimensions of the pending image (so the client knows)
+				$pending_file = $this->_pendingJPEG($row['transfer_id']);
+				if (file_exists($pending_file)) {
+					$size = getimagesize($pending_file);
+					$row['width'] = $size[0];
+					$row['height'] = $size[1];
+				}
 		return $row;
 	}
 
