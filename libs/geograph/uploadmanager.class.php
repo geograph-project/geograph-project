@@ -1411,6 +1411,8 @@ $this->db->raiseErrorFn = 'adodb_throw';
 						 $dates = explode(':',$date);
 						 $row['imagetaken'] = implode('-',$dates).(($time)?' '.$time:'');
 					}
+
+					$row['orientation'] = $exif['IFD0']['Orientation'] ?? null;
 				}
 		return $row;
 	}

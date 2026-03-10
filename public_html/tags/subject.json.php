@@ -23,16 +23,30 @@
 
 require_once('geograph/global.inc.php');
 
-customExpiresHeader(3600*24);
 
 
 $db = GeographDatabaseConnection(true);
 
-$query = "SELECT `prefix`, tag, tag_id
-		FROM tag
+if (!empty($_GET['suggestions'])) {
+	//used by the test-subject-matching.php
+
+	customExpiresHeader(90);
+
+	$query = "select sum(is_candidate!=0) as m, 'subject' as prefix, subject as tag, min(cosine_min) as min_min
+		 from subject_embedding inner join subjects using (subject_id)
+		 where model = 'pe' and cosine_cnt > 50 group by subject order by m asc, min_min desc limit 20";
+
+	//cosine_cnt is because currently, only partial data is PE encoded, so some 'iamges tagged with subject' provides few images with the embedding vector!
+
+} else {
+	customExpiresHeader(3600*24);
+
+	$query = "SELECT `prefix`, tag, tag_id, count
+		FROM tag LEFT JOIN tag_stat using (tag_id)
 		WHERE prefix = 'subject' and status = 1 and canonical = 0
 		ORDER BY tag";
-//canonical=0 ensures it an 'offical' subject tag
+	//canonical=0 ensures it an 'offical' subject tag
+}
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $data = $db->getAll($query);

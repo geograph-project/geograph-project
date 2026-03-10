@@ -52,8 +52,12 @@ export async function onMount() {
             const thumbUrl = `/submit.php?preview=${item.transfer_id}`;
             const displayLabel = item.grid_reference || ''; //No Gridref';
 
+	    const itemString = JSON.stringify(item);
+	    const escapedItem = itemString.replace(/"/g, '&quot;');
+
             return `
                 <div class="submission-tile"
+			data-route="/app/submit" data-message="${escapedItem}"
                      data-preview="${thumbUrl}"
                      data-id="${item.transfer_id}">
                     <img src="${thumbUrl}" loading="lazy" alt="Draft">
@@ -61,6 +65,8 @@ export async function onMount() {
                 </div>
             `;
         }).join('');
+
+return;
 
         // Reuse the click delegation logic
         gridContainer.addEventListener('click', (e) => {

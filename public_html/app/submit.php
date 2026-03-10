@@ -1,3 +1,18 @@
+<?
+
+require_once('geograph/global.inc.php');
+require_once('geograph/uploadmanager.class.php');
+
+init_session();
+
+$USER->mustHavePerm('basic');
+
+if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a login request!
+
+//	...
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,17 +77,6 @@
         
         .thumb-img { height: 45px; width: auto; border-radius: 4px; margin-right: 12px; }
         .sticky-title { font-weight: bold; color: #333; }
-
-        /* Map */
-
-	#map {
-		max-width: min( 350px , 100% );
-		margin: 6px auto;
-		aspect-ratio: 1 / 1;
-
-		border:1px solid black; border-radius:2px;
-		background-color:cyan;
-	}
 
         /* Content spacing */
         .content { padding: 20px; max-width: 600px; margin: 0 auto; }
@@ -260,9 +264,7 @@ span.tag-pill button {
 
 	dialog {
 	    /* Ensures it doesn't look like a standard browser alert */
-	    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-	}
-	#license-modal {
+
 	    max-height: 85vh; /* Give a bit more vertical breathing room */
 	    max-width: 90vw;  /* Prevents it from hitting the screen edges on mobile */
 	    width: 500px;
@@ -272,10 +274,122 @@ span.tag-pill button {
 	    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 	    background-color:#e4e4fc;
 	}
+    dialog button {
+        display:block;
+        width:100%;
+    }
+
 	.nowrap {
 		white-space:nowrap;
 	}
+
+
+    /* Map */
+
+#maparea {
+    display: flex;
+    flex-direction: column; /* Default: Stacked */
+align-items: center;    /* This centers the 350px map horizontally */
+
+    margin-left: auto;      /* The "Magic" centering combo */
+    margin-right: auto;
+    width: fit-content;     /* Crucial: prevents the div from being 100% wide */
+
+    gap: 10px;              /* Space between map and controls */
+    justify-content: flex-start; /* Keeps them grouped together */
+    align-items: flex-start;    /* Prevents stretching */
+}
+
+#map {
+	max-width: min( 350px , 100% );
+    width: 350px;
+    margin:auto;
+	aspect-ratio: 1 / 1;
+	border:1px solid black; border-radius:2px;
+    flex-shrink: 0;         /* Prevents the map from squishing */
+}
+
+#maparea .controls {
+    text-align:center;
+    padding:0;
+}
+
+/* Switch to Row layout in Landscape */
+@media (orientation: landscape) {
+    #maparea {
+        flex-direction: row; /* Controls move to the right */
+        align-items: stretch;
+    }
+
+    #maparea .controls {
+        max-width: 250px;
+        width: 100%;            /* Allows it to be smaller than 200px if needed */
+        flex-shrink: 1;         /* Allows controls to shrink if screen is tiny */
+        word-wrap: break-word;  /* Prevents text from forcing the width wider */
+
+        /* Optional: make controls match the map height */
+        max-height: 350px;
+        overflow-y: auto;
+    }
+}
+
+#maparea input[type=radio], #maparea input[type=checkbox] { /* inside leaflet layer switcher */
+    width:inherit;
+}
+
+#maparea input[type=text] {
+    width:180px;
+    font-family: sans-serif;
+    color:gray;
+    background-color:var(--bg);
+    border:1px solid silver;
+}
+#maparea label {
+    display:unset;
+}
+#maparea input.active {
+        color:black;
+        background-color:white;
+        border:1px solid black;
+}
+#maparea input#photographer_gridref.active{
+    border:2px solid #210b7b;
+}
+#maparea input#grid_reference.active{
+    border:2px solid #5300ff;
+}
+#maparea label.active {
+        background-color:yellow;
+}
+
+#orientation_message {
+    background-color:pink;
+}
+
     </style>
+
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+    <link rel="stylesheet" type="text/css" href="<?php echo smarty_modifier_revision("/js/mappingLeaflet.css"); ?>" />
+    <link rel="stylesheet" href="<?php echo smarty_modifier_revision("/js/leaflet-search-master/src/leaflet-search.css"); ?>" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.67.0/dist/L.Control.Locate.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.css" />
+
+    <script src="<?php echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
+
+    <script src="<?php echo smarty_modifier_revision("/js/Leaflet.MetricGrid.js"); ?>"></script>
+    <script src="<?php echo smarty_modifier_revision("/js/mappingLeaflet.js"); ?>"></script>
+
+    <script src="<?php echo smarty_modifier_revision("/js/L.Control.Locate.js"); ?>"></script>
+    <script src="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.min.js"></script>
+    <script src="<?php echo smarty_modifier_revision("/js/leaflet-search-master/src/leaflet-search.js"); ?>"></script>
+    <script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographGeocoder.js"); ?>"></script>
+    <script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographRecentUploads.js"); ?>"></script>
+
+
 </head>
 <body>
 
@@ -288,12 +402,12 @@ span.tag-pill button {
         <button onclick="rotateImage(90)">Rotate Right <span>&#8635;</span></button>
     </div>
 
-    <div style="display:none">
-	Warning: <b>This image has EXIF 'Orientation' flag set.</b>
+    <div id="orientation_message" style="display:none">
+    	<h4>Warning: <b>This image has EXIF 'Orientation' flag set.</b></h4>
 
         It's highly recommended to use the rotation function to reorientate the image, this resets the flag which prevents potential display 
-        issues, as not all Browsers etc will honor the flag.<br><br> So please rotate the image, even if it actully displays 
-        <i>correctly</i> in the preview! Rotate it sideways, and then <i>back</i> until displays correctly again.<br>Your browser might be 
+        issues, as not all Browsers etc will honor the flag.<br><br> So please rotate the image, <b>even if it actully displays 
+        <i>correctly</i> in the preview</b>! Rotate it sideways, and then <i>back</i> until displays correctly again.<br>Your browser might be 
         ignoring the flag which is why the preview appears ok to you!<br><br>
     </div>
 </div>
@@ -303,12 +417,98 @@ span.tag-pill button {
     <div class="sticky-title" id="displayTitle"></div>
 </div>
 
-<form method="post" name="mainForm" id="mainForm">
+<form method="post" name="theForm" id="theForm">
 	<input type=hidden name="upload_id" value="">
 
-	<div id="map">
-		map placeholder!
+    <div style="text-align:center">
+        <button type="button" onclick="openModal('map-modal')"
+        style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer;">How to use this map &gt;</button>
+    </div>
+
+	<div id="maparea">
+
+        <div id="map"></div>
+
+        <div class="controls">
+                <span class=nowrap><label for=photographer_gridref class="gr active" style="color:#210b7b">Camera</label>:
+                        <input type="text" name="photographer_gridref" id="photographer_gridref" value="" size="12" maxlength="14"
+                         onblur="checkGridref(this)" placeholder="(Camera Location)" class="active"/></span>
+                &nbsp;
+                <span class=nowrap><label for=grid_reference class="gr" style="color:#5300ff;">Subject</label>:
+                        <input type="text" name="grid_reference" value="" id="grid_reference" size="12" maxlength="14"
+                         onblur="checkGridref(this)" placeholder="(Subject Location)"/></span>
+
+                <div style=display:none><input type="checkbox" name="use6fig" value="1"/> <label for="use6fig">Only use 6 figures (<span class="nowrap"><a title="Explanation" href="https://www.geograph.org.uk/help/map_precision" target="_blank">Explanatioion</a><img style="padding-left:2px;" alt="New Window" title="opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span>)</label></div>
+            <br>
+
+            <label for="view_direction">View</label>:
+            <select id="view_direction" name="view_direction">
+                    <option value="-1" style="color:gray">Direction</option>
+                    <option value="0">NORTH            : 0 deg</option>
+                    <option value="22" style="color:gray">North-northeast  : 22 deg</option>
+                    <option value="45">Northeast        : 45 deg</option>
+                    <option value="67" style="color:gray">East-northeast   : 67 deg</option>
+                    <option value="90">EAST             : 90 deg</option>
+                    <option value="112" style="color:gray">East-southeast   : 112 deg</option>
+                    <option value="135">Southeast        : 135 deg</option>
+                    <option value="157" style="color:gray">South-southeast  : 157 deg</option>
+                    <option value="180">SOUTH            : 180 deg</option>
+                    <option value="202" style="color:gray">South-southwest  : 202 deg</option>
+                    <option value="225">Southwest        : 225 deg</option>
+                    <option value="247" style="color:gray">West-southwest   : 247 deg</option>
+                    <option value="270">WEST             : 270 deg</option>
+                    <option value="292" style="color:gray">West-northwest   : 292 deg</option>
+                    <option value="315">Northwest        : 315 deg</option>
+                    <option value="337" style="color:gray">North-northwest  : 337 deg</option>
+                    <option value="00">NORTH            : 0 deg</option>
+             </select>
+            <div id="dist_message" style="padding-left:10px"></div>
+        </div>
 	</div>
+
+    <div id="mapInfo" style="padding:10px;border-radius:10px; background-color:yellow; position:sticky; bottom:0">
+        If the image lacks location data, use the <strong>Locate/Pin</strong> icon to find your current position or the <strong>Search</strong> icon to find a place by name.<br><br>
+        <strong>Drag the map</strong> to align the central cross-hairs with the Camera/Photographer location.<br><br>
+        Tap the <strong>Grid Reference boxes</strong> to toggle between positioning the Camera and the Subject (the active selection is highlighted in white).
+    </div>
+
+    <dialog id="map-modal" onclick="closeModal('map-modal')">
+        <h3>Location Instructions</h3>
+        <p>To submit your image, we need both the <strong>Camera</strong> position and the <strong>Subject</strong> position.</p>
+
+        <article>
+            <h3>1. Set the Camera Location</h3>
+            <p>If the location did not load automatically from your photo's EXIF data, use one of these three methods:</p>
+            <ul>
+                <li><strong>Search:</strong> Tap the Search icon on the map to find a specific place.</li>
+                <li><strong>GPS:</strong> Tap the Location/Pin icon to center the map on your current position.</li>
+                <li><strong>Manual:</strong> Type a Grid Reference directly into the Camera location box.</li>
+            </ul>
+            <p><strong>Refine:</strong> Once the map is active, drag it until the central circle is positioned exactly over the camera location.</p>
+        </article>
+
+        <article>
+            <h3>2. Set the Subject Location</h3>
+            <p>Once the Camera position is set, mark the location of your subject:</p>
+            <ul>
+                <li><strong>Quick Method:</strong> Double-tap the subject's location on the map to instantly mark and center the point.</li>
+                <li><strong>Manual Method:</strong> Tap the Subject box to toggle "Subject Centering," then drag the map until the subject is under the center crosshair.</li>
+            </ul>
+            <blockquote>
+                <p><strong>Tip:</strong> If your photo already has GPS data, simply double-tap the subject on the map and drag to refine if necessary.</p>
+            </blockquote>
+        </article>
+
+        <article>
+            <h3>Additional Controls</h3>
+            <ul>
+                <li><strong>Toggling:</strong> You can click either the Camera or Subject box at any time to switch which location is currently active for dragging on the map.</li>
+                <li><strong>Minimum Requirements:</strong> If you cannot specify an exact location, you must enter at least a 4-figure Grid Reference in the Subject box.</li>
+                <li><strong>View Direction:</strong> the direction dropdown will auto-calculate as you enter locations. Manual selection is only necessary if the camera and subject are very close together, which may affect accuracy.</li>
+            </ul>
+        </article>
+        <button type="button" onclick="closeModal('map-modal')">Close</button>
+    </dialog>
 
 	<div class="content">
         <div class="field-header">
@@ -323,9 +523,9 @@ span.tag-pill button {
         </div>
 	    <textarea name="comment" placeholder="optional longer description" rows="5"></textarea>
 
-        <label for="date-picker">Date Taken</label>
+        <label for="imagetaken">Date Taken</label>
         <div>
-            <input type="date" id="date-picker" name="imagetaken" required>
+            <input type="date" id="imagetaken" name="imagetaken" required>
             <input type="text" id="date-text" name="date_partial"
                    placeholder="e.g. 2025 or 2025-03"
                    title="Please enter a date like 1960, 1964-03, or 2023-03-09"
@@ -338,7 +538,7 @@ span.tag-pill button {
 
             <script>
             function switchToText() {
-                const picker = document.getElementById('date-picker');
+                const picker = document.getElementById('imagetaken');
                 const textInput = document.getElementById('date-text');
 
                 picker.style.display = 'none';
@@ -353,8 +553,8 @@ span.tag-pill button {
 
             function clearDate() {
                 // Hide both, remove required from both
-                document.getElementById('date-picker').style.display = 'none';
-                document.getElementById('date-picker').removeAttribute('required');
+                document.getElementById('imagetaken').style.display = 'none';
+                document.getElementById('imagetaken').removeAttribute('required');
                 document.getElementById('date-text').style.display = 'none';
                 document.getElementById('date-text').removeAttribute('required');
                 document.getElementById('date-controls').innerHTML = '<p>Date unknown</p>';
@@ -375,7 +575,7 @@ span.tag-pill button {
             </select>
         </div>
 	    <div class="tag-input-container">
-            <input type="search" id="subject-input" placeholder="Search subjects...">
+            <input type="search" name="subject" id="subject-input" placeholder="Search subjects...">
             <div id="suggestionsSubjects" class="dropdown"></div>
             <datalist id="subject-list"></datalist>
             <input type="hidden" name="subject_id" id="subject-id">
@@ -416,10 +616,10 @@ span.tag-pill button {
                         <option value="panorama:photosphere">PhotoSphere (full 360, and full height)</option>
                 </select>
 
-                <div class=nowrap id="showvfov" style="display:none">(vfov: <input type=number step=0.01 name=vfov placeholder=120 style=width:70px;text-align:right>degrees wide)</div>
-                <div class=nowrap id="showhfov">(hfov: <input type=number step=0.01 name=hfov placeholder=90 style=width:70px;text-align:right>degrees high)</div>
+                <div class=nowrap id="showvfov" style="display:none">(vfov: <input type=number step=0.01 name=vfov id=vfov placeholder=120 style=width:70px;text-align:right>degrees wide)</div>
+                <div class=nowrap id="showhfov">(hfov: <input type=number step=0.01 name=hfov id=hfov placeholder=90 style=width:70px;text-align:right>degrees high)</div>
 
-		<button type="button" onclick="openModal('pano-modal')"
+        		<button type="button" onclick="openModal('pano-modal')"
                 style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer;">How to Submit Panoramas &gt;</button>
 
            </div>
@@ -430,18 +630,15 @@ span.tag-pill button {
                     document.getElementById('showvfov').style.display = (select.value == 'panorama:wideangle')?'':'none';
                     document.getElementById('showhfov').style.display = (select.value == 'panorama:photosphere')?'none':'';
                     document.getElementById("showpano").style.display = "";
+                    document.getElementById("panoselect").required = true;
                 } else {
                     document.getElementById("showpano").style.display ="none";
+                    document.getElementById("panoselect").required = false;
                 }
            }
-function openModal(id) {
-    const modal = document.getElementById(id);
-    modal.showModal();
-    modal.querySelector('div').scrollTop = 0;
-}
            </script>
 
-<dialog id="pano-modal" onclick="document.getElementById('pano-modal').close()">
+<dialog id="pano-modal" onclick="closeModal('pano-modal')">
     <div style="max-height: 80vh; overflow-y: auto; padding: 10px;">
         <h3>About Panoramas & Photospheres</h3>
 
@@ -462,7 +659,7 @@ function openModal(id) {
         </a>
 
         <br><br>
-        <button type="button" onclick="document.getElementById('pano-modal').close()">Close</button>
+        <button type="button" onclick="closeModal('pano-modal')">Close</button>
     </div>
 </dialog>
 
@@ -537,10 +734,10 @@ function openModal(id) {
 
 		    <p>Because we are an open project we want to ensure our content is licensed as openly as possible and so we ask that all images are released under the Creative Commons 
             licence, including accompanying metadata. <button type="button"
-                onclick="document.getElementById('license-modal').showModal();document.getElementById('license-modal').scrollTop = 0;"
+                onclick="openModal('license-modal');"
                 style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer;">Read More &gt;</button> </p>
 
-            <dialog id="license-modal" onclick="document.getElementById('license-modal').close()">
+            <dialog id="license-modal" onclick="closeModal('license-modal')">
                 <h3>Open Licensing Explained</h3>
 
                 <p>By using a <strong>Creative Commons Attribution-ShareAlike 2.0</strong> licence, you retain your copyright while granting the
@@ -561,7 +758,7 @@ function openModal(id) {
 
 	            <p><a href="/help/freedom" target="_blank">Open Geograph Freedom Manifesto</a> <span class="nowrap">(Opens in new tab)</span></p>
 
-                <button type="button" style="display:block;width:100%;" onclick="document.getElementById('license-modal').close()">Close</button>
+                <button type="button" onclick="closeModal('license-modal')">Close</button>
             </dialog>
         </fieldset>
 
@@ -580,22 +777,56 @@ function openModal(id) {
     const displayTitle = document.getElementById('displayTitle');
     const imgLarge = document.getElementById('imgLarge');
     const imgThumb = document.getElementById('imgThumb');
-    const mainForm = document.getElementById('mainForm');
+    const theForm = document.getElementById('theForm');
 
 // --------------------------------
 
     let upload_id = null;
-    let filename = null; //we can receive the original filename
+//    let update_data = [];
 
     window.addEventListener('message', (event) => {
-        // Basic security check: if (event.origin !== "http://yourdomain.com") return;
+        if (event.origin !== window.location.origin) return;
 
         console.log("Received:", event.data);
-        if (event.data.startsWith('transfer_id=')) {
-            upload_id = event.data.match(/id=(\w+)/)[1];
-    	//todo, extract exif (geo+date+oritentiation+filename!)
-            resetForm(upload_id);
+        try {
+            const data = JSON.parse(event.data);
+//            upload_data = data;
+
+            if (data.transfer_id)
+                resetForm(data.transfer_id);
+
+            //uploaded page will send grid_reference+photographer_gridref
+            if (data.grid_reference)
+                document.getElementById('grid_reference').value = data.grid_reference;
+            if (data.photographer_gridref) {
+                document.getElementById('photographer_gridref').value = data.photographer_gridref;
+                centerMap(data.photographer_gridref);
+                //TODO, we should probably add a byutton somewher 'reset to ___', so if mess up the map can easily revert to GPS location!
+            }
+
+            //but submit will send lat/long!
+            if (data.lat) //long may be exacty zero (meridian!
+                setLatLong(data.lat, data.long, 'photographer_gridref','EXIF')
+
+            if (data.imagetaken) {
+                document.getElementById('imagetaken').value = data.imagetaken.substr(0,10).replace(/:/g,'-');
+                //if we have a date it very unlikly to not be known!
+                document.getElementById('date-controls').innerHTML = '';
+            }
+
+            if (data.orientation)
+                orientationMessage(data.orientation);
+
+        } catch (e) {
+            // Handle non-JSON messages
+            if (event.data.startsWith('transfer_id=')) {
+                upload_id = event.data.match(/id=(\w+)/)[1];
+                //todo, extract exif (geo+date+oritentiation!)
+                //currently only rceive the upload_id via simple strings
+                resetForm(upload_id);
+            }
         }
+
     });
 
     window.addEventListener('DOMContentLoaded', function() {
@@ -612,23 +843,44 @@ function openModal(id) {
         renderRecent('submit.subjects', 'recent-subjects');
         renderRecent('submit.tags', 'recent-tags');
         updateLicenceDiv();
+
+        if (!map)
+            loadmap();
     });
 
     function resetForm(newId) {
         updatePreview(newId); //will store it in upload_id;
 
     	//we starting again!
-    	mainForm.elements['title'].value = '';
-    	mainForm.elements['comment'].value = '';
-        //todo, other elements to reset too!
-    	//todo, we need to set position (from EXIF)
-    	//todo, we need to set date!!? (from EXIF)
+        document.getElementById("orientation_message").style.display='none';
+        theForm.elements['grid_reference'].value = '';
+        theForm.elements['photographer_gridref'].value = '';
+        theForm.elements['view_direction'].value = -1;
+
+    	theForm.elements['title'].value = '';
+    	theForm.elements['comment'].value = '';
+
+        theForm.elements['imagetaken'].value = ''; //todo,might need to restore the controls??
+
+        theForm.elements['contexts[]'].value = '';
+        theForm.elements['subject'].value = ''; //reset recent?
+        document.getElementById("active-tags").innerHTML = '';
+
+//        theForm.elements[''].value = '';
+        //todo, other elements to reset too! including special flags!
+        document.getElementById("c-drone").checked = false;
+        document.getElementById("c-pano").checked = false;
+        document.getElementById("panoselect").value=''; document.getElementById("panoselect").required = false;
+        document.getElementById("vfov").value = '';
+        document.getElementById("hfov").value = '';
+        updatePanoDisplay();
+        window.scrollTo({top: 0}); //incase last use was scrolled!
     }
 
     function updatePreview(newId) {
         if (newId)
             upload_id = newId; //store in the global (otherwise we using from the global as is)
-        mainForm.elements['upload_id'].value = upload_id;
+        theForm.elements['upload_id'].value = upload_id;
         imgLarge.src = `/submit.php?preview=${upload_id}`;
         imgThumb.src = `/submit.php?preview=${upload_id}`;
     }
@@ -637,8 +889,6 @@ function openModal(id) {
 // Sticky Header/Preview
 
     async function rotateImage(degrees, force = 0) {
-        const form = document.forms['theForm'];
-
         if (!upload_id || upload_id.length < 10) {
             alert("Unable to rotate, please let us know");
             return;
@@ -648,7 +898,6 @@ function openModal(id) {
             imgLarge.style.opacity = 0.3;
             document.querySelector('.controls').opacity = 0.3;
 
-
             // Construct the URL using URLSearchParams (safer than manual string building)
             const params = new URLSearchParams({ rotate:upload_id, degrees, force });
             const response = await fetch(`/submit.php?${params.toString()}`);
@@ -657,6 +906,7 @@ function openModal(id) {
             if (result.width && result.upload_id) {
                 imgLarge.style.opacity = 1;
                 updatePreview(result.upload_id);
+                document.getElementById("orientation_message").style.display='none';
 
             } else if (result.lossy) {
                 if (confirm("This image cannot be rotated losslessly. Quality loss may occur. Continue?")) {
@@ -670,6 +920,12 @@ function openModal(id) {
         } catch (err) {
             console.error(err);
             alert("Rotation Failed, please try again. If it persists, let us know!");
+        }
+    }
+
+    function orientationMessage(orientation) {
+        if (orientation && orientation != 1 &&  orientation !== "1") {
+            document.getElementById("orientation_message").style.display='';
         }
     }
 
@@ -1104,8 +1360,6 @@ function openModal(id) {
             // Find if the typed value matches a valid tag
             const match = Array.from(options).find(o => o.value === input.value);
 
-console.log(input,match);
-
             if (match) {
                 hiddenId.value = match.dataset.id;
                 input.setCustomValidity(""); // Clear any previous error
@@ -1135,7 +1389,7 @@ console.log(input,match);
         return true;
     }
 
-    document.forms['mainForm'].addEventListener('submit', validateForm);
+    document.forms['theForm'].addEventListener('submit', validateForm);
 
 
 // --------------------------------
@@ -1156,6 +1410,333 @@ function escapeHTML(str) {
     const p = document.createElement('p');
     p.textContent = str;
     return p.innerHTML;
+}
+
+function openModal(id) {
+    const modal = document.getElementById(id);
+    modal.showModal();
+    modal.scrollTop = 0;
+}
+function closeModal(id) {
+    document.getElementById(id).close();
+}
+
+// --------------------------------
+// Map - ported from mobile submit
+
+    var map = null;
+    var issubmit = false; //we do it manually.
+    var geocoder = null;
+    var disableAutoUpdate = false;
+    var leafletBaseKey = 'LeafletBase'; //at the moment, we dont know what grid it will be!
+    var checkedonce = false;
+
+    var static_host = <? echo json_encode($CONF['STATIC_HOST']); ?>;
+	var OSAPIKey = <? echo json_encode($CONF['os_api_key'] ?? null); ?>;
+
+
+    function loadmap() {
+        setupBaseMap({doubleClickZoom:false, scrollWheelZoom:'center'});
+
+// Add this guard immediately after creating the map object
+map.on('mousedown dragstart', function(e) {
+    if (!map.getCenter()) {
+        // If no center is set, stop the event from bubbling
+        // to the internal Leaflet handlers like _onUp
+        L.DomEvent.stopPropagation(e);
+        return false;
+    }
+});
+
+        if (location.search.length>2 && location.search.indexOf('gridref=')) {
+                if (match = location.search.match(/gridref=([A-Z]{1,2} ?\d{2,5} ?\d{2,5})/)) {
+                        disableAutoUpdate = true; //we just centering the map, not setting an exact location!
+                        centerMap(match[1]);
+                }
+        }
+
+        L.geotagPhoto.crosshair({
+                crosshairHTML: '<img alt="Center of the map; crosshair location" title="Crosshair" src="https://unpkg.com/leaflet-geotag-photo@0.5.1/images/crosshair.svg" width="100px" />'
+        }).addTo(map).on('input', function (event) { //really jsut called when the map is recentered!
+                if (!map._loaded) //dragging the map before setup, fails!
+                        return;
+           var point = this.getCrosshairLatLng(); //really just getting center of the map!
+           if (point && point.lat && !disableAutoUpdate)
+                   setLatLong(point.lat, point.lng);
+        });
+
+        map.on('mousedown',function() {
+                disableAutoUpdate = false;
+        });
+
+        L.DomEvent.on(map._container, 'touchstart', function() {
+                disableAutoUpdate = false;
+        });
+
+        map.on('dblclick',function(event) {
+                if (!map._loaded) //dragging the map before setup, fails!
+                        return;
+
+                //first SWAP the active.
+                disableAutoUpdate = true;
+                document.querySelectorAll('#maparea input[type=text]').forEach(input => {
+                    input.classList.toggle('active');
+                });
+
+                // Toggle active class on all matching labels
+                document.querySelectorAll('#maparea label.gr').forEach(label => {
+                    label.classList.toggle('active');
+                });
+
+                //then recenter the map (which feeds back to the new location box!)
+                disableAutoUpdate = false;
+                map.panTo(event.latlng);
+        });
+
+        map.on('dragend',function(event) {
+                if (!map._loaded) //dragging the map before setup, fails!
+                        return;
+
+                if (document.forms['theForm'].use6fig && !document.forms['theForm'].use6fig.checked && !checkedonce) {
+                        var z=13; //zoom level on normal web tile maps.
+                        if (map.options && map.options.crs && map.options.crs.code && map.options.crs.code == "EPSG:27700") //the OS maps use a differet CRS, with differnt zooms
+                                z = 7;
+                        if (map.getZoom() <= z) {
+                                document.forms['theForm'].use6fig.checked = true;
+                                checkedonce = true;
+                        }
+                }
+        });
+
+       // setupMess(); //TODO!
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const tab2 = document.getElementById('maparea');
+        if (!tab2) return;
+
+        const inputs = tab2.querySelectorAll('input[type=text]');
+        const labels = tab2.querySelectorAll('label.gr');
+        const mapInfo = document.getElementById('mapInfo');
+
+        // Helper to clear active classes
+        const clearActive = () => {
+            inputs.forEach(i => i.classList.remove('active'));
+            labels.forEach(l => l.classList.remove('active'));
+        };
+
+        // Input events
+        inputs.forEach(input => {
+            // Focus event
+            input.addEventListener('focus', function() {
+                clearActive();
+                this.classList.add('active');
+                if (this.previousElementSibling) {
+                    this.previousElementSibling.classList.add('active');
+                }
+                if (this.value) centerMap(this.value);
+            });
+
+            // Change/Input events
+            ['input', 'change', 'keyup', 'paste'].forEach(evt => {
+                input.addEventListener(evt, function() {
+                    console.log(this.value);
+                    window.disableAutoUpdate = true;
+                    if (this.value) centerMap(this.value);
+                    updateMapMarker(this, false);
+                    if (mapInfo) mapInfo.style.display = 'none';
+                });
+            });
+        });
+
+        // Label click events
+        tab2.querySelectorAll('label').forEach(label => {
+            const attr = label.getAttribute('for');
+            if (attr) {
+                const targetInput = tab2.querySelector(`input[type=text][name="${attr}"]`);
+                if (targetInput) {
+                    label.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        clearActive();
+                        targetInput.classList.add('active');
+                        if (targetInput.previousElementSibling) {
+                            targetInput.previousElementSibling.classList.add('active');
+                        }
+                        if (targetInput.value) centerMap(targetInput.value);
+                    });
+                }
+            }
+        });
+    });
+
+    function centerMap(gridref) {
+        gridref = gridref.trim().toUpperCase().replace(/ /g,'');
+        var grid=new GT_OSGB();
+        var ok = false;
+        if (grid.parseGridRef(gridref)) {
+                ok = true;
+        } else {
+                grid=new GT_Irish();
+                ok = grid.parseGridRef(gridref)
+        }
+
+        if (ok && gridref.length > 4) {
+                if (gridref.length <= 6 && grid.eastings%1000 == 0 && grid.northings%1000 == 0) {
+                        grid.eastings = grid.eastings + 500;
+                        grid.northings = grid.northings + 500;
+                } else if (gridref.length <= 8 && grid.eastings%100 == 0 && grid.northings%100 == 0) {
+                        grid.eastings = grid.eastings + 50;
+                        grid.northings = grid.northings + 50;
+                } else if (gridref.length <= 10 && grid.eastings%10 == 0 && grid.northings%10 == 0) {
+                        grid.eastings = grid.eastings + 5;
+                        grid.northings = grid.northings + 5;
+                }
+
+                //convert to a wgs84 coordinate
+                wgs84 = grid.getWGS84(true);
+
+                if (!map)
+                        loadmap();
+                var point = new L.LatLng(wgs84.latitude,wgs84.longitude);
+                var z = map.getZoom();
+
+                if (!z || z < 13)
+                        map.setView(point,15);
+                else
+                        map.setView(point);
+        }
+    }
+
+    function setLatLong(lat,long,element,source) {
+        //console.log('setLatLong',lat,long,element,source);
+        if (!lat || !long) {
+                return;
+        }
+        if (!map)
+                loadmap();
+
+
+        if (map && element) {  //only call if specifying a element. If no element, it probably just a map drag!
+            var z = map.getZoom();
+            if (!z || z < 13) {
+                    map.setView([lat,long],15);
+            } else {
+                    map.panTo([lat,long]);
+            }
+        }
+
+        wgs84=new GT_WGS84();
+        wgs84.setDegrees(lat, long);
+
+        var grid = false
+        if (wgs84.isIreland2()) {
+            grid=wgs84.getIrish(true);
+        } else if (wgs84.isGreatBritain()) {
+            grid=wgs84.getOSGB();
+        }
+        if (grid) {
+            gridref = grid.getGridRef(5);//.replace(/ /g,'');
+
+            if (!element) {
+        		if (!element) {
+        		    if (document.getElementById('photographer_gridref')?.classList.contains('active')) {
+        		        element = 'photographer_gridref';
+        		    } else if (document.getElementById('grid_reference')?.classList.contains('active')) {
+        		        element = 'grid_reference';
+        		    }
+        		}
+            }
+
+            if (element) {
+                    document.forms['theForm'].elements[element].value = gridref;
+                    if (element == 'photographer_gridref' && !marker2) { //updateMapMarker WILL create subject marker, but not photographer marker?
+                            createPMarker([lat,long]);
+                    }
+                    updateMapMarker(document.forms['theForm'].elements[element],false);
+            }
+            if (source) {
+        		const exifElement = document.getElementById('exiflocation');
+                if (exifElement) {
+                    exifElement.textContent = "Location from " + source + ": " + gridref;
+        	        exifElement.style.display = '';
+        	    }
+            }
+            const mapInfo = document.getElementById('mapInfo');
+            if (mapInfo) {
+                mapInfo.style.display = 'none';
+            }
+        }
+    }
+
+    function getLocation() {
+        $.geolocation.get({success: function(position) {
+
+                setLatLong(position.coords.latitude, position.coords.longitude, 'photographer_gridref','GPS');
+
+        }, fail:function() {
+                alert('Unable to load location');
+        }});
+    }
+
+    function checkGridref(that) {
+        //todo!
+    }
+
+    var size=6;
+    var last='';
+    function copyPosition(form) {
+        var input = form.elements['photographer_gridref'].value;
+
+        var grid = new GT_OSGB();
+        if (!grid.parseGridRef(input)) {
+                grid = new GT_Irish();
+                if (!grid.parseGridRef(input)) {
+                        return;
+                }
+        }
+
+        if (last != input)
+                size = 3;
+        last = input;
+
+        form.elements['grid_reference'].value = grid.getGridRef(size);//.replace(/ /g,'');
+
+        size = size + 1;
+        if (size ==6) size = 3;
+    }
+
+//this is only to 'document' what need to capture, we probably wont be reading from exif directly!
+//we'll receive this data on input
+function gotExif() {
+        var dateraw = EXIF.getTag(this, 'DateTimeOriginal') || EXIF.getTag(this, 'DateTimeDigitized') || EXIF.getTag(this, 'DateTime');
+        if (dateraw) {
+                $('input#imagetaken').val(dateraw.substr(0,10).replace(/:/g,'-'));
+        }
+
+        var long = EXIF.getTag(this, 'GPSLongitude');
+        var lat = EXIF.getTag(this, 'GPSLatitude');
+        if (long&&lat) {
+                long = toDecimal(long);
+                lat = toDecimal(lat);
+
+                if (long > 180) long = long - 360.0; //some apps (like geosetter) encode longitude as E 0-360 - but >180 is W
+                if (EXIF.getTag(this, 'GPSLongitudeRef') == 'W') long = long * -1;
+                if (EXIF.getTag(this, 'GPSLatitudeRef') == 'S') lat = lat * -1;
+
+                //console.log('F',long,lat);
+
+                setLatLong(lat, long, 'photographer_gridref','EXIF');
+        }
+
+        var orientation = EXIF.getTag(this, 'Orientation');
+        if (orientation && orientation != '1') {
+                var text = "This image has EXIF 'Orientation' flag set ("+orientation+"). Please make sure the image displays correctly in the preview. If it doesn't then use the option under the preview to rotate the image. Even if it >";
+                $('#preview').prepend("<big>"+text+"</big><br><hr><br>");
+                alert(text);
+                //in fact lets auto set this...
+                $('select[name="orientation"]').val("0");
+        }
+
 }
 
 
