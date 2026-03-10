@@ -23,7 +23,11 @@ const AppState = {
             // Default to system preference
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             this.settings.darkMode = prefersDark;
-	    //todo, uploadMaxDimension needs syncing from $USER->upload_size
+
+            // Sync uploadMaxDimension from server-provided preference
+            if (window.GEOGRAPH_USER_PREFERENCES && window.GEOGRAPH_USER_PREFERENCES.uploadMaxDimension) {
+                this.settings.uploadMaxDimension = parseInt(window.GEOGRAPH_USER_PREFERENCES.uploadMaxDimension, 10);
+            }
         }
         this.syncWithDOM();
     },

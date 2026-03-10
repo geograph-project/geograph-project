@@ -112,6 +112,10 @@ class Router {
             iframe.dataset.isTransitioning = "true";
             iframe.addEventListener('load', () => {
                 iframe.dataset.isTransitioning = "false";
+
+                // Always send the latest settings to the iframe upon load
+                iframe.contentWindow.postMessage(JSON.stringify({ settings: AppState.settings }), '*');
+
                 // Process any pending messages once loaded
                 if (iframe.dataset.pendingMessage) {
                     iframe.contentWindow.postMessage(iframe.dataset.pendingMessage, '*');
@@ -133,6 +137,11 @@ class Router {
 
         iframe.style.display = 'block';
         iframe.classList.add('active');
+
+        // Always send the latest settings to the iframe when it becomes active
+        if (iframe.dataset.isTransitioning !== 'true') {
+            iframe.contentWindow.postMessage(JSON.stringify({ settings: AppState.settings }), '*');
+        }
 
         // 2. postMessage Logic
         if (options.message) {
