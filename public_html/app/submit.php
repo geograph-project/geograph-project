@@ -490,6 +490,7 @@ align-items: center;    /* This centers the 350px map horizontally */
 <div id="top-boundary"></div>
 
 <div class="main-header" id="mainHeader">
+    <div id="image-dimensions" style="padding: 10px; font-weight: bold; background: #eee;"></div>
     <img id="imgLarge" class="preview-img-large" src="" alt="Full Preview">
     <div class="controls">
         <button onclick="rotateImage(270)"><span>&#8634;</span> Rotate Left</button>
@@ -512,6 +513,7 @@ align-items: center;    /* This centers the 350px map horizontally */
 
 <form method="post" name="theForm" id="theForm">
 	<input type=hidden name="upload_id" value="">
+	<input type=hidden name="largestsize" value="65536">
 
     <div style="text-align:center">
         <button type="button" onclick="openModal('map-modal')"
@@ -847,7 +849,7 @@ align-items: center;    /* This centers the 350px map horizontally */
                     This includes the <strong>metadata</strong> (location, title/description, tags, date and shared descriptions), which allows researchers and the public to 
                     discover and reuse contributions effectively.</p>
 
-                <p>You are releasing this image at [d x d] specifically, the larger size (if any) wont be released.
+                <p>You are releasing this image at <span id="final-dimensions">[d x d]</span> specifically, the larger size (if any) wont be released.
 
 	            <p><a href="/help/freedom" target="_blank">Open Geograph Freedom Manifesto</a> <span class="nowrap">(Opens in new tab)</span></p>
 
@@ -876,6 +878,7 @@ align-items: center;    /* This centers the 350px map horizontally */
 
     let upload_id = null;
 //    let update_data = [];
+    let uploadMaxDimension = 65536;
 
     window.addEventListener('message', (event) => {
         if (event.origin !== window.location.origin) return;
@@ -885,8 +888,20 @@ align-items: center;    /* This centers the 350px map horizontally */
             const data = JSON.parse(event.data);
 //            upload_data = data;
 
+            if (data.settings && data.settings.uploadMaxDimension) {
+                uploadMaxDimension = parseInt(data.settings.uploadMaxDimension, 10);
+                theForm.elements['largestsize'].value = uploadMaxDimension;
+                updateDimensionsDisplay();
+            }
+
             if (data.transfer_id)
                 resetForm(data.transfer_id);
+
+            if (data.width && data.height) {
+                currentWidth = data.width;
+                currentHeight = data.height;
+                updateDimensionsDisplay();
+            }
 
             //uploaded page will send grid_reference+photographer_gridref
             if (data.grid_reference)
@@ -970,12 +985,56 @@ align-items: center;    /* This centers the 350px map horizontally */
         window.scrollTo({top: 0}); //incase last use was scrolled!
     }
 
+    let currentWidth = 0;
+    let currentHeight = 0;
+
     function updatePreview(newId) {
         if (newId)
             upload_id = newId; //store in the global (otherwise we using from the global as is)
         theForm.elements['upload_id'].value = upload_id;
         imgLarge.src = `/submit.php?preview=${upload_id}`;
         imgThumb.src = `/submit.php?preview=${upload_id}`;
+
+        // Get dimensions from image load
+        imgLarge.onload = function() {
+            // Note: browser might show actual display dimensions, but it's a fallback
+            if (!currentWidth) {
+                currentWidth = this.naturalWidth;
+                currentHeight = this.naturalHeight;
+                updateDimensionsDisplay();
+            }
+        };
+    }
+
+    function updateDimensionsDisplay() {
+        if (!currentWidth || !currentHeight) return;
+
+        let finalWidth = currentWidth;
+        let finalHeight = currentHeight;
+        let downsized = false;
+
+        if (uploadMaxDimension < 65536 && (currentWidth > uploadMaxDimension || currentHeight > uploadMaxDimension)) {
+            const aspect = currentWidth / currentHeight;
+            if (aspect > 1) {
+                finalWidth = uploadMaxDimension;
+                finalHeight = Math.floor(uploadMaxDimension / aspect);
+            } else {
+                finalHeight = uploadMaxDimension;
+                finalWidth = Math.floor(uploadMaxDimension * aspect);
+            }
+            downsized = true;
+        }
+
+        const dimText = `${currentWidth} x ${currentHeight} pixels`;
+        const finalDimText = `${finalWidth} x ${finalHeight} pixels`;
+
+        document.getElementById('image-dimensions').innerHTML = `Current Size: ${dimText}` +
+            (downsized ? `<br><span style="color: #d9534f;">Note: This image will be downsized to ${finalDimText} server-side.</span>` : '');
+
+        const finalDimsEl = document.getElementById('final-dimensions');
+        if (finalDimsEl) {
+            finalDimsEl.textContent = finalDimText + (uploadMaxDimension >= 65536 ? ' (Full Resolution)' : '');
+        }
     }
 
 // --------------------------------
