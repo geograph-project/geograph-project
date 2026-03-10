@@ -19,6 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 	        $response['ok']  = $uploadmanager->processDataURL($data['image']);
         	if ($response['ok']) {
                 	$response['upload_id'] = $uploadmanager->upload_id;
+                        $response['width'] = $uploadmanager->upload_width;
+                        $response['height'] = $uploadmanager->upload_height;
 		} else {
 			$response['error'] = $uploadmanager->errormsg;
 		}
@@ -138,6 +140,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
     let fileQueue = [];
     const max_size = 8 * 1024 * 1024; //larger files will be downsized!
+    let uploadMaxDimension = 65536; // Default to effectively unlimited
+
+    window.addEventListener('message', (event) => {
+        if (event.origin !== window.location.origin) return;
+        try {
+            const data = JSON.parse(event.data);
+            if (data.settings && data.settings.uploadMaxDimension) {
+                uploadMaxDimension = parseInt(data.settings.uploadMaxDimension, 10);
+                console.log('Updated uploadMaxDimension to:', uploadMaxDimension);
+            }
+        } catch (e) {
+            // Not JSON or other message type
+        }
+    });
 
     // Persist Preference
     autoProceedCheck.checked = localStorage.getItem('autoProceed') === 'true';
@@ -178,13 +194,35 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         }));
 
         // 2. Resize if necessary
-        let dataUri = await new Promise(resolve => {
-            if (item.file.size > max_size && !isHeic) {
+        let dataUri = await new Promise(async (resolve) => {
+            let needsResize = (item.file.size > max_size);
+
+            if (!needsResize && uploadMaxDimension < 65536) {
+                // Also check dimensions
+                const dimensions = await new Promise(res => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const dims = {w: img.width, h: img.height};
+                        URL.revokeObjectURL(img.src);
+                        res(dims);
+                    };
+                    img.onerror = () => {
+                        URL.revokeObjectURL(img.src);
+                        res(null);
+                    };
+                    img.src = URL.createObjectURL(item.file);
+                });
+                if (dimensions && (dimensions.w > uploadMaxDimension || dimensions.h > uploadMaxDimension)) {
+                    needsResize = true;
+                }
+            }
+
+            if (needsResize && !isHeic) {
                 resizeFileWorker(item.file, max_size, (url) => {
                     const finished = document.getElementById('messageDiv');
                     if (finished) finished.remove();
                     resolve(url);
-                });
+                }, uploadMaxDimension);
             } else {
                 const reader = new FileReader();
                 reader.onload = (e) => resolve(e.target.result);
@@ -280,16 +318,16 @@ async function renderUI() {
 
             // Sequential POST request
             const result = await sendToPHP(item.dataUri);
-            if (result) {
+            if (result && result.success) {
                 // SUCCESS: Remove from queue and mark visually
                 document.getElementById(`wrapper-${item.id}`).classList.add('uploaded');
 		// Add the UploadID to buttons
 		if (i == 0 && fileQueue.length == 1) {
-			addIdtoBtn('btnSingle', result.upload_id);
+			addIdtoBtn('btnSingle', result.upload_id, result.width, result.height);
 		} else if (i == 0) {
-			addIdtoBtn('btnFirst', result.upload_id);
+			addIdtoBtn('btnFirst', result.upload_id, result.width, result.height);
 		} else if (i == fileQueue.length-1) {
-			addIdtoBtn('btnLast', result.upload_id);
+			addIdtoBtn('btnLast', result.upload_id, result.width, result.height);
 		}
 		upload_id = result.upload_id;
                 // Remove from array so it's gone if we click upload again
@@ -311,7 +349,7 @@ async function renderUI() {
             selectLabel.style.opacity = 0.7;
             uploadBtn.classList.add('hidden');
             if (fileQueueLength === 1 && autoProceedCheck.checked && document.visibilityState === 'visible') {
-                navigateTo('/app/submit',{message: 'transfer_id='+upload_id});
+                navigateTo('/app/submit',{message: JSON.stringify({transfer_id: upload_id, width: result.width, height: result.height})});
 	        postActions.classList.add('hidden');
   	        displayArea.innerHTML = '';
             } else {
@@ -325,25 +363,10 @@ async function renderUI() {
         }
     };
 
-function addIdtoBtn(btnId, upload_id) {
+function addIdtoBtn(btnId, upload_id, width, height) {
 	//want to overite any existing click (from a previous call!)
         document.getElementById(btnId).onclick = function() {
-
-/* TODO actully we going to have to provide (or we could send lat/long direcltyl!)
- {
-        "transfer_id": "2f24bc8f3ce8c249bff61564d09022ed",
-        "photographer_gridref": "TQ3840294942",
-        "grid_reference": "TQ3894",
-        "imagetaken": "2024-12-14 15:01:02",
-        "orientation": 1
- }
-
-          const itemString = JSON.stringify(item);
-
-*/
-
-
-		navigateTo('/app/submit',{message: 'transfer_id='+upload_id});
+		navigateTo('/app/submit',{message: JSON.stringify({transfer_id: upload_id, width: width, height: height})});
 		postActions.classList.add('hidden');
 		displayArea.innerHTML = '';
 	};
@@ -383,7 +406,7 @@ async function sendToPHP(dataUri) {
         // 3. Handle your custom application-level success/error
         if (result.ok) {
             console.log('Upload successful! ID:', result.upload_id);
-            return { success: true, upload_id: result.upload_id };
+            return { success: true, upload_id: result.upload_id, width: result.width, height: result.height };
         } else {
             console.error('Upload failed:', result.error);
             return { success: false, error: result.error };

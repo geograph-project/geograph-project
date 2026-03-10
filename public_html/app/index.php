@@ -62,6 +62,12 @@ function generate_import_map($dir, $basePath = '/app/js/') {
     <?= generate_import_map('/app/js/') ?>
     </script>
 
+    <script>
+        window.GEOGRAPH_USER_PREFERENCES = {
+            uploadMaxDimension: <?= json_encode($USER->upload_size ?: 65536) ?>
+        };
+    </script>
+
     <link rel="shortcut icon" type="image/x-icon" href="<? echo $CONF['STATIC_HOST']; ?>/favicon.ico">
     <link rel="manifest" href="/app/manifest.json">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
