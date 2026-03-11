@@ -475,10 +475,15 @@ GT_WGS84.prototype.isIreland2 = function()
 	return oddNodes;
 }
 
+/*****************************************************************************
+*
+* Some Utility Functions to make working with either grid easier
+*
+*****************************************************************************/
+
 //get either
 GT_WGS84.prototype.getGrid = function()
 {
-    var grid = false;
     if (this.isIreland2()) {
             return this.getIrish(true);
     } else if (this.isGreatBritain()) {
@@ -487,6 +492,37 @@ GT_WGS84.prototype.getGrid = function()
     return false;
 }
 
+//and the getting either gridref
+GT_WGS84.prototype.getGridRef = function(precision)
+{
+    var grid = false;
+    if (this.isIreland2()) {
+            grid = this.getIrish(true);
+    } else if (this.isGreatBritain()) {
+            grid = this.getOSGB();
+    }
+    if (grid && grid.status=="OK")
+	return grid.getGridRef(precision);
+    return false;
+}
+
+//encupsulate the logic of grid-conversion direct to wgs84
+//- NOTE, this is a factory method, as getWGS84 creates a new object!
+GT_WGS84.parseGridRef = function(gridref) {
+    var grid = new GT_OSGB();
+    var ok = false;
+
+    if (grid.parseGridRef(gridref)) {
+        ok = true;
+    } else {
+        grid = new GT_Irish();
+        ok = grid.parseGridRef(gridref);
+    }
+    if (ok) {
+        return grid.getWGS84(true);
+    }
+    return false;
+};
 
 
 

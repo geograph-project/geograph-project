@@ -1,32 +1,5 @@
-//////////////////////////////////////
-//not sure why this missing from geotools2! (hindsight and all that!) 
-
-GT_WGS84.prototype.getGrid = function() {
-        if (this.isIreland2())
-               grid=this.getIrish(true);
-        else
-               grid=this.getOSGB();
-	return grid;
-}
-
-GT_WGS84.prototype.parseGridRef = function(gridref) { //technically this is a feactory method, not a class method!
-		var grid=new GT_OSGB();
-		var ok = false;
-		if (grid.parseGridRef(gridref)) {
-			ok = true;
-		} else {
-			grid=new GT_Irish();
-			ok = grid.parseGridRef(gridref);
-		}
-	        if (ok) {
-			//convert to a wgs84 coordinate
-			return grid.getWGS84(true);
-		}
-	return false;
-}
 
 //////////////////////////////////////
-
 
         function formatJSON(rawjson) {
                 var json = {}, key, loc, disp = [];
@@ -37,12 +10,11 @@ GT_WGS84.prototype.parseGridRef = function(gridref) { //technically this is a fe
                 for(i=0;i<items.length;i++) {
 			//results.push({value:item.gr+' '+item.name,label:item.name,gr:item.gr,title:item.localities});
 
-                        key = items[i].gr+' '+items[i].name;
+                        let key = items[i].gr+' '+items[i].name;
 			if (items[i].localities)
 				key = key + ", "+items[i].localities;
-	
-			wgs84=new GT_WGS84();
-			wgs84 = wgs84.parseGridRef(items[i].gr);
+
+			let wgs84 = GT_WGS84.parseGridRef(items[i].gr);
 
 			if (wgs84) {
 	                        loc = L.latLng( wgs84.latitude, wgs84.longitude );

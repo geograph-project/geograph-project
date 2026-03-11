@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" rel="stylesheet" />
         <link rel="stylesheet" type="text/css" href="{"/js/mappingLeaflet.css"|revision}" />
 
-        <link rel="stylesheet" href="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.css" />
+        <link rel="stylesheet" href="{"/js/leaflet-search-master/src/leaflet-search.css"|revision}" />
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.67.0/dist/L.Control.Locate.min.css" />
@@ -33,9 +33,8 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script src="{"/js/jquery.storage.js"|revision}"></script>
 
-        <script src="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.js"></script>
-        <script src="https://www.geograph.org/leaflet/Leaflet.GeographGeocoder.js"></script>
-
+        <script src="{"/js/leaflet-search-master/src/leaflet-search.js"|revision}"></script>
+	<script src="{"/js/Leaflet.GeographGeocoder.js"|revision}"></script>
 
 
 {literal}

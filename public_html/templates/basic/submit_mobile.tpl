@@ -9,13 +9,14 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <link href="{"/js/select2-3.3.2/select2.css"|revision}" rel="stylesheet"/>
 <script src="{"/js/select2-3.3.2/select2.js"|revision}"></script>
-<script type="text/javascript" src="https://s1.geograph.org.uk/mapper/geotools2.v7300.js"></script>
+<script src="{"/mapper/geotools2.js"|revision}"></script>
 <script src="{"/js/jquery.storage.js"|revision}"></script>
 
         <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
         <link rel="stylesheet" type="text/css" href="{"/js/mappingLeaflet.css"|revision}" />
 
-<link rel="stylesheet" href="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.css" />
+<link rel="stylesheet" href="{"/js/leaflet-search-master/src/leaflet-search.css"|revision}" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
 
         <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
@@ -29,10 +30,11 @@
 	<link rel="stylesheet" href="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.css" />
 
 	<script src="https://www.geograph.org/leaflet/L.Control.Locate.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
 	<script src="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.min.js"></script>
 
-<script src="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.js"></script>
-<script src="https://www.geograph.org/leaflet/Leaflet.GeographGeocoder.js"></script>
+<script src="{"/leaflet-search-master/src/leaflet-search.js"|revision}"></script>
+<script src="{"/js/Leaflet.GeographGeocoder.js"|revision}"></script>
 
 	<script src="{"/js/Leaflet.GeographRecentUploads.js"|revision}"></script>
 
@@ -75,6 +77,10 @@ img, #previewImage2 {
 	transform:rotate(270deg);
 	width:400px !important; /* so square, and rotates nicely! */
 	margin:auto;
+}
+
+.easy-button-container button span {
+        line-height:30px;
 }
 
 .tabs {
@@ -446,6 +452,10 @@ function checkMultiFormSubmission() {
 		$.localStorage('submit.tags',lines.join('\n'));
 	}
 
+	//save this for next time!
+	if (map && saveMapPosition)
+		saveMapPosition(map);
+
 	/////////////////////////
 
 	cancelMess();
@@ -474,8 +484,29 @@ function checkMultiFormSubmission() {
 {/dynamic}
 {literal}
 
+function saveMapPosition(map) {
+    const center = map.getCenter();
+    const zoom = map.getZoom();
+    const position = {
+        lat: center.lat,
+        lng: center.lng,
+        zoom: zoom
+    };
+    localStorage.setItem('mapLastPosition', JSON.stringify(position));
+}
+
 function loadmap() {
 	setupBaseMap({doubleClickZoom:false, scrollWheelZoom:'center'});
+
+	L.easyButton('fa-history', function(btn, map) {
+	    const saved = localStorage.getItem('mapLastPosition');
+	    if (saved) {
+	        const pos = JSON.parse(saved);
+	        map.setView([pos.lat, pos.lng], pos.zoom);
+	    } else {
+	        alert("No saved position found.");
+	    }
+	}, 'Reset to Last Position').addTo(map);
 
 	if (location.search.length>2 && location.search.indexOf('gridref=')) {
 		if (match = location.search.match(/gridref=([A-Z]{1,2} ?\d{2,5} ?\d{2,5})/)) {
@@ -663,6 +694,8 @@ function setLatLong(lat,long,element,source) {
 		}
 		if (source) {
 			$('#exiflocation').text("Location from "+source+": "+gridref).show();
+			if (source == 'EXIF')
+				saveMapPosition(map);
 		}
 		$('#mapInfo').hide();
           }

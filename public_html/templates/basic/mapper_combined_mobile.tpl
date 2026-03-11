@@ -38,11 +38,13 @@
 	#header h1 a {
 	    display: none;
 	}
-	@media screen and (min-height: 700px) {
-		#header_block {	display:block;}
-		#map { position: absolute; top: 74px; }
-		#message { top:74px; }
-	}
+{/literal}{dynamic}{if !$inner}{literal}
+       @media screen and (min-height: 700px) {
+               #header_block { display:block;}
+               #map { position: absolute; top: 74px; }
+               #message { top:74px; }
+       }
+{/literal}{/if}{/dynamic}{literal}
 
 	.leaflet-sidebar .close {
 	    z-index: 100000 !important;
@@ -112,7 +114,7 @@ svg.svgFilter {
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" rel="stylesheet" />
 	<link rel="stylesheet" type="text/css" href="{"/js/mappingLeaflet.css"|revision}" />
 
-        <link rel="stylesheet" href="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.css" />
+        <link rel="stylesheet" href="{"/js/leaflet-search-master/src/leaflet-search.css"|revision}" />
 
         <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
 
@@ -170,8 +172,8 @@ svg.svgFilter {
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<script src="{"/js/jquery.storage.js"|revision}"></script>
 
-	<script src="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.js"></script>
-	<script src="https://www.geograph.org/leaflet/Leaflet.GeographGeocoder.js"></script>
+	<script src="{"/js/leaflet-search-master/src/leaflet-search.js"|revision}"></script>
+	<script src="{"/js/Leaflet.GeographGeocoder.js"|revision}"></script>
 
 	<script src="https://unpkg.com/togeojson@0.16.0/togeojson.js"></script>
 	<script src="https://unpkg.com/leaflet-filelayer@1.2.0/src/leaflet.filelayer.js"></script>

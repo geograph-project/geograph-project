@@ -93,6 +93,10 @@ if (!empty($_GET['dots'])) {
 if (!empty($_GET['views'])) {
         $smarty->assign('views',1);
 }
+if (!empty($_GET['inner'])) {
+	//hides the logo at the top!
+        $smarty->assign('inner',1);
+}
 
 $smarty->assign('g_time',filemtime("../guider/mapper_guider.js"));
 
