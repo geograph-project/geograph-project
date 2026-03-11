@@ -127,7 +127,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             image-orientation: none;
         }
 
-        .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
+        .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; touch-action: manipulation; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
         .btn-primary { background: var(--primary); color: white; width: 100%; box-sizing: border-box; }
 
 
@@ -161,14 +161,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             align-items: center;
             padding: 0 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            z-index: 1000;
-            
+            z-index: 10000;
+
             /* Hidden State */
             transform: translateY(-100%);
             transition: transform 0.2s ease-in-out;
         }
         .sticky-bar.visible { transform: translateY(0); }
-        
+
+        #form-status-bar {
+            margin-left: auto;
+            color: gray;
+        }
+        #form-status-bar.complete {
+            color: #1b5e20;
+            background-color: #e8f5e9;
+            border-color: #c8e6c9;
+            font-weight: bold;
+        }
+        .sticky-bar:has(#form-status-bar.complete) {
+            border-color: #52a52d;
+        }
+
         .thumb-img { height: 45px; width: auto; border-radius: 4px; margin-right: 12px; }
         .sticky-title { font-weight: bold; color: #333; }
 
@@ -181,19 +195,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         }
 }
 
-        label { display: block; margin: 15px 0 5px; font-weight: bold; color: #555; }
+/* Form Inputs */
+
+        label { display: block; margin: 15px 0 5px; font-weight: bold; color: #555; touch-action: manipulation; user-select: none;  }
         input, textarea { 
             width: 100%; padding: 12px; margin-bottom: 10px; 
             border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; 
             font-size:1.1em;
         }
 
-    input, select, textarea {
-        /* Set this to the height of your sticky header + a bit of padding */
-        scroll-margin-top: 120px;
+        input, select, textarea {
+            /* Set this to the height of your sticky header + a bit of padding */
+            scroll-margin-top: 120px;
+            font-family: Georgia, Verdana, Arial, serif; /* set this as this is what used for display in main site!! */
+        }
 
-	font-family: Georgia, Verdana, Arial, serif; /* set this as this is what used for display in main site!! */
-    }
+        @media screen and (max-height: 500px) and (orientation: landscape) {
+        	/* only rows=5, but just to make sure */
+        	textarea {
+		        scroll-margin-top: 66px;
+        		max-height:50svh;
+        	}
+            textarea:focus-within {
+                 scroll-margin-top: 10px; /* actully browser likly to have hidden sticky header */
+            }
+        }
 
 input:invalid, select:invalid, #contexts:invalid {
     border: 1px solid #ff0000;
@@ -215,6 +241,8 @@ input:invalid, select:invalid, #contexts:invalid {
     background: #f9f9f9;
 }
 
+/* contexts multi-select */
+
 #contexts {
     width: 100%;
     padding-left: 3px; /* Gives the items room to breathe */
@@ -235,6 +263,8 @@ input:invalid, select:invalid, #contexts:invalid {
     font-weight: normal;
 }
 
+/* subject/tag autocomplete */
+
 #subject-input, #tag-search {
     margin-bottom:0;
 }
@@ -242,11 +272,15 @@ input:invalid, select:invalid, #contexts:invalid {
     background-color:white;
     border-radius:6px;
 }
+
+/* suggestion-item's are the items below subject/tag input */
 .suggestion-item {
     --display: inline; /* Allows them to flow next to each other */
     padding: 6px 12px;     /* More padding for better touch targets */
     margin: 4px;
     cursor: pointer;
+    touch-action: manipulation; /* Optimizes for touch, removing the "300ms tap delay" */
+    user-select: none;
     white-space: nowrap;
     border-radius: 15px;   /* Rounded pill look */
     border: 1px solid #aaa;
@@ -254,23 +288,34 @@ input:invalid, select:invalid, #contexts:invalid {
     background-color: #f5f5f0;
     transition: background 0.2s;
 }
-
 .suggestion-item:hover {
     background: #e0e0e0;
 }
-
-/* Add an active state for mobile tapping */
 .suggestion-item:active {
     background: #007bff;
     color: white;
     border-color: #0056b3;
 }
+
 .suggestion-item strong {
     font-weight: 500;
     text-decoration: underline;
     text-decoration-color: silver;
+    pointer-events: none;
 }
 
+.add-new-tag {
+    background-color: #e6fffa; /* Soft green */
+    border: 1px dashed #38b2ac; /* Dashed border to imply 'creating' */
+    color: #2c7a7b;
+    font-weight: bold;
+}
+
+div#active-tags {
+	line-height:35px;
+}
+
+/* tag-pill are the actual selected tag(s) */
 span.tag-pill {
     padding: 6px 12px;
     margin: 4px;
@@ -281,20 +326,11 @@ span.tag-pill {
     border: 1px solid #aaa;
     background: #fff;
 }
-div#active-tags {
-	line-height:35px;
-}
 span.tag-pill button {
 	border:none;
     color:red;
 	margin-left: 6px; /* Give the 'X' some space */
 	padding:0;
-}
-.add-new-tag {
-    background-color: #e6fffa; /* Soft green */
-    border: 1px dashed #38b2ac; /* Dashed border to imply 'creating' */
-    color: #2c7a7b;
-    font-weight: bold;
 }
 
 /* Compact Flag Container */
@@ -315,6 +351,7 @@ span.tag-pill button {
         align-items: flex-start; /* Keeps text aligned if it wraps */
         --margin-bottom: 8px;
         cursor: pointer;
+        touch-action: manipulation;
     }
 
     .flag-item input {
@@ -329,9 +366,11 @@ span.tag-pill button {
         line-height: 1.4;
     }
 
+/* more general forms */
+
     button {
         padding: 8px 16px; border: 1px solid #007bff; background: #fff;
-        color: #007bff; border-radius: 4px; cursor: pointer; font-weight: bold;
+        color: #007bff; border-radius: 4px; cursor: pointer; font-weight: bold; touch-action: manipulation;
     }
     button:active { background: #007bff; color: #fff; }
 
@@ -339,6 +378,7 @@ span.tag-pill button {
 		margin-top:20px;
 		border-radius:8px;
 	    background-color:#f5f5f0; padding:3px;
+        border: 1px solid #eee;
 	}
 	fieldset legend {
 		padding:5px;
@@ -399,7 +439,7 @@ align-items: center;    /* This centers the 350px map horizontally */
     width: 350px;
     margin:auto;
 	aspect-ratio: 1 / 1;
-	border:1px solid black; border-radius:2px;
+	border:1px solid silver; border-radius:5px;
     flex-shrink: 0;         /* Prevents the map from squishing */
 }
 
@@ -453,7 +493,14 @@ align-items: center;    /* This centers the 350px map horizontally */
     border:2px solid #5300ff;
 }
 #maparea label.active {
-        background-color:yellow;
+    background-color:yellow;
+}
+
+.easy-button-container button {
+    padding:0;
+}
+.easy-button-container button span {
+    line-height:30px;
 }
 
 #orientation_message {
@@ -466,6 +513,7 @@ align-items: center;    /* This centers the 350px map horizontally */
     <link rel="stylesheet" type="text/css" href="<?php echo smarty_modifier_revision("/js/mappingLeaflet.css"); ?>" />
     <link rel="stylesheet" href="<?php echo smarty_modifier_revision("/js/leaflet-search-master/src/leaflet-search.css"); ?>" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.67.0/dist/L.Control.Locate.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.css" />
 
@@ -480,6 +528,7 @@ align-items: center;    /* This centers the 350px map horizontally */
     <script src="<?php echo smarty_modifier_revision("/js/L.Control.Locate.js"); ?>"></script>
     <script src="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.min.js"></script>
     <script src="<?php echo smarty_modifier_revision("/js/leaflet-search-master/src/leaflet-search.js"); ?>"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
     <script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographGeocoder.js"); ?>"></script>
     <script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographRecentUploads.js"); ?>"></script>
 
@@ -509,6 +558,7 @@ align-items: center;    /* This centers the 350px map horizontally */
 <div id="stickyBar" class="sticky-bar">
     <img id="imgThumb" class="thumb-img" src="" alt="Thumbnail">
     <div class="sticky-title" id="displayTitle"></div>
+    <div id="form-status-bar"></div>
 </div>
 
 <form method="post" name="theForm" id="theForm">
@@ -517,7 +567,7 @@ align-items: center;    /* This centers the 350px map horizontally */
 
     <div style="text-align:center">
         <button type="button" onclick="openModal('map-modal')"
-        style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer;">How to use this map &gt;</button>
+        style="background:none; border:none; color:blue; text-decoration:underline;">How to use this map &gt;</button>
     </div>
 
 	<div id="maparea">
@@ -527,10 +577,12 @@ align-items: center;    /* This centers the 350px map horizontally */
         <div class="controls">
                 <span class=nowrap><label for=photographer_gridref class="gr active" style="color:#210b7b">Camera</label>:
                         <input type="text" name="photographer_gridref" id="photographer_gridref" value="" size="12" maxlength="14"
+                         pattern="^[A-Za-z]{1,2}\s*\d{1,5}\s*\d{1,5}$" title="Optional: 1-2 letters plus an even number of digits (e.g. TQ 123 456 or O 12 34)"
                          onblur="checkGridref(this)" placeholder="(Camera Location)" class="active"/></span>
                 &nbsp;
                 <span class=nowrap><label for=grid_reference class="gr" style="color:#5300ff;">Subject</label>:
                         <input type="text" name="grid_reference" value="" id="grid_reference" size="12" maxlength="14"
+                         required pattern="^[A-Za-z]{1,2}\s*\d{1,5}\s*\d{1,5}$" title="Enter a 1 or 2 letter grid ref followed by an even number of digits (e.g., TQ 123 456 or O 12 34)"
                          onblur="checkGridref(this)" placeholder="(Subject Location)"/></span>
 
                 <div style=display:none><input type="checkbox" name="use6fig" value="1"/> <label for="use6fig">Only use 6 figures (<span class="nowrap"><a title="Explanation" href="https://www.geograph.org.uk/help/map_precision" target="_blank">Explanatioion</a><img style="padding-left:2px;" alt="New Window" title="opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span>)</label></div>
@@ -561,7 +613,7 @@ align-items: center;    /* This centers the 350px map horizontally */
         </div>
 	</div>
 
-    <div id="mapInfo" style="padding:10px;border-radius:10px; background-color:yellow; position:sticky; bottom:0">
+    <div id="mapInfo" style="padding:10px;border-radius:10px; background-color:yellow; position:sticky; bottom:0; z-index:1000;">
         If the image lacks location data, use the <strong>Locate/Pin</strong> icon to find your current position or the <strong>Search</strong> icon to find a place by name.<br><br>
         <strong>Drag the map</strong> to align the central cross-hairs with the Camera/Photographer location.<br><br>
         Tap the <strong>Grid Reference boxes</strong> to toggle between positioning the Camera and the Subject (the active selection is highlighted in white).
@@ -573,11 +625,12 @@ align-items: center;    /* This centers the 350px map horizontally */
 
         <article>
             <h3>1. Set the Camera Location</h3>
-            <p>If the location did not load automatically from your photo's EXIF data, use one of these three methods:</p>
+            <p>If the location did not load automatically from your photo's EXIF data, use one of these methods:</p>
             <ul>
-                <li><strong>Search:</strong> Tap the Search icon on the map to find a specific place.</li>
-                <li><strong>GPS:</strong> Tap the Location/Pin icon to center the map on your current position.</li>
-                <li><strong>Manual:</strong> Type a Grid Reference directly into the Camera location box.</li>
+                <li><strong>Search:</strong> Tap the <span class="fa fa-search"></span> icon on the map to find a specific place.</li>
+                <li><strong>GPS:</strong> Tap the <span class="fa fa-map-marker"></span> icon to center the map on your current position.</li>
+                <li><strong>Manual:</strong> Type a Grid-Reference directly into the Camera (or Subject) location box.</li>
+                <li><strong>Last:</strong> If have already submitted an image, click the <span class="fa fa-history"></span> Reset to use last submitted location.</li>
             </ul>
             <p><strong>Refine:</strong> Once the map is active, drag it until the central circle is positioned exactly over the camera location.</p>
         </article>
@@ -587,7 +640,7 @@ align-items: center;    /* This centers the 350px map horizontally */
             <p>Once the Camera position is set, mark the location of your subject:</p>
             <ul>
                 <li><strong>Quick Method:</strong> Double-tap the subject's location on the map to instantly mark and center the point.</li>
-                <li><strong>Manual Method:</strong> Tap the Subject box to toggle "Subject Centering," then drag the map until the subject is under the center crosshair.</li>
+                <li><strong>Manual Method:</strong> Tap the Subject box to toggle to "Subject" Centering then drag the map until the subject is under the center crosshair.</li>
             </ul>
             <blockquote>
                 <p><strong>Tip:</strong> If your photo already has GPS data, simply double-tap the subject on the map and drag to refine if necessary.</p>
@@ -643,7 +696,7 @@ align-items: center;    /* This centers the 350px map horizontally */
                 textInput.setAttribute('required', 'required');
                 textInput.focus();
 
-                document.getElementById('date-controls').innerHTML = '';
+                document.getElementById('date-controls').style.display = 'none';
             }
 
             function clearDate() {
@@ -652,7 +705,10 @@ align-items: center;    /* This centers the 350px map horizontally */
                 document.getElementById('imagetaken').removeAttribute('required');
                 document.getElementById('date-text').style.display = 'none';
                 document.getElementById('date-text').removeAttribute('required');
-                document.getElementById('date-controls').innerHTML = '<p>Date unknown</p>';
+                document.querySelector('label[for=imagetaken]').textContent = 'Date Unknown';
+                document.getElementById('date-controls').style.display = 'none';
+                if (typeof updateFormProgress == 'function')
+                    updateFormProgress();
             }
             </script>
         </div>
@@ -715,7 +771,7 @@ align-items: center;    /* This centers the 350px map horizontally */
                 <div class=nowrap id="showhfov">(hfov: <input type=number step=0.01 name=hfov id=hfov placeholder=90 style=width:70px;text-align:right>degrees high)</div>
 
         		<button type="button" onclick="openModal('pano-modal')"
-                style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer;">How to Submit Panoramas &gt;</button>
+                style="background:none; border:none; color:blue; text-decoration:underline;">How to Submit Panoramas &gt;</button>
 
            </div>
            <script>
@@ -830,7 +886,7 @@ align-items: center;    /* This centers the 350px map horizontally */
 		    <p>Because we are an open project we want to ensure our content is licensed as openly as possible and so we ask that all images are released under the Creative Commons 
             licence, including accompanying metadata. <button type="button"
                 onclick="openModal('license-modal');"
-                style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer;">Read More &gt;</button> </p>
+                style="background:none; border:none; color:blue; text-decoration:underline;">Read More &gt;</button> </p>
 
             <dialog id="license-modal" onclick="closeModal('license-modal')">
                 <h3>Open Licensing Explained</h3>
@@ -909,15 +965,17 @@ align-items: center;    /* This centers the 350px map horizontally */
             if (data.photographer_gridref) {
                 document.getElementById('photographer_gridref').value = data.photographer_gridref;
                 centerMap(data.photographer_gridref);
-                //TODO, we should probably add a byutton somewher 'reset to ___', so if mess up the map can easily revert to GPS location!
+                saveMapPosition(map, 'Location from EXIF');
             }
 
             //but submit will send lat/long!
-            if (data.lat) //long may be exacty zero (meridian!
+            if (data.lat) { //long may be exacty zero (meridian!
                 setLatLong(data.lat, data.long, 'photographer_gridref','EXIF')
+                saveMapPosition(map, 'Location from EXIF');
+            }
 
-            if (data.imagetaken) {
-                document.getElementById('imagetaken').value = data.imagetaken.substr(0,10).replace(/:/g,'-');
+            if (data.imagetaken && data.imagetaken > '1000-01-01') {
+                document.getElementById('imagetaken').value = data.imagetaken.substr(0,10).replace(/:/g,'-'); //sometimes EXIF has ":"
                 //if we have a date it very unlikly to not be known!
                 document.getElementById('date-controls').innerHTML = '';
             }
@@ -925,7 +983,12 @@ align-items: center;    /* This centers the 350px map horizontally */
             if (data.orientation)
                 orientationMessage(data.orientation);
 
+            if (data.transfer_id)
+                if (typeof updateFormProgress == 'function')
+                    updateFormProgress();
+
         } catch (e) {
+console.log("Error", e);
             // Handle non-JSON messages
             if (event.data.startsWith('transfer_id=')) {
                 upload_id = event.data.match(/id=(\w+)/)[1];
@@ -938,22 +1001,34 @@ align-items: center;    /* This centers the 350px map horizontally */
     });
 
     window.addEventListener('DOMContentLoaded', function() {
-    	//note sure if will use URL Params, but very useful during testing!
+        // 1. Critical Logic (must happen immediately)
         const urlParams = new URLSearchParams(window.location.search);
-        if (newID = urlParams.get('transfer_id')) {
-        	resetForm(newID);
+        const newID = urlParams.get('transfer_id');
+        if (newID) {
+            resetForm(newID);
         }
         //todo?
         //else setTimeout(function() { if (!update_id) navigateTo('/app/uploaded/'); }, 2500);
 
-        loadContexts(); //loads it own recent
-        loadSubjects();
-        renderRecent('submit.subjects', 'recent-subjects');
-        renderRecent('submit.tags', 'recent-tags');
-        updateLicenceDiv();
+        // 2. Secondary Logic (decoupled)
+        const runDeferredTasks = () => {
+            if (!window.map) {
+                loadmap();
+            }
 
-        if (!map)
-            loadmap();
+            loadContexts();
+            loadSubjects();
+            renderRecent('submit.subjects', 'recent-subjects');
+            renderRecent('submit.tags', 'recent-tags');
+            updateLicenceDiv();
+        };
+
+        // Use requestIdleCallback with a fallback
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(runDeferredTasks);
+        } else {
+            setTimeout(runDeferredTasks, 1);
+        }
     });
 
     function resetForm(newId) {
@@ -983,6 +1058,9 @@ align-items: center;    /* This centers the 350px map horizontally */
         document.getElementById("hfov").value = '';
         updatePanoDisplay();
         window.scrollTo({top: 0}); //incase last use was scrolled!
+
+                if (typeof updateFormProgress == 'function')
+                    updateFormProgress();
     }
 
     let currentWidth = 0;
@@ -1034,6 +1112,7 @@ align-items: center;    /* This centers the 350px map horizontally */
         const finalDimsEl = document.getElementById('final-dimensions');
         if (finalDimsEl) {
             finalDimsEl.textContent = finalDimText + (uploadMaxDimension >= 65536 ? ' (Full Resolution)' : '');
+            //todo, the " the larger size (if any) wont be released" should be dynamic too!
         }
     }
 
@@ -1102,6 +1181,21 @@ align-items: center;    /* This centers the 350px map horizontally */
     });
     observer.observe(imgLarge);
 
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => {
+        // Only scroll if the input is focused
+        if (document.activeElement.tagName === 'TEXTAREA') {
+          // Small delay to ensure the resize has finished
+          setTimeout(() => {
+            document.activeElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start' // Pins to the top (honouring scroll-margin-top)
+            });
+          }, 100);
+        }
+      });
+    }
+
 // --------------------------------
 // Tags
 
@@ -1162,9 +1256,13 @@ align-items: center;    /* This centers the 350px map horizontally */
 
             // If the input is in the bottom 30% of the visible area
             if (rect.top > viewportHeight * 0.7) {
+                let block = 'center'; // This puts it in the middle, not the top
+                if (window.matchMedia("(max-height: 500px) and (orientation: landscape)").matches) {
+                    block = 'start';
+                }
                 searchInput.scrollIntoView({
                     behavior: 'smooth',
-                    block: 'center' // This puts it in the middle, not the top
+                    block: block
                 });
             }
         }, 300);
@@ -1326,11 +1424,16 @@ align-items: center;    /* This centers the 350px map horizontally */
             const rect = subjectInput.getBoundingClientRect();
             const viewportHeight = window.innerHeight;
 
+
             // If the input is in the bottom 30% of the visible area
             if (rect.top > viewportHeight * 0.7) {
+                let block = 'center'; // This puts it in the middle, not the top
+                if (window.matchMedia("(max-height: 500px) and (orientation: landscape)").matches) {
+                    block = 'start';
+                }
                 subjectInput.scrollIntoView({
                     behavior: 'smooth',
-                    block: 'center' // This puts it in the middle, not the top
+                    block: block
                 });
             }
         }, 300);
@@ -1544,6 +1647,10 @@ align-items: center;    /* This centers the 350px map horizontally */
             saveRecent('submit.tags', Array.from(selectedTags));
         }
 
+        //save this for next time!
+        if (map && saveMapPosition)
+            saveMapPosition(map, 'Position of Last Submission');
+
         return true;
     }
 
@@ -1592,11 +1699,35 @@ function closeModal(id) {
     var static_host = <? echo json_encode($CONF['STATIC_HOST']); ?>;
 	var OSAPIKey = <? echo json_encode($CONF['os_api_key'] ?? null); ?>;
 
+    let resetButton;
+    function saveMapPosition(map, label) {
+        const center = map.getCenter();
+        const zoom = map.getZoom();
+        const position = {
+            lat: center.lat,
+            lng: center.lng,
+            zoom: zoom
+        };
+        localStorage.setItem('mapLastPosition', JSON.stringify(position));
+        if (label) {
+            localStorage.setItem('mapLastLabel', label);
+            if (resetButton) {
+                // Use the button instance method to update the tooltip
+                resetButton.options.title = `Reset to: ${label}`;
+                // Force the title update on the button element itself
+                if (resetButton.button)
+                    resetButton.button.title = `Reset to: ${label}`;
+            }
+        } else {
+            localStorage.setItem('mapLastLabel', 'unknown'); //should still set something, so not out of sync
+        }
+    }
 
     function loadmap() {
         setupBaseMap({doubleClickZoom:false, scrollWheelZoom:'center'});
 
 // Add this guard immediately after creating the map object
+// ... because map starts non-centerd, accidental dragging of the map breaks it due to uncaught exception, this guards against that!
 map.on('mousedown dragstart', function(e) {
     if (!map.getCenter()) {
         // If no center is set, stop the event from bubbling
@@ -1606,6 +1737,21 @@ map.on('mousedown dragstart', function(e) {
     }
 });
 
+        //this button does double duty
+        // ... it can be used to 'reset' back to EXIF location (if drag around and loose their nice GPS location)
+        // ... but we also save location, on final submision; so on next load (when no exif), it can be used initialize map to last submission
+        const savedLabel = localStorage.getItem('mapLastLabel') ?? 'unknown';
+        resetButton = L.easyButton('fa-history', function(btn, map) {
+            const saved = localStorage.getItem('mapLastPosition');
+            if (saved) {
+                const pos = JSON.parse(saved);
+                map.setView([pos.lat, pos.lng], pos.zoom);
+            } else {
+                alert("No saved position found.");
+            }
+        }, `Reset to: ${savedLabel}`).addTo(map);
+
+
         if (location.search.length>2 && location.search.indexOf('gridref=')) {
                 if (match = location.search.match(/gridref=([A-Z]{1,2} ?\d{2,5} ?\d{2,5})/)) {
                         disableAutoUpdate = true; //we just centering the map, not setting an exact location!
@@ -1614,13 +1760,21 @@ map.on('mousedown dragstart', function(e) {
         }
 
         L.geotagPhoto.crosshair({
-                crosshairHTML: '<img alt="Center of the map; crosshair location" title="Crosshair" src="https://unpkg.com/leaflet-geotag-photo@0.5.1/images/crosshair.svg" width="100px" />'
+          //      crosshairHTML: '<img alt="Center of the map; crosshair location" title="Crosshair" src="https://unpkg.com/leaflet-geotag-photo@0.5.1/images/crosshair.svg" width="100px" />'
+
+            crosshairHTML: `
+                <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="black" stroke-width="3" class="main-crosshair" stroke-opacity="0.5"/>
+                    <g stroke="black" stroke-width="1" stroke-linecap="round" stroke-opacity="0.5" class="reticle-lines">
+                        <line x1="50" y1="43" x2="50" y2="47" /> <line x1="50" y1="53" x2="50" y2="57" /> <line x1="43" y1="50" x2="47" y2="50" /> <line x1="53" y1="50" x2="57" y2="50" /> </g>
+                </svg>`
+
         }).addTo(map).on('input', function (event) { //really jsut called when the map is recentered!
                 if (!map._loaded) //dragging the map before setup, fails!
                         return;
-           var point = this.getCrosshairLatLng(); //really just getting center of the map!
-           if (point && point.lat && !disableAutoUpdate)
-                   setLatLong(point.lat, point.lng);
+                var point = this.getCrosshairLatLng(); //really just getting center of the map!
+                if (point && point.lat && !disableAutoUpdate)
+                        setLatLong(point.lat, point.lng);
         });
 
         map.on('mousedown',function() {
@@ -1825,77 +1979,105 @@ map.on('mousedown dragstart', function(e) {
         }
     }
 
-    function getLocation() {
-        $.geolocation.get({success: function(position) {
-
-                setLatLong(position.coords.latitude, position.coords.longitude, 'photographer_gridref','GPS');
-
-        }, fail:function() {
-                alert('Unable to load location');
-        }});
-    }
-
     function checkGridref(that) {
-        //todo!
+        //todo! (is being called, so dont remove)
+
+        /*
+        const val = el.value.trim();
+        if (!val && !el.required) return; // Ignore empty optional fields
+
+        // 1. Basic cleaning
+        const clean = val.replace(/\s+/g, '').toUpperCase();
+        const match = clean.match(/^([A-Z]{1,2})(\d+)$/);
+
+        if (match && match[2].length % 2 === 0) {
+            // 2. It's valid! Now format the input box for the user
+            const letters = match[1];
+            const digits = match[2];
+            const half = digits.length / 2;
+            el.value = `${letters} ${digits.substring(0, half)} ${digits.substring(half)}`;
+
+            // 3. Update the Map & Reset Button label
+            // If this is the main subject, we definitely want to save this "Good Position"
+            if (el.id === 'grid_reference') {
+                // convertToLatLng is your own logic for the grid shift
+                const coords = convertToLatLng(el.value); 
+                map.setView(coords, 16);
+                saveMapPosition(map, 'Subject: ' + el.value);
+            }
+        } else if (val !== "") {
+            // Optional: style the box red if they typed garbage
+            el.style.borderColor = 'red';
+        }
+        */
     }
 
-    var size=6;
-    var last='';
-    function copyPosition(form) {
-        var input = form.elements['photographer_gridref'].value;
+// ---------------------
 
-        var grid = new GT_OSGB();
-        if (!grid.parseGridRef(input)) {
-                grid = new GT_Irish();
-                if (!grid.parseGridRef(input)) {
-                        return;
-                }
+function updateFormProgress() {
+    const form = document.forms['theForm'];
+    const statusDisplay = document.getElementById('form-status-bar'); // Your display element
+    
+    let completed = 0;
+    let totalRelevant = 0;
+
+    Array.from(form.elements).forEach(el => {
+        // 1. Define what counts as a "Value"
+        let hasValue = false;
+        let isTracked = false;
+
+        // 1. Identify "Tracked" elements
+        const isTextish = ['text', 'number', 'date', 'textarea'].includes(el.type) || el.tagName === 'TEXTAREA';
+        const isSingleSelect = el.type === 'select-one' && !el.name.startsWith('recent-'); //not the recent selectors
+        const isSearch = el.type === 'search' && el.id === 'subject-input'; //only the Subject one, NOT tags
+        const isCheckbox = el.type === 'checkbox';
+        const isMultiSelect = el.type === 'select-multiple';
+        const isTrackedHidden = el.type === 'hidden' && el.name === 'tags[]'; //only dynamic tags
+
+        // 2. Determine "Value" based on type
+        if (isTextish || isSearch || isTrackedHidden) {
+            isTracked = true;
+            hasValue = el.value.trim().length > 0;
+        } else if (isSingleSelect) {
+            isTracked = true;
+            hasValue = el.value.length > 0 && el.value !== "-1"; //direction uses -1 for none, as 0 is North
+        } else if (isCheckbox) {
+            isTracked = true;
+            hasValue = el.checked;
+        } else if (isMultiSelect) {
+            isTracked = true;
+            // Check if at least one option is selected
+            hasValue = Array.from(el.options).some(opt => opt.selected && opt.value !== "");
         }
 
-        if (last != input)
-                size = 3;
-        last = input;
+        // 2. Apply your "Required vs Optional" logic
+        if (isTracked) {
+            const isRequired = el.hasAttribute('required');
+            // Only count in the total if it's required OR currently has a value
+            if (isRequired || hasValue) {
+                totalRelevant++;
+                if (hasValue) completed++;
+            }
+        }
+    });
 
-        form.elements['grid_reference'].value = grid.getGridRef(size);//.replace(/ /g,'');
-
-        size = size + 1;
-        if (size ==6) size = 3;
+    statusDisplay.textContent = `Progress: ${completed}/${totalRelevant}`;
+    if (completed === totalRelevant && totalRelevant > 0) {
+        statusDisplay.classList.add('complete');
+    } else {
+        statusDisplay.classList.remove('complete');
     }
-
-//this is only to 'document' what need to capture, we probably wont be reading from exif directly!
-//we'll receive this data on input
-function gotExif() {
-        var dateraw = EXIF.getTag(this, 'DateTimeOriginal') || EXIF.getTag(this, 'DateTimeDigitized') || EXIF.getTag(this, 'DateTime');
-        if (dateraw) {
-                $('input#imagetaken').val(dateraw.substr(0,10).replace(/:/g,'-'));
-        }
-
-        var long = EXIF.getTag(this, 'GPSLongitude');
-        var lat = EXIF.getTag(this, 'GPSLatitude');
-        if (long&&lat) {
-                long = toDecimal(long);
-                lat = toDecimal(lat);
-
-                if (long > 180) long = long - 360.0; //some apps (like geosetter) encode longitude as E 0-360 - but >180 is W
-                if (EXIF.getTag(this, 'GPSLongitudeRef') == 'W') long = long * -1;
-                if (EXIF.getTag(this, 'GPSLatitudeRef') == 'S') lat = lat * -1;
-
-                //console.log('F',long,lat);
-
-                setLatLong(lat, long, 'photographer_gridref','EXIF');
-        }
-
-        var orientation = EXIF.getTag(this, 'Orientation');
-        if (orientation && orientation != '1') {
-                var text = "This image has EXIF 'Orientation' flag set ("+orientation+"). Please make sure the image displays correctly in the preview. If it doesn't then use the option under the preview to rotate the image. Even if it >";
-                $('#preview').prepend("<big>"+text+"</big><br><hr><br>");
-                alert(text);
-                //in fact lets auto set this...
-                $('select[name="orientation"]').val("0");
-        }
-
 }
+const myForm = document.forms['theForm'];
 
+// 'input' catches typing in text/search/textarea
+myForm.addEventListener('input', updateFormProgress);
+
+// 'change' catches select dropdowns and checkbox toggles
+myForm.addEventListener('change', updateFormProgress);
+
+// Initial run to catch pre-filled data (EXIF, etc.)
+updateFormProgress();
 
 </script>
 
