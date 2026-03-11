@@ -45,37 +45,42 @@ L.GeographRecentUploads = L.FeatureGroup.extend({
 
 ///////////////////////////////////////////////////
 
-	imageRequest:  function () {
-                var data = {}
+	imageRequest: async function() {
+		let url = new URL(this.options.endpoint, window.location.origin);
 
 		if (this._last_id) {
-			data.since = this._last_id
+			url.searchParams.append('since', this._last_id);
 		}
 
-		var that = this;
-                $.getJSON(
-       	                this.options.endpoint,
-               	        data,
-                       	function(data) {
-				if (data && data.length) {
-					$.each(data,function(index,value) {
-						if (that._done[value.gridimage_id])
-							return;
+		try {
+			const response = await fetch(url);
+			if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-						that._done[value.gridimage_id] =
-							L.circleMarker([value.wgs84_lat,value.wgs84_long],
-							 {title:value.grid_reference+' : '+value.title, radius:4, color:'#f93024'})
-							.on('click', function() {
-								window.open('/photo/'+value.gridimage_id,'_blank');
-							});
+			const data = await response.json();
 
-						that.addLayer(that._done[value.gridimage_id]);
-						if (value.gridimage_id > that._last_id)
-							that._last_id = value.gridimage_id;
-					});
-				}
+			if (data && data.length) {
+			    for (const value of data) {
+			        if (this._done[value.gridimage_id]) continue;
+
+			        this._done[value.gridimage_id] = L.circleMarker([value.wgs84_lat, value.wgs84_long], {
+			                title: `${value.grid_reference} : ${value.title}`,
+			                radius: 4,
+			                color: '#f93024'
+			            }
+			        ).on('click', () => {
+			            window.open(`/photo/${value.gridimage_id}`, '_blank');
+			        });
+
+			        this.addLayer(this._done[value.gridimage_id]);
+
+			        if (value.gridimage_id > this._last_id) {
+			            this._last_id = value.gridimage_id;
+			        }
+			    }
 			}
-		);
+		} catch (error) {
+			console.error('Error fetching images:', error);
+		}
 	}
 
 
