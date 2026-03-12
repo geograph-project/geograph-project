@@ -20,6 +20,7 @@ export function render() {
 
             <dialog id="photo-modal" class="photo-modal">
                 <div class="modal-content">
+                    <h4 id="modal-title"></h4>
                     <img id="modal-img" src="" alt="Draft Preview">
                     <div class="modal-controls">
 			<a href="#" id="full-page-link" class="btn">View Photo Page</a>
@@ -64,7 +65,7 @@ async function loadSubmissions(filter = 'recent') {
             <div class="submission-tile"
                  data-large="${item.thumbnail.replace(/_\d+x\d+/, '')}"
                  data-id="${item.gridimage_id}" title="${escapeHTML(item.title)}">
-                <img src="${item.thumbnail}" loading="lazy" alt="${escapeHTML(item.title)}">
+                <img src="${item.thumbnail}" loading="lazy" alt="${escapeHTML(item.title)}" draggable="false">
                 <div class="tile-overlay"><span>${item.moderation_status} / ${item.grid_reference}</span></div>
             </div>
         `).join('');
@@ -86,6 +87,7 @@ export async function onMount() {
 
     const gridContainer = document.getElementById('submissions-grid');
     const modal = document.getElementById('photo-modal');
+    const modalTitle = document.getElementById('modal-title');
     const modalImg = document.getElementById('modal-img');
     const fullPageLink = document.getElementById('full-page-link');
 
@@ -98,6 +100,7 @@ export async function onMount() {
             const id = tile.dataset.id;
 
             // Update Modal
+            modalTitle.textContent = tile.title;
             modalImg.src = largeUrl;
             fullPageLink.href = `/photo/${id}`;
 
