@@ -16,11 +16,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
 	$response = [];
 	if (isset($data['image'])) {
-	        $response['ok']  = $uploadmanager->processDataURL($data['image']);
-        	if ($response['ok']) {
-                	$response['upload_id'] = $uploadmanager->upload_id;
-                        $response['width'] = $uploadmanager->upload_width;
-                        $response['height'] = $uploadmanager->upload_height;
+	    $response['ok']  = $uploadmanager->processDataURL($data['image']);
+        if ($response['ok']) {
+            $response['upload_id'] = $uploadmanager->upload_id;
+            if (!empty($uploadmanager->original_width)) {
+                //ideally want size of the largest, not the preview;
+                $response['width'] = $uploadmanager->original_width;
+                $response['height'] = $uploadmanager->original_height;
+            } else {
+                $response['width'] = $uploadmanager->upload_width;
+                $response['height'] = $uploadmanager->upload_height;
+            }
 		} else {
 			$response['error'] = $uploadmanager->errormsg;
 		}
@@ -58,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 }
 
         /* Custom Buttons */
-        .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
+        .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; touch-action: manipulation; user-select: none; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
         .btn-select { background: var(--primary); color: white; width: 100%; box-sizing: border-box; }
         .btn-upload { background: var(--primary); color: white; width: 100%; }
         .btn-upload:disabled { background: #ccc; cursor: not-allowed; }
@@ -124,7 +130,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 </div>
 
 <!-- note we are using a local 'patched' version of exif.js, that deals with specific bugs -->
-<script type="text/javascript" src="/viewer/exif.js"></script>
+<!--script type="text/javascript" src="/viewer/exif.js"></script!-->
+<script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js"></script>
 <script type="text/javascript" src="/js/submission_utils.js"></script>
 <script type="text/javascript" src="/viewer/ExifRestorer.js"></script>
 
@@ -148,7 +155,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             const data = JSON.parse(event.data);
             if (data.settings && data.settings.uploadMaxDimension) {
                 uploadMaxDimension = parseInt(data.settings.uploadMaxDimension, 10);
-                console.log('Updated uploadMaxDimension to:', uploadMaxDimension);
             }
         } catch (e) {
             // Not JSON or other message type
@@ -191,41 +197,47 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         renderUI();
     }
 
-    // Helper to process a single item
     async function processItem(item) {
-        const isHeic = item.file.name.toLowerCase().endsWith('.heic') || item.file.type === 'image/heic';
+        item.isHeic = item.file.name.toLowerCase().endsWith('.heic') || item.file.type === 'image/heic';
 
-        // 1. Analyze EXIF
-        const exifData = await new Promise(resolve => EXIF.getData(item.file, function() {
-            const lat = EXIF.getTag(this, 'GPSLatitude');
-            const long = EXIF.getTag(this, 'GPSLongitude');
-            const date = EXIF.getTag(this, 'DateTimeOriginal') || EXIF.getTag(this, 'DateTime');
-            const orientation = EXIF.getTag(this, 'Orientation');
+        // 1. Analyze EXIF (Handles JPEG and HEIC automatically)
+        // We tell it exactly what we want, and it returns a simple object
+/*
+        const data = await exifr.parse(item.file, {
+            pick: ['GPSLatitude', 'GPSLongitude', 'DateTimeOriginal', 'CreateDate', 'Orientation'],
+            // This ensures it returns decimal degrees (-122.4 instead of [122, 24, 0])
+            format: 'object'
+        }).catch(err => {
+            console.warn("Exif parsing failed", err);
+            return null;
+        });
+*/
 
-            let decimalLat = null;
-            let decimalLong = null;
+        // Calling parse with just the file is the most "stable" way.
+        // By default, exifr parses the most common tags (GPS, Orientation, etc.)
+        const data = await exifr.parse(item.file, {
+            translateKeys: true,  // Keep this true so you get 'latitude'/'longitude'
+            translateValues: false, // THIS is what gives you '1' instead of "Horizontal (normal)"
+            reviveValues: false     // This prevents it from turning date strings into JS Date objects
+        });
 
-            if (lat && long) {
-                decimalLat = toDecimal(lat);
-                decimalLong = toDecimal(long);
+        const lat = data?.latitude || null;   // exifr helpfully maps GPSLatitude to 'latitude'
+        const long = data?.longitude || null; // and GPSLongitude to 'longitude'
+        const date = data?.DateTimeOriginal || data?.CreateDate || null;
+        const orientation = data?.Orientation || null;
 
-                if (EXIF.getTag(this, 'GPSLatitudeRef') === 'S') decimalLat *= -1;
-                if (EXIF.getTag(this, 'GPSLongitudeRef') === 'W') decimalLong *= -1;
-                // Handle 0-360 range if necessary
-                if (decimalLong > 180) decimalLong -= 360.0;
-            }
+        const exifData = {
+            // The Fix: Check if the value is NOT null/undefined, rather than if it is "truthy"
+            hasGeo: (lat !== null && long !== null),
+            lat: lat,
+            long: long,
+            date: date,
+            orientation: orientation
+        };
 
-            resolve({
-                hasGeo: !!(lat && long),
-                lat: decimalLat,
-                long: decimalLong,
-                date: date,
-                orientation: orientation
-            });
-        }));
-
-        // 2. Resize if necessary
-        let dataUri = await new Promise(async (resolve) => {
+        // 2. Resize if necessary (converts file to a DataURL, resizeFileWorker, will naturally convert file to data URL naturally too)
+        if (!item.dataUri) //might of already been processed on previois run
+        item.dataUri = await new Promise(async (resolve) => {
             let needsResize = (item.file.size > max_size);
 
             if (!needsResize && uploadMaxDimension < 65536) {
@@ -248,7 +260,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
                 }
             }
 
-            if (needsResize && !isHeic) {
+            if (needsResize && !item.isHeic) {
                 resizeFileWorker(item.file, max_size, (url) => {
                     const finished = document.getElementById('messageDiv');
                     if (finished) finished.remove();
@@ -261,8 +273,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             }
         });
 
-        item.dataUri = dataUri;
-        item.isHeic = isHeic;
         return { item, exifData };
     }
 
@@ -291,6 +301,8 @@ async function renderUI() {
     processedItems.forEach(({ item, exifData }) => {
         const queueItem = fileQueue.find(f => f.id === item.id);
         if (queueItem) queueItem.exifData = exifData;
+        //really should store the dataUri too!
+        if (queueItem) queueItem.dataUri = item.dataUri;
     });
 
     // Render based on count
@@ -452,7 +464,7 @@ async function sendToPHP(dataUri) {
 
         // 3. Handle your custom application-level success/error
         if (result.ok) {
-            console.log('Upload successful! ID:', result.upload_id);
+            console.log('Upload successful! ID:', result.upload_id, result.width);
             return { success: true, upload_id: result.upload_id, width: result.width, height: result.height };
         } else {
             console.error('Upload failed:', result.error);
