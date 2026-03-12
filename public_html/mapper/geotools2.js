@@ -380,12 +380,14 @@ function GT_WGS84()
 {
 	this.latitude=0;
 	this.longitude=0;
+	this.status="Undefined";
 }
 
 GT_WGS84.prototype.setDegrees = function(latitude,longitude)
 {
 	this.latitude=latitude;
 	this.longitude=longitude;
+	this.status="OK";
 }
 
 GT_WGS84.prototype.parseString = function(text)
@@ -415,8 +417,7 @@ GT_WGS84.prototype.parseString = function(text)
 		
 		this.latitude=latsign * (d1 + (m1/60.0));
 		this.longitude=longsign * (d2 + (m2/60.0));
-		
-		
+		this.status="OK";
 	}
 	
 	return ok;
