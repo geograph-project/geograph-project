@@ -163,11 +163,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             z-index: 10000;
 
-            /* Hidden State */
             transform: translateY(-100%);
+            opacity:0;
+            pointer-events: none;
+        }
+        .sticky-bar.visible { transform: translateY(0); opacity:1 }
+        /* only animate when ready */
+        .sticky-bar.ready {
+            /* Hidden State */
             transition: transform 0.2s ease-in-out;
         }
-        .sticky-bar.visible { transform: translateY(0); }
 
         #form-status-bar {
             margin-left: auto;
@@ -240,6 +245,60 @@ input:invalid, select:invalid, #contexts:invalid {
     border: 1px solid #ccc;
     background: #f9f9f9;
 }
+
+/* suggestion-pill is used for placename ugestions on title/description */
+
+#suggestion-pill-bar {
+    width: 100%;
+    display: flex;
+    overflow-x: auto;
+    gap: 2px;
+    padding: 4px;
+    background: #f4f4f4;
+    height: 44px;
+    align-items: center;
+}
+#suggestion-pill-bar.no-results {
+    display: none;
+}
+
+.suggestion-pill {
+    padding: 6px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    white-space:nowrap;
+    user-select: none;
+}
+
+@media (any-pointer: coarse) {
+
+    #suggestion-pill-bar {
+        position: fixed;
+        left: 0;
+        z-index: 9999;
+        gap: 8px;
+
+        height: 50px; /* Slightly taller for easier tapping */
+
+        /* Use translateZ to force hardware acceleration and smooth movement */
+        transform: translateZ(0);
+        will-change: transform; /* Hardware acceleration optimization */
+        transition: transform 0.2s ease-out;
+
+        touch-action: manipulation;
+    }
+    .suggestion-pill {
+        padding: 6px 12px;
+    }
+}
+
+.suggestion-pill:active {
+     background: #e0e0e0;
+}
+
+.hidden { display: none }
 
 /* contexts multi-select */
 
@@ -613,7 +672,7 @@ align-items: center;    /* This centers the 350px map horizontally */
         </div>
 	</div>
 
-    <div id="mapInfo" style="padding:10px;border-radius:10px; background-color:yellow; position:sticky; bottom:0; z-index:1000;">
+    <div id="mapInfo" style="padding:10px;border-radius:10px; background-color:#fbfbe1; position:sticky; bottom:0; z-index:1000; text-align:center">
         If the image lacks location data, use the <strong>Locate/Pin</strong> icon to find your current position or the <strong>Search</strong> icon to find a place by name.<br><br>
         <strong>Drag the map</strong> to align the central cross-hairs with the Camera/Photographer location.<br><br>
         Tap the <strong>Grid Reference boxes</strong> to toggle between positioning the Camera and the Subject (the active selection is highlighted in white).
@@ -670,6 +729,8 @@ align-items: center;    /* This centers the 350px map horizontally */
             <span class="optional-label">(optional)</span>
         </div>
 	    <textarea name="comment" placeholder="optional longer description" rows="5"></textarea>
+
+        <div id="suggestion-pill-bar" class="hidden no-results"></div>
 
         <label for="imagetaken">Date Taken</label>
         <div>
@@ -1171,6 +1232,7 @@ console.log("Error", e);
             // threshold 0.2 means: "Is at least 20% of the image visible?"
             // We show the sticky bar when LESS than 20% is visible.
             if (entry.intersectionRatio < 0.2) {
+//                stickyBar.classList.add('ready');
                 stickyBar.classList.add('visible');
             } else {
                 stickyBar.classList.remove('visible');
@@ -2011,6 +2073,184 @@ map.on('mousedown dragstart', function(e) {
         }
         */
     }
+
+
+// ---------------------
+
+const suggestionsBar = document.getElementById('suggestion-pill-bar');
+let lastFocusedElement = null;
+
+function syncBarPosition() {
+    if (!window.visualViewport) return;
+    if (suggestionsBar.classList.contains('no-results')) return;
+
+    // The amount of space the keyboard is currently occupying
+    const keyboardHeight = window.innerHeight - window.visualViewport.height;
+
+    // The current scroll offset of the visual viewport
+    // This ensures that even if you scroll the page, the bar stays locked to the bottom
+    const offsetTop = window.visualViewport.offsetTop;
+
+    // Calculate the 'bottom' position relative to the visual window
+    // We add the offsetTop so it stays "fixed" relative to the scrolled content
+    suggestionsBar.style.bottom = `${keyboardHeight}px`;
+    suggestionsBar.style.top = `${window.visualViewport.height + offsetTop - suggestionsBar.offsetHeight}px`;
+}
+
+if (window.matchMedia("(any-pointer: coarse)").matches) {
+        // Attach to every event that could change the view
+        window.visualViewport.addEventListener('resize', syncBarPosition);
+        window.visualViewport.addEventListener('scroll', syncBarPosition);
+}
+
+// Toggle visibility based on focus
+let blurTimer = null
+document.querySelectorAll('input[name=title], textarea').forEach(el => {
+    el.addEventListener('focus', () => {
+        // Only fetch if we have valid coordinates from your map logic
+        if (typeof eastings1 !== 'undefined' && typeof northings1 !== 'undefined' && eastings1 > 0 && northings1 > 0) {
+            //alas no global reference to the grid is kept!
+            const ri=document.getElementById('grid_reference').value.match(/^[A-Z]{2}/i)?1:2;
+            loadPlaceNames(eastings1, northings1, ri);
+        } else if (typeof eastings2 !== 'undefined' && typeof northings2 !== 'undefined' && eastings2 > 0 && northings2 > 0) {
+            const ri=document.getElementById('photographer_gridref').value.match(/^[A-Z]{2}/i)?1:2;
+            loadPlaceNames(eastings2, northings2, ri);
+        }
+
+        //we DONT check no-results here, as may still be loading, the no-results will keep it hidden, even if 'hidden' class is removed
+
+        lastFocusedElement = el;
+        suggestionsBar.classList.remove('hidden');
+        if (blurTimer) clearTimeout(blurTimer); //otherwise the timer might still hide when switching!
+    });
+    el.addEventListener('blur', (e) => {
+        // Delay blur to allow clicking a pill before the bar disappears
+        blurTimer = setTimeout(() => {
+            if (!suggestionsBar.contains(document.activeElement)) {
+                suggestionsBar.classList.add('hidden');
+            }
+            blurTimer = null;
+        }, 200);
+    });
+
+    // Reactive filtering as they type
+    el.addEventListener('input', (e) => {
+        const query = e.target.value.split(' ').pop().toLowerCase(); // Get last word
+        filterSuggestions(query);
+    });
+});
+
+
+function filterSuggestions(query) {
+    if (suggestionsBar.classList.contains('no-results')) return;
+
+    const pills = document.querySelectorAll('.suggestion-pill');
+    const q = query.toLowerCase();
+
+    pills.forEach(pill => {
+        const name = pill.textContent.toLowerCase();
+        // If empty query, show everything. If not, match prefix or name.
+        const isVisible = q === "" || name.includes(q);
+        pill.style.display = isVisible ? 'inline-block' : 'none';
+    });
+
+    // UX: If there's an exact or high-quality match, we could visually
+    // differentiate the first visible pill
+    const firstVisible = Array.from(pills).find(p => p.style.display !== 'none');
+    if (firstVisible) {
+        firstVisible.classList.add('highlight-match');
+    }
+}
+
+let loadedPos = { eastings: null, northings: null, ri: null };
+let isFetching = false;
+
+async function loadPlaceNames(eastings, northings, ri) {
+  // Don't re-fetch if we've already loaded this exact spot
+  if (isFetching || (eastings === loadedPos.eastings && northings === loadedPos.northings && ri == loadedPos.ri)) {
+    return;
+  }
+
+  isFetching = true;
+  loadedPos = { eastings, northings, ri };
+
+  suggestionsBar.innerHTML = 'Loading...';
+
+  try {
+    const script_name = (ri==2)?"ie_open_data.json.php":"os_open_names.json.php";
+    const response = await fetch(`/stuff/${script_name}?e=${eastings}&n=${northings}&live=1`);
+    const data = await response.json();
+
+    isFetching = false;
+    suggestionsBar.innerHTML = ''; // Clear loading
+
+    if (data?.rows?.length) {
+      for (const item of data.rows) {
+        for (const key of ['name1', 'name2', 'name', 'irish']) {
+          if (!item[key]) continue;
+
+          const name = item[key];
+          const pill = document.createElement('button');
+          pill.className = 'suggestion-pill';
+          pill.textContent = name;
+          pill.title = item.local_type ?? item.town_type ?? '';
+
+          suggestionsBar.appendChild(pill);
+        }
+      }
+      suggestionsBar.classList.remove('no-results');
+    } else {
+      suggestionsBar.classList.add('no-results');
+//      suggestionsBar.textContent = 'No nearby places found.';
+    }
+  } catch (err) {
+    suggestionsBar.classList.add('no-results');
+//    suggestionsBar.textContent = 'Failed to load places.';
+  }
+  isFetching = false;
+}
+
+suggestionsBar.addEventListener('click', (e) => {
+    const pill = e.target.closest('.suggestion-pill');
+    if (pill) {
+        e.preventDefault();
+        insertAtCursor(pill.textContent);
+        filterSuggestions(''); //remove filter
+    }
+});
+
+
+
+function insertAtCursor(textToInsert) {
+    // 1. Get the currently focused element
+    const el = lastFocusedElement;
+
+    // 2. Validate that it's an input or textarea
+    if (!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA')) {
+        console.warn('No valid input focused');
+        return;
+    }
+
+    const cursorPosition = el.selectionStart;
+    const textBeforeCursor = el.value.slice(0, cursorPosition);
+
+    // 1. Find the start of the current "partial word"
+    // We search backwards for the last space
+    const lastSpaceIndex = textBeforeCursor.lastIndexOf(' ');
+    const wordStart = lastSpaceIndex === -1 ? 0 : lastSpaceIndex + 1;
+
+    // 2. Build the new value:
+    // Everything before the partial word + the full suggestion + rest of text
+    const textAfterCursor = el.value.slice(el.selectionEnd);
+    el.value = el.value.slice(0, wordStart) + textToInsert + ' ' + textAfterCursor;
+
+    // 3. Update cursor position (placed after the inserted word and the space we added)
+    const newCursorPos = wordStart + textToInsert.length + 1;
+    el.setSelectionRange(newCursorPos, newCursorPos);
+
+    el.focus();
+}
+
 
 // ---------------------
 
