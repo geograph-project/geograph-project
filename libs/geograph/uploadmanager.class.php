@@ -652,7 +652,7 @@ if (filesize($file) > 4000000) {
 	}
 
 	//accept a data URL specifically
-	function processDataURL($url) {
+	function processDataURL($url, $name = null) {
 		$ok = false;
 
 		//Sanity check: verify the string is a data URI before invoking the stream wrapper
@@ -661,6 +661,9 @@ if (filesize($file) > 4000000) {
                         $this->error("Invalid image upload format.");
                         return false;
                 }
+
+		if (!empty($name))
+			$this->name = $name;
 
 		$upload_id=md5(uniqid('upload'));
 		$temp_file = tempnam("/tmp",'upload');
@@ -755,10 +758,13 @@ if (filesize($file) > 4000000) {
 			}
 
 			//we have no use for  this data. and it is potentially HUGE!
-			// the data will ultimately be inserted into a TEXT column (limited to 665535 bytes)
+			// the data will ultimately be inserted into a TEXT column (limited to 65535 bytes)
 			if (!empty($exif['IFD0']['StripOffsets']))	unset($exif['IFD0']['StripOffsets']);
 			if (!empty($exif['IFD0']['StripByteCounts']))	unset($exif['IFD0']['StripByteCounts']);
 
+			//this is a bit of a cheat, but we want to store the filename, so inject into the exif structure, which is serialized to disk below, so can read it later
+			if (!empty($this->name))
+				$exif['COMPUTED']['name'] = $this->name;
 
 			$this->trySetDateFromExif($exif);
 			$this->rawExifData = $exif;
@@ -1388,7 +1394,7 @@ $this->db->raiseErrorFn = 'adodb_throw';
 						list($e,$n,$reference_index) = ExifToNational($exif);
 						list ($row['photographer_gridref'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
 						list ($row['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
-						$row['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$row['grid_reference']);
+						$row['gridsquare'] = preg_replace('/^([A-Z]+).*$/','$1',$row['grid_reference']);
 					}
 
 					if (!empty($exif['COMMENT']) && preg_match("/(\b|_)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",implode(' ',$exif['COMMENT']),$m)) {
@@ -1413,14 +1419,27 @@ $this->db->raiseErrorFn = 'adodb_throw';
 					}
 
 					$row['orientation'] = $exif['IFD0']['Orientation'] ?? null;
-				}
 
-				// Also add the dimensions of the pending image (so the client knows)
-				$pending_file = $this->_pendingJPEG($row['transfer_id']);
-				if (file_exists($pending_file)) {
-					$size = getimagesize($pending_file);
-					$row['width'] = $size[0];
-					$row['height'] = $size[1];
+					//todo, GPSImgDirection: 115, GPSImgDirectionRef: "M"  (T=True, M=Magnetic) - the submission could use this!
+
+					//the new app can use these (note MAY be inaccurate, depending on 'orientation'. end user will have to deal with that
+					$row['width']  = $exif['COMPUTED']['Width']  ?? $exif['IFD0']['ImageWidth']  ?? $exif['EXIF']['ExifImageWidth'] ?? null;
+					$row['height'] = $exif['COMPUTED']['Height'] ?? $exif['IFD0']['ImageLength'] ?? $exif['EXIF']['ExifImageLength'] ?? null; //yes Exif used Length, not Height!
+
+
+					if (!empty($exif['COMPUTED']['name']) && preg_match('/_([A-Z]{1,2})(\d{4,10})\./',$exif['COMPUTED']['name'], $m) && strlen($m[2])%2 == 0) {
+						// Trust filename if EXIF is missing OR if user provided high precision GR (> 6 figures)
+						if (empty($row['photographer_gridref']) || strlen($m[0]) > 9) {
+							$row['photographer_gridref'] = $m[1].$m[2];
+						}
+						if (empty($row['grid_reference'])) {
+							//todo, perhaps a bit fragile computing 4fig GR outself!
+							$e = substr($m[2],0,strlen($m[2])/2);
+							$n = substr($m[2],strlen($m[2])/2);
+							$row['grid_reference'] = $m[1].substr($e,0,2).substr($n,0,2);
+							$row['gridsquare'] = $m[1];
+						}
+					}
 				}
 		return $row;
 	}

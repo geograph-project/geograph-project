@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
 	$response = [];
 	if (isset($data['image'])) {
-	    $response['ok']  = $uploadmanager->processDataURL($data['image']);
+	    $response['ok']  = $uploadmanager->processDataURL($data['image'], $data['name'] ?? null);
         if ($response['ok']) {
             $response['upload_id'] = $uploadmanager->upload_id;
             if (!empty($uploadmanager->original_width)) {
@@ -132,8 +132,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 <!-- note we are using a local 'patched' version of exif.js, that deals with specific bugs -->
 <!--script type="text/javascript" src="/viewer/exif.js"></script!-->
 <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js"></script>
-<script type="text/javascript" src="/js/submission_utils.js"></script>
-<script type="text/javascript" src="/viewer/ExifRestorer.js"></script>
+<script src="<?php echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
+<script src="<?php echo smarty_modifier_revision("/js/submission_utils.js"); ?>"></script>
+<script src="<?php echo smarty_modifier_revision("/viewer/ExifRestorer.js"); ?>"></script>
 
 <script>
     const fileInput = document.getElementById('file-input');
@@ -200,20 +201,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
     async function processItem(item) {
         item.isHeic = item.file.name.toLowerCase().endsWith('.heic') || item.file.type === 'image/heic';
 
-        // 1. Analyze EXIF (Handles JPEG and HEIC automatically)
-        // We tell it exactly what we want, and it returns a simple object
-/*
-        const data = await exifr.parse(item.file, {
-            pick: ['GPSLatitude', 'GPSLongitude', 'DateTimeOriginal', 'CreateDate', 'Orientation'],
-            // This ensures it returns decimal degrees (-122.4 instead of [122, 24, 0])
-            format: 'object'
-        }).catch(err => {
-            console.warn("Exif parsing failed", err);
-            return null;
-        });
-*/
 
-        // Calling parse with just the file is the most "stable" way.
+        // 1. Analyze EXIF (Handles JPEG and HEIC automatically)
         // By default, exifr parses the most common tags (GPS, Orientation, etc.)
         const data = await exifr.parse(item.file, {
             translateKeys: true,  // Keep this true so you get 'latitude'/'longitude'
@@ -221,57 +210,70 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             reviveValues: false     // This prevents it from turning date strings into JS Date objects
         });
 
-        const lat = data?.latitude || null;   // exifr helpfully maps GPSLatitude to 'latitude'
-        const long = data?.longitude || null; // and GPSLongitude to 'longitude'
-        const date = data?.DateTimeOriginal || data?.CreateDate || null;
-        const orientation = data?.Orientation || null;
-
+        const lat = data?.latitude ?? null;   // exifr helpfully maps GPSLatitude to 'latitude'
+        const long = data?.longitude ?? null; // and GPSLongitude to 'longitude'
         const exifData = {
             // The Fix: Check if the value is NOT null/undefined, rather than if it is "truthy"
             hasGeo: (lat !== null && long !== null),
             lat: lat,
             long: long,
-            date: date,
-            orientation: orientation
+            date: data?.DateTimeOriginal || data?.CreateDate || null,
+            orientation: data?.Orientation || null
         };
 
-        // 2. Resize if necessary (converts file to a DataURL, resizeFileWorker, will naturally convert file to data URL naturally too)
-        if (!item.dataUri) //might of already been processed on previois run
-        item.dataUri = await new Promise(async (resolve) => {
-            let needsResize = (item.file.size > max_size);
-
-            if (!needsResize && uploadMaxDimension < 65536) {
-                // Also check dimensions
-                const dimensions = await new Promise(res => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const dims = {w: img.width, h: img.height};
-                        URL.revokeObjectURL(img.src);
-                        res(dims);
-                    };
-                    img.onerror = () => {
-                        URL.revokeObjectURL(img.src);
-                        res(null);
-                    };
-                    img.src = URL.createObjectURL(item.file);
-                });
-                if (dimensions && (dimensions.w > uploadMaxDimension || dimensions.h > uploadMaxDimension)) {
-                    needsResize = true;
+        // 2. Support reading a Grid Ref from filename (e.g., photo_SU12345678.jpg)
+        const match = item.file.name.match(/_([A-Z]{1,2}\d{4,10})\./i);
+        if (match) {
+            // Trust filename if EXIF is missing OR if user provided high precision GR (> 6 figures)
+            if (!exifData.hasGeo || match[1].length > 7) {
+                let wgs84 = GT_WGS84.parseGridRef(match[1]);
+                if (wgs84 && wgs84.status === 'OK') {
+                    exifData.lat = wgs84.latitude;
+                    exifData.long = wgs84.longitude;
+                    exifData.hasGeo = true;
+                    exifData.source = 'filename';
                 }
             }
+        }
 
-            if (needsResize && !item.isHeic) {
-                resizeFileWorker(item.file, max_size, (url) => {
-                    const finished = document.getElementById('messageDiv');
-                    if (finished) finished.remove();
-                    resolve(url);
-                }, uploadMaxDimension);
-            } else {
-                const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.readAsDataURL(item.file);
-            }
-        });
+        // 3. Resize if necessary (converts file to a DataURL, resizeFileWorker, will naturally convert file to data URL naturally too)
+        if (!item.dataUri) { //might of already been processed on previous run
+            item.dataUri = await new Promise(async (resolve) => {
+                let needsResize = (item.file.size > max_size);
+
+                if (!needsResize && uploadMaxDimension < 65536) {
+                    // Also check dimensions
+                    const dimensions = await new Promise(res => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const dims = {w: img.width, h: img.height};
+                            URL.revokeObjectURL(img.src);
+                            res(dims);
+                        };
+                        img.onerror = () => {
+                            URL.revokeObjectURL(img.src);
+                            res(null);
+                        };
+                        img.src = URL.createObjectURL(item.file);
+                    });
+                    if (dimensions && (dimensions.w > uploadMaxDimension || dimensions.h > uploadMaxDimension)) {
+                        needsResize = true;
+                    }
+                }
+
+                if (needsResize && !item.isHeic) {
+                    resizeFileWorker(item.file, max_size, (url) => {
+                        const finished = document.getElementById('messageDiv');
+                        if (finished) finished.remove();
+                        resolve(url);
+                    }, uploadMaxDimension);
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(item.file);
+                }
+            });
+        }
 
         return { item, exifData };
     }
@@ -370,7 +372,7 @@ async function renderUI() {
             progressFill.style.width = ((uploadedCount + 1) / fileQueueLength) * 100 + '%';
 
             // Sequential POST request
-            const result = await sendToPHP(item.dataUri);
+            const result = await sendToPHP(item.dataUri, item.file.name);
             if (result && result.success) {
                 // SUCCESS: Remove from queue and mark visually
                 document.getElementById(`wrapper-${item.id}`).classList.add('uploaded');
@@ -448,12 +450,12 @@ function addIdtoBtn(btnId, upload_id, width, height, exifData) {
 }
 
 
-async function sendToPHP(dataUri) {
+async function sendToPHP(dataUri, name) {
     try {
         const response = await fetch('upload.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: dataUri })
+            body: JSON.stringify({ image: dataUri, name })
         });
 
         // 1. Always check HTTP status first

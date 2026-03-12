@@ -67,6 +67,8 @@ $clear_cache = array();
 if (isset($_FILES['jpeg_exif']))
 {
 	$uploadmanager=new UploadManager;
+	if (!empty($_FILES['jpeg_exif']['name']))
+		$uploadmanager->name = basename(str_replace("\\",'/',$_FILES['jpeg_exif']['name'])); //fix windows paths in case we receive them
 
 	switch($_FILES['jpeg_exif']['error'])
 	{
@@ -113,9 +115,12 @@ if (isset($_FILES['jpeg_exif']))
 
 } elseif (!empty($_POST['jpeg_data'])) {
 	$uploadmanager=new UploadManager;
-	if ($uploadmanager->processDataURL($_POST['jpeg_data'])) {
+	if ($uploadmanager->processDataURL($_POST['jpeg_data'], $_POST['jpeg_filename'] ?? null)) {
 		$upload_to_process=true;
 		$smarty->assign('success', 1);
+		if (!empty($_POST['jpeg_filename'])) {
+			$smarty->assign('filename',basename(str_replace("\\",'/',$_POST['jpeg_filename'])));
+		}
 
         } else {
                 $smarty->assign('error', $uploadmanager->errormsg);
@@ -291,9 +296,12 @@ if (!empty($upload_to_process) && !empty($uploadmanager) && $uploadmanager->uplo
 		$smarty->assign('grid_reference', $grid_reference);
 	}
 
-	if (!empty($_FILES['jpeg_exif']['name']) && preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",$_FILES['jpeg_exif']['name'],$m)) {
+	//read from $_POST['jpeg_filename'] as well - used when image has been client side resized
+	$original_filename = $_POST['jpeg_filename'] ?? $_FILES['jpeg_exif']['name'] ?? $uploadmanager->name ?? null;
+
+	if (!empty($original_file) && preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",$original_filename,$m)) {
 		if (strlen($m[3]) != strlen($m[4])) {
-			if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{4,10})(\b|[A-Za-z_])/i",$_FILES['jpeg_exif']['name'],$m)) {
+			if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{4,10})(\b|[A-Za-z_])/i",$original_filename,$m)) {
 				if (strlen($m[3])%2==0) {
 					$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3]);
 				}
