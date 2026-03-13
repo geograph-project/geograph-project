@@ -32,7 +32,7 @@ init_session();
 
         /* Custom Buttons */
         .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; touch-action: manipulation; user-select: none; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
-        .btn-select { background: var(--primary); color: white; width: 100%; box-sizing: border-box; }
+        .btn-select { background: var(--primary); color: white; width: 100%; box-sizing: border-box; text-align:center }
         .btn-upload { background: var(--primary); color: white; width: 100%; }
         .btn-upload:disabled { background: #ccc; cursor: not-allowed; }
         .btn-secondary { background: #e9ecef; color: #333; width: 100%; }
@@ -52,19 +52,22 @@ init_session();
 </head>
 
 <body>
-    <p>Use this button to capture a new image with your camera. The current location will be written to the filename, such that when upload the file later, the location wont be stripped by privacy concious browsers.
-	<label for="cameraInput" class="btn btn-select" id="select-label">Capture Image</label>
+
+    <p>Use this button to take a photo with your camera. Location data will be included in the filename, which will be saved to your
+    Downloads folder. If you don't receive a download notification, you can try the download again.
+
+	<label for="cameraInput" class="btn btn-select" id="select-label">Take Photo</label>
     <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
 
     <button id="downloadBtn" class="btn" style="display:none;">2. Save to Downloads</button>
 
-    <p>Use this button to save a note, its tagged with our current position, can be referened later (on this device only!) during submission.
-    <button id="saveBtn" class="btn btn-select" onclick="alert('non functional')">Save Local Note (placeholder)</button>
+    <p>Use this button to save a note tagged with your location which can be used during submission (accessible on this device only).
+    <button id="saveBtn" class="btn btn-select" onclick="alert('non functional')">Save Location</button>
 
 	<br>
 	<br>
 
-    <label><input type=checkbox name=show_map onclick="toggleMap(this.checked)"> Show Live Map</label> (helps make sure your device has a good GPS lock)
+    <label><input type=checkbox name=show_map onclick="toggleMap(this.checked)"> Show Live Map</label> (helps make sure have a good GPS lock)
     <div id="map" style="width:350px; height:350px; max-height:90vh; max-width:80vw;"></div>
 
     <script>
