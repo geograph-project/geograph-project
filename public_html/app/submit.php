@@ -85,7 +85,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         $method = 'app';
         $rc = $um->commit($method);
         if ($rc == "") {
-            ini_set('display_errors',0);
 
                         //clear user profile
                         $ab=floor($USER->user_id/10000);
@@ -137,6 +136,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             });
             target.dispatchEvent(event);
         }
+
+        function updateAppState(detail) {
+            const isInsideIframe = window.self !== window.top;
+            const target = isInsideIframe ? window.parent : window;
+            const event = new CustomEvent('update-app-state', {
+                detail,
+                bubbles: true
+            });
+            target.dispatchEvent(event);
+        }
+
+        //now the submission is finished, need to tell the app, there is no longer an active upload_id - none is a special value
+        window.addEventListener('DOMContentLoaded', function() {
+            updateAppState({upload_id: 'none'});
+        });
+
     </script>
 </body>
 </html>
@@ -664,7 +679,7 @@ align-items: center;    /* This centers the 350px map horizontally */
     <div id="form-status-bar"></div>
 </div>
 
-<form method="post" name="theForm" id="theForm">
+<form method="post" action="/app/submit.php?done" name="theForm" id="theForm">
 	<input type=hidden name="upload_id" value="">
 	<input type=hidden name="largestsize" value="65536">
 

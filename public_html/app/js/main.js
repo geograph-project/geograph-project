@@ -57,7 +57,31 @@ function init() {
     // Initialize router
     router.init();
 
-    // Service Worker Boilerplate (Placeholder)
+    // Listen for navigation requests from iframes
+    window.addEventListener('request-navigation', (e) => {
+        const { path, options } = e.detail;
+        router.navigate(path, options);
+    });
+
+    // Intercept link clicks globally (using the data-route attribute)
+    document.body.addEventListener('click', (e) => {
+        const link = e.target.closest('[data-route]');
+        if (link) {
+            e.preventDefault();
+            const path = link.getAttribute('data-route');
+            const param = link.getAttribute('data-param');
+            const message = link.getAttribute('data-message');
+            router.navigate(path, { param, message });
+        }
+    });
+
+    // Listen for updates from iframes
+    window.addEventListener('update-app-state', (e) => {
+        // We explicitly bridge the event to the state
+        AppState.setState(e.detail);
+    });
+
+    // Simple Placeholder Worker (just to allow installation for now)
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/app/js/sw.js')
              .then(reg => console.log('Service Worker registered', reg))

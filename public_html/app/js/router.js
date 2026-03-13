@@ -13,26 +13,6 @@ class Router {
 
         // Handle navigation events
         window.addEventListener('popstate', (e) => this.handleNavigation(window.location.pathname));
-
-        // Intercept link clicks
-        document.body.addEventListener('click', (e) => {
-            const link = e.target.closest('[data-route]');
-            if (link) {
-                e.preventDefault();
-                const path = link.getAttribute('data-route');
-
-                const param = link.getAttribute('data-param');
-                const message = link.getAttribute('data-message');
-                this.navigate(path, { param, message });
-
-            }
-        });
-
-        // Listen for navigation requests from iframes
-        window.addEventListener('request-navigation', (e) => {
-            const { path, options } = e.detail;
-            this.navigate(path, options);
-        });
     }
 
     /**

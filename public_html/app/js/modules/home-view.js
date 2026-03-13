@@ -51,8 +51,6 @@ export function onMount() {
     if (!AppState.upload_id || AppState.upload_id === 'none')
 	resumeBtn.classList.add('hidden');
 
-console.log('home',AppState);
-
     //todo should also hide submit-btn, if no uploaded!
 
     const installBtn = document.getElementById('install-btn');
