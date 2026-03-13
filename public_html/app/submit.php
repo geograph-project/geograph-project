@@ -26,13 +26,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         failMessage($gs->errormsg);
     }
 
-    $takendate = strtotime($_POST['imagetaken']);
-    if ($takendate > time()) {
+    //need to deal with potential partial dates, while allowing for missing
+    $partial = trim($_POST['date_partial'] ?? '');
+    $standard = trim($_POST['imagetaken'] ?? '');
+    $takendate = parseDate(!empty($partial) ? $partial : $standard); //will return 0000-00-00 for empty!
+
+    if (!$takendate) {
+        failMessage("Invalid date format or out of range (must be > 1800)");
+    } elseif ($takendate > date('Y-m-d')) {
         failMessage("Date taken in future");
+    } else {
+        $um->setTaken($takendate);
     }
-
-//TODO "date_partial"!!
-
 
     // set up attributes from uploaded data
     $um->setSquare($gs);
@@ -40,7 +45,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
     if (!empty($_POST['use6fig']))
         $um->setUse6fig(stripslashes($_POST['use6fig']));
     $um->setDirection($_POST['view_direction']);
-    $um->setTaken(date('Y-m-d',$takendate));
     $um->setTitle($_POST['title']);
     $um->setComment($_POST['comment']);
 
@@ -665,11 +669,8 @@ align-items: center;    /* This centers the 350px map horizontally */
     </div>
 
     <div id="orientation_message" style="display:none">
-	<h4>Action Required: Fix Image Orientation</h3>
-
-	This image uses an 'Orientation' flag that some browsers ignore, which can cause it to appear sideways for other users. Please
-	rotate the image sideways and back to upright using the tools provided, <b>even if it actully displays <i>correctly</i> in the
-	preview</b>. This resets the flag and ensures your image displays consistently across all devices.<br><br>
+	Browsers and devices handle image orientation differently. If you are seeing this warning, please rotate the image sideways (if 
+	needed) and back to upright, <b>even if it looks OK to you</b>. This will ensure it is displayed correctly across all devices.
     </div>
 </div>
 
@@ -832,6 +833,22 @@ align-items: center;    /* This centers the 350px map horizontally */
                 if (typeof updateFormProgress == 'function')
                     updateFormProgress();
             }
+	    function resetDateControls(exifdate) {
+		if (exifdate && exifdate > '1000-01-01') {
+	            document.getElementById('imagetaken').value = exifdate.substr(0,10).replace(/:/g,'-'); //sometimes EXIF has ":"
+	            //if we have a date it very unlikly to not be known!
+	            document.getElementById('date-controls').style.display = 'none';
+	        } else {
+	            //might need to reshow them!
+		    document.getElementById('imagetaken').style.display = '';
+	            document.getElementById('date-controls').style.display = '';
+		}
+                document.getElementById('imagetaken').required = true;
+		document.getElementById('date-text').style.display = 'none';
+                document.getElementById('date-text').required = false;
+	    }
+
+
             </script>
         </div>
 
@@ -1040,6 +1057,9 @@ align-items: center;    /* This centers the 350px map horizontally */
 	<button type=submit class="btn btn-primary">I Agree - Submit Image</button>
 
 
+	<button type=button class="btn btn-secondary" onclick="navigateTo('/app/uploaded')" style="width:100%">Return to list Without Submitting</button>
+
+
 	<br><br>
 </form>
 
@@ -1096,11 +1116,7 @@ align-items: center;    /* This centers the 350px map horizontally */
                 saveMapPosition(map, 'Location from EXIF');
             }
 
-            if (data.imagetaken && data.imagetaken > '1000-01-01') {
-                document.getElementById('imagetaken').value = data.imagetaken.substr(0,10).replace(/:/g,'-'); //sometimes EXIF has ":"
-                //if we have a date it very unlikly to not be known!
-                document.getElementById('date-controls').innerHTML = '';
-            }
+            resetDateControls(data.imagetaken ?? '')
 
             if (data.orientation)
                 orientationMessage(data.orientation);

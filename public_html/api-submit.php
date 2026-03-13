@@ -46,9 +46,10 @@ function failMessage($text) {
 		failMessage($gs->errormsg);
 	}
 
-	$takendate = strtotime($_POST['imagetaken']);
-
-	if ($takendate > time()) {
+	$takendate = parseDate($_POST['imagetaken'] ?? '');
+	if (!$takendate) {
+	        failMessage("Invalid date format or out of range (must be > 1800)");
+	} elseif ($takendate > date('Y-m-d')) {
 		failMessage("Date taken in future");
 	}
 
@@ -59,7 +60,7 @@ function failMessage($text) {
 	if (!empty($_POST['use6fig']))
 		$um->setUse6fig(stripslashes($_POST['use6fig']));
 	$um->setDirection($_POST['view_direction']);
-	$um->setTaken(date('Y-m-d',$takendate));
+	$um->setTaken($takendate);
 	$um->setTitle($_POST['title']);
 	$um->setComment($_POST['comment']);
 

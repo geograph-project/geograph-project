@@ -960,9 +960,31 @@ function getFormattedDate($input) {
                 $date = str_replace(array_keys($translate),array_values($translate),$date);
         }
 
-
 	return $date;
 }
+
+//spectifically to cope with partial dates, and add the -00 to make it a DATE value
+function parseDate($input) {
+    if (empty($input) || $input < '1000-01-01')
+    	return '0000-00-00';
+
+    // Check for format YYYY or YYYY-MM or YYYY-MM-DD
+    // We regex it to ensure it's at least 1000 and valid
+    if (preg_match('/^(\d{4})(-(\d{2}))?(-(\d{2}))?$/', $input, $matches)) {
+        $year = (int)$matches[1];
+        $month = isset($matches[3]) ? (int)$matches[3] : 0;
+        $day = isset($matches[5]) ? (int)$matches[5] : 0;
+
+        if ($year < 1800 || $year > (int)date('Y') + 1) {
+            return false; // Out of valid range
+        }
+
+        // Return a consistent format like 1964-03-00
+        return sprintf('%04d-%02d-%02d', $year, $month, $day);
+    }
+    return false;
+}
+
 
 //credit: http://www.php.net/fsockopen
 function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {

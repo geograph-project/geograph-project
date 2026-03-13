@@ -118,19 +118,27 @@ function UploadPicture() {
 		returnXML();
 	}
 
-	$takendate = strtotime_uk($_POST['date']);
-	
-	if ($takendate > time()) {
+	//first try nice ISO format
+	$takendate = parseDate($_POST['date']);
+	if (!$takendate) {
+		//if not fall back (parseDate returns false, for dates it can't parse)
+		$timestamp = strtotime_uk($_POST['date']);
+		if ($timestamp)
+			$takendate = date('Y-m-d', $timestamp);
+		else {
+			$xml['status'] = "Invalid date format or out of range (must be > 1800)";
+			returnXML();
+		}
+	} elseif ($takendate > date('Y-m-d')) {
 		$xml['status'] = "Date taken in future";
 		returnXML();
 	}
-	
-	// set up attributes from uploaded data
 
+	// set up attributes from uploaded data
 	$um->setSquare($gs);
 	$um->setViewpoint($_POST['photographer']);
 	$um->setDirection($_POST['direction']);
-	$um->setTaken(date('Y-m-d',$takendate));
+	$um->setTaken($takendate);
 	$um->setTitle($_POST['title']);
 	$um->setComment($_POST['comments']);
 
