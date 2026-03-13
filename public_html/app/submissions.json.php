@@ -46,7 +46,7 @@ if (!empty($_GET['since'])) {
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 //needs to use gridimage/gridsquare because may be pending images. but join in gridimage_search, as may already be moderated, which case have the lat/long ready to use!
-$sql = "select gridimage_id,g.submitted,gs.grid_reference,g.title,nateastings,natnorthings,natgrlen,gs.reference_index,wgs84_lat,wgs84_long,g.imagetaken, g.user_id, g.moderation_status
+$sql = "select gridimage_id,g.submitted,gs.grid_reference,g.title,nateastings,natnorthings,natgrlen,gs.reference_index,wgs84_lat,wgs84_long,g.imagetaken, g.user_id, g.moderation_status, gs.x, gs.y
 	from gridimage g
 		inner join gridsquare gs using (gridsquare_id)
 		left join gridimage_search gi using (gridimage_id)
@@ -80,7 +80,11 @@ if ($count = $recordSet->RecordCount()) {
 	                $r['thumbnail'] = $image->getThumbnail(213,160,true);
 		}
 
-		if (empty($r['wgs84_lat']) || $r['wgs84_lat'] < 1) { //todo && !empty($r['nateastings']), because if 4fig subject, doesnt have nateastings!
+		if (empty($r['wgs84_lat']) || $r['wgs84_lat'] < 1) {
+			if (empty($r['nateastings'])) {
+				// because if 4fig subject, doesnt have nateastings!
+				list($r['nateastings'],$r['natnorthings'],$reference_index) = $conv->internal_to_national($r['x'],$r['y']);
+			}
 		        list($r['wgs84_lat'],$r['wgs84_long']) = $conv->national_to_wgs84($r['nateastings'],$r['natnorthings'],$r['reference_index']);
 		}
 
