@@ -33,7 +33,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
 	<script src="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.min.js"></script>
 
-<script src="{"/leaflet-search-master/src/leaflet-search.js"|revision}"></script>
+<script src="{"/js/leaflet-search-master/src/leaflet-search.js"|revision}"></script>
 <script src="{"/js/Leaflet.GeographGeocoder.js"|revision}"></script>
 
 	<script src="{"/js/Leaflet.GeographRecentUploads.js"|revision}"></script>
