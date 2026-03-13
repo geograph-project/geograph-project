@@ -13,7 +13,7 @@ function init() {
     const routes = {
         'home': { module: '/app/js/modules/home-view.js', title: 'Geograph' },
         'search': { module: '/app/js/modules/search-view.js', title: 'Search' },
-//        'search': { isIframe: true, url: '/finder/finder.php?inner=1', title: 'Search' },
+        'results': { isIframe: true, url: '/finder/finder.php?inner=1', title: 'Results' },
         'map': { isIframe: true, url: '/mapper/combined.php?mobile=1&inner=1', title: 'Map' },
 
         'upload': { isIframe: true, url: '/app/upload.php', title: 'Upload' },
@@ -21,6 +21,7 @@ function init() {
         'submit': { isIframe: true, url: '/app/submit.php', title: 'Submission' },
 
         'home2': { isIframe: true, url: '/app/home.php', title: 'Geograph' },
+        'capture': { isIframe: true, url: '/app/capture.php', title: 'Capture (alpha)' },
 
         'profile': { module: '/app/js/modules/profile-view.js', title: 'Profile' },
         'recent': { module: '/app/js/modules/recent-view.js', title: 'Recent Submissions' },
