@@ -89,7 +89,7 @@ function failMessage($text) {
 	$um->setLargestSize($_POST['largestsize']);
 
 	if (!empty($_POST['jpeg_data'])) {
-		$ok = $um->processDataURL($_POST['jpeg_data']);
+		$ok = $um->processDataURL($_POST['jpeg_data'], $_POST['jpeg_filename'] ?? null);
 	} elseif (!empty($_POST['jpeg_url'])) {
 		$ok = $um->processURL($_POST['jpeg_url']);
 	} elseif (!empty($_FILES['jpeg_exif']['tmp_name'])) {

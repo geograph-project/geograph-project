@@ -1,5 +1,9 @@
 {assign var="page_title" value="Geograph Quick Search"}
+{if $inner}
+{include file="_basic_begin.tpl"}
+{else}
 {include file="_std_begin.tpl"}
+{/if}
 
 {literal}
 <style type="text/css">
@@ -1323,4 +1327,9 @@ function convertZoomtoLen(num) {
 </script>
 {/literal}
 
-{include file="_std_end.tpl"}
+{if $inner}
+</body>
+</html>
+{else}
+	{include file="_std_end.tpl"}
+{/if}

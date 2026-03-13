@@ -35,5 +35,11 @@ init_session();
 $smarty = new GeographPage;
 
 $smarty->assign('tab',1);
+$cacheid = '';
 
-$smarty->display('finder_finder.tpl');
+if (!empty($_GET['inner'])) {
+	$smarty->assign('inner',1);
+	$cacheid = 'inner';
+}
+
+$smarty->display('finder_finder.tpl', $cacheid);
