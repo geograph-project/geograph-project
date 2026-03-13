@@ -130,7 +130,7 @@ async function displayStats() {
         const displayData = {
             "Total Images": data.images,
             "Personal Points": data.geosquares,
-            "Firsts": data.first,
+            "Firsts": data.points,
             "T-Points": data.tpoints,
             "Pending Uploads": data.pending
         };
