@@ -1,7 +1,7 @@
 export function render() {
     return `
 
-<form method="get" action="/finder/finder.php" class="search-form">
+<form method="get" name=theForm id=theForm action="/finder/finder.php" class="search-form">
     <div class="form-group">
         <label for="q">Search for:</label>
         <input type="search" name="q" id="q" placeholder="enter keywords">
@@ -15,11 +15,12 @@ export function render() {
         </div>
     </div>
 
-    <div class="checkbox-group">
-        <input type="checkbox" disabled id="my-images">
-        <label for="my-images">Only Search Your images (doesnt work yet)</label>
+    <div id="my-group" class="checkbox-group">
+        <input type="checkbox" name="contributor" id="my-images">
+        <label for="my-images">Only Search Your images</label>
     </div>
 
+    <input type="hidden" name="inner" value="true">
     <input type="hidden" name="standalone" value="true">
 
     <div class="form-group">
@@ -41,6 +42,9 @@ export function render() {
 
     .form-group {
         display: contents; /* Allows children to participate in the parent grid */
+    }
+    .form-group input[type=search] {
+        border-radius:10px;
     }
 
     .location-input {
@@ -97,4 +101,39 @@ export function onMount() {
             handleGeolocation();
         });
     }
+    if (window.GEOGRAPH_USER_PREFERENCES && window.GEOGRAPH_USER_PREFERENCES['user_id'])
+        document.getElementById('my-images').value = window.GEOGRAPH_USER_PREFERENCES['user_id']+" Myself";
+    else
+         document.getElementById('my-group').style.display='none';
+
+    document.getElementById('theForm').addEventListener('submit', submitForm);
+}
+
+function submitForm(event) {
+    event.preventDefault();
+
+    const form = document.getElementById('theForm');
+
+    // 1. Create a FormData object from the form
+    const formData = new FormData(form);
+
+    // 2. Pass that directly into URLSearchParams to get the encoded string
+    const queryString = new URLSearchParams(formData).toString();
+
+    //this submits the querysting to the /finder/finder.php - in an iframe!)
+    navigateTo('/app/results', {param:queryString});
+
+    return false;
+}
+
+//actully seems like best way to request navigation is via an event!
+function navigateTo(path, options) {
+    const isInsideIframe = window.self !== window.top;
+    const target = isInsideIframe ? window.parent : window;
+
+    const event = new CustomEvent('request-navigation', {
+        detail: { path, options },
+        bubbles: true
+    });
+    target.dispatchEvent(event);
 }
