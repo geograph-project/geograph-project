@@ -191,7 +191,7 @@ function rotateImage(degrees,force) {
 							$this.attr('width', $this.attr('height'));
 							$this.attr('height', tmp);
 						}
-					}).attr('src',"/submit.php?preview="+result.upload_id);
+					}).attr('src',"/calendar/upload.php?preview="+result.upload_id);
 
 					if (document.getElementById('rotation_warning')) {
 						document.getElementById('rotation_warning').style.display = 'none';

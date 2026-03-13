@@ -57,6 +57,9 @@ if (!empty($_GET['gid'])) {
 		$image = new GridImage();
 		$image->fastInit($irow);
 
+		//specifically use a different folder!
+		$CONF['photo_upload_dir'] = "/mnt/efs/calendar-files";
+
 		//in THIS case can CANT use uploadmanager, as it may it someone elses image!
 		$uploadmanager=new UploadManager;
 
@@ -71,13 +74,8 @@ if (!empty($_GET['gid'])) {
 	                $orginalfile = $uploadmanager->tmppath.'/'.($u%10).'/newpic_u'.$u.'_'.$id.'.original.jpeg';
 		}
 
-		$base = basename($orginalfile);
-	        $copy = "/mnt/efs/calendar-files/$base";
-		if (file_exists($copy)) {
-			readfile($copy);
-		} else {
-	                readfile($orginalfile);
-		}
+		//note still creating the path ourself, due tot he different user_id!
+	        readfile($orginalfile);
 	}
         exit;
 }

@@ -36,6 +36,10 @@ dieIfReadOnly();
 
 init_session();
 
+                //specifically use a different folder!
+                $CONF['photo_upload_dir'] = "/mnt/efs/calendar-files";
+		//but otherwise let uploadmanager handle it, so files get written with current user-id!
+
 $uploadmanager=new UploadManager;
 //display preview image?
 if (isset($_GET['preview']) && $uploadmanager->validUploadId($_GET['preview']))
@@ -130,7 +134,7 @@ if (isset($_REQUEST['id']))
 					 $smarty->assign('allow_same', 1);
 				}
 
-				$smarty->assign('preview_url', "/resubmit.php?preview=".$uploadmanager->upload_id);
+				$smarty->assign('preview_url', "/calendar/upload.php?preview=".$uploadmanager->upload_id);
 				$smarty->assign('preview_width', $uploadmanager->upload_width);
 				$smarty->assign('preview_height', $uploadmanager->upload_height);
 			} else {
