@@ -1,3 +1,5 @@
+import AppState from '/app/js/app-state.js';
+
 /**
  * Home View Module
  */
@@ -18,13 +20,18 @@ export function render() {
 
             <div class="content-body">
 		<button data-route="/app/upload" class="demo-btn">Upload Image</button>
-		<button data-route="/app/uploaded" class="demo-btn">Submit Image</button>
-		<button data-route="/app/profile" class="demo-btn">Submitted Images</button>
+		<button data-route="/app/uploaded" id="submit-btn" class="demo-btn">Submit Image</button>
+		<button data-route="/app/submit" id="resume-btn" class="demo-btn">Resume Submission</button>
+		<button data-route="/app/profile" class="demo-btn">Your Profile</button>
 
+		<button data-route="/app/capture" class="demo-btn">Capture/ Save Location</button>
 		<button data-route="/app/map" class="demo-btn">View Map</button>
+		<button data-route="/app/help" class="demo-btn">Getting Started</button>
 
 	        <button id="install-btn" class="demo-btn" style="display: none;">Add to Home Screen</button>
             </div>
+
+	    <p align=center><a href="/" target="_blank">Open Main Site</a><br><br>
 
             <p align=center><a href=# data-route="/app/settings">Settings &gt;</a>
 
@@ -40,6 +47,14 @@ function isMobile() {
 }
 
 export function onMount() {
+    const resumeBtn = document.getElementById('resume-btn');
+    if (!AppState.upload_id || AppState.upload_id === 'none')
+	resumeBtn.classList.add('hidden');
+
+console.log('home',AppState);
+
+    //todo should also hide submit-btn, if no uploaded!
+
     const installBtn = document.getElementById('install-btn');
     const installTip = document.querySelector('.install-tip');
 

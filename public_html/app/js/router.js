@@ -59,11 +59,22 @@ class Router {
         const menuOverlay = document.getElementById('menu-overlay');
         if (menuOverlay) menuOverlay.classList.add('hidden');
 
-        AppState.setState({
+        const newState = {
             isInnerPage: relativePath !== 'home',
             currentRoute: path,
             pageTitle: route.title || 'PMA'
-        });
+        };
+        if (options.message) {
+            try {
+                const data = JSON.parse(options.message);
+                if (data.transfer_id) {
+                    newState.upload_id = data.transfer_id;
+                }
+            } catch (e) {
+                console.warn("Failed to parse navigation options message", e);
+            }
+        }
+        AppState.setState(newState);
 
         if (!route.isIframe) {
             this.renderModule(route, options);
@@ -107,6 +118,7 @@ class Router {
 
         if (!iframe) {
             iframe = document.createElement('iframe');
+	    iframe.setAttribute('allow', 'geolocation');
 
             // Mark as "loading" before we change the source
             iframe.dataset.isTransitioning = "true";
