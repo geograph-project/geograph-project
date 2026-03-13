@@ -2222,7 +2222,7 @@ async function loadPlaceNames(eastings, northings, ri) {
 
   try {
     const script_name = (ri==2)?"ie_open_data.json.php":"os_open_names.json.php";
-    const response = await fetch(`/stuff/${script_name}?e=${eastings}&n=${northings}&live=1`);
+    const response = await fetch(`/stuff/${script_name}?e=${eastings}&n=${northings}`);
     const data = await response.json();
 
     isFetching = false;

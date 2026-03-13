@@ -124,7 +124,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	//calling our own API is ugly, but better than replicating all the code here?
 
-        $remote = get_internal_url($CONF['API_HOST']."/finder/bytag.json.php?q=hectad:$hectad&ddev=1&live=1", 3);
+        $remote = get_internal_url($CONF['API_HOST']."/finder/bytag.json.php?q=hectad:$hectad&ddev=1", 3);
 
         if (!empty($remote) && strlen($remote) > 110) {
 		$tags = json_decode($remote);
