@@ -31,6 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         failMessage("Date taken in future");
     }
 
+//TODO "date_partial"!!
+
+
     // set up attributes from uploaded data
     $um->setSquare($gs);
     $um->setViewpoint($_POST['photographer_gridref']);
@@ -82,26 +85,67 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         $method = 'app';
         $rc = $um->commit($method);
         if ($rc == "") {
+            ini_set('display_errors',0);
+
                         //clear user profile
                         $ab=floor($USER->user_id/10000);
                         $smarty = new GeographPage;
                         $smarty->clear_cache(null, "user$ab|{$USER->user_id}");
 
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Submission Status</title>
+    <link rel="stylesheet" href="<? echo smarty_modifier_revision('/app/assets/css/style.css'); ?>">
+    <style>
+        body { padding:10px; text-align: center; background-color: #e7ffe7;}
+        .idNum { font-size:2em; font-family: math, sans-serif; }
+        .nowrap { white-space: nowrap; }
+    </style>
+</head>
+<body>
 
-             print '<meta name="viewport" content="width=device-width, initial-scale=1">';
+    <h3 align=center>Submission Successful</h3>
+    <br>
+    <hr>
+    <br>
+    <p>ID: <a class="idNum" href="https://www.geograph.org.uk/photo/<?= (int)$um->gridimage_id ?>" target="_top"><?= (int)$um->gridimage_id ?></a> <span class=nowrap>(open photo page in browser)</span></p>
 
-             print "Submission Successful";
-             print "<hr>";
-             print "ID: <a href=\"https://www.geograph.org.uk/photo/{$um->gridimage_id}\">{$um->gridimage_id}</a>";
+    <?php if ($need_larger): ?>
+        <br>
+        <b>If you now need to add the full size Panorama</b>:
+        <a href="/resubmit.php?id=<?= (int)$um->gridimage_id ?>" class="btn  btn-primary">Add Larger Image</a>
+        (Opens in browser)<br><br>
+    <?php endif; ?>
 
-                  print "<hr>";
-                  print "<a href=/app/ target=_top>Continue</a>";
+    <button class="btn btn-primary" onclick="navigateTo('/app/uploaded')">Submit Another</button>
+
+    <button class="btn btn-primary" onclick="navigateTo('/app/upload')">Upload Another</button>
+
+    <a href="/app/" class="btn" target="_top" onclick="navigateTo('/app/home'); return false;">Back To Home</a>
+
+    <script>
+        function navigateTo(path, options) {
+            const isInsideIframe = window.self !== window.top;
+            const target = isInsideIframe ? window.parent : window;
+            const event = new CustomEvent('request-navigation', {
+                detail: { path, options },
+                bubbles: true
+            });
+            target.dispatchEvent(event);
+        }
+    </script>
+</body>
+</html>
+<?php
 
         } else {
             failMessage($rc);
         }
     }
-
 
     exit;
 }
@@ -725,7 +769,7 @@ align-items: center;    /* This centers the 350px map horizontally */
 	    <input type="text" name="title" placeholder="Give your photo a title" oninput="updateStickyTitle(this.value)" required>
 
         <div class="field-header">
-    	    <label>Description (optional)</label>
+    	    <label>Description</label>
             <span class="optional-label">(optional)</span>
         </div>
 	    <textarea name="comment" placeholder="optional longer description" rows="5"></textarea>
