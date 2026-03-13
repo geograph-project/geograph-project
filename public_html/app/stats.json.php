@@ -26,28 +26,10 @@ init_session();
 
 $USER->mustHavePerm("basic");
 
-$uploadmanager=new UploadManager;
-
-
-if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a login request!
-	//delete submisisons
-
-
-        // Get the raw POST data
-        $input = file_get_contents('php://input');
-        $data = json_decode($input, true);
-
-	if (is_array($data['ids'])) {
-		sleep(3); //fake!
-	}
-	//noop!
-
-} else {
-
-	$data = $uploadmanager->getUploadedFiles();
-
-}
-
+$USER->getStats();
+$db = $USER->_getDB();
+$data = $USER->stats;
+$data['pending'] = $db->getOne("select count(*) from gridimage where user_id = {$USER->user_id} and moderation_status = 'pending'");
 
 outputJSON($data);
 
