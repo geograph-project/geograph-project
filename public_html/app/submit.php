@@ -112,12 +112,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
     <br>
     <hr>
     <br>
-    <p>ID: <a class="idNum" href="https://www.geograph.org.uk/photo/<?= (int)$um->gridimage_id ?>" target="_top"><?= (int)$um->gridimage_id ?></a> <span class=nowrap>(open photo page in browser)</span></p>
+    <p>ID: <a class="idNum" href="https://www.geograph.org.uk/photo/<?= (int)$um->gridimage_id ?>" target="_blank"><?= (int)$um->gridimage_id ?></a> <span class=nowrap>(open photo page in browser)</span></p>
 
     <?php if ($need_larger): ?>
         <br>
         <b>If you now need to add the full size Panorama</b>:
-        <a href="/resubmit.php?id=<?= (int)$um->gridimage_id ?>" class="btn  btn-primary">Add Larger Image</a>
+        <a href="/resubmit.php?id=<?= (int)$um->gridimage_id ?>" target="_blank" class="btn btn-primary">Add Larger Image</a>
         (Opens in browser)<br><br>
     <?php endif; ?>
 
@@ -687,6 +687,8 @@ align-items: center;    /* This centers the 350px map horizontally */
                         <input type="text" name="grid_reference" value="" id="grid_reference" size="12" maxlength="14"
                          required pattern="^[A-Za-z]{1,2}\s*\d{1,5}\s*\d{1,5}$" title="Enter a 1 or 2 letter grid ref followed by an even number of digits (e.g., TQ 123 456 or O 12 34)"
                          onblur="checkGridref(this)" placeholder="(Subject Location)"/></span>
+
+		<!-- TODO - open gridsquare page -->
 
                 <div style=display:none><input type="checkbox" name="use6fig" value="1"/> <label for="use6fig">Only use 6 figures (<span class="nowrap"><a title="Explanation" href="https://www.geograph.org.uk/help/map_precision" target="_blank">Explanatioion</a><img style="padding-left:2px;" alt="New Window" title="opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span>)</label></div>
             <br>
