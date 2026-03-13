@@ -112,16 +112,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
     <button id="upload-btn" class="btn btn-upload hidden">Start Upload</button>
 
     <div id="post-upload-actions" class="hidden">
+        <button class="btn btn-upload" onclick="navigateTo('/app/uploaded')">Proceed to Submission</button>
         <div id="multi-actions">
-            <button class="btn btn-upload" id="btnFirst">Submit First Image</button>
-            <button class="btn btn-secondary" id="btnLast">Submit Last Image</button>
+            <button class="btn btn-secondary" id="btnFirst">Submit First Image</button>
+            <!--button class="btn btn-secondary" id="btnLast">Submit Last Image</button-->
         </div>
         <div id="single-actions" class="hidden">
-            <button class="btn btn-upload" id="btnSingle">Submit Image Now</button>
+            <button class="btn btn-secondary" id="btnSingle">Submit Image Now</button>
         </div>
     </div>
 
-    <div class="settings">
+    <div class="settings hidden">
         <label>
             <input type="checkbox" id="auto-proceed">
             Proceed directly after single upload
@@ -129,8 +130,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
     </div>
 </div>
 
-<!-- note we are using a local 'patched' version of exif.js, that deals with specific bugs -->
-<!--script type="text/javascript" src="/viewer/exif.js"></script!-->
 <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js"></script>
 <script src="<?php echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
 <script src="<?php echo smarty_modifier_revision("/js/submission_utils.js"); ?>"></script>
@@ -194,6 +193,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             file: file,
             dataUri: null
         }));
+
+        document.querySelector('.settings').classList.toggle('hidden', files.length>1);
 
         renderUI();
     }
