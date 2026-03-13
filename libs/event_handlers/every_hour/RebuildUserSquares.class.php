@@ -44,13 +44,12 @@ class RebuildUserSquares extends EventHandler
 		$this->Execute("DROP TABLE IF EXISTS user_gridsquare_tmp");
 
 		$create = "CREATE TABLE user_gridsquare_tmp
-                                (UNIQUE INDEX (user_id,`grid_reference`),INDEX(`grid_reference`),SPATIAL KEY (`point_xy`))
-                                ENGINE=MyISAM";
+                                (UNIQUE INDEX (user_id,`grid_reference`),INDEX(`grid_reference`),SPATIAL KEY (`point_xy`))";
 		$insert = "INSERT INTO user_gridsquare_tmp";
 		$select = " SELECT user_id,`grid_reference`,x,y,reference_index,
                                 sum(moderation_status='geograph') as has_geographs,count(*) as imagecount,
                                 max(ftf) as max_ftf, sum(points = 'tpoint') as tpoints, SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))) as has_recent,
-				GROUP_CONCAT(gridimage_id ORDER BY ftf>0 desc,seq_no LIMIT 1) AS first, max(gridimage_id) as `last`, `point_xy`,
+				GROUP_CONCAT(gridimage_id ORDER BY ftf>0 desc,seq_no LIMIT 1)+0 AS first, max(gridimage_id) as `last`, `point_xy`,
 				SUM(LENGTH(comment)) AS comment_len
                                 FROM gridimage_search
 				WHERE \$where
