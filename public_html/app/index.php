@@ -3,10 +3,13 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+//TODO, need to force autologin!
 
 //$smarty = new GeographPage;
 
 $USER->mustHavePerm('basic');
+
+$mtime = filemtime(__FILE__);
 
 /**
  * Helper to get versioned URLs mirroring the site's logic
@@ -14,18 +17,18 @@ $USER->mustHavePerm('basic');
 function pma_revision($filename) {
     global $REVISIONS, $CONF, $LIVE;
 
-    if (isset($LIVE[$filename]) || true) {
-        $fullPath = $_SERVER['DOCUMENT_ROOT'] . $filename;
+    $fullPath = $_SERVER['DOCUMENT_ROOT'] . $filename;
+
+		global $mtime;
+		if (file_exists($fullPath))
+			$mtime = max($mtime,filemtime($fullPath));
+
+    if (isset($LIVE[$filename]) || !isset($REVISIONS[$filename])) {
         return $filename . "?" . (file_exists($fullPath) ? filemtime($fullPath) : time());
-    } elseif (isset($REVISIONS[$filename])) {
-        return $CONF['STATIC_HOST'] . preg_replace('/\.(js|css)$/', ".v{$REVISIONS[$filename]}.$1", $filename);
     } else {
-        // Fallback to filemtime for development
-        $fullPath = $_SERVER['DOCUMENT_ROOT'] . $filename;
-        if (file_exists($fullPath)) {
-            return $filename . "?v=" . filemtime($fullPath);
-        }
-        return $filename;
+        return preg_replace('/\.(js|css)$/', ".v{$REVISIONS[$filename]}.$1", $filename);
+	//for now, doesnt work leading them of CDN. As on cloudflare doesnt really matter loading them from www anyway!
+        return $CONF['STATIC_HOST'] . preg_replace('/\.(js|css)$/', ".v{$REVISIONS[$filename]}.$1", $filename);
     }
 }
 
@@ -64,6 +67,7 @@ function generate_import_map($dir, $basePath = '/app/js/') {
 
     <script>
         window.GEOGRAPH_USER_PREFERENCES = {
+	    user_id: <? echo intval($USER->user_id); ?>,
             uploadMaxDimension: <?= json_encode($USER->upload_size ?: 65536) ?>
         };
     </script>
@@ -125,12 +129,14 @@ function generate_import_map($dir, $basePath = '/app/js/') {
             <ul>
                 <li><a href="/" target="_blank">Open Main Site</a></li>
                 <li><a href="/app/settings" data-route="/app/settings">Settings</a></li>
-                <li><a href="/app/recent" data-route="/app/recent">Recent Submissions</a></li>
                 <li><a href="/app/help" data-route="/app/help">App Help</a></li>
                 <li><a href="/app/contact" data-route="/app/contact">Contact Us</a></li>
+                <li><a href="/app/contact" data-route="/app/contact">Report a Concern</a></li>
                 <li><a href="/app/tos" data-route="/app/tos">Terms of Service</a></li>
                 <li><a href="/discuss/" target="_blank">Open Discussion Forum</a></li>
+                <li><a href="https://forms.gle/T69BLFZyeQP9qfMKA" target="_blank">App Feedback</a></li>
 	        <li><a href="javascript:history.go(0)" style=color:silver>Reload App (during dev)</a></li>
+	        <li style=color:green>V0.93<small>.<? echo date('mdH',$mtime); ?></small></li>
             </ul>
         </nav>
     </div>
