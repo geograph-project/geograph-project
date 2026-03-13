@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             --accent: #6c757d;
         }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .card { background: white; padding: 24px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; }
+        .card { --background: white; padding: 24px; border-radius: 20px; --box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; }
 
 @media screen and (max-width: 500px) {
         body {
