@@ -41,7 +41,7 @@ init_session_or_cache($seconds, 900); //cache publically, and privately
 
 
 //do we trust it? like hell we do! alphanumerics only please!
-if (!preg_match('/^[a-z0-9_]+$/' , $page))
+if (!preg_match('/^[a-z0-9_-]+$/' , $page))
 {
 	$page='404';
 }
