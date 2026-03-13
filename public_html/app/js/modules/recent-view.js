@@ -16,13 +16,16 @@ export function render() {
 }
 
 function formatTakenDate(dateStr) {
+    if (dateStr < '1000-01-01')
+        return 'unknown';
+
     const date = new Date(dateStr);
     const now = new Date();
-    
+
     // Format: Wed 4th Jan
     const options = { weekday: 'short', day: 'numeric', month: 'short' };
     let formatted = date.toLocaleDateString('en-GB', options);
-    
+
     // Add ordinal suffix (st, nd, rd, th)
     const day = date.getDate();
     const suffix = (day % 10 === 1 && day !== 11) ? 'st' : (day % 10 === 2 && day !== 12) ? 'nd' : (day % 10 === 3 && day !== 13) ? 'rd' : 'th';
@@ -39,7 +42,7 @@ function formatRelativeTime(dateStr) {
     const past = new Date(dateStr.replace(' ', 'T'));
     const now = new Date();
     const diffInSeconds = Math.floor((now - past) / 1000);
-    
+
     const days = Math.floor(diffInSeconds / 86400);
     const hours = Math.floor(diffInSeconds / 3600);
 
