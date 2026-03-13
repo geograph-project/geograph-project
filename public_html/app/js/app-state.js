@@ -55,7 +55,7 @@ const AppState = {
     syncWithDOM() {
         // Handle bar sizing
         if (this.isInnerPage) {
-            document.body.classList.add('is-inner');
+//            document.body.classList.add('is-inner');
         } else {
             document.body.classList.remove('is-inner');
         }
