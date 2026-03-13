@@ -77,8 +77,15 @@ function init() {
 
     // Listen for updates from iframes
     window.addEventListener('update-app-state', (e) => {
+        const newState = e.detail;
+
+        // Set the "Dirty Bit" when the upload is finished
+        if (newState.upload_id && newState.upload_id === 'none') {
+            newState.newSubmission = true;
+        }
+
         // We explicitly bridge the event to the state
-        AppState.setState(e.detail);
+        AppState.setState(newState);
     });
 
     // Simple Placeholder Worker (just to allow installation for now)

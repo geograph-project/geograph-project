@@ -98,7 +98,7 @@ class Router {
 
         if (!iframe) {
             iframe = document.createElement('iframe');
-	    iframe.setAttribute('allow', 'geolocation');
+            iframe.setAttribute('allow', 'geolocation');
 
             // Mark as "loading" before we change the source
             iframe.dataset.isTransitioning = "true";
@@ -119,6 +119,13 @@ class Router {
             iframe.id = `iframe-${id}`;
             this.iframeContainer.appendChild(iframe);
             this.iframes[id] = iframe;
+
+        } else if (baseUrl == '/app/submit.php' && AppState.newSubmission) {
+            //we need to explicitly force it to refresh
+            iframe.dataset.isTransitioning = "true";
+            iframe.src = finalUrl;
+
+            AppState.setState({ newSubmission: false });
 
         } else if (options.param) {
             iframe.dataset.isTransitioning = "true";
