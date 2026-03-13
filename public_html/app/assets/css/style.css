@@ -263,11 +263,11 @@ body.dark-mode .view h2 {
 
 /* 1. The Container: Handles the layout of the tiles */
 .content-body {
-    display: grid;
-    /* This creates as many 100px columns as will fit, then stops */
-    grid-template-columns: repeat(auto-fill, 100px); 
-    gap: 15px; /* The "nice gap" between buttons */
-    padding: 20px;
+  display:flex;
+  flex-wrap: wrap;
+  justify-content: center; /* This centers the items when they don't fill the row */
+  gap: 15px;
+  padding: 20px;
 }
 
 /* 2. The Buttons: Defined as 100px squares */
@@ -320,7 +320,9 @@ input[type="search"] {
         /* Custom Buttons */
         .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
         .btn-primary { background: var(--primary); color: white; width: 100%; box-sizing: border-box; }
-        .btn-secondary { background: #e9ecef; color: #333; width: 100%; }
+        .btn-secondary { background: #e9ecef; color: #333; width: 100%; border:1px solid silver; }
+        .btn-danger { background: pink; color: #333; width: 100%; border:1px solid silver; }
+
 
 
 .controls {
@@ -337,23 +339,38 @@ input[type="search"] {
     font-weight: bold;
 }
 
+.controls btn {
+	width:inherit; /*normal buttons are 100% */
+}
+.controls select {
+	border-radius:5px;
+	padding:4px;
+	align-self: center; /* or flex-start */
+}
+
 .submissions-grid {
-    display: grid;
-    /* Aligns with your 100px button logic */
-    grid-template-columns: repeat(auto-fill, 100px);
-    gap: 10px;
-    padding-top: 20px;
-    justify-content: center
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* This centers the items when they don't fill the row */
+  gap: 15px;
+  padding: 20px;
 }
 
 .submission-tile {
+    position-relative;
     width: 100px;
     height: 100px;
     position: relative;
     overflow: hidden;
     border-radius: 8px;
     background: #eee; /* Fallback color while loading */
+    touch-action: pan-y; 
+    cursor: pointer;
+    user-select:none;
+    -webkit-tap-highlight-color: transparent; /* Removes the flash on iOS */
 }
+
+.delete-check { position: absolute; top: 5px; left: 5px; z-index: 10; }
 
 .submission-tile img {
     width: 100%;
@@ -430,11 +447,17 @@ input[type="search"] {
 
 .review-item {
     display: flex;
+    flex-direction: column; /* Stack top row and bottom row */
     gap: 15px;
-    background: #f9f9f9;
+    --background: #f9f9f9;
     padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+    --border-radius: 8px;
+    --border: 1px solid #ddd;
+}
+
+.review-main-row {
+    display: flex; /* Image and fields stay in a row */
+    gap: 15px;
 }
 
 @media screen and (max-width: 500px) {
@@ -445,7 +468,7 @@ input[type="search"] {
 		padding:0;
 	}
 	.review-item {
-		padding:0;
+		padding:10px 0;
 		gap:3px;
 	}
 	.review-item span {
@@ -462,7 +485,6 @@ input[type="search"] {
     object-fit: cover;
     border-radius: 4px;
 }
-
 .review-fields {
     display: flex;
     flex-direction: column;
@@ -475,10 +497,21 @@ input[type="search"] {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-family: inherit;
+    font-family: Georgia;
+    font-size:1em;
 }
 
 .review-fields textarea {
     height: 60px;
     resize: vertical;
+}
+.meta-info {
+    /* full with at the bttom */
+}
+
+.meta-info sup {
+	font-size:0.5em;
+}
+.meta-info strong {
+	white-space: nowrap;
 }

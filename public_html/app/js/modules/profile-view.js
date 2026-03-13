@@ -2,10 +2,14 @@ import { escapeHTML } from '/app/js/utils.js';
 
 export function render() {
     return `
-        <div class="view profile-view">
-            <h2>Your Submissions / <a href="#" data-route="/app/recent">Review</a></h2>
+        <div class="view profile-view" style="text-align:center">
 
-            <div class="controls" style="margin-bottom: 20px;">
+    	    <div id="statsCard" class="stats-grid"></div>
+
+            <button class="btn btn-primary" data-route="/app/recent">Edit Recent Submissions</button>
+
+            <div class="controls">
+	        	Submissions:
                 <label id="recent-label">
                     <input type="radio" name="view-filter" value="recent" checked> Last 3 Days <span id="counter"></span>
                 </label>
@@ -23,7 +27,8 @@ export function render() {
                     <h4 id="modal-title"></h4>
                     <img id="modal-img" src="" alt="Draft Preview">
                     <div class="modal-controls">
-			<a href="#" id="full-page-link" class="btn">View Photo Page</a>
+			<a href="#" id="full-page-link" target="_blank" class="btn">View Photo Page</a>
+			<a href="#" id="edit-page-link" target="_blank" class="btn">Open Edit Page</a>
                         <button id="close-modal" class="btn btn-secondary">Close</button>
                     </div>
                 </div>
@@ -31,7 +36,49 @@ export function render() {
         </div>
 
 	<br>
-	<p>Only shows a submissions (including Pending) from last 3 days, view <a href="/profile.php">Full site Profile</a> for more.
+	<p>Only shows a submissions (including Pending) from last 3 days, view <a href="/profile.php" target="_blank">Full site Profile</a> for more.
+
+	<p id="timestamp"></p>
+
+<style>
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.stat-tile {
+    background: #f4f4f9;
+    padding: 15px 10px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+.stat-value {
+    --display: block;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.stat-label {
+    color: #666;
+    font-size:0.75em;
+    --text-transform: uppercase;
+}
+
+p#timestamp {
+	padding:10px;
+}
+
+.controls {
+    background: #f4f4f9;
+
+}
+</style>
+
     `;
 }
 
@@ -74,9 +121,54 @@ async function loadSubmissions(filter = 'recent') {
     }
 }
 
+async function displayStats() {
+   const url = "/app/stats.json.php";
+   try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        const displayData = {
+            "Total Images": data.images,
+            "Personal Points": data.geosquares,
+            "Firsts": data.first,
+            "T-Points": data.tpoints,
+            "Pending Uploads": data.pending
+        };
+
+        let htmlOutput = '';
+        for (const [label, value] of Object.entries(displayData)) {
+        	if (value > 0) {
+                const formattedValue = value.toLocaleString();
+
+    	        htmlOutput += `
+    	            <div class="stat-tile">
+    	                <span class="stat-value">${formattedValue}</span>
+    	                <span class="stat-label">${label}</span>
+            	    </div>`;
+        	}
+        }
+        document.getElementById('statsCard').innerHTML = htmlOutput;
+
+        // Add the timestamp note
+        if (data.updated && htmlOutput.length) {
+    	    // Calculate time difference
+    	    const updatedDate = new Date(data.updated?.replace(' ', 'T'));
+    	    const now = new Date();
+    	    const diffInHours = Math.floor((now - updatedDate) / (1000 * 60 * 60));
+    	    document.getElementById('timestamp').innerHTML = `<em>Stats updated ${diffInHours} hours ago</em>`;
+        } else {
+        	//just for testig on staging
+        	document.getElementById('timestamp').innerHTML = `<em>Stats updated 6 hours ago (fake)</em>`;
+        }
+   } catch (err) {
+       console.log(err);
+   }
+}
+
 export async function onMount() {
     // Initial Load
     loadSubmissions('recent');
+    displayStats();
 
     // Handle Toggle Changes
     document.querySelectorAll('input[name="view-filter"]').forEach(radio => {
@@ -90,6 +182,7 @@ export async function onMount() {
     const modalTitle = document.getElementById('modal-title');
     const modalImg = document.getElementById('modal-img');
     const fullPageLink = document.getElementById('full-page-link');
+    const editPageLink = document.getElementById('edit-page-link');
 
         // Delegate click events to the grid
         gridContainer.addEventListener('click', (e) => {
@@ -103,6 +196,7 @@ export async function onMount() {
             modalTitle.textContent = tile.title;
             modalImg.src = largeUrl;
             fullPageLink.href = `/photo/${id}`;
+            editPageLink.href = `/editimage.php?id=${id}`;
 
             modal.showModal(); // Opens as a top-layer backdrop
         });
