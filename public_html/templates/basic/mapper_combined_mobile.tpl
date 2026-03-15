@@ -261,7 +261,7 @@ svg.svgFilter {
 {/literal}
 {dynamic}
 	{if $gridref}
-		var wgs84=GT_WGS84().parseGridRef('{$gridref}'); //Its a factory method
+		var wgs84=GT_WGS84.parseGridRef('{$gridref}'); //Its a factory method
 		if (wgs84) mapOptions.center = L.latLng( wgs84.latitude, wgs84.longitude );
 		if (wgs84) mapOptions.zoom = 13;
 	{elseif $ireland}
