@@ -154,11 +154,16 @@ async function displayStats() {
     	    // Calculate time difference
     	    const updatedDate = new Date(data.updated?.replace(' ', 'T'));
     	    const now = new Date();
-    	    const diffInHours = Math.floor((now - updatedDate) / (1000 * 60 * 60));
-    	    document.getElementById('timestamp').innerHTML = `<em>Stats updated ${diffInHours} hours ago</em>`;
-        } else {
-        	//just for testig on staging
-        	document.getElementById('timestamp').innerHTML = `<em>Stats updated 6 hours ago (fake)</em>`;
+	 	const diffInMinutes = Math.floor(now - updatedDate / (1000 * 60));
+		const diffInHours = Math.floor(diffInMinutes / 60);
+
+		let timeDisplay;
+		if (diffInHours > 0) {
+		    timeDisplay = `${diffInHours} hours ago`;
+		} else {
+		    timeDisplay = `${diffInMinutes} minutes ago`;
+		}
+		document.getElementById('timestamp').innerHTML = `<em>Stats updated ${timeDisplay}</em>`;
         }
    } catch (err) {
        console.log(err);
