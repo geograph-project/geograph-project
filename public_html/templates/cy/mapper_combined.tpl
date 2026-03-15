@@ -169,11 +169,9 @@
 {/literal}
 {dynamic}
 	{if $gridref}
-		 var wgs84=new GT_WGS84();
-                 wgs84 = wgs84.parseGridRef('{$gridref}'); //technically a factory method
-
-                 if (wgs84)
-                          mapOptions.center = L.latLng( wgs84.latitude, wgs84.longitude );
+		var wgs84=GT_WGS84().parseGridRef('{$gridref}'); //Its a factory method
+		if (wgs84) mapOptions.center = L.latLng( wgs84.latitude, wgs84.longitude );
+		if (wgs84) mapOptions.zoom = 13;
 	{/if}
 	{if $zoom}
 		mapOptions.zoom = {$zoom};
