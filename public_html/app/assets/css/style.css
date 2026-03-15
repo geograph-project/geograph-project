@@ -352,14 +352,14 @@ input[type="search"] {
   display: flex;
   flex-wrap: wrap;
   justify-content: center; /* This centers the items when they don't fill the row */
-  gap: 15px;
+  gap: 12px;
   padding: 20px;
 }
 
 .submission-tile {
     position-relative;
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     position: relative;
     overflow: hidden;
     border-radius: 8px;
