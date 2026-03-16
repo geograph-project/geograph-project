@@ -299,7 +299,7 @@ if (!empty($upload_to_process) && !empty($uploadmanager) && $uploadmanager->uplo
 	//read from $_POST['jpeg_filename'] as well - used when image has been client side resized
 	$original_filename = $_POST['jpeg_filename'] ?? $_FILES['jpeg_exif']['name'] ?? $uploadmanager->name ?? null;
 
-	if (!empty($original_file) && preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",$original_filename,$m)) {
+	if (!empty($original_filename) && preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",$original_filename,$m)) {
 		if (strlen($m[3]) != strlen($m[4])) {
 			if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{4,10})(\b|[A-Za-z_])/i",$original_filename,$m)) {
 				if (strlen($m[3])%2==0) {
