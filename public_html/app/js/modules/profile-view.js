@@ -1,4 +1,4 @@
-import { escapeHTML } from '/app/js/utils.js';
+import { escapeHTML, navigateTo } from '/app/js/utils.js';
 
 export function render() {
     return `
@@ -6,7 +6,12 @@ export function render() {
 
     	    <div id="statsCard" class="stats-grid"></div>
 
-            <button class="btn btn-primary" data-route="/app/recent">Edit Recent Submissions</button>
+            <button id="edit-btn" class="btn btn-secondary hidden" data-route="/app/recent">Edit Recent Submissions</button>
+
+		<form id="search-form" class="search-container">
+		    <input type="search" name="q" placeholder="Search your submissions..." enterkeyhint="search">
+		    <button type="submit" aria-label="Search">&#x1F50D;</button>
+		</form>
 
             <div class="controls">
 	        	Submissions:
@@ -14,7 +19,7 @@ export function render() {
                     <input type="radio" name="view-filter" value="recent" checked> Last 3 Days <span id="counter"></span>
                 </label>
                 <label style="margin-left: 15px;">
-                    <input type="radio" name="view-filter" value="all" id="all-checkbox"> Last 100 Images
+                    <input type="radio" name="view-filter" value="all" id="all-checkbox"> Last <span id="counter2">100</span> Images
                 </label>
             </div>
 
@@ -41,6 +46,28 @@ export function render() {
 	<p id="timestamp"></p>
 
 <style>
+
+.search-container {
+    display: flex;
+    gap: 8px; /* Space between input and button */
+    width: 100%;
+}
+
+.search-container input {
+    flex: 1; /* Makes the input grow to fill available space */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.search-container button {
+    padding: 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #f0f0f0;
+    cursor: pointer;
+}
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -82,6 +109,8 @@ p#timestamp {
     `;
 }
 
+
+
 async function loadSubmissions(filter = 'recent') {
     const gridContainer = document.getElementById('submissions-grid');
     const url = filter === 'all'
@@ -100,13 +129,18 @@ async function loadSubmissions(filter = 'recent') {
                 document.getElementById('recent-label').style.display='none';
                 document.getElementById('all-checkbox').checked = true;
 		loadSubmissions('all')
-            }
+                document.getElementById('edit-btn').style.display='none'; //currently only edits 'recent', not last 100 anyway
+            } else {
+		document.getElementById('search-form').style.display='none';
+	    }
             gridContainer.innerHTML = '<p>No submissions found.</p>';
             return;
         }
 
         if (filter == 'recent')
 		 document.getElementById('counter').textContent = `[${data.length}]`;
+	else //might as well make the count accurate, if there are less than 100
+		 document.getElementById('counter2').textContent = data.length;
 
         gridContainer.innerHTML = data.map(item => `
             <div class="submission-tile"
@@ -174,6 +208,14 @@ export async function onMount() {
     // Initial Load
     loadSubmissions('recent');
     displayStats();
+
+    document.getElementById('search-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = e.target.elements.q.value;
+        const userId = window.GEOGRAPH_USER_PREFERENCES['user_id'];
+
+        navigateTo('/app/results', {param: `q=${encodeURIComponent(query)}&contributor=${encodeURIComponent(userId)}+Myself`});
+    });
 
     // Handle Toggle Changes
     document.querySelectorAll('input[name="view-filter"]').forEach(radio => {

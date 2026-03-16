@@ -1,3 +1,5 @@
+import { escapeHTML, navigateTo } from '/app/js/utils.js';
+
 export function render() {
     return `
 
@@ -104,7 +106,7 @@ export function onMount() {
     if (window.GEOGRAPH_USER_PREFERENCES && window.GEOGRAPH_USER_PREFERENCES['user_id'])
         document.getElementById('my-images').value = window.GEOGRAPH_USER_PREFERENCES['user_id']+" Myself";
     else
-         document.getElementById('my-group').style.display='none';
+        document.getElementById('my-group').style.display='none';
 
     document.getElementById('theForm').addEventListener('submit', submitForm);
 }
@@ -126,14 +128,3 @@ function submitForm(event) {
     return false;
 }
 
-//actully seems like best way to request navigation is via an event!
-function navigateTo(path, options) {
-    const isInsideIframe = window.self !== window.top;
-    const target = isInsideIframe ? window.parent : window;
-
-    const event = new CustomEvent('request-navigation', {
-        detail: { path, options },
-        bubbles: true
-    });
-    target.dispatchEvent(event);
-}
