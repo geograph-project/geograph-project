@@ -628,6 +628,101 @@ align-items: center;    /* This centers the 350px map horizontally */
 #orientation_message {
     background-color:pink;
 }
+.field-header .info-icon {
+    position: relative; top:0 !important; left:10px;
+}
+
+.field-header .info-icon::after {
+    left:30px; right:unset;
+}
+
+    </style>
+
+    <!-- THIS IS A SEPERATE STYLE BLOCK, THAT GETS DUPLCIATED INTO PARENT -->
+	<style id="styleforRemoteBlock">
+	    #remoteEditorOverlay {
+	        position: fixed; left: 0; width: 100vw; background: white;
+	        z-index: 999999; display: none; flex-direction: column; overflow: hidden;
+	    }
+	    .remote-header { 
+	        height: 48px; background: #f8f9fa; display: flex; 
+	        justify-content: space-between; align-items: center; padding: 0 12px;
+	        border-bottom: 1px solid #ddd;
+	    }
+	    .toggle-group { display: flex; background: #eee; border-radius: 6px; padding: 2px; }
+	    .toggle-btn { 
+	        border: none; padding: 6px 12px; font-size: 13px; border-radius: 4px; 
+	        cursor: pointer; background: transparent; 
+	    }
+	    .toggle-btn.active { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); font-weight: bold; }
+	    
+	    .remote-body { position:relative; flex: 1; display: flex; flex-direction: column; padding: 0px; background-color:#f8f9fa; }
+	    
+	    /* Input visibility controls */
+	    #remoteTitleInput, #remoteDescArea { width: 100%; border: 1px solid #eee; font-size: 18px; outline: none; box-sizing: border-box; font-family: Georgia, Verdana, Arial, serif}
+	    #remoteTitleInput { height: 45px; padding: 0 10px; }
+	    #remoteDescArea { flex: 1; padding: 10px; resize: none; max-width:640px; }
+
+	    .remote-suggestions { 
+	        height: 50px; --background: #222; color: white; display: flex; 
+	        align-items: center; gap: 10px; padding: 0 10px; overflow-x: auto; flex-shrink: 0;
+	    }
+	    .suggestion-pill { background: #444; color:white; padding: 6px 12px; border-radius: 4px; font-size: 13px; white-space: nowrap; }
+
+	/* Portrait: Show both at once */
+	@media (orientation: portrait) {
+	    .remote-body {
+	        display: flex;
+	        flex-direction: column;
+	        gap: 15px;
+	    }
+	    #remoteTitleInput { display: block !important; }
+	    #remoteDescArea { display: block !important; flex: 1; }
+	    
+	    /* Hide the toggles in portrait as they aren't needed */
+	    .toggle-group { display: none !important; }
+	}
+
+/* The warning state on the input itself */
+.input-warning {
+    background-color: #fff9c4 !important;
+    border: 1px solid #fbc02d !important;
+}
+
+/* The Icon as a sibling */
+.info-icon {
+    position: absolute;
+    /* Use 'right' and a top offset based on the input's position */
+    right: 12px;
+    background: #fbc02d;
+    color: #000;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    display: none;
+}
+
+/* Position specifically for title vs desc */
+#titleInfo { top: 12px; }
+#descInfo { bottom: 62px; } /* Adjust based on your button bar height */
+
+.info-icon::after {
+    content: attr(data-error);
+    display: none;
+    position: absolute;
+    right: 12px;
+    background: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+.info-icon:active::after { display: block; }
 
     </style>
 
@@ -781,16 +876,22 @@ align-items: center;    /* This centers the 350px map horizontally */
 
 	<div class="content">
         <div class="field-header">
-    	    <label>Title</label>
+            <div style="display: flex; align-items: center;">
+                <label>Title</label>
+                <span id="titleInfo" class="info-icon" data-error="">!</span>
+            </div>
             <span class="optional-label">(required)</span>
         </div>
-	    <input type="text" name="title" placeholder="Give your photo a title" oninput="updateStickyTitle(this.value)" required>
+	    <input type="text" name="title" maxlength="128" id="localTitle" placeholder="Give your photo a title" oninput="updateStickyTitle(this.value)" required>
 
         <div class="field-header">
-    	    <label>Description</label>
+            <div style="display: flex; align-items: center;">
+        	    <label>Description</label>
+                <span id="descInfo" class="info-icon" data-error="">!</span>
+            </div>
             <span class="optional-label">(optional)</span>
         </div>
-	    <textarea name="comment" placeholder="optional longer description" rows="5"></textarea>
+	    <textarea name="comment" id="localDesc" placeholder="optional longer description" rows="5"></textarea>
 
         <div id="suggestion-pill-bar" class="hidden no-results"></div>
 
@@ -1062,6 +1163,28 @@ align-items: center;    /* This centers the 350px map horizontally */
 
 	<br><br>
 </form>
+
+
+    <!--- this is just a template that gets cloned, not the active suggestion bar! (should not be inside the actual form) -->
+    <div id="blockForRemote" style="display:none">
+        <div class="remote-header">
+            <img id="remotePreview" height=50>
+            <div class="toggle-group">
+                <button class="toggle-btn" id="btnModeTitle">Title</button>
+                <button class="toggle-btn" id="btnModeDesc">Description</button>
+            </div>
+            <button id="remoteCloseBtn" style="background:#007bff; color:white; border:none; padding:8px 15px; border-radius:4px;">Done</button>
+        </div>
+        <div class="remote-body">
+            <input type="text" id="remoteTitleInput" maxlength="128" placeholder="Enter Title...">
+            <textarea id="remoteDescArea" maxlength="65000" placeholder="Enter Optional Description..."></textarea>
+<div class="info-icon" id="titleInfo" title="Style Hint">!</div>
+<div class="info-icon" id="descInfo" title="Style Hint">!</div>
+
+        </div>
+    	<div class="remote-suggestions" id="remoteSuggBar"></div>
+    </div>
+
 
 <script src="/js/to-title-case.js"></script>
 <script>
@@ -2153,94 +2276,264 @@ map.on('mousedown dragstart', function(e) {
 
 
 // ---------------------
+// The title and description get a full screen editor, mainly to make he suggestionsBar visible, but really helps on small screns, where the text area might be partially obscured or scorlled out of view. 
 
-const suggestionsBar = document.getElementById('suggestion-pill-bar');
-let lastFocusedElement = null;
 
-function syncBarPosition() {
-    if (!window.visualViewport) return;
-    if (suggestionsBar.classList.contains('no-results')) return;
+    // used in both modes
+    const localTitle = document.getElementById('localTitle'); // <input> in iframe
+    const localDesc = document.getElementById('localDesc');   // <textarea> in iframe
 
-    // The amount of space the keyboard is currently occupying
-    const keyboardHeight = window.innerHeight - window.visualViewport.height;
+    const isSmall = window.matchMedia("(any-pointer: coarse) and (max-width: 900px) and (max-height: 900px)").matches;
 
-    // The current scroll offset of the visual viewport
-    // This ensures that even if you scroll the page, the bar stays locked to the bottom
-    const offsetTop = window.visualViewport.offsetTop;
+    //used by both modes (gets set to right context)
+    let suggBar = null;
+    let searchRoot = null;
 
-    // Calculate the 'bottom' position relative to the visual window
-    // We add the offsetTop so it stays "fixed" relative to the scrolled content
-    suggestionsBar.style.bottom = `${keyboardHeight}px`;
-    suggestionsBar.style.top = `${window.visualViewport.height + offsetTop - suggestionsBar.offsetHeight}px`;
-}
+    //used by isSmall, defined here to for scoping
+    let titleInp, descArea, btnTitle, btnDesc, currentMode;
 
-if (window.matchMedia("(any-pointer: coarse)").matches) {
-        // Attach to every event that could change the view
-        window.visualViewport.addEventListener('resize', syncBarPosition);
-        window.visualViewport.addEventListener('scroll', syncBarPosition);
-}
+    //and defined for working with local bar
 
-// Toggle visibility based on focus
-let blurTimer = null
-document.querySelectorAll('input[name=title], textarea').forEach(el => {
-    el.addEventListener('focus', () => {
-        // Only fetch if we have valid coordinates from your map logic
-        if (typeof eastings1 !== 'undefined' && typeof northings1 !== 'undefined' && eastings1 > 0 && northings1 > 0) {
-            //alas no global reference to the grid is kept!
-            const ri=document.getElementById('grid_reference').value.match(/^[A-Z]{2}/i)?1:2;
-            loadPlaceNames(eastings1, northings1, ri);
-        } else if (typeof eastings2 !== 'undefined' && typeof northings2 !== 'undefined' && eastings2 > 0 && northings2 > 0) {
-            const ri=document.getElementById('photographer_gridref').value.match(/^[A-Z]{2}/i)?1:2;
-            loadPlaceNames(eastings2, northings2, ri);
+    // A unified way to get the active element, regardless of device
+    //used by useSuggection
+    function getActiveEditor() {
+        if (isSmall) {
+            return (currentMode === 'title') ? titleInp : descArea;
         }
+        return lastFocusedElement;
+    }
+
+    if (isSmall) {
+    	localTitle.readOnly = true;
+        localDesc.readOnly = true;
+
+    	// --- Configuration & Setup ---
+    	const parentDoc = window.parent.document;
+    	const parentWin = window.parent;
+    	searchRoot = parentDoc;
+
+    	// 1. Get the templates from the current iframe document
+    	const styleTemplate = document.getElementById("styleforRemoteBlock");
+    	const overlayTemplate = document.getElementById("blockForRemote");
+
+    	// 2. Check if already injected in the parent
+    	let remoteOverlay = parentDoc.getElementById('remoteEditorOverlay');
+
+    	if (!remoteOverlay) {
+    	    // Inject the CSS (Cloned from iframe to parent head)
+    	    const newStyle = styleTemplate.cloneNode(true);
+    	    newStyle.id = 'remoteEditorStyles';
+    	    parentDoc.head.appendChild(newStyle);
+
+    	    // Inject the HTML (Cloned from iframe to parent body)
+    	    remoteOverlay = overlayTemplate.cloneNode(true);
+    	    remoteOverlay.id = 'remoteEditorOverlay';
+    	    remoteOverlay.style.display = 'none'; // Ensure it's hidden
+    	    parentDoc.body.appendChild(remoteOverlay);
+    	}
+
+    	// DESTROY the original template (prevent ID conflicts when standalone)
+    	overlayTemplate.remove();
+
+    	// 3. UI Logic and State Management
+    	// grab references to the overlay (newly created or reused)
+    	titleInp = parentDoc.getElementById('remoteTitleInput');
+    	descArea = parentDoc.getElementById('remoteDescArea');
+    	btnTitle = parentDoc.getElementById('btnModeTitle');
+    	btnDesc = parentDoc.getElementById('btnModeDesc');
+
+    	//just to start, will be set correctly on focus!
+    	currentMode = 'title'; // 'title' or 'desc'
+
+    	// store a singleton reference to the local function
+    	if (!parentWin.updateRemoteLayout) {
+    	    parentWin.updateRemoteLayout = function() {
+    		    if (parentWin.visualViewport && remoteOverlay.style.display === 'flex') {
+    		        const vv = parentWin.visualViewport;
+    		        remoteOverlay.style.height = `${vv.height}px`;
+    		        remoteOverlay.style.top = `${vv.offsetTop}px`;
+    		        parentWin.scrollTo(0, 0);
+    		    }
+    	    }
+    	    parentWin.currentMode = currentMode;
+    	}
+
+    	// these are inline functions as reference local varaibles
+    	const openOverlay = (mode) => {
+    	    // Sync iframe data to parent overlay
+    	    titleInp.value = localTitle.value;
+    	    descArea.value = localDesc.value;
+    	    remoteOverlay.style.display = 'flex';
+    	    setMode(mode);
+    	    parentWin.visualViewport.addEventListener('resize', parentWin.updateRemoteLayout);
+    	    parentWin.visualViewport.addEventListener('scroll', parentWin.updateRemoteLayout);
+    	    parentWin.updateRemoteLayout();
+
+            initalizePlacenames();
+    	};
+
+    	localTitle.addEventListener('click', () => openOverlay('title'));
+    	localDesc.addEventListener('click', () => openOverlay('desc'));
+
+    	//needs to overwrite it
+    	parentDoc.getElementById('remoteCloseBtn').onclick = () => {
+    	    // Sync data back to iframe
+    	    localTitle.value = titleInp.value;
+    	    localDesc.value = descArea.value;
+
+    	    remoteOverlay.style.display = 'none';
+
+    		//need to make sure to remove this, so the next iframe can add its own
+    	    parentWin.visualViewport.removeEventListener('resize', parentWin.updateRemoteLayout);
+    	    parentWin.visualViewport.removeEventListener('scroll', parentWin.updateRemoteLayout);
+    	};
+
+    	suggBar = parentDoc.getElementById('remoteSuggBar');
+
+    	if (!suggBar.dataset.listenerAttached) {
+    		// Event Listeners for switching modes inside the overlay (only needed once)
+    		btnTitle.onclick = () => setMode('title');
+    		btnDesc.onclick = () => setMode('desc');
+
+    		// need to also set the modes (for portrait, when both bisible!)
+    		titleInp.onfocus = () => setMode('title');
+    		descArea.onfocus = () => setMode('desc');
+
+    		//these event handlers only reference content directly in the remote overlay, so only need adding once
+    		suggBar.addEventListener('click', useSuggection);
+
+    		// 1. Attach listeners to the remote elements
+    		// This should be done right after they are created in the parentDoc
+    		titleInp.addEventListener('input', (e) => handleInput(e));
+    		descArea.addEventListener('input', (e) => handleInput(e));
+
+    		suggBar.dataset.listenerAttached = "true"; // Flag it as "already handled"
+    	}
+
+    } else { //not isSmall, so large
+
+    	// we if no remote frame, we now need to work on the 'local' suggestion bar
+    	suggBar = document.getElementById('suggestion-pill-bar');
+    	searchRoot = document;
+
+    	[localTitle, localDesc].forEach(el => {
+    		el.addEventListener('input', handleInput);
+        	el.addEventListener('focus', handleFocus);
+        	el.addEventListener('blur', handleBlur);
+    	});
+
+        suggBar.addEventListener('click', useSuggection);
+    }
+
+    // ---------------------------------------
+    // and now the actual fucntions
+
+    function setMode(mode) {
+        currentMode = mode;
+        if (mode === 'title') {
+    	    // If we are in portrait, don't bother hiding/showing, just focus
+    	    if (!window.matchMedia("(orientation: portrait)").matches) {
+    	        titleInp.style.display = 'block';
+            	descArea.style.display = 'none';
+        	}
+            btnTitle.classList.add('active');
+            btnDesc.classList.remove('active');
+            titleInp.focus();
+        } else {
+        	if (!window.matchMedia("(orientation: portrait)").matches) {
+               	titleInp.style.display = 'none';
+               	descArea.style.display = 'block';
+        	}
+            btnTitle.classList.remove('active');
+            btnDesc.classList.add('active');
+            descArea.focus();
+        }
+    }
+
+    function handleInput(e) {
+        // Get the word currently being typed (last word before cursor)
+        const val = e.target.value;
+        const cursorPosition = e.target.selectionStart;
+
+        // Slice text up to cursor and grab the last word
+        const textUpToCursor = val.slice(0, cursorPosition);
+        const words = textUpToCursor.split(/\s+/);
+        const lastWord = words[words.length - 1].toLowerCase();
+
+        filterSuggestions(lastWord);
+
+        validateStyle(e.target, e.target.tagName === 'TEXTAREA'?'desc':'title');
+
+    }
+
+    function filterSuggestions(query) {
+        // Crucial: Use parentDoc because the buttons aren't in the iframe!
+        const pills = searchRoot.querySelectorAll('.suggestion-pill');
+        pills.forEach(pill => {
+            const name = pill.textContent.toLowerCase();
+            const title = pill.getAttribute('title') ? pill.getAttribute('title').toLowerCase() : "";
+            // Match against the button text OR the title attribute (Village, Road, etc.)
+            const isVisible = query === "" || name.includes(query); // || title.includes(query);
+            pill.style.display = isVisible ? 'inline-block' : 'none';
+        });
+    }
+
+    function useSuggection(e) {
+        e.preventDefault();
+
+        // Ensure we clicked a button (or something inside a button)
+        const btn = e.target.closest('.suggestion-pill');
+        if (!btn) return;
+
+        // 1. Identify which input is currently "active" in your UI
+        const activeEl = getActiveEditor();
+
+        insertAtCursor(activeEl, btn.textContent);
+        filterSuggestions(''); //remove filter
+    }
+
+    // Toggle visibility based on focus
+    let blurTimer = null;
+    function handleFocus(e) {
+        initalizePlacenames();
+
+console.log('focus', e.target, eastings1, eastings2);
 
         //we DONT check no-results here, as may still be loading, the no-results will keep it hidden, even if 'hidden' class is removed
 
-        lastFocusedElement = el;
-        suggestionsBar.classList.remove('hidden');
+        lastFocusedElement = e.target;
+        suggBar.classList.remove('hidden');
         if (blurTimer) clearTimeout(blurTimer); //otherwise the timer might still hide when switching!
-    });
-    el.addEventListener('blur', (e) => {
+    }
+
+    function handleBlur(e) {
         // Delay blur to allow clicking a pill before the bar disappears
         blurTimer = setTimeout(() => {
-            if (!suggestionsBar.contains(document.activeElement)) {
-                suggestionsBar.classList.add('hidden');
+		//if just clicking a suggestion, dont hide the bar (useSuggestion will refocus it anyway!)
+            if (!suggBar.contains(document.activeElement)) {
+                suggBar.classList.add('hidden');
             }
             blurTimer = null;
         }, 200);
-    });
-
-    // Reactive filtering as they type
-    el.addEventListener('input', (e) => {
-        const query = e.target.value.split(' ').pop().toLowerCase(); // Get last word
-        filterSuggestions(query);
-    });
-});
-
-
-function filterSuggestions(query) {
-    if (suggestionsBar.classList.contains('no-results')) return;
-
-    const pills = document.querySelectorAll('.suggestion-pill');
-    const q = query.toLowerCase();
-
-    pills.forEach(pill => {
-        const name = pill.textContent.toLowerCase();
-        // If empty query, show everything. If not, match prefix or name.
-        const isVisible = q === "" || name.includes(q);
-        pill.style.display = isVisible ? 'inline-block' : 'none';
-    });
-
-    // UX: If there's an exact or high-quality match, we could visually
-    // differentiate the first visible pill
-    const firstVisible = Array.from(pills).find(p => p.style.display !== 'none');
-    if (firstVisible) {
-        firstVisible.classList.add('highlight-match');
     }
-}
+
+// ---------------------
 
 let loadedPos = { eastings: null, northings: null, ri: null };
 let isFetching = false;
+
+
+function initalizePlacenames() {
+    // Only fetch if we have valid coordinates from your map logic
+    if (typeof eastings1 !== 'undefined' && typeof northings1 !== 'undefined' && eastings1 > 0 && northings1 > 0) {
+        //alas no global reference to the grid is kept!
+        const ri=document.getElementById('grid_reference').value.match(/^[A-Z]{2}/i)?1:2;
+        loadPlaceNames(eastings1, northings1, ri);
+    } else if (typeof eastings2 !== 'undefined' && typeof northings2 !== 'undefined' && eastings2 > 0 && northings2 > 0) {
+        const ri=document.getElementById('photographer_gridref').value.match(/^[A-Z]{2}/i)?1:2;
+        loadPlaceNames(eastings2, northings2, ri);
+    }
+}
 
 async function loadPlaceNames(eastings, northings, ri) {
   // Don't re-fetch if we've already loaded this exact spot
@@ -2251,7 +2544,7 @@ async function loadPlaceNames(eastings, northings, ri) {
   isFetching = true;
   loadedPos = { eastings, northings, ri };
 
-  suggestionsBar.innerHTML = 'Loading...';
+  suggBar.innerHTML = 'Loading...';
 
   try {
     const script_name = (ri==2)?"ie_open_data.json.php":"os_open_names.json.php";
@@ -2259,7 +2552,7 @@ async function loadPlaceNames(eastings, northings, ri) {
     const data = await response.json();
 
     isFetching = false;
-    suggestionsBar.innerHTML = ''; // Clear loading
+    suggBar.innerHTML = ''; // Clear loading
 
     if (data?.rows?.length) {
       for (const item of data.rows) {
@@ -2269,40 +2562,28 @@ async function loadPlaceNames(eastings, northings, ri) {
           const name = item[key];
           const pill = document.createElement('button');
           pill.className = 'suggestion-pill';
+          pill.type = 'button';
           pill.textContent = name;
           pill.title = item.local_type ?? item.town_type ?? '';
 
-          suggestionsBar.appendChild(pill);
+          suggBar.appendChild(pill);
         }
       }
-      suggestionsBar.classList.remove('no-results');
+      suggBar.classList.remove('no-results');
     } else {
-      suggestionsBar.classList.add('no-results');
-//      suggestionsBar.textContent = 'No nearby places found.';
+      suggBar.classList.add('no-results');
+//      suggBar.textContent = 'No nearby places found.';
     }
   } catch (err) {
-    suggestionsBar.classList.add('no-results');
-//    suggestionsBar.textContent = 'Failed to load places.';
+    suggBar.classList.add('no-results');
+//    suggBar.textContent = 'Failed to load places.';
   }
   isFetching = false;
 }
 
-suggestionsBar.addEventListener('click', (e) => {
-    const pill = e.target.closest('.suggestion-pill');
-    if (pill) {
-        e.preventDefault();
-        insertAtCursor(pill.textContent);
-        filterSuggestions(''); //remove filter
-    }
-});
+function insertAtCursor(el, textToInsert) {
 
-
-
-function insertAtCursor(textToInsert) {
-    // 1. Get the currently focused element
-    const el = lastFocusedElement;
-
-    // 2. Validate that it's an input or textarea
+    // Validate that it's an input or textarea
     if (!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA')) {
         console.warn('No valid input focused');
         return;
@@ -2312,9 +2593,11 @@ function insertAtCursor(textToInsert) {
     const textBeforeCursor = el.value.slice(0, cursorPosition);
 
     // 1. Find the start of the current "partial word"
-    // We search backwards for the last space
+    // We search backwards for the last space (or newline)
     const lastSpaceIndex = textBeforeCursor.lastIndexOf(' ');
-    const wordStart = lastSpaceIndex === -1 ? 0 : lastSpaceIndex + 1;
+    const lastNewlineIndex = textBeforeCursor.lastIndexOf('\n');
+    const lastBreakIndex = Math.max(lastSpaceIndex, lastNewlineIndex);
+    const wordStart = lastBreakIndex === -1 ? 0 : lastBreakIndex + 1;
 
     // 2. Build the new value:
     // Everything before the partial word + the full suggestion + rest of text
@@ -2328,6 +2611,41 @@ function insertAtCursor(textToInsert) {
     el.focus();
 }
 
+function validateStyle(el, fieldName) {
+    const v = el.value.trim();
+    if (v.length <= 1) {
+        setValidationUI(el, fieldName, true);
+        return;
+    }
+    let titleValue = (isSmall)?titleInp.value:localTitle.value;
+console.log(titleValue);
+    let error = null;
+    if (/^[a-z]/.test(v)) error = 'Start with a capital letter';
+    else if (v.length > 4 && (v.toUpperCase() === v || v.toLowerCase() === v)) error = 'Avoid ALL CAPS or all lowercase';
+    else if (fieldName === 'title' && v.endsWith('.') && !v.endsWith('...')) error = 'Titles should not end with a full stop';
+    //todo need to detect if description is duplicate of title
+    else if (fieldName === 'desc' && v.toLowerCase().replace(/\.+$/, '') == titleValue.trim().toLowerCase()) error = 'Should not duplicate Title';
+    //else if (fieldName === 'desc' && v.length > 0 && !/[.!?]$/.test(v)) error = 'Comments should end with punctuation';
+
+    setValidationUI(el, fieldName, !error, error);
+}
+
+function setValidationUI(el, fieldName, isValid, message = '') {
+    const iconId = fieldName == 'title' ? 'titleInfo' : 'descInfo';
+    const icon = searchRoot.getElementById(iconId);
+
+    if (!isValid) {
+        el.classList.add('input-warning');
+        if (icon) {
+            icon.style.display = 'block';
+            icon.dataset.error = message; //for the CSS popup
+           // icon.onclick = () => alert(message); // Simple alert, or a custom toast
+        }
+    } else {
+        el.classList.remove('input-warning');
+        if (icon) icon.style.display = 'none';
+    }
+}
 
 // ---------------------
 
