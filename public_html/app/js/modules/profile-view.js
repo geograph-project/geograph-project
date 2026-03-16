@@ -209,14 +209,6 @@ export async function onMount() {
     loadSubmissions('recent');
     displayStats();
 
-    document.getElementById('search-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const query = e.target.elements.q.value;
-        const userId = window.GEOGRAPH_USER_PREFERENCES['user_id'];
-
-        navigateTo('/app/results', {param: `q=${encodeURIComponent(query)}&contributor=${encodeURIComponent(userId)}+Myself`});
-    });
-
     // Handle Toggle Changes
     document.querySelectorAll('input[name="view-filter"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
@@ -224,6 +216,15 @@ export async function onMount() {
         });
     });
 
+    document.getElementById('search-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = e.target.elements.q.value;
+        const userId = window.GEOGRAPH_USER_PREFERENCES['user_id'];
+
+        navigateTo('/app/results', {param: `q=${encodeURIComponent(query)}&contributor=${encodeURIComponent(userId)}+Myself&inner=true&standalone=true`});
+    });
+
+    //modal controler for image previews
     const gridContainer = document.getElementById('submissions-grid');
     const modal = document.getElementById('photo-modal');
     const modalTitle = document.getElementById('modal-title');
