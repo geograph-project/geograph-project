@@ -476,6 +476,9 @@ input[type="search"] {
 		max-width:190px;
 		overflow:hidden;
 	}
+	.submissions-grid {
+		padding:20px 2px;
+	}
 }
 
 
