@@ -2370,6 +2370,7 @@ map.on('mousedown dragstart', function(e) {
     	    parentWin.updateRemoteLayout();
 
             initalizePlacenames();
+            parentDoc.getElementById('remotePreview').src = imgLarge.src;
     	};
 
     	localTitle.addEventListener('click', () => openOverlay('title'));
@@ -2497,8 +2498,6 @@ map.on('mousedown dragstart', function(e) {
     function handleFocus(e) {
         initalizePlacenames();
 
-console.log('focus', e.target, eastings1, eastings2);
-
         //we DONT check no-results here, as may still be loading, the no-results will keep it hidden, even if 'hidden' class is removed
 
         lastFocusedElement = e.target;
@@ -2618,7 +2617,6 @@ function validateStyle(el, fieldName) {
         return;
     }
     let titleValue = (isSmall)?titleInp.value:localTitle.value;
-console.log(titleValue);
     let error = null;
     if (/^[a-z]/.test(v)) error = 'Start with a capital letter';
     else if (v.length > 4 && (v.toUpperCase() === v || v.toLowerCase() === v)) error = 'Avoid ALL CAPS or all lowercase';
