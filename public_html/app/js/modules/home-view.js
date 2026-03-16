@@ -24,7 +24,7 @@ export function render() {
 		<button data-route="/app/submit" id="resume-btn" class="demo-btn">Resume Submission</button>
 		<button data-route="/app/profile" class="demo-btn">Your Profile</button>
 
-		<button data-route="/app/capture" class="demo-btn">Capture/ Save Location</button>
+		<button data-route="/app/capture" class="demo-btn">Take Photo / Save Location</button>
 		<button data-route="/app/map" class="demo-btn">View Map</button>
 		<button data-route="/app/help" class="demo-btn">Getting Started</button>
 
