@@ -289,7 +289,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             }
         }
 
-input:invalid, select:invalid, #contexts:invalid {
+input:invalid, select:invalid, #contexts:invalid, .input-invalid {
     border: 1px solid #ff0000;
     background-color: #f5f5f0;
 }
@@ -625,6 +625,13 @@ align-items: center;    /* This centers the 350px map horizontally */
     line-height:30px;
 }
 
+.notes-bar {
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #eee;
+    margin-top: 10px;
+}
+
 #orientation_message {
     background-color:pink;
 }
@@ -660,8 +667,8 @@ align-items: center;    /* This centers the 350px map horizontally */
 	    
 	    /* Input visibility controls */
 	    #remoteTitleInput, #remoteDescArea { width: 100%; border: 1px solid #eee; font-size: 18px; outline: none; box-sizing: border-box; font-family: Georgia, Verdana, Arial, serif}
-	    #remoteTitleInput { height: 45px; padding: 0 10px; }
-	    #remoteDescArea { flex: 1; padding: 10px; resize: none; max-width:640px; }
+	    #remoteTitleInput { height: 45px; padding: 0 6px; }
+	    #remoteDescArea { flex: 1; padding: 6px; resize: none; max-width:652px; }
 
 	    .remote-suggestions { 
 	        height: 50px; --background: #222; color: white; display: flex; 
@@ -826,6 +833,9 @@ align-items: center;    /* This centers the 350px map horizontally */
                     <option value="00">NORTH            : 0 deg</option>
              </select>
             <div id="dist_message" style="padding-left:10px"></div>
+
+            <div class="notes-bar"><select id="notesList"></select> (Sets the <span id="activeMode">Camera</span>)</div>
+
         </div>
 	</div>
 
@@ -955,7 +965,7 @@ align-items: center;    /* This centers the 350px map horizontally */
 
         <div class="field-header">
     	    <label>Geographical Contexts</label>
-            <span class="optional-label">(select multiple)</span>
+            <span class="optional-label" id="context-count">(select multiple)</span>
         </div>
 	    <select name="contexts[]" id="contexts" multiple size=10 required></select>
 
@@ -1186,7 +1196,9 @@ align-items: center;    /* This centers the 350px map horizontally */
     </div>
 
 
-<script src="/js/to-title-case.js"></script>
+<script src="<? echo smarty_modifier_revision("/js/to-title-case.js"); ?>"></script>
+<script src="<? echo smarty_modifier_revision("/js/anyascii.js"); ?>"></script>
+
 <script>
     const stickyBar = document.getElementById('stickyBar');
     const mainHeader = document.getElementById('mainHeader');
@@ -1282,6 +1294,7 @@ console.log("Error", e);
             renderRecent('submit.subjects', 'recent-subjects');
             renderRecent('submit.tags', 'recent-tags');
             updateLicenceDiv();
+            renderNotesList();
         };
 
         // Use requestIdleCallback with a fallback
@@ -1475,7 +1488,7 @@ console.log("Error", e);
         if (debounceTimer) clearTimeout(debounceTimer);
 
         debounceTimer = setTimeout(async function() {
-
+    		//todo, take only the LAST component, if entered text includes a ;
             const response = await fetch(`/tags/tags.json.php?term=${encodeURIComponent(query)}&mode=ranked`);
             const results = await response.json(); // Expected: ["tag1", "tag2"]
 
@@ -1484,7 +1497,8 @@ console.log("Error", e);
 
             let html = results.map(tag => {
                 // 1. Create a Case-Insensitive Regex of the user's query
-                const regex = new RegExp(`(${query})`, "gi");
+                const safeQuery = escapeRegex(query);
+                const regex = new RegExp(`(${safeQuery})`, "gi");
                 // 2. Replace the match with a bold version
                 // $1 keeps the original casing from the database (e.g., "Road" stays "Road")
                 const highlighted = escapeHTML(tag).toTitleCase().replace(regex, "<strong>$1</strong>");
@@ -1492,8 +1506,26 @@ console.log("Error", e);
             }).join('');
 
             if (query.length > 2 && !normalizedResults.includes(query.toLowerCase())) {
-                const query_safe = escapeHTML(query);
-                html += `<div class="suggestion-item add-new-tag" data-tag="${query_safe}">+ Add "${query_safe}"</div>`;
+        		//todo, perhaps would be nice o auto-split!
+                if (query.includes(';')) {
+                    // 1. Split and clean each tag
+                    const tagArray = query.split(/\s*;\s*/).map(t => t.trim()).filter(t => t.length > 0);
+                    const cleanedTags = tagArray.map(t => cleanTag(t)).filter(t => t.length > 0);
+                    if (cleanedTags.length > 0) { //could end up zero!
+
+                        // 2. Create the data-tag string for bulk processing
+                        const query_safe = escapeHTML(cleanedTags.join(';'));
+
+                        // 3. Generate the visual display
+                        const displayList = cleanedTags.map(t => `[${escapeHTML(t)}]`).join(' ');
+
+                        html += `<div class="suggestion-item add-new-tag" data-tag="${query_safe}">+ Add all: ${displayList}</div>`;
+                    }
+
+		        } else {
+                    const query_safe = escapeHTML(cleanTag(query));
+                    html += `<div class="suggestion-item add-new-tag" data-tag="${query_safe}">+ Add [${query_safe}]</div>`;
+                }
             }
 
             suggestions.innerHTML = html;
@@ -1530,7 +1562,63 @@ console.log("Error", e);
         }, 300);
     });
 
+    function cleanTag(text) {
+        //Allows chars: A-Z a-z 0-9 _ ( ) + . & / ! ? % @ # - (plus space)
+
+        //basic HTML injection protection
+        text = text.replace(/\\/g, "").replace(/<[^>]*>/g, "").replace(/[<>]+/ig, " ");
+
+        //clean up text, doing fairly full unicode->ascii transliteration
+        text = anyAscii(text);
+
+        //standardize brackets
+        text = text.replace(/[\{\(\[<]+/g, "(").replace(/[\}\)\]>]+/g, ")");
+
+        //hive off the prefix
+        var prefix = null;
+        if (text.indexOf(':') > -1) {
+                var bits = text.split(/\s*:+\s*/,2);
+                text = bits[1].replace(/:/g,' ');
+
+                //prefixes have particully restricted charactor set.
+                prefix = bits[0].toLowerCase().replace(/[^\w]+/," ").replace(/[ _]+/g, " ").replace(/(^\s+|\s+$)/g, "");
+        }
+
+        //special support for listin building rating
+        text = text.replace(/\*/g,'(star)');
+
+        //quotes not supported
+        text = text.replace(/['"`]+/g, ""); //dont want to replace with space, because of apos
+
+        //then remove any none supported chars (by now only have ascii left to deal with)
+        text = text.replace(/[^\w()\+\.&\/!?%@#-]+/g, " ");
+
+        //clean/collapse whitespace
+        text = text.replace(/[ _\t\n\r]+/g, " ").replace(/(^\s+|\s+$)/g, "");
+
+        //this is a well known and common issue to fix, our house style doesnt have dot after st.
+        text = text.replace(/\b(st)\.+\s*/i, '$1 ');
+
+        //just to catch odd cases were tag ends up actully blank!
+        text = text.replace(/^\s*$/,'blank');
+
+        //add the prefix again
+        if (prefix)
+                text = prefix+':'+text;
+        return text;
+    }
+
     function addTag(tag) {
+        if (tag.includes(';')) {
+            const tagArray = tag.split(/\s*;\s*/).map(t => t.trim()).filter(t => t.length > 0);
+            if (tagArray.length == 0)
+                return;
+
+            for(let q=0;q<tagArray.length;q++)
+                addTag(tagArray[q]);
+            return;
+        }
+
         if (!selectedTags.has(tag)) {
             selectedTags.add(tag);
 
@@ -1563,6 +1651,11 @@ console.log("Error", e);
         }
         searchInput.value = '';
         suggestions.innerHTML = '';
+    }
+
+    function escapeRegex(string) {
+        // This replaces special regex characters with their escaped version
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
 // --------------------------------
@@ -1750,6 +1843,16 @@ console.log("Error", e);
         } catch (e) { console.error("Failed to load tags", e); }
 
         select.appendChild(fragment);
+
+        select.addEventListener('input', e => {
+            const selectedOptions = Array.from(select.options).filter(o => o.selected);
+            const selectedCount = selectedOptions.length;
+            if (selectedCount>6)
+                 document.getElementById('context-count').textContent = `${selectedCount} is TOO MANY`;
+            else
+                document.getElementById('context-count').textContent = `${selectedCount} selected`;
+            select.classList.toggle('input-invalid', (selectedCount == 0 || selectedCount>6));
+        });
     }
 
     function renderRecent(storageKey, elementId) {
@@ -1858,7 +1961,18 @@ console.log("Error", e);
     function validateForm(event) {
         const form = this;
 
+        ////////////////////
         // check required
+
+        if (localTitle.value.trim() === '') {
+	    //this only happens in isSmall (as the native required didnt work!)
+            event.preventDefault();
+            localTitle.readOnly = false; // Temporarily unlock
+            localTitle.setCustomValidity('Please fill out this Field');
+            localTitle.reportValidity();
+            localTitle.focus();
+            return false;
+        }
 
         const select = document.getElementById('contexts');
         const selected = Array.from(select.selectedOptions).map(o => o.value);
@@ -1876,7 +1990,6 @@ console.log("Error", e);
             const hiddenId = document.getElementById('subject-id');
             const options = document.querySelectorAll('#subject-list option');
             const valueLower = input.value.toLowerCase();
-
 
             // Find if the typed value matches a valid tag
             const match = Array.from(options).find(o => o.value.toLowerCase() === valueLower);
@@ -2062,6 +2175,8 @@ map.on('mousedown dragstart', function(e) {
                     label.classList.toggle('active');
                 });
 
+                updateActiveMode();
+
                 //then recenter the map (which feeds back to the new location box!)
                 disableAutoUpdate = false;
                 map.panTo(event.latlng);
@@ -2084,6 +2199,14 @@ map.on('mousedown dragstart', function(e) {
 
        // setupMess(); //TODO!
     }
+
+        function updateActiveMode() {
+            const activeLabel = document.querySelector('label.gr.active');
+            if (activeLabel) {
+                document.getElementById('activeMode').textContent = activeLabel.textContent;
+            }
+        }
+
 
     document.addEventListener('DOMContentLoaded', () => {
         const tab2 = document.getElementById('maparea');
@@ -2109,6 +2232,7 @@ map.on('mousedown dragstart', function(e) {
                     this.previousElementSibling.classList.add('active');
                 }
                 if (this.value) centerMap(this.value);
+                updateActiveMode();
             });
 
             // Change/Input events
@@ -2136,6 +2260,7 @@ map.on('mousedown dragstart', function(e) {
                             targetInput.previousElementSibling.classList.add('active');
                         }
                         if (targetInput.value) centerMap(targetInput.value);
+                        updateActiveMode();
                     });
                 }
             }
@@ -2263,7 +2388,7 @@ map.on('mousedown dragstart', function(e) {
             // If this is the main subject, we definitely want to save this "Good Position"
             if (el.id === 'grid_reference') {
                 // convertToLatLng is your own logic for the grid shift
-                const coords = convertToLatLng(el.value); 
+                const coords = convertToLatLng(el.value);
                 map.setView(coords, 16);
                 saveMapPosition(map, 'Subject: ' + el.value);
             }
@@ -2273,6 +2398,40 @@ map.on('mousedown dragstart', function(e) {
         }
         */
     }
+
+function renderNotesList() {
+    const select = document.getElementById('notesList');
+    select.innerHTML = '<option value="">Select a note to jump to...</option>';
+
+    const storage = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+    if (!storage.length) {
+        select.parentElement.style.display = 'none';
+        return;
+    }
+
+    storage.forEach((item, index) => {
+        const option = document.createElement('option');
+        // 1. Store the coords in the value so we can easily parse them later
+        option.value = item.coords;
+        // 2. Make the display text human-readable
+        option.textContent = `${item.timestamp} | ${item.note.substring(0, 30)}${item.note.length>30?'...':''}`;
+        select.appendChild(option);
+    });
+
+    // 3. Attach the change listener
+    select.onchange = (e) => {
+        const coordsStr = e.target.value;
+        if (!coordsStr) return;
+
+        // Assuming coords are stored as "lat,lng" string
+        const [lat, lng] = coordsStr.trim().split(/\s*,\s*/).map(Number);
+
+        if (map && !isNaN(lat) && !isNaN(lng)) {
+            map.setView([lat, lng], 13); // Center the Leaflet map
+        }
+        select.selectedIndex=0;
+    };
+}
 
 
 // ---------------------
@@ -2305,6 +2464,8 @@ map.on('mousedown dragstart', function(e) {
 
     if (isSmall) {
     	localTitle.readOnly = true;
+	localTitle.classList.toggle('input-invalid', localTitle.value == ''); //the browser doesnt show real :invalid on readonly, so add fake one
+
         localDesc.readOnly = true;
 
     	// --- Configuration & Setup ---
@@ -2381,6 +2542,14 @@ map.on('mousedown dragstart', function(e) {
     	    // Sync data back to iframe
     	    localTitle.value = titleInp.value;
     	    localDesc.value = descArea.value;
+
+	    //sync with local validation
+	    updateStickyTitle(titleInp.value);
+	    localTitle.classList.toggle('input-invalid', localTitle.value == ''); //the browser doesnt show real :invalid, so add fake one
+            //we also need to add remove this once edited!
+	    if (localTitle.value != '')
+		localTitle.setCustomValidity("");
+            updateFormProgress();
 
     	    remoteOverlay.style.display = 'none';
 
