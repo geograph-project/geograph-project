@@ -11,25 +11,24 @@ function init() {
 
     // Setup routes
     const routes = {
-        'home': { module: '/app/js/modules/home-view.js', title: 'Geograph' },
-        'search': { module: '/app/js/modules/search-view.js', title: 'Search' },
+        'home':    { module: '/app/js/modules/home-view.js', title: 'Geograph' },
+        'search':  { module: '/app/js/modules/search-view.js', title: 'Search' },
         'results': { isIframe: true, url: '/finder/finder.php?inner=1', title: 'Results' },
-        'map': { isIframe: true, url: '/mapper/combined.php?mobile=1&inner=1', title: 'Map' },
+        'map':     { isIframe: true, url: '/mapper/combined.php?mobile=1&inner=1', title: 'Map' },
 
-        'upload': { isIframe: true, url: '/app/upload.php', title: 'Upload' },
-        'uploaded': { module: '/app/js/modules/uploaded-view.js', title: 'Submit' },
-        'submit': { isIframe: true, url: '/app/submit.php', title: 'Submission' },
+        'upload':  { isIframe: true, url: '/app/upload.php', title: 'Upload' },
+        'uploaded':{ module: '/app/js/modules/uploaded-view.js', title: 'Submit' },
+        'submit':  { isIframe: true, url: '/app/submit.php', title: 'Submission' },
 
-        'home2': { isIframe: true, url: '/app/home.php', title: 'Geograph' },
-        'capture': { isIframe: true, url: '/app/capture.php', title: 'Capture (alpha)' },
+        'capture': { isIframe: true, url: '/app/capture.php', title: 'Take Photo' },
 
         'profile': { module: '/app/js/modules/profile-view.js', title: 'Profile' },
-        'recent': { module: '/app/js/modules/recent-view.js', title: 'Recent Submissions' },
+        'recent':  { module: '/app/js/modules/recent-view.js', title: 'Recent Submissions' },
 
-        'settings': { module: '/app/js/modules/settings-view.js', title: 'Settings' },
-        'help': { module: '/app/js/modules/help-view.js', title: 'Help' },
-        'contact': { module: '/app/js/modules/contact-view.js', title: 'Contact' },
-        'tos': { module: '/app/js/modules/tos-view.js', title: 'Terms' }
+        'settings':{ module: '/app/js/modules/settings-view.js', title: 'Settings' },
+        'help':    { module: '/app/js/modules/help-view.js', title: 'Help' },
+        'contact': { isIframe: true, url: '/app/contact.php', title: 'Contact' },
+        'tos':     { module: '/app/js/modules/tos-view.js', title: 'Terms' }
     };
 
     const router = new Router(routes);
