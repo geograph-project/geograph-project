@@ -1,3 +1,4 @@
+import AppState from '/app/js/app-state.js';
 import { escapeHTML } from '/app/js/utils.js';
 
 export function render() {
@@ -38,8 +39,13 @@ export async function onMount() {
     const titlePrompt = document.getElementById('title-prompt');
     const selectionControls = document.getElementById('selection-controls');
 
+    sortSelect.value = AppState.getPreference('uploadedSort', 'uploaded-desc');
+
     const response = await fetch('/app/uploads.json.php');
     currentData = await response.json();
+
+    //only show if something to sort!
+    sortSelect.classList.toggle('hidden', currentData.length<2);
 
     // Render logic
     const updateGrid = () => {
@@ -50,6 +56,9 @@ export async function onMount() {
 
         // 1. Sort based on select value
         const val = sortSelect.value;
+
+	AppState.setPreference('uploadedSort', val);
+
         const sorted = [...currentData].sort((a, b) => {
             if (val === 'uploaded-asc') return a.uploaded - b.uploaded;
             if (val === 'uploaded-desc') return b.uploaded - a.uploaded;

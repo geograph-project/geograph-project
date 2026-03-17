@@ -1,3 +1,4 @@
+import AppState from '/app/js/app-state.js';
 import { escapeHTML, navigateTo } from '/app/js/utils.js';
 
 export function render() {
@@ -14,7 +15,17 @@ export function render() {
 		</form>
 
             <div class="controls">
-	        	Submissions:
+                <select id="sort-select">
+                    <option value="uploaded-desc">Uploaded (Newest)</option>
+                    <option value="uploaded-asc">Uploaded (Oldest)</option>
+                    <option value="taken-desc">Date Taken (Newest)</option>
+                    <option value="taken-asc">Date Taken (Oldest)</option>
+                    <option value="grid-asc">Grid Ref (A-Z)</option>
+                    <option value="grid-desc">Grid Ref (Z-A)</option>
+                    <option value="titie-asc">Title (A-Z)</option>
+                    <option value="title-desc">Title (Z-A)</option>
+                </select>
+
                 <label id="recent-label">
                     <input type="radio" name="view-filter" value="recent" checked> Last 3 Days <span id="counter"></span>
                 </label>
@@ -109,47 +120,78 @@ p#timestamp {
     `;
 }
 
-
+let currentData = [];
 
 async function loadSubmissions(filter = 'recent') {
     const gridContainer = document.getElementById('submissions-grid');
+    const sortSelect = document.getElementById('sort-select');
     const url = filter === 'all'
         ? '/app/submissions.json.php?thumbs=1&images=100'
         : '/app/submissions.json.php?thumbs=1';
 
     gridContainer.innerHTML = '<p>Loading...</p>';
+    sortSelect.value = AppState.getPreference('profileSort', 'uploaded-desc');
 
     try {
         const response = await fetch(url);
-        const data = await response.json();
+        currentData = await response.json();
 
-        if (data.length === 0) {
-            if (filter = 'recent') {
+        //only show if something to sort!
+        sortSelect.classList.toggle('hidden', currentData.length<2);
+
+        if (currentData.length === 0) {
+            if (filter == 'recent') {
                 //well, if no results!
                 document.getElementById('recent-label').style.display='none';
                 document.getElementById('all-checkbox').checked = true;
-		loadSubmissions('all')
+ 	         	loadSubmissions('all')
                 document.getElementById('edit-btn').style.display='none'; //currently only edits 'recent', not last 100 anyway
             } else {
-		document.getElementById('search-form').style.display='none';
-	    }
+                //the user has nothing!
+                document.getElementById('counter2').textContent = currentData.length;
+		        document.getElementById('search-form').style.display='none';
+     	    }
             gridContainer.innerHTML = '<p>No submissions found.</p>';
             return;
         }
 
         if (filter == 'recent')
-		 document.getElementById('counter').textContent = `[${data.length}]`;
-	else //might as well make the count accurate, if there are less than 100
-		 document.getElementById('counter2').textContent = data.length;
+            document.getElementById('counter').textContent = `[${currentData.length}]`;
+  	    else //might as well make the count accurate, if there are less than 100
+		    document.getElementById('counter2').textContent = currentData.length;
 
-        gridContainer.innerHTML = data.map(item => `
-            <div class="submission-tile"
-                 data-large="${item.thumbnail.replace(/_\d+x\d+/, '')}"
-                 data-id="${item.gridimage_id}" title="${escapeHTML(item.title)}">
-                <img src="${item.thumbnail}" loading="lazy" alt="${escapeHTML(item.title)}" draggable="false">
-                <div class="tile-overlay"><span>${item.moderation_status} / ${item.grid_reference}</span></div>
-            </div>
-        `).join('');
+        // Render logic
+  	    const updateGrid = () => {
+            // 1. Sort based on select value
+            const val = sortSelect.value;
+
+            AppState.setPreference('profileSort', val);
+
+            const sorted = [...currentData].sort((a, b) => {
+                if (val === 'uploaded-asc')  return a.gridimage_id - b.gridimage_id;
+                if (val === 'uploaded-desc') return b.gridimage_id - a.gridimage_id;
+                if (val === 'taken-asc')  return (a.imagetaken || '').localeCompare(b.imagetaken || '');
+                if (val === 'taken-desc') return (b.imagetaken || '').localeCompare(a.imagetaken || '');
+                if (val === 'grid-asc')  return (a.grid_reference || '').localeCompare(b.grid_reference || '');
+                if (val === 'grid-desc') return (b.grid_reference || '').localeCompare(a.grid_reference || '');
+                if (val === 'title-asc')  return (a.title || '').localeCompare(b.title || '');
+                if (val === 'title-desc') return (b.title || '').localeCompare(a.title || '');
+                return 0;
+            });
+
+	        gridContainer.innerHTML = sorted.map(item => `
+	            <div class="submission-tile"
+	                 data-large="${item.thumbnail.replace(/_\d+x\d+/, '')}"
+	                 data-id="${item.gridimage_id}" title="${escapeHTML(item.title)}">
+	                <img src="${item.thumbnail}" loading="lazy" alt="${escapeHTML(item.title)}" draggable="false">
+	                <div class="tile-overlay"><span>${item.moderation_status} / ${item.grid_reference}</span></div>
+	            </div>
+	        `).join('');
+    	}
+
+        updateGrid(); // Initial render
+        sortSelect.onchange = updateGrid;
+
     } catch (err) {
         gridContainer.innerHTML = '<p>Error loading gallery.</p>';
     }

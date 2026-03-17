@@ -396,6 +396,11 @@ input[type="search"] {
     text-align: center;
 }
 
+.submission-tile:has(.delete-check:checked) .tile-overlay {
+	background: rgba(255, 0, 0, 0.5);
+}
+
+
 .photo-modal {
     border: none;
     border-radius: 12px;

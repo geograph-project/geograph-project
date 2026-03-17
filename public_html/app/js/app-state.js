@@ -8,8 +8,8 @@ const AppState = {
     pageTitle: 'Geograph',
     settings: {
         darkMode: false,
-	imagesPerScreen: 16,
-	uploadMaxDimension: 65536 //effectively unlimited!
+   	    imagesPerScreen: 16,
+        uploadMaxDimension: 65536
     },
 
     /**
@@ -27,6 +27,9 @@ const AppState = {
             // Sync uploadMaxDimension from server-provided preference
             if (window.GEOGRAPH_USER_PREFERENCES && window.GEOGRAPH_USER_PREFERENCES.uploadMaxDimension) {
                 this.settings.uploadMaxDimension = parseInt(window.GEOGRAPH_USER_PREFERENCES.uploadMaxDimension, 10);
+		//becaused saved in smallint(5) unsigned, its actully reported as 65535!! (we need 65536)
+		if (this.settings.uploadMaxDimension > 65530)
+		    this.settings.uploadMaxDimension = 65536;
             }
         }
         this.syncWithDOM();
@@ -39,6 +42,39 @@ const AppState = {
         this.settings = { ...this.settings, ...newSettings };
         localStorage.setItem('pma_settings', JSON.stringify(this.settings));
         this.syncWithDOM();
+    },
+
+    /**
+     * Checks if a specific preference exists in the settings
+     */
+    hasPreference(key) {
+        return Object.prototype.hasOwnProperty.call(this.settings, key);
+    },
+
+    /**
+     * Gets a preference by key with an optional default value
+     */
+    getPreference(key, defaultValue = null) {
+        return this.hasPreference(key) ? this.settings[key] : defaultValue;
+    },
+
+    /**
+     * Updates a single preference and persists the change
+     */
+    setPreference(key, value) {
+        this.updateSettings({ [key]: value });
+    },
+
+    /**
+     * Deletes a specific preference and updates storage
+     */
+    removePreference(key) {
+        if (this.hasPreference(key)) {
+            delete this.settings[key];
+            // Persist the version without the deleted key
+            localStorage.setItem('pma_settings', JSON.stringify(this.settings));
+            this.syncWithDOM();
+        }
     },
 
     /**
