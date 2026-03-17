@@ -188,12 +188,14 @@ async function displayStats() {
     	    // Calculate time difference
     	    const updatedDate = new Date(data.updated?.replace(' ', 'T'));
     	    const now = new Date();
-	 	const diffInMinutes = Math.floor(now - updatedDate / (1000 * 60));
+	 	const diffInMinutes = Math.floor((now - updatedDate) / (1000 * 60));
 		const diffInHours = Math.floor(diffInMinutes / 60);
 
 		let timeDisplay;
 		if (diffInHours > 0) {
 		    timeDisplay = `${diffInHours} hours ago`;
+		} else if (diffInMinutes < 1) {
+		    timeDisplay = 'just now';
 		} else {
 		    timeDisplay = `${diffInMinutes} minutes ago`;
 		}
