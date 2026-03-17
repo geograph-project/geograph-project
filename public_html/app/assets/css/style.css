@@ -228,6 +228,12 @@ footer {
     display: none !important;
 }
 
+.nav-left.hidden {
+    display: flex !important; 
+    visibility: hidden;   /* Hides content but keeps the 'ghost' box */
+    pointer-events: none; /* Optional: prevents clicking the invisible item */
+}
+
 .view h2 {
     margin-bottom: 1rem;
     color: var(--primary-bg);
@@ -244,6 +250,9 @@ body.dark-mode .view h2 {
     border-radius: 8px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex-direction: column;
+    display: flex;
+    gap: 20px;
 }
 
 .setting-item {

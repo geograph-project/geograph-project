@@ -7,12 +7,12 @@ export function render() {
     return `
         <div class="view settings-view">
             <h2>Settings</h2>
-            <p>Adjust your preferences for the Geograph application.</p>
+            <p>Adjust your preferences for the Geograph application.<br><br></p>
 
             <div class="settings-group">
                 <div class="setting-item">
-                    <label for="dark-mode-toggle">Dark Mode</label>
-                    <input type="checkbox" id="dark-mode-toggle">
+                    <label for="darkMode">Dark Mode</label>
+                    <input type="checkbox" id="darkMode">
                 </div>
             </div>
 
@@ -29,24 +29,45 @@ export function render() {
                 </div>
             </div>
 
+            <div class="settings-group">
+                <div class="setting-item">
+                    <label for="showBottomButtons">Show Navigation Buttons</label>
+                    <input type="checkbox" id="showBottomButtons">
+                </div>
+                <div class="setting-item">
+                    <label for="shrinkHeader">Small Header/Footer</label>
+                    <input type="checkbox" id="shrinkHeader">
+                </div>
+            </div>
+
         </div>
     `;
 }
 
 export function onMount() {
-    const toggle = document.getElementById('dark-mode-toggle');
-    const select = document.getElementById('uploadMaxDimension');
-    if (toggle) {
-        // Initial state
-        toggle.checked = AppState.settings.darkMode;
-        select.value = AppState.settings.uploadMaxDimension;
+    const inputs = document.querySelectorAll('.setting-item input, .setting-item select');
 
-        // Handle change
-        toggle.addEventListener('change', (e) => {
-            AppState.updateSettings({ darkMode: e.target.checked });
+    inputs.forEach(input => {
+        const key = input.id;
+        const settingValue = AppState.settings[key];
+
+        // 1. Set Initial State
+        if (settingValue !== undefined) {
+            if (input.type === 'checkbox') {
+                input.checked = settingValue;
+            } else {
+                input.value = settingValue;
+            }
+        }
+
+        // 2. Attach Universal Listener
+        input.addEventListener('change', (e) => {
+            const value = e.target.type === 'checkbox' 
+                ? e.target.checked 
+                : e.target.value;
+
+            // Dynamically update the key that matches the ID
+            AppState.updateSettings({ [key]: value });
         });
-        select.addEventListener('change', (e) => {
-            AppState.updateSettings({ uploadMaxDimension: e.target.value });
-        });
-    }
+    });
 }

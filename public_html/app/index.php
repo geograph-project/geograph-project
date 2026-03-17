@@ -106,11 +106,17 @@ function generate_import_map($dir, $basePath = '/app/js/') {
     </div>
 
     <footer id="main-footer">
-        <div class="nav-left" style="opacity:0.1">
+        <div class="nav-left" id="bottom-buttons">
+            <button id="btn-camera" class="nav-btn" data-route="/app/capture" aria-label="Take Photo">
+                <span class="icon-container"></span>
+            </button>
             <button id="btn-upload" class="nav-btn" data-route="/app/upload">
                 <span class="icon-container"></span>
             </button>
             <button id="btn-submit" class="nav-btn" data-route="/app/uploaded">
+                <span class="icon-container"></span>
+            </button>
+            <button id="btn-resume" class="nav-btn" data-route="/app/submit">
                 <span class="icon-container"></span>
             </button>
             <button id="btn-map" class="nav-btn" data-route="/app/map">

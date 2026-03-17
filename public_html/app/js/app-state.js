@@ -9,7 +9,9 @@ const AppState = {
     settings: {
         darkMode: false,
    	    imagesPerScreen: 16,
-        uploadMaxDimension: 65536
+        uploadMaxDimension: 65536,
+	showBottomButtons: false,
+	shrinkHeader: false
     },
 
     /**
@@ -20,6 +22,8 @@ const AppState = {
         if (savedSettings) {
             this.settings = JSON.parse(savedSettings);
         } else {
+	    //some dynamic defaults
+
             // Default to system preference
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             this.settings.darkMode = prefersDark;
@@ -90,8 +94,8 @@ const AppState = {
      */
     syncWithDOM() {
         // Handle bar sizing
-        if (this.isInnerPage) {
-//            document.body.classList.add('is-inner');
+        if (this.isInnerPage && this.settings.shrinkHeader) {
+            document.body.classList.add('is-inner');
         } else {
             document.body.classList.remove('is-inner');
         }
@@ -102,6 +106,11 @@ const AppState = {
         } else {
             document.body.classList.remove('dark-mode');
         }
+
+	document.getElementById('bottom-buttons').classList.toggle('hidden', !this.settings.showBottomButtons);
+
+	//the button in footer
+	document.getElementById('btn-resume').classList.toggle('hidden', !this.upload_id || this.upload_id === 'none');
 
         const titleEl = document.getElementById('page-title');
         if (titleEl) {
