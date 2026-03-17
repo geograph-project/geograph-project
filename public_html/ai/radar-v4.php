@@ -13,9 +13,26 @@ $USER->mustHavePerm('basic');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="/js/Leaflet.GeographScout.js?<? echo filemtime(__DIR__.'/../js/Leaflet.GeographScout.js'); ?>"></script>
-    <script type="text/javascript" src="<? echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
 
+
+    <link rel="stylesheet" href="<?php echo smarty_modifier_revision("/js/leaflet-search-master/src/leaflet-search.css"); ?>" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.67.0/dist/L.Control.Locate.min.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
+
+    <script src="<?php echo smarty_modifier_revision("/js/Leaflet.MetricGrid.js"); ?>"></script>
+    <script src="<?php echo smarty_modifier_revision("/js/L.Control.Locate.js"); ?>"></script>
+
+    <script src="<?php echo smarty_modifier_revision("/js/leaflet-search-master/src/leaflet-search.js"); ?>"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+    <script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographGeocoder.js"); ?>"></script>
+    <script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographRecentUploads.js"); ?>"></script>
+
+    <script src="/js/Leaflet.GeographScout.js?<? echo filemtime(__DIR__.'/../js/Leaflet.GeographScout.js'); ?>"></script>
+    <script src="<?php echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
     <style>
         body { margin: 0; display: flex; flex-direction: column; height: 100vh; font-family: sans-serif; }
         #controls { padding: 15px; background: #2c3e50; color: white; display: flex; gap: 20px; flex-wrap: wrap; }
@@ -26,81 +43,91 @@ $USER->mustHavePerm('basic');
 </head>
 <body>
 
-<div class="status-bar" id="status">Initializing GPS...</div>
+<div class="status-bar" id="status">Click the Pin icon to snap to your location</div>
 <div id="map"></div>
 
 <script>
+                var bounds = L.latLngBounds(L.latLng(49.863788, -13.688451), L.latLng(60.860395, 1.795260));
+
+    var mapOptions = {
+	maxBounds: bounds,
+        minZoom: 10,
+	maxZoom: 16,
+        attributionControl:false //we add our own manually!
+    };
+
+
+
     // --- CONFIG & STATE ---
-    const map = L.map('map'); //.setView([57.4, -2.9], 11);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    const map = L.map('map', mapOptions).addControl(
+                        L.control.attribution({ position: 'bottomright', prefix: ''}) );
+
+//.setView([57.4, -2.9], 11);
+    var osmAttrib='Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {minZoom: 3, maxZoom: 18, attribution: osmAttrib}).addTo(map);
 
     let userMarker = L.circleMarker([0,0], {color: 'blue', radius: 8, fillOpacity: 0.8}).addTo(map);
-	let geographScout = null;
+    let geographScout = null;
 
-    // --- LOGIC ---
+/////////////////////////////////////////////
+// stolen from mappingLeaflet.js
 
-    async function updatePosition(lat, lng) {
-        const userLatLng = L.latLng(lat, lng);
-        userMarker.setLatLng(userLatLng);
+	let geocoder;
+        const issubmit = false;
 
-	if (!geographScout) {
-		//we now start without location, so itialize it the first time!
-		map.setView(userLatLng, 12);
+        var baseMaps = {};
+        var overlayMaps = {};
 
-	} else {
-	    // 2. Smart Panning Logic
-	    // We get the current bounds and "pad" them negatively by 25%
-	    // to create a central 50% "safe zone"
-	    const currentBounds = map.getBounds();
-	    const safeZone = currentBounds.pad(-0.4);
-	    const extraZone = currentBounds.pad(3);
+                if (L.GeographRecentUploads)
+                        overlayMaps["Recent Uploads"] = L.geographRecentUploads();
 
-	    if (!extraZone.contains(userLatLng)) {
-	        //might as well go right there
-	        map.setView(userLatLng, map.getZoom(), { animate: false });
+                // dots layer
+                var layerUrl='https://t0.geograph.org.uk/tile/tile-density.php?z={z}&x={x}&y={y}&match=&l=1&6=1';
+                var layerAttrib='&copy; Geograph Project';
+                overlayMaps['Photo Subjects'] = new L.TileLayer(layerUrl, {minZoom: 6, maxZoom: 18, attribution: layerAttrib, bounds: bounds, opacity: 0.8});
 
-	    } else if (!currentBounds.contains(userLatLng)) {
-	        //try to scroll nicely.
-	        map.panTo(userLatLng);
+                if (L.britishGrid) {
+                        var gridOptions = {
+                                opacity: 0.3,
+                                weight: 0.7,
+                                showSquareLabels: [100000,10000,100]
+                        };
 
-	    } else if (!safeZone.contains(userLatLng)) {
-	        // panInside is great because it only moves the map
-	        // the minimum distance required to show the point
-	        map.panInside(userLatLng, {
-	            padding: [100, 100], // Extra pixel padding from the edge
-	            animate: true,
-	            duration: 0.5
-	        });
-	    }
-        }
+                        overlayMaps['OSGB Grid'] = L.britishGrid(gridOptions);
+                        overlayMaps['Irish Grid'] = L.irishGrid(gridOptions);
+                        if (!issubmit) {
+                                overlayMaps['OSGB Grid'].addTo(map);
+                                overlayMaps['Irish Grid'].addTo(map);
+                        }
+                }
 
-        document.getElementById('status').innerText = `Position Uploaded`;
-        if (!geographScout) {
+                if (L.geographGeocoder && !geocoder)
+                        map.addControl(geocoder = L.geographGeocoder());
+
+                if (L.control.locate)
+                        L.control.locate({
+                                keepCurrentZoomLevel: [13,18],
+                                locateOptions: {
+                                        maxZoom: 13,
+                                        enableHighAccuracy: true
+                        }}).addTo(map);
+
+/////////////////////////////////////////////
+
 		// 1. Initialize the plugin
 		geographScout = L.geographScout({
 		    user_id: <? echo intval($USER->user_id); ?>,
 		    apiUrl: '/api-scout.php'
 		});
 
-		// 2. (Optional) Add it to the map by default
+
+		overlayMaps['Geograph Scout'] = geographScout;
 		geographScout.addTo(map);
 
-		// 3. Add it to the standard Leaflet Layer Control
-		const overlays = {
-			    "Geograph Scout": geographScout
-		};
-		L.control.layers(null, overlays).addTo(map);
-	}
-    }
+	 L.control.layers(baseMaps,overlayMaps).addTo(map);
 
-    // --- GEOLOCATION START ---
-    if ("geolocation" in navigator) {
-        navigator.geolocation.watchPosition(
-            (pos) => updatePosition(pos.coords.latitude, pos.coords.longitude),
-            (err) => console.error(err),
-            { enableHighAccuracy: true }
-        );
-    }
+
+/////////////////////////////////////////////
 
 </script>
 </body>

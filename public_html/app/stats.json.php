@@ -24,7 +24,12 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-$USER->mustHavePerm("basic");
+if (!$USER->hasPerm("basic")) {
+        //return a nice JSON error!
+	$data = array('error'=>'login required');
+	outputJSON($data); //uses pass-by-ref;
+	exit;
+}
 
 $USER->getStats();
 $db = $USER->_getDB();
