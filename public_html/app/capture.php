@@ -344,13 +344,19 @@ function escapeHTML(str) {
 
         document.getElementById('cameraInput').addEventListener('change', (e) => {
             latestFile = e.target.files[0];
+
+       		const now = new Date();
+     		datePart = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+	        timePart = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+
+
             // Get location immediately on capture
             navigator.geolocation.getCurrentPosition((pos) => {
                 latestCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
 
-        		const now = new Date();
-        		datePart = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
-		        timePart = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+		const divElement = document.getElementById('takeMessage');
+		if (divElement)
+			divElement.textContent = '';
 
                 document.getElementById('downloadBtn').style.display = 'block';
                 document.getElementById('downloadBtn').textContent = `Download ${timePart} Again`;
@@ -360,9 +366,17 @@ function escapeHTML(str) {
 		//still trigger the download on error!
 		latestCoords = null; //will write an unknown file
 
+		let errorMessage = "Unknown error";
+		switch(err.code) {
+		        case 1:  errorMessage = "Location access denied"; break;
+		        case 2:  errorMessage = "GPS signal lost or unavailable"; break;
+		        case 3:  errorMessage = "GPS request timed out"; break;
+		        default: errorMessage = err.message || "Positioning error"; break;
+		}
+
 		const divElement = document.getElementById('takeMessage');
 		if (divElement)
-			divElement.textContent = err.message + " (image should be saved with _unknown location)";
+			divElement.textContent = `${errorMessage} (image should be saved with _unknown location)`;
 
                 document.getElementById('downloadBtn').style.display = 'block';
                 document.getElementById('downloadBtn').textContent = `Download ${timePart} Again`;
