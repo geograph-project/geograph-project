@@ -11,14 +11,15 @@ $USER->mustHavePerm('basic');
 <head>
     <title>Geograph Scout - Dev Prototype</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 
-    <link rel="stylesheet" href="<?php echo smarty_modifier_revision("/js/leaflet-search-master/src/leaflet-search.css"); ?>" />
+    <link rel="stylesheet" href="<?php echo smarty_modifier_revision("/js/leaflet-search-master/src/leaflet-search.css"); ?>">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.67.0/dist/L.Control.Locate.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.67.0/dist/L.Control.Locate.min.css">
+    <!--link rel="stylesheet" href="<? echo smarty_modifier_revision("/js/Leaflet.GeographClickLayer.css"); ?>"-->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
@@ -30,8 +31,10 @@ $USER->mustHavePerm('basic');
     <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
     <script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographGeocoder.js"); ?>"></script>
     <script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographRecentUploads.js"); ?>"></script>
+    <!--script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographClickLayer.js"); ?>"></script-->
 
     <script src="/js/Leaflet.GeographScout.js?<? echo filemtime(__DIR__.'/../js/Leaflet.GeographScout.js'); ?>"></script>
+    <script src="/js/Leaflet.GeographCameraButton.js?<? echo filemtime(__DIR__.'/../js/Leaflet.GeographCameraButton.js'); ?>"></script>
     <script src="<?php echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
     <style>
         body { margin: 0; display: flex; flex-direction: column; height: 100vh; font-family: sans-serif; }
@@ -61,6 +64,8 @@ $USER->mustHavePerm('basic');
     // --- CONFIG & STATE ---
     const map = L.map('map', mapOptions).addControl(
                         L.control.attribution({ position: 'bottomright', prefix: ''}) );
+
+    const photoHistory = new L.FeatureGroup().addTo(map);
 
 //.setView([57.4, -2.9], 11);
     var osmAttrib='Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
@@ -111,6 +116,13 @@ $USER->mustHavePerm('basic');
                                         maxZoom: 13,
                                         enableHighAccuracy: true
                         }}).addTo(map);
+
+                //actully no. Requires juery!
+//                if (L.GeographClickLayer)
+  //                  clickLayer = L.geographClickLayer().addTo(map);
+
+		if (L.geographCameraButton)
+			cameraButton = L.geographCameraButton({historyPoints: photoHistory}).addTo(map);
 
 /////////////////////////////////////////////
 
