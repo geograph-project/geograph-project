@@ -446,7 +446,7 @@ function escapeHTML(str) {
     		} else {
     			var wgs84 = new GT_WGS84();
     			wgs84.setDegrees(latestCoords.lat, latestCoords.lng);
-    			let gridref = wgs84.getGridRef(10);
+    			let gridref = wgs84.getGridRef(5);
 
     			if (gridref) {
     				//this is our proper format, date/time for easy sorting, plus GR
