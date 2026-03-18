@@ -65,6 +65,17 @@ $USER->mustHavePerm('basic');
     const map = L.map('map', mapOptions).addControl(
                         L.control.attribution({ position: 'bottomright', prefix: ''}) );
 
+// Add this guard immediately after creating the map object
+// ... because map starts non-centerd, accidental dragging of the map breaks it due to uncaught exception, this guards against that!
+map.on('mousedown dragstart', function(e) {
+    if (!map.getCenter()) {
+        // If no center is set, stop the event from bubbling
+        // to the internal Leaflet handlers like _onUp
+        L.DomEvent.stopPropagation(e);
+        return false;
+    }
+});
+
     const photoHistory = new L.FeatureGroup().addTo(map);
 
 //.setView([57.4, -2.9], 11);
@@ -89,7 +100,7 @@ $USER->mustHavePerm('basic');
                 // dots layer
                 var layerUrl='https://t0.geograph.org.uk/tile/tile-density.php?z={z}&x={x}&y={y}&match=&l=1&6=1';
                 var layerAttrib='&copy; Geograph Project';
-                overlayMaps['Photo Subjects'] = new L.TileLayer(layerUrl, {minZoom: 6, maxZoom: 18, attribution: layerAttrib, bounds: bounds, opacity: 0.8});
+                overlayMaps['Photo Subjects'] = new L.TileLayer(layerUrl, {minZoom: 6, maxZoom: 18, attribution: layerAttrib, bounds: bounds, opacity: 0.7});
 
                 if (L.britishGrid) {
                         var gridOptions = {
