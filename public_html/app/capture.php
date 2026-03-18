@@ -123,11 +123,10 @@ h3 {
     <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
 
 	<div id="takeMessage"></div>
-    <button id="downloadBtn" class="btn" style="display:none;">2. Save to Downloads</button>
+    <button id="downloadBtn" class="btn" style="display:none;">Save to Downloads</button>
 
-    <p>Use this button to save a note tagged with your location which can be used during submission (accessible on this device only). Notes are listed at the bottom of the page.
-    <button id="saveBtn" class="btn btn-select">Save Location</button>
-
+    <p>Or seperately, use this button to save a note tagged with your location which can be used during submission (accessible on this device only). Notes are listed at the bottom of the page.
+    <button id="saveBtn" class="btn btn-select">Create Location Note</button>
 
     <div id="noteForm" style="display:none;">
         <textarea id="noteText" wrap="soft" maxlength="255" placeholder="Enter note..."></textarea>
