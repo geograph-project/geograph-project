@@ -117,11 +117,11 @@
 				var grid=wgs84.getOSGB();
 			}
 			if (zoom > 14) {
-				var gridref = grid.getGridRef(10);
+				var gridref = grid.getGridRef(5);
 			} else if (zoom > 9) {
-				var gridref = grid.getGridRef(6);
+				var gridref = grid.getGridRef(3);
 			} else {
-				var gridref = grid.getGridRef(4);
+				var gridref = grid.getGridRef(2);
 			}
 			url = url.replace(/\$gridref/g,gridref.replace(/ /g,''));
 		}
