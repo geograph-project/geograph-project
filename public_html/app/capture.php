@@ -122,6 +122,7 @@ h3 {
 	<label for="cameraInput" class="btn btn-select" id="select-label">Take Photo</label>
     <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
 
+	<div id="takeMessage"></div>
     <button id="downloadBtn" class="btn" style="display:none;">2. Save to Downloads</button>
 
     <p>Use this button to save a note tagged with your location which can be used during submission (accessible on this device only). Notes are listed at the bottom of the page.
@@ -354,7 +355,20 @@ function escapeHTML(str) {
                 document.getElementById('downloadBtn').style.display = 'block';
                 document.getElementById('downloadBtn').textContent = `Download ${timePart} Again`;
                 document.getElementById('downloadBtn').click();
-            });
+
+            }, (err) => {
+		//still trigger the download on error!
+		latestCoords = null; //will write an unknown file
+
+		const divElement = document.getElementById('takeMessage');
+		if (divElement)
+			divElement.textContent = err.message + " (image should be saved with _unknown location)";
+
+                document.getElementById('downloadBtn').style.display = 'block';
+                document.getElementById('downloadBtn').textContent = `Download ${timePart} Again`;
+                document.getElementById('downloadBtn').click();
+
+            }, { enableHighAccuracy: true, timeout: 5000 });
         });
 
         document.getElementById('downloadBtn').addEventListener('click', () => {
