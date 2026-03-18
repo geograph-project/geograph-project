@@ -2,9 +2,7 @@ L.GeographScout = L.LayerGroup.extend({
     options: {
         apiUrl: 'https://api.geograph.org.uk/api-scout.php',
         user_id: 0,
-        refreshDistance: 10, // km
-        poiRadius: 10, // km
-	storageKey: 'geograph_scout_filters'
+	    storageKey: 'geograph_scout_filters'
     },
 
     initialize: function (options) {
@@ -25,9 +23,11 @@ L.GeographScout = L.LayerGroup.extend({
 
         // State
         this._poiCache = [];
+        this._activeMarkers = new Map();
         this._localSquareCache = {};
-        this._lastFetchLocation = null;
         this._typeLookup = {};
+
+        this._tilecache = {};
 
         // Default Filters
         const defaultFilters = {
@@ -60,6 +60,11 @@ L.GeographScout = L.LayerGroup.extend({
         this._initUi();
         if (Object.keys(this._typeLookup).length == 0)
 	        this._fetchTypes();
+
+        // Listen to the map's location event (which L.Control.Locate triggers)
+        this._map.on('locationfound', (e) => {
+            this._lastGpsResult = e; // Stores latlng, accuracy, timestamp, etc.
+        });
 
 	// Bind the moveend event so the plugin reacts to map movement
         this._map.on('moveend', this._onMapMove, this);
@@ -134,7 +139,7 @@ L.GeographScout = L.LayerGroup.extend({
         this._dialog.onclose = () => {
             // Update state from UI
             this._filters.unphotographed = document.getElementById('gs-unphoto').checked;
-            this._filters.newPhotos = document.getElementById('gs-few-photo').checked;
+            this._filters.fewPhotos = document.getElementById('gs-few-photo').checked;
             this._filters.noRecent = document.getElementById('gs-no-recent').checked;
             this._filters.personal = document.getElementById('gs-personal').checked;
             this._filters.personalUpdate = document.getElementById('gs-update').checked;
@@ -147,7 +152,7 @@ L.GeographScout = L.LayerGroup.extend({
             if (this.options.storageKey)
                 localStorage.setItem(this.options.storageKey, JSON.stringify(this._filters));
 
-            this.refreshDisplay();
+            this._onFilterChange();
         };
     },
 
@@ -159,27 +164,91 @@ L.GeographScout = L.LayerGroup.extend({
 ///////////////////////////////////////////////////////
 
     _onMapMove: async function () {
-        const center = this._map.getCenter();
+        if (this._map.getZoom() < 11) return;
 
-        // Logic: Should we fetch new data?
-        let needsFetch = false;
-        if (!this._lastFetchLocation) {
-            needsFetch = true;
-console.log('First Fetch', center);
-        } else {
-            const distFromLastFetch = center.distanceTo(this._lastFetchLocation) / 1000;
-            // Fetch if moved > 10km or if we have no data
-            if (distFromLastFetch > this.options.refreshDistance) needsFetch = true;
-//console.log('Move', center, this._lastFetchLocation, 'km:', distFromLastFetch, '>', this.options.refreshDistance, needsFetch);
+        const centerLL = this._map.getCenter();
+        const bounds = this._map.getBounds();
+        
+        // 1. Get Center in Grid terms
+        const centerGrid = this._convertLLtoEN(centerLL.lat, centerLL.lng);
+        if (!centerGrid) return; // Off-grid entirely
+
+        // 2. Calculate spans in meters
+        // Distance from center to West edge and North edge
+        const westPoint = L.latLng(centerLL.lat, bounds.getWest());
+        const northPoint = L.latLng(bounds.getNorth(), centerLL.lng);
+        
+        const widthMeters = centerLL.distanceTo(westPoint);
+        const heightMeters = centerLL.distanceTo(northPoint);
+
+        // 3. Define the bounding box in Eastings/Northings
+        // We add a small buffer (e.g. 5km) to ensure coverage
+        const buffer = 5000;
+        const minE = centerGrid.eastings - widthMeters - buffer;
+        const maxE = centerGrid.eastings + widthMeters + buffer;
+        const minN = centerGrid.northings - heightMeters - buffer;
+        const maxN = centerGrid.northings + heightMeters + buffer;
+
+        // 4. Snap the start points to the 10km grid
+        const startE = Math.floor(minE / 10000) * 10000;
+        const startN = Math.floor(minN / 10000) * 10000;
+
+        let requestCount = 0;
+
+        for (let e = startE; e <= maxE; e += 10000) {
+            if (requestCount > 16) break; // Stop columns if limit hit
+            for (let n = startN; n <= maxN; n += 10000) {
+                const hectad = this._convertENtoHectad(e, n, centerGrid.reference_index);
+
+                if (hectad && !this._tilecache[hectad]) {
+
+                    // Safety: stop if the viewport is unexpectedly huge (each fetch is actully 3!
+                    if (++requestCount > 16) break;
+
+                    this._tilecache[hectad] = 'loading';
+                    this._fetchFromGeographAPIHectad(hectad)
+                        .then(() => { this._tilecache[hectad] = 'loaded'; })
+                        .catch(() => { delete this._tilecache[hectad]; });
+                }
+            }
         }
+        //no refreshDisplay, as we now let leaflet handle visibiliy, features are always plotted!
+    },
 
-        if (needsFetch) {
-            await this._fetchFromGeographAPI(center.lat, center.lng);
-        }
 
-        // Always refresh the markers/squares on move to ensure they
-        // are visible in the current viewport even if we didn't fetch
-        this.refreshDisplay();
+    //using our own libary alas, the working with multi-grid is awkward
+    _convertLLtoHectad: function(lat,lng) {
+    	var wgs84 = new GT_WGS84();
+  	    wgs84.setDegrees(lat, lng);
+     	let gridref = wgs84.getGridRef(1);
+        if (gridref)
+            return gridref.replace(/ /g,''); //naturaulyl reurns GRs with spaces!
+        return false;
+    },
+
+    _convertLLtoEN: function(lat, lng) {
+        const wgs84 = new GT_WGS84();
+        wgs84.setDegrees(lat, lng);
+
+        // Get the appropriate grid (OSGB for UK, Irish for Ireland)
+        const grid = wgs84.getGrid();
+        if (!grid)
+            return false;
+
+        return {
+            eastings: grid.eastings,
+            northings: grid.northings,
+            reference_index: grid.reference_index //now available in geotools
+        };
+    },
+
+    _convertENtoHectad: function(e, n, ri) {
+        let grid = (ri === 1) ? new GT_OSGB() : new GT_Irish();
+        grid.setGridCoordinates(e, n);
+        // getGridRef(1) returns the 10km (hectad) reference
+        let gridref = grid.getGridRef(1).replace(/\s+/g, '');
+        //will blindly return a gridref, even if off the edge of know squares, so need to detect where get numbers wihtout the grid letters.
+        return (gridref.length>2)?gridref:false;
     },
 
     _getBBoxForScout: function(lat, lng, radiusKm = 15) {
@@ -198,10 +267,20 @@ console.log('First Fetch', center);
     },
 
     _getSquarePolygon: function(sq) {
-        // 1. Get the grid object for the SW corner
-        const wgs84 = new GT_WGS84();
-        wgs84.setDegrees(sq.lat, sq.lng);
-        const grid = wgs84.getGrid();
+        let grid;
+        //one API gives us lat/long (although may be better to jsut get from the GR anyway)
+        //if (sq.lat) {
+        //    // 1. Get the grid object for the SW corner
+        //    const wgs84 = new GT_WGS84();
+        //    wgs84.setDegrees(sq.lat, sq.lng);
+        //    grid = wgs84.getGrid();
+        //} else {
+            if (sq.gr.length == 6)
+                grid = new GT_OSGB();
+            else
+                grid = new GT_Irish();
+            grid.parseGridRef(sq.gr);
+        //}
 
         if (!grid || grid.status != 'OK')
            return [];
@@ -228,24 +307,47 @@ console.log('First Fetch', center);
         return latLngs;
     },
 
-    _renderNearbyPoints: function(userPt) {
-        this._poiLayer.clearLayers();
-        const center = this._map.getCenter();
+    _renderSinglePOI: function(poi) {
+        if (!this._filters.categories.includes(poi.t)) return;
+        if (this._activeMarkers.has(poi.id)) return;
 
-        this._poiCache.forEach(poi => {
-            const poiLatLng = L.latLng(poi.lt, poi.lg);
-            const distKm = center.distanceTo(poiLatLng) / 1000;
+        const poiLatLng = L.latLng(poi.lt, poi.lg);
+        const title = this._typeLookup[poi.t] || "Point of Interest";
 
-//todo could just use map bounds instead!
+        // Bind a function instead of a static string
+        const marker = L.marker(poiLatLng).bindPopup(() => {
+            // This code runs ONLY when the marker is clicked
+            let popupContent = `<b>${poi.n}</b><br>${title}`;
 
-            // Only show markers within 10km of current location
-            if (distKm <= 10 && this._filters.categories.includes(poi.t)) {
-                var title = this._typeLookup[poi.t];
-                L.marker(poiLatLng)
-                    .bindPopup(`<b>${poi.n}</b><br>${title}<br>${distKm.toFixed(2)}km away`)
-        		    .addTo(this._poiLayer);
+            if (this._lastGpsResult && this._lastGpsResult.latlng) {
+                const distKm = this._lastGpsResult.latlng.distanceTo(poiLatLng) / 1000;
+                popupContent += `<br>${distKm.toFixed(2)}km from your current position`;
+            }
+
+            return popupContent;
+        });
+
+        marker.addTo(this._poiLayer);
+        this._activeMarkers.set(poi.id, marker);
+    },
+
+    _onFilterChange: function() {
+        this._activeMarkers.forEach((marker, id) => {
+            const poi = this._poiCache[id];
+            if (!this._filters.categories.includes(poi.t)) {
+                this._poiLayer.removeLayer(marker);
+                this._activeMarkers.delete(id);
             }
         });
+
+        // Check if any points in the cache should now be shown
+        // (e.g. if a category was turned back ON)
+        this._poiCache.forEach(poi => {
+            this._renderSinglePOI(poi);
+        });
+
+        //and trigger the suqars to rerender
+        this._renderSquares(Object.values(this._localSquareCache));
     },
 
     _renderSquares: function(squares) {
@@ -256,8 +358,6 @@ console.log('First Fetch', center);
             let color = null;
             let label = "";
             let dash = null;
-
-    //TODO, could also check is within bounds of map!
 
             // Priority 1: Globally Unphotographed
             if (this._filters.unphotographed && sq.status.nonGeograph) {
@@ -301,24 +401,41 @@ console.log('First Fetch', center);
                     fillOpacity: 0.2,
                     dashArray: dash,
                     interactive: true
-                }).addTo(this._squareLayer).bindPopup(`Square: ${sq.gr}<br>${label}<br>Images: ${sq.c}`, {autoPan:false} );
+                }).addTo(this._squareLayer).bindPopup(`Square: ${sq.gr}<br>${label}<br>Images: ${sq.c}`);
             }
         });
     },
 
-    _processSquares: function(allSquares, userSquares) {
+    _processSquares: function(allSquaresRaw, userSquaresRaw) {
+	    // 1. Normalization Helper
+	    // Converts {"TQ3039": {c:1}} into [{gr: "TQ3039", c:1}]
+	    const normalize = (data) => {
+	        if (!data) return [];
+	        if (Array.isArray(data)) return data;
+	        return Object.entries(data).map(([gr, obj]) => {
+	            return { ...obj, gr: gr }; // Inject the key as the 'gr' property
+	        });
+	    };
+
+	    const allSquares = normalize(allSquaresRaw);
+	    const userSquares = normalize(userSquaresRaw);
+
         // Map of user squares for easy attribute lookup (like 'last photographed')
         const userSquareMap = new Map(userSquares.map(s => [s.gr, s]));
 
-	// 1. Extract only the numbers that are greater than 0
-	const validValues = allSquares.map(sq => sq.c).filter(val => val !== null && val > 0);
+	    // 1. Extract only the numbers that are greater than 0
+   	    const validValues = allSquares.map(sq => sq.c).filter(val => val !== null && val > 0);
 
-	// 2. Perform calculations only if we have data
-	const total = validValues.reduce((sum, val) => sum + val, 0);
-	const avg = validValues.length > 0 ? total / validValues.length : 0;
-	const criteria = Math.max(4, avg *0.2);
+    	// 2. Perform calculations only if we have data
+	    const total = validValues.reduce((sum, val) => sum + val, 0);
+    	const avg = validValues.length > 0 ? total / validValues.length : 0;
+	    const criteria = Math.max(4, avg *0.2);
 
         allSquares.forEach(sq => {
+            //the hectad API, also gives us all at sea squares, which dont want to bother with
+            if (!(sq.l || sq.c)) //not if no land and no imags
+                return;
+
             const userData = userSquareMap.get(sq.gr);
             const hasVisited = !!userData; // Truthy if the ID exists in the map
 
@@ -356,47 +473,55 @@ console.log('First Fetch', center);
         this._renderSquares(Object.values(this._localSquareCache));
     },
 
-    _fetchFromGeographAPI: async function(lat, lng) {
-        const currentPos = L.latLng(lat, lng);
+    _fetchFromGeographAPIHectad: async function(hectad) {
+        // 1. Construct URLs
+        const scoutUrl = `${this.options.apiUrl}?hectad=${hectad}`;
+        const allSquaresUrl = `https://t0.geograph.org.uk/tile-hectad.json.php?hectad=${hectad}`;
+        const userSquaresUrl = `https://t0.geograph.org.uk/tile-hectad.json.php?hectad=${hectad}&user_id=${this.options.user_id}`;
 
-        // Check against the bounds stored in the options
-        if (this.options.bounds && !this.options.bounds.contains(currentPos)) {
-            console.warn("Request skipped: Coordinates are outside Britain and Ireland.");
-            this._lastFetchLocation = currentPos; //still set the fetch position to avoid lots of fake fetches
-            return; // Exit early to prevent API calls
+        try {
+            // 2. Run all three fetches in parallel
+            const [poiRes, squareRes, userRes] = await Promise.allSettled([
+                fetch(scoutUrl).then(r => r.json()),
+                fetch(allSquaresUrl).then(r => r.json()),
+                fetch(userSquaresUrl).then(r => r.json())
+            ]);
+
+            // 3. Process POI (Scout) Data
+            if (poiRes.status === 'fulfilled' && Array.isArray(poiRes.value)) {
+                poiRes.value.forEach(item => {
+                    // Ensure we don't overwrite if it already exists in cache
+                    if (!this._poiCache[item.id]) {
+                        this._poiCache[item.id] = item;
+                        this._renderSinglePOI(item);
+                    }
+                });
+            }
+
+            // 4. Process Grid Squares
+            // Note: tile-hectad returns { markers: [...] } directly
+            if (squareRes.status === 'fulfilled' && userRes.status === 'fulfilled') {
+                const allMarkers = squareRes.value.squares || [];
+                const userMarkers = userRes.value.squares || [];
+
+                // Your existing processing logic
+                this._processSquares(allMarkers, userMarkers);
+            }
+
+            // 5. Update Status UI
+            this._tilecache[hectad] = 'loaded'; // Mark as successfully cached
+
+            const cacheCount = Object.keys(this._poiCache).length;
+            const statusEl = document.getElementById('status');
+            if (statusEl) {
+                statusEl.innerText = `Loaded Hectad ${hectad}. Total POIs: ${cacheCount}`;
+            }
+
+        } catch (err) {
+            console.error(`Failed to fetch data for hectad ${hectad}:`, err);
+            // Reset so it can be attempted again on next move
+            delete this._tilecache[hectad];
         }
-
-        // Round for privacy and better server-side caching
-        const fuzzyLat = lat.toFixed(2);
-        const fuzzyLng = lng.toFixed(2);
-
-        const bbox = this._getBBoxForScout(lat, lng, 5); //will only do spall areas!
-
-        // Run both fetches in parallel
-        const [poiRes, squareRes, userRes] = await Promise.allSettled([
-            fetch(`${this.options.apiUrl}?lat=${fuzzyLat}&lng=${fuzzyLng}&radius=30`).then(r => r.json()),
-            fetch(`https://api.geograph.org.uk/stuff/squares.json.php?olbounds=${bbox}`).then(r => r.json()),
-            fetch(`https://api.geograph.org.uk/stuff/squares.json.php?olbounds=${bbox}&user_id=${this.options.user_id}`).then(r => r.json())
-        ]);
-
-        if (poiRes.status === 'fulfilled') {
-            poiRes.value.forEach(item => {
-                if (!this._poiCache[item.id]) {
-                    this._poiCache[item.id] = item;
-                }
-            });
-        }
-
-        if (squareRes.status === 'fulfilled' && userRes.status === 'fulfilled') {
-            const allMarkers = squareRes.value.markers || [];
-            const userMarkers = userRes.value.markers || [];
-            this._processSquares(allMarkers, userMarkers);
-        }
-
-        this._lastFetchLocation = L.latLng([lat, lng]);
-        const keys = Object.keys(this._poiCache);
-        if (document.getElementById('status'))
-	        document.getElementById('status').innerText = `Cache updated. Total points in DB: ${keys.length}`;
     },
 
     _fetchTypes: async function() {
@@ -416,13 +541,6 @@ console.log('First Fetch', center);
         }
     },
 
-///////////////////////////////////////////////////////
-
-    refreshDisplay: function() {
-        if (!this._lastFetchLocation) return;
-        this._renderSquares(Object.values(this._localSquareCache));
-        this._renderNearbyPoints(this._lastFetchLocation);
-    }
 });
 
 // Factory method
