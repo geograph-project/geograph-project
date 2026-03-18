@@ -145,7 +145,7 @@ L.GeographCameraButton = L.Control.extend({
             try {
             	const wgs84 = new GT_WGS84();
                 wgs84.setDegrees(lat,lng);
-                let gridref = wgs84.getGridRef(isFromMap?6:10);
+                let gridref = wgs84.getGridRef(isFromMap?3:5);
                 if (gridref)
             		locString = gridref.replace(/ /g, '');
             } catch (e) {
