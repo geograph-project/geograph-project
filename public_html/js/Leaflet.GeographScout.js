@@ -8,6 +8,12 @@ L.GeographScout = L.LayerGroup.extend({
 
     initialize: function (options) {
         L.setOptions(this, options);
+
+        // If no bounds were provided in the options, set the default Britain/Ireland box
+        if (!this.options.bounds) {
+            this.options.bounds = L.latLngBounds( L.latLng(49.863788, -13.688451), L.latLng(60.860395, 1.795260) );
+        }
+
         L.LayerGroup.prototype.initialize.call(this);
 
         // Internal Layers
@@ -312,37 +318,45 @@ console.log('Move', center, this._lastFetchLocation, 'km:', distFromLastFetch, '
     },
 
     _fetchFromGeographAPI: async function(lat, lng) {
+        const currentPos = L.latLng(lat, lng);
+
+        // Check against the bounds stored in the options
+        if (this.options.bounds && !this.options.bounds.contains(currentPos)) {
+            console.warn("Request skipped: Coordinates are outside Britain and Ireland.");
+            this._lastFetchLocation = currentPos; //still set the fetch position to avoid lots of fake fetches
+            return; // Exit early to prevent API calls
+        }
 
         // Round for privacy and better server-side caching
-            const fuzzyLat = lat.toFixed(2);
-            const fuzzyLng = lng.toFixed(2);
+        const fuzzyLat = lat.toFixed(2);
+        const fuzzyLng = lng.toFixed(2);
 
-            const bbox = this._getBBoxForScout(lat, lng, 5); //will only do spall areas!
+        const bbox = this._getBBoxForScout(lat, lng, 5); //will only do spall areas!
 
-            // Run both fetches in parallel
-            const [poiRes, squareRes, userRes] = await Promise.allSettled([
-                fetch(`${this.options.apiUrl}?lat=${fuzzyLat}&lng=${fuzzyLng}&radius=30`).then(r => r.json()),
-                fetch(`https://api.geograph.org.uk/stuff/squares.json.php?olbounds=${bbox}`).then(r => r.json()),
-                fetch(`https://api.geograph.org.uk/stuff/squares.json.php?olbounds=${bbox}&user_id=${this.options.user_id}`).then(r => r.json())
-            ]);
+        // Run both fetches in parallel
+        const [poiRes, squareRes, userRes] = await Promise.allSettled([
+            fetch(`${this.options.apiUrl}?lat=${fuzzyLat}&lng=${fuzzyLng}&radius=30`).then(r => r.json()),
+            fetch(`https://api.geograph.org.uk/stuff/squares.json.php?olbounds=${bbox}`).then(r => r.json()),
+            fetch(`https://api.geograph.org.uk/stuff/squares.json.php?olbounds=${bbox}&user_id=${this.options.user_id}`).then(r => r.json())
+        ]);
 
-            if (poiRes.status === 'fulfilled') {
-                poiRes.value.forEach(item => {
-                        if (!this._poiCache[item.id]) {
-                            this._poiCache[item.id] = item;
-                        }
-                });
-            }
+        if (poiRes.status === 'fulfilled') {
+            poiRes.value.forEach(item => {
+                if (!this._poiCache[item.id]) {
+                    this._poiCache[item.id] = item;
+                }
+            });
+        }
 
-            if (squareRes.status === 'fulfilled' && userRes.status === 'fulfilled') {
-                    const allMarkers = squareRes.value.markers || [];
-                    const userMarkers = userRes.value.markers || [];
-                    this._processSquares(allMarkers, userMarkers);
-            }
+        if (squareRes.status === 'fulfilled' && userRes.status === 'fulfilled') {
+            const allMarkers = squareRes.value.markers || [];
+            const userMarkers = userRes.value.markers || [];
+            this._processSquares(allMarkers, userMarkers);
+        }
 
         this._lastFetchLocation = L.latLng([lat, lng]);
         const keys = Object.keys(this._poiCache);
-	if (document.getElementById('status'))
+        if (document.getElementById('status'))
 	        document.getElementById('status').innerText = `Cache updated. Total points in DB: ${keys.length}`;
     },
 
