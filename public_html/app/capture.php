@@ -131,6 +131,7 @@ h3 {
     <div id="noteForm" style="display:none;">
         <textarea id="noteText" wrap="soft" maxlength="255" placeholder="Enter note..."></textarea>
         <p>Drag the map to refine position of the cross-hairs...<br><input type="text" id="noteCoords" readonly></p>
+	<div id="positionNote"></div>
         <button class="btn btn-select" onclick="saveNoteToLocalStorage()">Save Note</button>
     </div>
 
@@ -150,7 +151,7 @@ h3 {
         var historyPoints = null;
 
 //////////////////////////////////////////////
-// Toggle the form
+// Saving Notes Function
 
 const btn = document.getElementById('saveBtn');
 
@@ -221,6 +222,11 @@ function renderNotesList() {
 	    <div class="note-body">${escapeHTML(item.note)}</div>
 	</li>`;
         list.appendChild(li);
+
+                if (map && historyPoints) {
+			const latlng = item.coords.trim().split(/\s*,\s*/).map(Number);
+                        L.circleMarker(latlng, {radius:6, color:'red'}).addTo(historyPoints);
+                }
     });
 }
 
@@ -285,10 +291,58 @@ function escapeHTML(str) {
 
                 // Store for the 'Save' button
                 latestCoords = { lat: latitude, lng: longitude };
-            }, (err) => console.error(err), { enableHighAccuracy: true });
+
+            }, (err) => {
+		//enableHighAccuracy Failed
+		console.error(err);
+		document.getElementById('noteCoords').value = getFriendlyError(err);
+
+		if (mapMarker) //if already initialized dont need anything more
+			return;
+
+		document.getElementById('positionNote').textContent = "GPS position failed. Will need to manually mark position on map";
+
+		// Helper to avoid repeating code
+		const setFallbackView = (latlng, zoom = 16) => {
+		        if (mapMarker) return; // Guard against race conditions
+		        mapMarker = L.marker(latlng).addTo(map);
+		        map.setView(latlng, zoom);
+		        latestCoords = { lat: latlng[0], lng: latlng[1] };
+		};
+
+		// 1. Try low accuracy (Fast fix)
+		navigator.geolocation.getCurrentPosition(
+		        (pos) => setFallbackView([pos.coords.latitude, pos.coords.longitude]),
+		        (err) => {
+		            // 2. Low accuracy failed, try Last Note
+		            const storage = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+		            if (storage.length > 0) {
+		                const lastNote = storage[storage.length - 1];
+				const latlng = lastNote.coords.trim().split(/\s*,\s*/).map(Number);
+		                setFallbackView(latlng);
+		            } else {
+		                // 3. Absolute fallback (The "Random" point)
+		                setFallbackView([57.4, -2.9], 6);
+		            }
+		        },
+		        { enableHighAccuracy: false, timeout: 3000 }
+		);
+
+		//all least try to prevent going to far attray when manually location.
+		var bounds = L.latLngBounds(L.latLng(49.863788, -13.688451), L.latLng(60.860395, 1.795260));
+		map.setMaxBounds(bounds);
+
+	    }, { enableHighAccuracy: true, timeout: 5000 });
         }
 
-
+    function getFriendlyError(err) {
+        switch(err.code) {
+            case 1: return "Location access denied by browser.";
+            case 2: return "GPS signal unavailable.";
+            case 3: return "GPS timed out.";
+            default: return err.message || "Location error.";
+        }
+    }
 
        function loadmap() {
 
@@ -411,14 +465,14 @@ function escapeHTML(str) {
 
             // Add to list for visual confirmation
     		if (fileList) {
-    	        const li = document.createElement('li');
-                li.textContent = `Saved: ${newName}`;
-    	        document.getElementById('fileList').appendChild(li);
+	    	        const li = document.createElement('li');
+	                li.textContent = `Saved: ${newName}`;
+	    	        document.getElementById('fileList').appendChild(li);
     		}
 
     		//add to map!
     		if (map && historyPoints) {
-    			L.circleMarker([latestCoords.lat, latestCoords.lng], {radius:6}).addTo(historyPoints);
+    			L.circleMarker([latestCoords.lat, latestCoords.lng], {radius:6, color:'blue'}).addTo(historyPoints);
     		}
         });
 
