@@ -3,7 +3,8 @@ L.GeographScout = L.LayerGroup.extend({
         apiUrl: 'https://api.geograph.org.uk/api-scout.php',
         user_id: 0,
         refreshDistance: 10, // km
-        poiRadius: 10 // km
+        poiRadius: 10, // km
+	storageKey: 'geograph_scout_filters'
     },
 
     initialize: function (options) {
@@ -29,13 +30,28 @@ L.GeographScout = L.LayerGroup.extend({
         this._typeLookup = {};
 
         // Default Filters
-        this._filters = {
+        const defaultFilters = {
             categories: ["2", "3", "5", "9", "8", "10", "11", "15", "17"],
             unphotographed: true,
+            fewPhotos: true,
             noRecent: true,
             personal: true,
             personalUpdate: true
         };
+
+        // Try to load from localStorage
+        let saved = {};
+        if (this.options.storageKey) {
+            try {
+                const item = localStorage.getItem(this.options.storageKey);
+                if (item) saved = JSON.parse(item);
+            } catch (e) {
+                console.error("GeographScout: Corrupt localStorage data", e);
+            }
+        }
+
+        // Merge: saved values will overwrite defaultFilters keys
+        this._filters = L.extend(defaultFilters, saved);
     },
 
     onAdd: function (map) {
@@ -104,7 +120,8 @@ L.GeographScout = L.LayerGroup.extend({
                     <div>
                         <strong>Grid Squares:</strong><br>
 		            <label style="color:#e74c3c"><input type="checkbox" id="gs-unphoto" ${this._filters.unphotographed ? 'checked':''}> Unphotographed</label>
-		            <label style="color:#9b59b6"><input type="checkbox" id="gs-no-recent" ${this._filters.noRecent ? 'checked':''}> No Recent (Global)</label><br>
+		            <label style="color:#7b7a7a"><input type="checkbox" id="gs-few-photo" ${this._filters.fewPhotos ? 'checked':''}> Few Photos</label>
+		            <label style="color:#9b59b6"><input type="checkbox" id="gs-no-recent" ${this._filters.noRecent ? 'checked':''}> No Recent</label><br>
 		            <label style="color:#3498db"><input type="checkbox" id="gs-personal" ${this._filters.personal ? 'checked':''}> Personal</label>
 		            <label style="color:#f39c12"><input type="checkbox" id="gs-update" ${this._filters.personalUpdate ? 'checked':''}> Personal Redo (>5yrs)</label>
                     </div>
@@ -117,6 +134,7 @@ L.GeographScout = L.LayerGroup.extend({
         this._dialog.onclose = () => {
             // Update state from UI
             this._filters.unphotographed = document.getElementById('gs-unphoto').checked;
+            this._filters.newPhotos = document.getElementById('gs-few-photo').checked;
             this._filters.noRecent = document.getElementById('gs-no-recent').checked;
             this._filters.personal = document.getElementById('gs-personal').checked;
             this._filters.personalUpdate = document.getElementById('gs-update').checked;
@@ -124,6 +142,10 @@ L.GeographScout = L.LayerGroup.extend({
             // Map the category checkboxes
             const checked = Array.from(this._dialog.querySelectorAll('.filter:checked'));
             this._filters.categories = checked.flatMap(el => el.value.split(','));
+
+            // Persist to local storage
+            if (this.options.storageKey)
+                localStorage.setItem(this.options.storageKey, JSON.stringify(this._filters));
 
             this.refreshDisplay();
         };
@@ -148,7 +170,7 @@ console.log('First Fetch', center);
             const distFromLastFetch = center.distanceTo(this._lastFetchLocation) / 1000;
             // Fetch if moved > 10km or if we have no data
             if (distFromLastFetch > this.options.refreshDistance) needsFetch = true;
-console.log('Move', center, this._lastFetchLocation, 'km:', distFromLastFetch, '>', this.options.refreshDistance, needsFetch);
+//console.log('Move', center, this._lastFetchLocation, 'km:', distFromLastFetch, '>', this.options.refreshDistance, needsFetch);
         }
 
         if (needsFetch) {
@@ -245,7 +267,11 @@ console.log('Move', center, this._lastFetchLocation, 'km:', distFromLastFetch, '
             // Priority 2: Globally Non-Recent
             else if (this._filters.noRecent && sq.status.nonRecent) {
                 color = "#9b59b6";
-                label = "Needs Recent Imagery (Global)";
+                label = "Needs Recent Imagery";
+            }
+            else if (this._filters.fewPhotos && sq.status.fewPhotos) {
+                color = "#7b7a7a";
+                label = `Few Photos<br>(based on average ${sq.status.average.toFixed(1)})`;
             }
             // Priority 3: Personal Point (Never visited)
             else if (this._filters.personal && sq.status.personallyNeeded) {
@@ -275,7 +301,7 @@ console.log('Move', center, this._lastFetchLocation, 'km:', distFromLastFetch, '
                     fillOpacity: 0.2,
                     dashArray: dash,
                     interactive: true
-                }).addTo(this._squareLayer).bindPopup(`Square: ${sq.gr}<br>${label}<br>Images: ${sq.c}`);
+                }).addTo(this._squareLayer).bindPopup(`Square: ${sq.gr}<br>${label}<br>Images: ${sq.c}`, {autoPan:false} );
             }
         });
     },
@@ -284,12 +310,23 @@ console.log('Move', center, this._lastFetchLocation, 'km:', distFromLastFetch, '
         // Map of user squares for easy attribute lookup (like 'last photographed')
         const userSquareMap = new Map(userSquares.map(s => [s.gr, s]));
 
+	// 1. Extract only the numbers that are greater than 0
+	const validValues = allSquares.map(sq => sq.c).filter(val => val !== null && val > 0);
+
+	// 2. Perform calculations only if we have data
+	const total = validValues.reduce((sum, val) => sum + val, 0);
+	const avg = validValues.length > 0 ? total / validValues.length : 0;
+	const criteria = Math.max(4, avg *0.2);
+
         allSquares.forEach(sq => {
             const userData = userSquareMap.get(sq.gr);
             const hasVisited = !!userData; // Truthy if the ID exists in the map
 
             // LOGIC A: Globally unphotographed (no geographs)
             const isNonGeograph = !sq.g;
+
+	    //geograph, but few photos
+            const isFewPhotos = sq.g && sq.c < criteria;
 
             //geographed, but not recently
             const isNonRecent = sq.g && !sq.r;
@@ -302,13 +339,15 @@ console.log('Move', center, this._lastFetchLocation, 'km:', distFromLastFetch, '
             const isNeedsUpdate = hasVisited && userData.r === 0;
 
             // Decide if we should track/show this square
-            if (isNonGeograph || isNonRecent || isPersonallyNeeded || isNeedsUpdate) {
+            if (isNonGeograph || isFewPhotos || isNonRecent || isPersonallyNeeded || isNeedsUpdate) {
                 // Add metadata so the renderer knows WHY it's showing
                 sq.status = {
                     nonGeograph: isNonGeograph,
+                    fewPhotos: isFewPhotos,
                     nonRecent: isNonRecent,
                     personallyNeeded: isPersonallyNeeded,
-                    needsUpdate: isNeedsUpdate
+                    needsUpdate: isNeedsUpdate,
+		    average: avg
                 };
                 this._localSquareCache[sq.gr] = sq;
             }
