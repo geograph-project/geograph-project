@@ -401,8 +401,8 @@ function setLocationBoxLatLng(latlng) {
 		var grid=wgs84.getOSGB();
 	}
 
-	//get a grid reference with 4 digits of precision
-	var gridref = grid.getGridRef(6).replace(/ /g,'');
+	//get a grid reference with 3 digits of precision
+	var gridref = grid.getGridRef(3).replace(/ /g,'');
 	$('#location').attr('value',gridref);
 }
 
