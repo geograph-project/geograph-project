@@ -37,7 +37,7 @@ $REVISIONS['/js/preview2.js']=8536;
 $REVISIONS['/js/puploader.js']=16852220;
 $REVISIONS['/js/related.js']=13770416;
 $REVISIONS['/js/screensaver.js']=55811055;
-$REVISIONS['/js/search2.js']=47440159;
+$REVISIONS['/js/search2.js']=68370262;
 $REVISIONS['/js/select2-3.3.2/select2.css']=7873;
 $REVISIONS['/js/select2-3.3.2/select2.js']=7895;
 $REVISIONS['/js/simpletree.css']=7590;
@@ -130,6 +130,6 @@ $REVISIONS['/app/js/modules/uploaded-view.js']=88901766;
 $REVISIONS['/app/js/sw.js']=38837486;
 $REVISIONS['/app/js/utils.js']=24751985;
 $REVISIONS['/app/js/router.js']=42057627;
-$REVISIONS['/js/Leaflet.GeographScout.js']=47070165;
-$REVISIONS['/js/Leaflet.GeographCameraButton.js']=30023957;
+$REVISIONS['/js/Leaflet.GeographScout.js']=33512944;
+$REVISIONS['/js/Leaflet.GeographCameraButton.js']=59260151;
 ?>
