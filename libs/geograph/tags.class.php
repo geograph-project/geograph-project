@@ -110,7 +110,8 @@ class Tags
 			return false;
 		}
 		foreach ($tags as $tag) {
-			$this->addTag($tag,$prefix);
+			if (!empty($tag))
+				$this->addTag($tag,$prefix);
 		}
 	}
 
