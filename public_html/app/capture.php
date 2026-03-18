@@ -300,7 +300,7 @@ function escapeHTML(str) {
 		if (mapMarker) //if already initialized dont need anything more
 			return;
 
-		document.getElementById('positionNote').textContent = "GPS position failed. Will need to manually mark position on map";
+		document.getElementById('positionNote').textContent = "GPS position failed. Will need to manually center the map";
 
 		// Helper to avoid repeating code
 		const setFallbackView = (latlng, zoom = 16) => {
