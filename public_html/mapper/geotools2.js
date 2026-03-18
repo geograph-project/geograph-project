@@ -57,6 +57,7 @@ function GT_OSGB()
 	this.northings=0;
 	this.eastings=0;
 	this.status="Undefined";
+	this.reference_index = 1; //as used on Geograph
 }
 
 GT_OSGB.prefixes = new Array (
@@ -165,10 +166,10 @@ GT_OSGB.prototype.parseGridRef = function(landranger)
 					if (GT_OSGB.prefixes[y][x] == gridSheet) {
 						this.eastings = (x * 100000)+gridEast;
 						this.northings = (y * 100000)+gridNorth;
+						this.status = 'OK';
 						ok=true;
 						break search;
 					}
-			
 			}
 		
 		}
@@ -215,6 +216,7 @@ function GT_Irish()
 	this.northings=0;
 	this.eastings=0;
 	this.status="Undefined";
+	this.reference_index = 2; //as used on Geograph
 }
 
 GT_Irish.prefixes = new Array (
@@ -314,6 +316,7 @@ GT_Irish.prototype.parseGridRef = function(landranger)
 					if (GT_Irish.prefixes[x][y] == gridSheet) {
 						this.eastings = (x * 100000)+gridEast;
 						this.northings = (y * 100000)+gridNorth;
+						this.status = 'OK';
 						ok=true;
 						break search;
 					}
