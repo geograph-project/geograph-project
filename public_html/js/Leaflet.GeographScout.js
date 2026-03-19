@@ -401,7 +401,7 @@ L.GeographScout = L.LayerGroup.extend({
                     fillOpacity: 0.2,
                     dashArray: dash,
                     interactive: true
-                }).addTo(this._squareLayer).bindPopup(`Square: ${sq.gr}<br>${label}<br>Images: ${sq.c}`);
+                }).addTo(this._squareLayer).bindPopup(`Square: <a href="/gridref/${sq.gr}" target="_blank">${sq.gr}</a><br>${label}<br>Images: ${sq.c}`);
             }
         });
     },
