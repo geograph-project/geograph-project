@@ -1,7 +1,7 @@
 {assign var="page_title" value="Register"}
 {include file="_std_begin.tpl"}
 
-<div style="max-width:600px">
+<div style="max-width:60em">
 <h2>Register</h2>
 
 {dynamic}
@@ -82,13 +82,13 @@
 	<hr><br>
 
 	<label for="name">Your name (will be used as credit for any images submit)</label><br/>
-	<input size="25" id="name" name="name" value="{$name|escape:'html'}"/>
+	<input size="25" id="name" name="name" value="{$name|escape:'html'}" required/>
 	<span class="formerror">{$errors.name}</span>
 
 	<br/><br/>
 
 	<label for="email">Your email address</label><br/>
-	<input size="45" id="email" name="email" value="{$email|escape:'html'}"/>
+	<input size="45" id="email" name="email" value="{$email|escape:'html'}" style="max-width:100%" required/>
 	<span class="formerror">{$errors.email}</span>
 
 	<br/><br/>
@@ -112,12 +112,12 @@
         </div>
 
 	<label for="password1">Choose a password</label><br/>
-	<input size="15" type="password" id="password1" name="password1" value="{$password1|escape:'html'}"/>
+	<input size="15" type="password" id="password1" name="password1" value="{$password1|escape:'html'}" required/>
 	<span class="formerror">{$errors.password1}</span>
 
 	<br/><br/>
 	<label for="password2">Confirm password</label><br/>
-	<input size="15" type="password" id="password2" name="password2" value="{$password2|escape:'html'}"/>
+	<input size="15" type="password" id="password2" name="password2" value="{$password2|escape:'html'}" required/>
 	<span class="formerror">{$errors.password2}</span>
 	<br/>
 	<span class="formerror">{$errors.general}</span>
