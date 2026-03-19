@@ -1485,6 +1485,9 @@ class GeographUser
 				pageMustBeHTTPS();
 
 				$smarty->assign('remember_me', isset($_COOKIE['autologin'])?1:0);
+				if (strpos($_SERVER['PHP_SELF'],'/app/') === 0)
+					$smarty->assign('remember_me', 2); //actully in app need to FORCE it
+
 				$smarty->assign('inline', $inline);
 				if (!empty($email))
 					$smarty->assign('email', $email);

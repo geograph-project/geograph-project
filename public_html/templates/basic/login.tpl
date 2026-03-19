@@ -99,7 +99,8 @@
 
 <br/><br/>
 
-<input type="checkbox" name="remember_me" id="remember_me" value="1" {if $remember_me}checked="checked"{/if}>
+<input type="checkbox" name="remember_me" id="remember_me" value="1" {if $remember_me}checked="checked"{/if}{if $remember_me eq 2} required
+	 oninvalid="this.setCustomValidity('This setting is required in the app')" oninput="this.setCustomValidity('')"{/if}>
 <label for="remember_me">Remember me - login automatically in future</label>
 
 <br/>

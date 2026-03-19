@@ -3,11 +3,15 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-//TODO, need to force autologin!
-
-//$smarty = new GeographPage;
-
 $USER->mustHavePerm('basic');
+
+//but still, need to force use of autologin!
+if (empty($_COOKIE['autologin']) && empty($_POST['remember_me'])) { //this is the actual login!
+	//force a new login, the login form will force ticking remember_me !?!
+	$USER->registered = false; //!
+	$USER->login();
+}
+
 
 $mtime = filemtime(__FILE__);
 
