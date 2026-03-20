@@ -59,15 +59,19 @@ export function setupPlaceAutocomplete(element_id, options = {}) {
         const safeTerm = escapeRegex(term);
         const re = new RegExp(`(${safeTerm})`, 'gi');
         const label = item.label.replace(re, '<b>$1</b>');
+        const displaygr = (item.gr && !item.label.includes(item.gr) && item.title) ? item.gr : '';
         const sub = (item.title || item.gr || '').replace(re, '<b>$1</b>');
         return `
             <li data-value="${item.value}" data-gr="${item.gr || ''}" data-label="${item.label}">
-                ${label}
-                <small>${sub}</small>
+		<div class="main-info">
+	                <span class="label">${label}</span>
+			<span class="gridref">${displaygr}</span>
+            	</div>
+                <span class="locality">${sub}</span>
             </li>`;
     };
 
-    input.addEventListener('input', async () => {
+    const updateSuggestions = async () => {
         const term = input.value.trim();
         let html = '';
 
@@ -106,7 +110,11 @@ export function setupPlaceAutocomplete(element_id, options = {}) {
             list.innerHTML = html;
             list.style.display = 'block';
         } catch (e) { console.error("Autocomplete error:", e); }
-    });
+    };
+
+    // Attach the same logic to both events
+    input.addEventListener('input', updateSuggestions);
+    input.addEventListener('focus', updateSuggestions);
 
     list.addEventListener('click', (e) => {
         const li = e.target.closest('li');

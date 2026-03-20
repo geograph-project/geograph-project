@@ -41,8 +41,12 @@ function pma_revision($filename) {
  */
 function generate_import_map($dir, $basePath = '/app/js/') {
     $map = ['imports' => []];
-    $fullDir = $_SERVER['DOCUMENT_ROOT'] . $dir;
 
+	//might need to add other dependancies, as they converted to modules
+	$appPath = "/js/location-selector.module.js";
+	$map['imports'][$appPath] = pma_revision($appPath);
+
+    $fullDir = $_SERVER['DOCUMENT_ROOT'] . $dir;
     if (!is_dir($fullDir)) return json_encode($map);
 
     $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($fullDir));
