@@ -51,7 +51,7 @@ init_session();
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--app-bg);
+            background-color: var(--bg);
             color: var(--content-text);
             margin: 0; padding: 20px;
         }

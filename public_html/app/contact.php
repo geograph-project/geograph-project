@@ -83,7 +83,6 @@ $tok = base64_encode("$n.$t").".".hash_hmac('sha256',$t.$n, $CONF['token_secret'
             --input-bg: #ffffff;
             --input-placeholder: #999999;
 
-
             /* Light Mode Secondary */
             --secondary-bg: #e9ecef;
             --secondary-text: #333333;
@@ -106,7 +105,7 @@ $tok = base64_encode("$n.$t").".".hash_hmac('sha256',$t.$n, $CONF['token_secret'
 
         body {
     	    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    	    background-color: var(--app-bg);
+    	    background-color: var(--bg);
     	    color: var(--content-text);
     	    margin: 0; padding: 20px;
     	}
