@@ -30,8 +30,8 @@ L.Control.EnhanceButton = L.Control.extend({
         menu.style.display = 'none'; // Hidden by default
         
         // Prevent map clicks/drags when interacting with the menu
-        L.DomEvent.disableClickPropagation(menu);
-        L.DomEvent.disableScrollPropagation(menu);
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.disableScrollPropagation(container);
 
         const options = [
             { id: 'enableNone', val: 'applyNone', label: 'No Enhancement' },
@@ -59,12 +59,35 @@ L.Control.EnhanceButton = L.Control.extend({
         });
 
         // Toggle visibility
-        L.DomEvent.on(button, 'click', L.DomEvent.stop).on(button, 'click', () => {
+        L.DomEvent.on(button, 'click', L.DomEvent.stop).on(button, 'click', (e) => {
+            L.DomEvent.stopPropagation(e);
+
             const isVisible = menu.style.display === 'block';
-            menu.style.display = isVisible ? 'none' : 'block';
+            if (isVisible) {
+                // CLOSE logic
+                menu.style.display = 'none';
+                // Remove the map listener so it doesn't stay 'primed'
+                this._map.off('mousedown touchstart movestart', this._hideMenu, this);
+            } else {
+                // OPEN logic
+                this._closeAllMenus();
+                menu.style.display = 'block';
+                // Use a named function so we can specifically turn it off later
+                this._map.once('mousedown touchstart movestart', this._hideMenu, this);
+            }
         });
 
         return container;
+    },
+
+    _hideMenu: function() {
+        const menu = this._container.querySelector('.enhance-menu');
+        if (menu) menu.style.display = 'none';
+    },
+
+    _closeAllMenus: function() {
+        const menus = document.querySelectorAll('.opacity-menu, .enhance-menu');
+        menus.forEach(m => m.style.display = 'none');
     },
 
     _applyFilter: function (className) {
@@ -171,8 +194,8 @@ L.Control.OpacityMenu = L.Control.extend({
         const menu = L.DomUtil.create('div', 'opacity-menu', container);
         menu.style.display = 'none';
         
-        L.DomEvent.disableClickPropagation(menu);
-        L.DomEvent.disableScrollPropagation(menu);
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.disableScrollPropagation(container);
 
         const modes = [
             { id: 'opNominal', label: 'Standard', base: 1.0, over: 1.0, checked: true },
@@ -198,12 +221,36 @@ L.Control.OpacityMenu = L.Control.extend({
         });
 
         // Toggle visibility
-        L.DomEvent.on(button, 'click', L.DomEvent.stop).on(button, 'click', () => {
+        L.DomEvent.on(button, 'click', L.DomEvent.stop).on(button, 'click', (e) => {
+            L.DomEvent.stopPropagation(e);
+
             const isVisible = menu.style.display === 'block';
-            menu.style.display = isVisible ? 'none' : 'block';
+
+            if (isVisible) {
+                // CLOSE logic
+                menu.style.display = 'none';
+                // Remove the map listener so it doesn't stay 'primed'
+                this._map.off('mousedown touchstart movestart', this._hideMenu, this);
+            } else {
+                // OPEN logic
+                this._closeAllMenus();
+                menu.style.display = 'block';
+                // Use a named function so we can specifically turn it off later
+                this._map.once('mousedown touchstart movestart', this._hideMenu, this);
+            }
         });
 
         return container;
+    },
+
+    _hideMenu: function() {
+        const menu = this._container.querySelector('.opacity-menu');
+        if (menu) menu.style.display = 'none';
+    },
+
+    _closeAllMenus: function() {
+        const menus = document.querySelectorAll('.opacity-menu, .enhance-menu');
+        menus.forEach(m => m.style.display = 'none');
     },
 
     _applyOpacityPreset: function (baseFudge, overFudge) {

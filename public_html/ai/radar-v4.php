@@ -81,7 +81,7 @@ map.on('mousedown dragstart', function(e) {
 
 //.setView([57.4, -2.9], 11);
     var osmAttrib='Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {minZoom: 3, maxZoom: 18, attribution: osmAttrib}).addTo(map);
+    let tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {minZoom: 3, maxZoom: 18, attribution: osmAttrib}).addTo(map);
 
     let userMarker = L.circleMarker([0,0], {color: 'blue', radius: 8, fillOpacity: 0.8}).addTo(map);
     let geographScout = null;
@@ -94,6 +94,8 @@ map.on('mousedown dragstart', function(e) {
 
         var baseMaps = {};
         var overlayMaps = {};
+
+		baseMaps['OSM'] = tileLayer;
 
                 if (L.GeographRecentUploads)
                         overlayMaps["Recent Uploads"] = L.geographRecentUploads();
