@@ -135,6 +135,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 <script src="<?php echo smarty_modifier_revision("/js/submission_utils.js"); ?>"></script>
 <script src="<?php echo smarty_modifier_revision("/viewer/ExifRestorer.js"); ?>"></script>
 
+    <script type="module">
+	import { navigateTo, setupSettingsListener } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
+	window.navigateTo = navigateTo;
+        setupSettingsListener();
+    </script>
+
 <script>
     const fileInput = document.getElementById('file-input');
     const selectLabel = document.getElementById('select-label');
@@ -488,16 +494,6 @@ async function sendToPHP(dataUri, name) {
         });
     }
 
-function navigateTo(path, options) {
-    const isInsideIframe = window.self !== window.top;
-    const target = isInsideIframe ? window.parent : window;
-
-    const event = new CustomEvent('request-navigation', {
-        detail: { path, options },
-        bubbles: true
-    });
-    target.dispatchEvent(event);
-}
 
 </script>
 

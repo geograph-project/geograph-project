@@ -130,32 +130,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
     <a href="/app/" class="btn" target="_top" onclick="navigateTo('/app/home'); return false;">Back To Home</a>
 
-    <script>
-        function navigateTo(path, options) {
-            const isInsideIframe = window.self !== window.top;
-            const target = isInsideIframe ? window.parent : window;
-            const event = new CustomEvent('request-navigation', {
-                detail: { path, options },
-                bubbles: true
-            });
-            target.dispatchEvent(event);
-        }
+    <script type="module">
+	import { navigateTo, updateAppState, setupSettingsListener } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
 
-        function updateAppState(detail) {
-            const isInsideIframe = window.self !== window.top;
-            const target = isInsideIframe ? window.parent : window;
-            const event = new CustomEvent('update-app-state', {
-                detail,
-                bubbles: true
-            });
-            target.dispatchEvent(event);
-        }
+	//so the page can ues it
+	window.navigateTo = navigateTo;
+
+        //set this up right away
+        setupSettingsListener();
 
         //now the submission is finished, need to tell the app, there is no longer an active upload_id - none is a special value
         window.addEventListener('DOMContentLoaded', function() {
             updateAppState({upload_id: 'none'});
         });
-
     </script>
 </body>
 </html>
@@ -1199,6 +1186,14 @@ align-items: center;    /* This centers the 350px map horizontally */
 <script src="<? echo smarty_modifier_revision("/js/to-title-case.js"); ?>"></script>
 <script src="<? echo smarty_modifier_revision("/js/anyascii.js"); ?>"></script>
 
+<script type="module">
+        import { escapeHTML, escapeRegex, navigateTo } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
+        //so the page can use it
+        window.escapeHTML = escapeHTML;
+        window.escapeRegex = escapeRegex;
+        window.navigateTo = navigateTo;
+</script>
+
 <script>
     const stickyBar = document.getElementById('stickyBar');
     const mainHeader = document.getElementById('mainHeader');
@@ -1225,6 +1220,10 @@ align-items: center;    /* This centers the 350px map horizontally */
                 uploadMaxDimension = parseInt(data.settings.uploadMaxDimension, 10);
                 theForm.elements['largestsize'].value = uploadMaxDimension;
                 updateDimensionsDisplay();
+            }
+	    if (data.settings && data.settings.darkMode) {
+                // Handle Dark Mode
+                document.body.classList.toggle('dark-mode', event.data.settings.darkMode);
             }
 
             if (data.transfer_id)
@@ -1653,11 +1652,6 @@ console.log("Error", e);
         suggestions.innerHTML = '';
     }
 
-    function escapeRegex(string) {
-        // This replaces special regex characters with their escaped version
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
 // --------------------------------
 // Subjects
 
@@ -2033,24 +2027,7 @@ console.log("Error", e);
 
 
 // --------------------------------
-// General App Stuff
-
-function navigateTo(path, options) {
-    const isInsideIframe = window.self !== window.top;
-    const target = isInsideIframe ? window.parent : window;
-
-    const event = new CustomEvent('request-navigation', {
-        detail: { path, options },
-        bubbles: true
-    });
-    target.dispatchEvent(event);
-}
-
-function escapeHTML(str) {
-    const p = document.createElement('p');
-    p.textContent = str;
-    return p.innerHTML;
-}
+// General Page Stuff
 
 function openModal(id) {
     const modal = document.getElementById(id);

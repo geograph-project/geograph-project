@@ -302,14 +302,19 @@ $tok = base64_encode("$n.$t").".".hash_hmac('sha256',$t.$n, $CONF['token_secret'
 <? } ?>
 
 <script type="module">
-	import { escapeHTML, navigateTo } from '/app/js/utils.js';
+	import { navigateTo, setupSettingsListener } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
+
+        //so the page can ues it
+        window.navigateTo = navigateTo;
 
 	window.addEventListener('DOMContentLoaded', function() {
-
 		document.querySelector('button[name="cancel"]').addEventListener('click', function() {
 			navigateTo('/app/home');
 		});
 	});
+
+	//set this up right away
+	setupSettingsListener();
 </script>
 
 </body>
