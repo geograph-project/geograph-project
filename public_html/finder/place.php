@@ -350,6 +350,7 @@ inputField.addEventListener('blur', function() {
 
                 const finalGridref = wgs84.getGridRef(3).replace(/ /g,''); // 6-figure GR
 
+		// BUTTON 1: "Use this location" (Original logic)
                 const useButton = document.createElement('button');
                 useButton.textContent = "Use this location";
                 useButton.style.cssText = "margin-top:10px; width:100%; cursor:pointer; font-weight:bold; padding:5px;";
@@ -359,6 +360,16 @@ inputField.addEventListener('blur', function() {
                     useLocation(lat, lng, finalGridref, "Grid Reference");
                 });
                 container.appendChild(useButton);
+
+// BUTTON 2: "What's around here?" (New Reverse Lookup)
+    const aroundButton = document.createElement('button');
+    aroundButton.textContent = "What's around here?";
+    aroundButton.style.cssText = "margin-top:5px; width:100%; cursor:pointer; padding:5px; background:#f0f0f0; border:1px solid #ccc;";
+    aroundButton.onclick = () => {
+        // Triggers the reverse geocode lookup against OS Open Names
+        searchGazetteer(finalGridref, true, true);
+    };
+    container.appendChild(aroundButton);
 
                 // 3. Manage the Marker
                 if (manualMarker) {
@@ -401,8 +412,13 @@ const mapUtils = {
 let markerGroup;
 let searchTimer;
 
-function searchGazetteer(query) {
-    if (query.length < 3) {
+/**
+ * @param {string} query - The search string (Place name or Grid Ref).
+ * @param {boolean} isReverse - If true, treats query as a Grid Ref for reverse geocoding.
+ * @param {boolean} useOpenNames - Toggle between OS Open Names and Places API.
+ */
+function searchGazetteer(query, isReverse = false, useOpenNames = false) {
+    if (!query || query.length < 3) {
         markerGroup.clearLayers();
         // Clear attribution when search is cleared
         if (markerGroup.getAttribution) {
@@ -412,12 +428,39 @@ function searchGazetteer(query) {
         return;
     }
 
-    const url = `/finder/places.json.php?q=${encodeURIComponent(query)}&new=1`;
+    // 1. Setup Base URL
+    let urlParams = "";
+    let baseUrl = useOpenNames
+        ? "/stuff/os_open_names.json.php?v=2"
+        : "/finder/places.json.php?new=1"; //the new param, means is OS 50k data, rather than GNS, no longer technically new!
 
-    fetch(url)
+    // 2. Handle Explicit Reverse Geocoding
+    if (isReverse) {
+        const grid = new GT_OSGB();
+        if (grid.parseGridRef(query)) {
+            urlParams = `e=${grid.eastings}&n=${grid.northings}`;
+	} else {
+	        const grid2 = new GT_Irish();
+        	if (grid2.parseGridRef(query)) {
+		    baseUrl = "/stuff/ie_open_data.json.php?v=2"
+	            urlParams = `e=${grid2.eastings}&n=${grid2.northings}`;
+        	} else {
+	            console.error("Invalid Grid Reference provided for reverse lookup.");
+        	    return;
+		}
+        }
+    } else {
+        // Standard text search
+        urlParams = `q=${encodeURIComponent(query)}`;
+    }
+
+    // 3. Construct and Fetch
+    fetch(`${baseUrl}&${urlParams}`)
+
         .then(response => response.json())
         .then(data => {
             // 1. Clear existing markers
+	    map.closePopup(); //in particular to close on custom makrer (lets leave the pin!)
             markerGroup.clearLayers();
 
             // 2. Handle Copyright
@@ -441,7 +484,7 @@ function searchGazetteer(query) {
                     infoBox.innerHTML = `${data.total_found} results`;
                 } else if (!data.query_info) {
                     infoBox.innerHTML = "?";
-                } else if (m = data.query_info.match(/\d+ of \d+/)) {
+                } else if (m = data.query_info.match(/\d+ of \w+/)) {
                     infoBox.innerHTML = m[0];
                 } else {
                     infoBox.innerHTML = data.query_info.replace(/\n/g, '').trim();
@@ -463,8 +506,28 @@ function searchGazetteer(query) {
             // 3. Process Items
             data.items.forEach((item,index) => {
                 // Convert Grid Ref to LatLng using your library
-                const centeredGR = item.gr.replace(/^(\w{1,2})(\d{2})(\d{2})$/, '$1$25$35');
-                const wgs84 = GT_WGS84.parseGridRef(centeredGR);
+		let wgs84;
+		if (item.gr) {
+	                const centeredGR = item.gr.replace(/^(\w{1,2})(\d{2})(\d{2})$/, '$1$25$35');
+        	        wgs84 = GT_WGS84.parseGridRef(centeredGR);
+		} else if(item.geometry_x) {
+			const grid = new GT_OSGB();
+			grid.setGridCoordinates(parseInt(item.geometry_x,10), parseInt(item.geometry_y,10));
+			wgs84 = grid.getWGS84();
+
+			//mutate to the same format!
+			item.name = item.name1 || item.name2;
+			item.gr = grid.getGridRef(2).replace(/ /g,'');
+			item.localities = item.local_type; //not right, but we dont get the county etc
+		} else if(item.e) {
+			const grid = new GT_Irish();
+			grid.setGridCoordinates(parseInt(item.e,10), parseInt(item.n,10));
+			wgs84 = grid.getWGS84();
+
+			//mutate to the same format!
+			item.gr = grid.getGridRef(2).replace(/ /g,'');
+			item.localities = [item.town_class, item.county, item.country].filter(Boolean).join(', ');
+		}
 
                 if (wgs84) {
                     const latLng = L.latLng(wgs84.latitude, wgs84.longitude);

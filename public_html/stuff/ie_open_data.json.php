@@ -67,10 +67,16 @@ if (empty($error)) {
 
 	$query = sqlBitsToSelect($sql);
 
-	$data['rows'] = $db->getAll($query);
+	if (!empty($_GET['v'])) {
+		$key = 'items';
+	} else {
+		$key = 'rows';
+	}
 
-	if (!empty($data['rows'])) {
-		foreach($data['rows'] as &$row) {
+	$data[$key] = $db->getAll($query);
+
+	if (!empty($data[$key])) {
+		foreach($data[$key] as &$row) {
 			$row['name'] = latin1_to_utf8($row['name']);
 			if (!empty($row['irish'])) {
 				$enc = mb_detect_encoding($row['irish'], 'UTF-8, ISO-8859-15, ASCII');
@@ -81,6 +87,14 @@ if (empty($error)) {
 			$row['n'] = intval($row['n']);
 		}
 		unset($row);
+
+		if (!empty($_GET['v'])) {
+
+			$count = count($data[$key]);
+			$query = "$e,$n"; //we only do reverse;
+			$data['total_found'] = "unknown"; //could get count in whole table??
+			$data['query_info'] = "Query '$query' retrieved $count of {$data['total_found']} matches";
+		}
 	}
 } else {
 	$data = array('error'=>$error);

@@ -33,19 +33,31 @@ customExpiresHeader(3600*24);
 
 $sql = array();
 $sql['wheres'] = array();
+
+	$sph = GeographSphinxConnection('sphinxql',true);
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+
 $sphinxq = empty($_GET['q'])?'':$_GET['q'];
+if (!empty($_GET['q'])) {
+	 $sql['wheres'][] = "MATCH(".$sph->Quote($_GET['q']).")";
 
-$x = intval($_GET['e']);
-$sql['wheres'][] = "mbr_xmin < $x and mbr_xmax > $x";
+	//perhaps could allow both? q+e/n
 
-$y = intval($_GET['n']);
-$sql['wheres'][] = "mbr_ymin < $y and mbr_ymax > $y";
+} elseif (!empty($_GET['e']) && !empty($_GET['n'])) {
+	$x = intval($_GET['e']);
+	$sql['wheres'][] = "mbr_xmin < $x and mbr_xmax > $x";
+
+	$y = intval($_GET['n']);
+	$sql['wheres'][] = "mbr_ymin < $y and mbr_ymax > $y";
+} else {
+	$error = "unknown query";
+}
 
 //todo, add ri = 1/2 (because we about to add ireland to the index!!)
 
 if (empty($error)) {
 
-	$sph = GeographSphinxConnection('sphinxql',true);
 
 	$sql['tables'] = array();
 	$sql['tables'][] = 'os_open_names';
@@ -57,14 +69,25 @@ if (empty($error)) {
 
 	$query = sqlBitsToSelect($sql);
 
-	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+	if (!empty($_GET['v'])) {
+		//just to make more compatible with places.json!
+		$data['items'] = $sph->getAll($query);
 
-	$data['rows'] = $sph->getAll($query);
+		$count = count($data['items']);
+		$query = htmlentities($_GET['q']);
+		$info = $sph->getAssoc("SHOW META");
+		$data['total_found'] = $info['total_found'];
+		$data['query_info'] = "Query '$query' retrieved $count of {$info['total_found']} matches in {$info['time']} sec.\n";
+	} else {
 
-	$info = $sph->getAssoc("SHOW META");
-        if (!empty($info['total_found'])) {
-		$data['count'] = $info['total_found'];
+		$data['rows'] = $sph->getAll($query);
+
+		$info = $sph->getAssoc("SHOW META");
+	        if (!empty($info['total_found']))
+			$data['count'] = $info['total_found'];
 	}
+
+	$data['copyright'] = "Contains OS data (c) Crown Copyright [and database right] 2021.";
 
 } else {
 	$data = array('error'=>$error);
