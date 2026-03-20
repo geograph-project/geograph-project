@@ -35,29 +35,45 @@ $smarty->display('_basic_begin.tpl',filemtime(__FILE__));
 //        $db = GeographDatabaseConnection(true);
 ?>
 <style>
-.map-label {
-    background: white;
-    border: 1px solid #666;
-    border-radius: 8px;
-    padding: 2px 5px;
-    --white-space: nowrap;
-    font-size: 12px;
-    font-weight: bold;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-    text-align: center;
+
+/* The wrapper created by Leaflet */
+.custom-label-wrapper {
+    width: auto !important;
+    height: auto !important;
 }
 
-/* Optional: add a little "pointer" triangle under the label */
-.map-label::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: white transparent transparent transparent;
+.map-label {
+    position: relative;
+    display: inline-block;
+    padding: 5px 10px;
+    background: white;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    white-space: normal;      /* Allow wrapping */
+    max-width: 120px;         /* Control wrap point */
+    min-width: 40px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    
+    /* THE MAGIC: Move the label so the bottom-center 
+       is exactly over the lat/lng point */
+    transform: translate(-50%, -100%); 
+    margin-top: -10px; /* Offset for the arrow height */
 }
+
+/* The Arrow */
+.map-label::after {
+    content: '';
+    position: absolute;
+    top: 100%; /* At the bottom of the label */
+    left: 50%;
+    margin-left: -8px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: #999 transparent transparent transparent;
+}
+
 /* The subtle highlight for the top result */
 .map-label.primary-match {
     background: #fff9c4; /* Light yellow */
@@ -421,10 +437,12 @@ function searchGazetteer(query) {
             // 1. Update/Show Query Info
             if (infoBox) {
                 // Clean up the string (removes newlines and extra spaces)
-                if (m = data.query_info.match(/\d+ of \d+/)) {
-                    infoBox.innerHTML = m[0];
-                } else if (!data.query_info && data.total_found) {
+                if (!data.query_info && data.total_found) {
                     infoBox.innerHTML = `${data.total_found} results`;
+                } else if (!data.query_info) {
+                    infoBox.innerHTML = "?";
+                } else if (m = data.query_info.match(/\d+ of \d+/)) {
+                    infoBox.innerHTML = m[0];
                 } else {
                     infoBox.innerHTML = data.query_info.replace(/\n/g, '').trim();
                 }
@@ -483,8 +501,8 @@ function searchGazetteer(query) {
                     const labelIcon = L.divIcon({
                         className: 'custom-label-container', // Wrapper class
                         html: `<div class="${labelClass}">${cleanName}</div>`,
-                        iconSize: [100, 40],
-                        iconAnchor: [50, 35] // Anchors the label so the "pointer" sits on the coord
+                        iconSize: null,      // Let the content define the size
+                        iconAnchor: [0, 0]   // We will handle the offset in CSS
                     });
 
                     // Create Popup Content
