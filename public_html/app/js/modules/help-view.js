@@ -25,6 +25,12 @@ export function render() {
     margin: 0;
 }
 
+    section h3 {
+	border-bottom:1px solid gray;
+    }
+    section h4 {
+	border-bottom:1px solid silver;
+    }
 
     section ul {
         margin-left:26px;
@@ -43,6 +49,9 @@ export function render() {
         margin-left:18px;
         margin-bottom:8px;
     }
+	section.intro p {
+		margin-left:0;
+	}
     section b {
         font-weight:500;
     }
@@ -54,20 +63,20 @@ export function render() {
 
     <div class="app-header">
         <h2>Welcome to the Geograph App <sup>V0.99</sup></h2>
-        <p class="faq-link">View <a href="/app/faq">Contributor Questions</a></p>
+        <p class="faq-link">See also <a href="/app/faq">App and Contributor Questions</a></p>
     </div>
 
     <hr>
 
     <main>
-    	<section>
+        <section class="intro">
             <p>Geograph is a free-to-use photographic archive of Britain and Ireland.</p>
             <p>This is a test version of the Geograph app which is still in development.</p>
             <p>Some app functions are not yet fully implemented and some link to the main website.</p>
             <p>All feedback is welcome &ndash; there is a link to a feedback form on the app menu.</p>
             <p>The app allows you to take, upload and submit photos to Geograph, review your recent submissions, view maps and search for images.</p>
             <p>It does not include all the functions found on the main website at http://www.geograph.org.uk</p>
-        </section>
+	</section>
 
         <section>
             <h3>Login</h3>
@@ -78,28 +87,32 @@ export function render() {
 
         <section>
             <h3>Installation</h3>
-            <p>This is a &ldquo;progressive web app&rdquo; (a website that can be downloaded and installed like an app or opened in a browser).</p>
+            <p>This is a &ldquo;Progressive Web App&rdquo; (a website that can be downloaded and installed like an app or opened in a browser).</p>
             <p>It does require an internet connection to be fully functional: you will not be able to upload images or browse maps if your device has no data signal.</p>
-            <p>On Android &ndash; open the App link in the Chrome browser, tap the three-dot menu icon in the top right, and select &quot;Add to home screen&quot; and choose &ldquo;Install&rdquo;</p>
-            <p>On Apple IoS &ndash; open the app link in Safari browser and tap the &ldquo;Share&rdquo; button.</p>
+            <p>On <b>Android</b> &ndash; open the App link in the Chrome browser, tap the three-dot menu icon in the top right, and select &quot;Add to home screen&quot; and choose &ldquo;Install&rdquo;</p>
+            <p>On <b>Apple IoS</b> &ndash; open the app link in Safari browser and tap the &ldquo;Share&rdquo; button.</p>
             <p>Choose the &ldquo;Add to home screen&rdquo; option.</p>
-            <p>In both cases, the Geograph app icon will be added to your home screen.</p>
+            <p>In both cases, the <b>Geograph</b> app icon will be added to your home screen.</p>
             <p>You do need to use the specified browsers to install the app.</p>
         </section>
 
         <section>
             <h3>Location, camera, files settings</h3>
             <p>To be fully functional, the app will need to access your device&rsquo;s location, camera and filestore.</p>
-            <p>In most cases you will be asked for permission the first time you use the app and these will be remembered.</p>
-            <p>Permissions can also be set (or revoked) via your device&rsquo;s settings menu.</p>
-            <p>If you use the main Geograph website in your browser on the same device, the same settings will apply &ndash; e.g.</p>
-            <p>if you denied location access to the website, it will not be available in the app until you allow it.</p>
-            <p>In Chrome this is found under &ldquo;Site settings&rdquo; within &ldquo;Settings&rdquo;.</p>
+            <p>In most cases you will be asked for permission the <b>first time</b> you use the app and these will be remembered.</p>
+            <p><b>Permissions</b> can also be set (or revoked) via your device&rsquo;s settings menu.</p>
+            <p>If you use the main Geograph website in your browser on the same device, <b>the same saved settings will apply</b>
+		<ul><ul>
+			<li>e.g. if you denied location access to the website, it will not be available in the app until you allow it.</p>
+		        <li>In Chrome this is found under &ldquo;Site settings&rdquo; within &ldquo;Settings&rdquo;.</p>
+		</ul></ul>
             <p>If you have chosen &ldquo;Desktop site&rdquo; in your browser for the main website, the app will not be correctly scaled: again, you can change it in the browser settings.</p>
-            <p>Once enabled, device location enhances various map functions. You can take photos with your native camera app or within the Geograph app.</p>
+            <p>Once enabled, <b>device location</b> enhances various map functions. You can take photos with your native camera app or within the Geograph app.</p>
             <p>If you would like to save location data on your image files, you need to allow your camera to access location, via your device settings.</p>
             <p>In some cases e.g. Android on Samsung, privacy rules deliberately prevent image location data from being uploaded.</p>
-            <p>You can take photos from within the app, and the location will be saved into the filename and available to assist with submission.</p>
+		<ul><ul>
+	            <li>You can take photos from within the app, and the location will be saved into the filename and available to assist with submission, bypassing this restriction.</li>
+		</ul></ul>
         </section>
 
         <section>
@@ -150,12 +163,11 @@ export function render() {
             <article>
                 <h4>Take Photo/Save Location</h4>
                 <p>This screen contains two functions.</p>
-                <p>Take Photo allows you to take a photo from within the app.</p>
+                <p><b>Take Photo</b> allows you to take a photo from within the app.</p>
                 <p>You will be asked to confirm that you wish to use the photo (&ldquo;OK&rdquo;/&ldquo;Use Photo&rdquo;) or be offered the chance to take it again.</p>
                 <p>Photos taken with this function are saved to the &ldquo;Downloads&rdquo; folder on your device.</p>
                 <p>Android users may find this particularly useful as device location is written into the image filename so that it can be accessed during image submission.</p>
-                <p>Create Location Note allows you to save an annotated location (on this device only). This may be useful e.g.</p>
-                <p>to record a waypoint on a walk or the location of an image subject such as a summit.</p>
+                <p><b>Create Location Note</b> allows you to save an annotated location (on this device only). This may be useful e.g. to record a waypoint on a walk or the location of an image subject such as a summit.</p>
                 <p>These locations can be accessed during image submission.</p>
             </article>
 

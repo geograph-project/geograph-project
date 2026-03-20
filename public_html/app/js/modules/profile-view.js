@@ -69,13 +69,18 @@ export function render() {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
+	color: var(--content-text);
+	background-color: var(--input-bg);
+}
+.search-container input::placeholder {
+	color: var(--input-placeholder);
 }
 
 .search-container button {
     padding: 0 15px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    background: #f0f0f0;
+    background: var(--primary);
     cursor: pointer;
 }
 
@@ -87,33 +92,28 @@ export function render() {
 }
 
 .stat-tile {
-    background: #f4f4f9;
+    background: val(--card-bg);
     padding: 15px 10px;
     border-radius: 8px;
     text-align: center;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--card-faded);
 }
 
 .stat-value {
     --display: block;
     font-size: 1.2rem;
     font-weight: bold;
-    color: #333;
+    color: var(--card-faded);
 }
 
 .stat-label {
-    color: #666;
+    color: var(--content-text);
     font-size:0.75em;
     --text-transform: uppercase;
 }
 
 p#timestamp {
 	padding:10px;
-}
-
-.controls {
-    background: #f4f4f9;
-
 }
 </style>
 

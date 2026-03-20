@@ -7,12 +7,68 @@
     --content-text: #333333;
     --card-bg: #ffffff;
     --primary: #007AFF; /* the main 'continue' button */
+
+    /* New: Faded Text & Borders */
+    --border-color: #c0c0c0;      /* Your 'silver' equivalent */
+    --card-faded: #666666; /* Slightly softer than #333 for better hierarchy */
+    --card-border: #e0e0e0;
+    
+    /* New: Inputs */
+    --input-bg: #ffffff;
+    --input-placeholder: #999999;
+
+    /* Light Mode Secondary */
+    --secondary-bg: #e9ecef;
+    --secondary-text: #333333;
+    --secondary-hover: #dee2e6; /* Slightly darker for interaction */
+
+    --danger-bg: #ffc0cb;       /* Your 'pink' */
+    --danger-text: #333333;
+
+    /* Light Mode Dialog */
+    --dialog-bg: #ffffff;         /* Same as card-bg for a clean look */
+    --dialog-backdrop: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    --dialog-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+
+/* Light Mode FAQ & Errors */
+    --faq-question: #333333;
+    --faq-answer: #555555;
+    --error-color: #d32f2f;      /* A slightly richer red than 'red' */
+    --error-bg-soft: #ffebee;    /* For optional error background boxes */
 }
 
 body.dark-mode {
     --app-bg: #121212;
     --content-text: #e0e0e0;
-    --card-bg: #1e1e1e;
+    --card-bg: #222222;
+
+    /* New: Dark Mode Variations */
+    --border-color: #333333;      /* Darker grey: creates a subtle 'cut' in the black bg */
+    --card-faded: #a0a0a0;     /* Light grey to stand out on dark cards */
+    --card-border: #333333;    /* Subtle separation for dark surfaces */
+    
+    /* New: Dark Mode Inputs */
+    --input-bg: #2c2c2c;       /* Slightly lighter than card-bg to "lift" the input */
+    --input-placeholder: #757575;
+
+    /* Dark Mode Secondary */
+    --secondary-bg: #333333;    /* Dark grey to sit quietly on the card */
+    --secondary-text: #e0e0e0;  /* Off-white text */
+    --secondary-hover: #444444; /* Slightly lighter for interaction */
+
+    --danger-bg: #442727;       /* Deep wine/maroon background */
+    --danger-text: #ff8a8a;     /* Soft red/pink text */
+
+/* Dark Mode Dialog */
+    /* We go slightly lighter than card-bg (#1e1e1e) to show 'elevation' */
+    --dialog-bg: #252525;         
+    --dialog-backdrop: rgba(0, 0, 0, 0.7); /* Darker backdrop for focus */
+    --dialog-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+
+    --faq-question: #ffffff;     /* Bright white for the 'trigger' question */
+    --faq-answer: #b0b0b0;       /* Muted grey for the body text */
+    --error-color: #ff6b6b;      /* Softer, brighter red/coral for dark bg */
+    --error-bg-soft: #3d1b1b;
 }
 
 body.is-inner {
@@ -34,6 +90,21 @@ body, html {
     background-color: var(--app-bg);
     color: var(--content-text);
     transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+dialog, .modal {
+    background-color: var(--dialog-bg);
+    color: var(--content-text);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: var(--dialog-shadow);
+}
+
+/* Styling the backdrop (native <dialog> only) */
+dialog::backdrop {
+    background-color: var(--dialog-backdrop);
+    backdrop-filter: blur(3px);
 }
 
 header, footer {
@@ -73,6 +144,16 @@ footer {
     transition: all 0.3s ease;
     padding: 20px;
     background-color: var(--app-bg);
+}
+
+#--app-container { /* intended for .back-image, otherwise just a demo -- will use var(--back-image) to define the image dynamically! */
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 255, 255, 0.5);
+  background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)),
+    url('https://s0.geograph.org.uk/geophotos/04/18/81/4188170_345a307d.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  colour:black;
 }
 
 #app-container {
@@ -329,16 +410,15 @@ input[type="search"] {
         /* Custom Buttons */
         .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
         .btn-primary { background: var(--primary); color: white; width: 100%; box-sizing: border-box; }
-        .btn-secondary { background: #e9ecef; color: #333; width: 100%; border:1px solid silver; }
-        .btn-danger { background: pink; color: #333; width: 100%; border:1px solid silver; }
-
-
+        .btn-secondary { background: var(--secondary-bg); color: var(--secondary-text); width: 100%; border:1px solid var(--border-color); }
+        .btn-danger { background: var(--danger-bg); color: var(--danger-text); width: 100%; border:1px solid var(--border-color); }
+	.btn-secondary:hover { background-color: var(--secondary-hover); }
 
 .controls {
     display: flex;
     justify-content: center;
     gap: 15px;
-    background: #f0f0f0;
+    background-color: var(--card-bg);
     padding: 10px;
     border-radius: 8px;
 }
@@ -355,6 +435,8 @@ input[type="search"] {
 	border-radius:5px;
 	padding:4px;
 	align-self: center; /* or flex-start */
+        background-color: var(--input-bg);
+        color: var(--content-text);
 }
 
 .submissions-grid {
@@ -417,12 +499,7 @@ input[type="search"] {
     max-width: 90vw;
     max-height: 90vh;
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
-}
-
-/* The backdrop (dimmed background) */
-.photo-modal::backdrop {
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(3px);
+    margin:auto;
 }
 
 .modal-content {
@@ -531,4 +608,19 @@ input[type="search"] {
 }
 .meta-info strong {
 	white-space: nowrap;
+}
+
+div.faq-item {
+	border-bottom: 1px solid var(--card-bg); padding: 15px 0;
+}
+button.faq-button {
+	background: none; border: none; width: 100%; text-align: left; font-size: 1rem; cursor: pointer; padding: 0; color: var(--faq-question);
+}
+
+div.faq-content {
+	margin-top: 10px; color: var(--faq-answer); line-height: 1.5; font-size: 0.95rem; white-space: pre-line;
+}
+
+.error-text {
+	color: var(--error-color);
 }

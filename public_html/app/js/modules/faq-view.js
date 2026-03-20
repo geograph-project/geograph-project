@@ -58,6 +58,20 @@ const staticlist = [
     "title": "Where can I find [help] or provide [feedback]?",
     "content": "The app menu, located in the footer at the bottom right, contains links for App Help, a contact form for the helpdesk, and a Google feedback form to report your experience. If reporting a specific technical issue, please include the app version number found in the footer."
   }
+
+/*
+[
+  {
+    "title": "Does the [Geograph App] record my location?",
+    "content": "No. As a web app, it can only access your location while it is actively being used. We only use your position for explicit, visible features, such as centering the map or taking a photo via the app. Location data is not used outside of these specific features."
+  },
+  {
+    "title": "Can I record a [location tracklog] for later use?",
+    "content": "If you wish to specifically record a location tracklog (e.g., for correlation with photos later), you will need to install a native app on your device with that capability. The Geograph app only supports saving individual annotated locations as notes or taking photos with location data embedded in the filename."
+  }
+]
+*/
+
 ];
 
     renderHTML(contain1, staticlist);
@@ -71,20 +85,17 @@ const staticlist = [
         renderHTML(contain2, faqs);
 
     } catch (error) {
-        containe2.innerHTML = `<p style="color: red;">Failed to load FAQs. Please try again later.</p>`;
+        containe2.innerHTML = `<p class="error-text">Failed to load FAQs. Please try again later.</p>`;
     }
 }
 
 function renderHTML(container, faqs) {
         container.innerHTML = faqs.map((item, index) => `
-            <div class="faq-item" style="border-bottom: 1px solid white; padding: 15px 0;">
-                <button 
-                    onclick="this.nextElementSibling.classList.toggle('hidden')"
-                    style="background: none; border: none; width: 100%; text-align: left; font-size: 1rem; cursor: pointer; padding: 0; color: #333;"
-                >
+            <div class="faq-item">
+                <button class="faq-button" onclick="this.nextElementSibling.classList.toggle('hidden')">
                     ${formatTitle(escapeHTML(item.title))}
                 </button>
-                <div class="faq-content hidden" style="margin-top: 10px; color: #555; line-height: 1.5; font-size: 0.95rem; white-space: pre-line;">
+                <div class="faq-content hidden">
                     ${escapeHTML(item.content)}
                 </div>
             </div>
