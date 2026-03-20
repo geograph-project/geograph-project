@@ -157,7 +157,7 @@ function openPlaceSearch(query, callback) {
 
     // 2. Create the Modal Container
     var modal = targetDoc.createElement('div');
-    modal.style.cssText = "width:90vw; height:90vh; background:white; border-radius:8px; position:relative; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.5);";
+    modal.style.cssText = "width:90vw; height:90vh; max-height:700px; background:white; border-radius:8px; position:relative; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.5);";
 	if (targetWindow.innerWidth < 500)
 		modal.style.width = '98vw'; //let the iframe grow bigger on small screens
 
