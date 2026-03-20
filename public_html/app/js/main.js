@@ -27,6 +27,7 @@ function init() {
 
         'settings':{ module: '/app/js/modules/settings-view.js', title: 'Settings' },
         'help':    { module: '/app/js/modules/help-view.js', title: 'Help' },
+        'faq':     { module: '/app/js/modules/faq-view.js', title: 'FAQ' },
         'contact': { isIframe: true, url: '/app/contact.php', title: 'Contact' },
         'tos':     { module: '/app/js/modules/tos-view.js', title: 'Terms' }
     };
