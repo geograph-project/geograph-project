@@ -120,13 +120,14 @@ map.on('mousedown dragstart', function(e) {
                 if (L.geographGeocoder && !geocoder)
                         map.addControl(geocoder = L.geographGeocoder());
 
-                if (L.control.locate)
+                if (L.control.locate) {
                         L.control.locate({
                                 keepCurrentZoomLevel: [13,18],
                                 locateOptions: {
                                         maxZoom: 13,
                                         enableHighAccuracy: true
-                        }}).addTo(map);
+                        }}).addTo(map).start();
+		}
 
                 //actully no. Requires juery!
 //                if (L.GeographClickLayer)
