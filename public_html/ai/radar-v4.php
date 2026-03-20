@@ -35,6 +35,7 @@ $USER->mustHavePerm('basic');
 
     <script src="/js/Leaflet.GeographScout.js?<? echo filemtime(__DIR__.'/../js/Leaflet.GeographScout.js'); ?>"></script>
     <script src="/js/Leaflet.GeographCameraButton.js?<? echo filemtime(__DIR__.'/../js/Leaflet.GeographCameraButton.js'); ?>"></script>
+    <script src="/js/Leaflet.enhanceButton.js?<? echo filemtime(__DIR__.'/../js/Leaflet.enhanceButton.js'); ?>"></script>
     <script src="<?php echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
     <style>
         body { margin: 0; display: flex; flex-direction: column; height: 100vh; font-family: sans-serif; }
@@ -136,6 +137,7 @@ map.on('mousedown dragstart', function(e) {
 		if (L.geographCameraButton)
 			cameraButton = L.geographCameraButton({historyPoints: photoHistory}).addTo(map);
 
+
 /////////////////////////////////////////////
 
 		// 1. Initialize the plugin
@@ -150,6 +152,9 @@ map.on('mousedown dragstart', function(e) {
 
 	 L.control.layers(baseMaps,overlayMaps).addTo(map);
 
+		L.control.enhanceButton({ position: 'topright' }).addTo(map);
+
+		L.control.opacityMenu({ baseMaps, overlayMaps, position: 'topright'}).addTo(map);
 
 /////////////////////////////////////////////
 
