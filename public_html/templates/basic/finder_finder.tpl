@@ -914,6 +914,11 @@ function jumpLocation(form) {
     //we accept the form, or a string 
     if (form && typeof form === 'string')
 	document.getElementById('loc').value = form;
+
+	//todo, perhaps could clear whole of location-disambiguation, but for now just target the particully incorrect message
+    const note_element = document.getElementById('location-ambigious');
+    if (note_element) note_element.remove(); //if there is one of these still there then remove. if select suggesttion it cleared, but if search again manually, it not)
+
     performSearch();
 }
 function jumpContributor(form) {
@@ -1281,6 +1286,7 @@ function lookForLocationMatches(loc,originalElement) {
             if (originalElement && originalElement == 'loc') {
                 const note = document.createElement('div');
                 //todo, if 'q' is empty, could run keyword results??
+		note.id = "location-ambigious";
                 note.innerHTML = 'Note, below results are not yet filtered by location. Choose place above';
                 note.style.backgroundColor = 'yellow';
                 container.appendChild(note);
@@ -1291,6 +1297,8 @@ function lookForLocationMatches(loc,originalElement) {
             document.getElementById('loc').value = `${data.items[0].gr} ${data.items[0].name}`;
             if (originalElement && originalElement == 'q')
                 document.querySelector('input[name="q"]').value = '';
+            const note_element = document.getElementById('location-ambigious');
+	    if (note_element) note_element.remove(); //if there is one of these still there then remove. if select suggesttion it cleared, but if search again manually, it not)
             performSearch();
         } else {
             if (originalElement && originalElement == 'loc')
