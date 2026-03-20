@@ -23,8 +23,10 @@
 
 require_once('geograph/global.inc.php');
 
-$results = array();
+//we should be allowing caching of this! - probably could be longer!
+customExpiresHeader(600,true);
 
+$results = array();
 
 if (!empty($_GET['q'])) {
 	$q=trim($_GET['q']);
@@ -299,7 +301,6 @@ if (!empty($_GET['q'])) {
 } else {
 	$results = "No query!";
 }
-
 
 if (!empty($_SERVER['HTTP_ORIGIN'])
 	&& preg_match('/^https?:\/\/(m|www|schools)\.geograph\.(org\.uk|ie)\.?$/',$_SERVER['HTTP_ORIGIN'])) { //can be spoofed, but SOME protection!
