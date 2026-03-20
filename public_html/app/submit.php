@@ -1223,7 +1223,7 @@ align-items: center;    /* This centers the 350px map horizontally */
             }
 	    if (data.settings && data.settings.darkMode) {
                 // Handle Dark Mode
-                document.body.classList.toggle('dark-mode', event.data.settings.darkMode);
+                document.body.classList.toggle('dark-mode', data.settings.darkMode);
             }
 
             if (data.transfer_id)
