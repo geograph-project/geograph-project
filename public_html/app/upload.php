@@ -49,26 +49,63 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             --primary: #007AFF;
             --success: #28a745;
             --bg: #f8f9fa;
-            --accent: #6c757d;
-        }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .card { --background: white; padding: 24px; border-radius: 20px; --box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; }
+            --content-text: #000000;
+            --card-faded: #666666; /* Slightly softer than #333 for better hierarchy */
 
-@media screen and (max-width: 500px) {
-        body {
-                padding:20px 2px;
+            --accent: #6c757d;
+            --input-bg: #ffffff;
+            --input-placeholder: #999999;
+
+
+            /* Light Mode Secondary */
+            --secondary-bg: #e9ecef;
+            --secondary-text: #333333;
+            --secondary-hover: #dee2e6; /* Slightly darker for interaction */
+            --danger-bg: #ffc0cb;       /* Your 'pink' */
+            --danger-text: #333333;
+
         }
-	.card {
-		padding:20px 2px;
-	}
-}
+        body.dark-mode {
+                --bg: #121212;
+            --content-text: #e0e0e0;
+            --card-faded: #a0a0a0;     /* Light grey to stand out on dark cards */
+
+            /* New: Dark Mode Inputs */
+            --input-bg: #2c2c2c;       /* Slightly lighter than card-bg to "lift" the input */
+            --input-placeholder: #757575;
+
+            /* Dark Mode Secondary */
+            --secondary-bg: #333333;    /* Dark grey to sit quietly on the card */
+            --secondary-text: #e0e0e0;  /* Off-white text */
+            --secondary-hover: #444444; /* Slightly lighter for interaction */
+            --danger-bg: #442727;       /* Deep wine/maroon background */
+            --danger-text: #ff8a8a;     /* Soft red/pink text */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--app-bg);
+            color: var(--content-text);
+            margin: 0; padding: 20px;
+        }
+	.card { --background: white; padding: 24px; border-radius: 20px; --box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; }
+
+
+        @media screen and (max-width: 500px) {
+                body {
+                        padding:20px 2px;
+                }
+		.card {
+	        	padding:20px 2px;
+		}
+        }
 
         /* Custom Buttons */
         .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; touch-action: manipulation; user-select: none; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
         .btn-select { background: var(--primary); color: white; width: 100%; box-sizing: border-box; }
         .btn-upload { background: var(--primary); color: white; width: 100%; }
-        .btn-upload:disabled { background: #ccc; cursor: not-allowed; }
-        .btn-secondary { background: #e9ecef; color: #333; width: 100%; }
+        .btn-upload:disabled { background: var(--secondary-bg); color: var(--secondary-text); cursor: not-allowed; }
+        .btn-secondary { background: var(--secondary-bg); color: var(--secondary-text); width: 100%; }
 
         /* Progress Bar */
         .progress-container { width: 100%; height: 6px; background: #eee; border-radius: 10px; margin: 10px 0; overflow: hidden; display: none; }
@@ -91,6 +128,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         /* Uploaded State */
         .uploaded img { opacity: 0.3; filter: grayscale(100%); }
         .uploaded::after { content: "\2713"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; color: var(--success); text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+	/* need to specifically fade to dark! */
+	body.dark-mode .uploaded img {
+		background-color: var(--bg);
+		filter: grayscale(100%) brightness(0.2);
+		opacity: 0.8;
+	}
 
         .settings { margin-top: 25px; padding-top: 15px; border-top: 1px solid #eee; text-align: left; }
         .settings label { cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--accent); }
@@ -115,7 +159,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         <button class="btn btn-upload" onclick="navigateTo('/app/uploaded')">Proceed to Submission</button>
         <div id="multi-actions">
             <button class="btn btn-secondary" id="btnFirst">Submit First Image</button>
-            <!--button class="btn btn-secondary" id="btnLast">Submit Last Image</button-->
+            <button class="btn btn-secondary hidden" id="btnLast">Submit Last Image</button>
         </div>
         <div id="single-actions" class="hidden">
             <button class="btn btn-secondary" id="btnSingle">Submit Image Now</button>

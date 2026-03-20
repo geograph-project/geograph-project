@@ -16,16 +16,48 @@ init_session();
             --primary: #007AFF;
             --success: #28a745;
             --bg: #f8f9fa;
+            --content-text: #000000;
+            --card-faded: #666666; /* Slightly softer than #333 for better hierarchy */
+
             --accent: #6c757d;
+            --input-bg: #ffffff;
+            --input-placeholder: #999999;
+
+
+            /* Light Mode Secondary */
+            --secondary-bg: #e9ecef;
+            --secondary-text: #333333;
+            --secondary-hover: #dee2e6; /* Slightly darker for interaction */
+	    --danger-bg: #ffc0cb;       /* Your 'pink' */
+	    --danger-text: #333333;
+
         }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .card { background: white; padding: 24px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; }
+        body.dark-mode {
+                --bg: #121212;
+            --content-text: #e0e0e0;
+            --card-faded: #a0a0a0;     /* Light grey to stand out on dark cards */
+
+            /* New: Dark Mode Inputs */
+            --input-bg: #2c2c2c;       /* Slightly lighter than card-bg to "lift" the input */
+            --input-placeholder: #757575;
+
+            /* Dark Mode Secondary */
+            --secondary-bg: #333333;    /* Dark grey to sit quietly on the card */
+            --secondary-text: #e0e0e0;  /* Off-white text */
+            --secondary-hover: #444444; /* Slightly lighter for interaction */
+	    --danger-bg: #442727;       /* Deep wine/maroon background */
+	    --danger-text: #ff8a8a;     /* Soft red/pink text */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--app-bg);
+            color: var(--content-text);
+            margin: 0; padding: 20px;
+        }
 
         @media screen and (max-width: 500px) {
                 body {
-                        padding:20px 2px;
-                }
-                .card {
                         padding:20px 2px;
                 }
         }
@@ -35,7 +67,7 @@ init_session();
         .btn-select { background: var(--primary); color: white; width: 100%; box-sizing: border-box; text-align:center }
         .btn-upload { background: var(--primary); color: white; width: 100%; }
         .btn-upload:disabled { background: #ccc; cursor: not-allowed; }
-        .btn-secondary { background: #e9ecef; color: #333; width: 100%; }
+        .btn-secondary { background: var(--secondary-bg); color: var(--secondary-text); width: 100%; }
 
 	#map {
 	 width:350px; height:350px; max-height:90vh; max-width:90vw;
@@ -46,12 +78,16 @@ init_session();
 		padding: 10px; border-radius: 8px; text-align: left;
 	}
 	#noteForm textarea {
-		width: 100%; height: 60px; font-family:Georgia; font-size:1.1em; border-radius:8px; padding:6px;  box-sizing: border-box; 
+		width: 100%; height: 60px; font-family:Georgia; font-size:1.1em; border-radius:8px; padding:6px;  box-sizing: border-box;
+		background-color: var(--input-bg);
+		color: var(--content-text);
 	}
 	#noteForm p { color: #666; text-align:center; }
 	#noteForm input[type=text] {
 		max-width:100%;
-		width: 200px; margin: 8px 0; padding:8px; border: none; background: white; text-align:center
+		width: 200px; margin: 8px 0; padding:8px; border: none; background: white; text-align:center;
+		background-color: var(--input-bg);
+		color: var(--content-text);
 	}
 
 h3 {
@@ -59,7 +95,7 @@ h3 {
 }
 
 #notesList {
-    list-style: none; 
+    list-style: none;
     padding: 0;
 }
 
@@ -79,13 +115,12 @@ h3 {
 
 .note-body {
     font-family:Georgia;
-    color: #333;
     line-height: 1.4;
 }
 
 .delete-btn {
-    background: #ffeded;
-    color: #d93025;
+    color: var(--danger-text);
+    background: var(--danger-bg);
     border: 1px solid #f8d7da;
     border-radius: 4px;
     padding: 4px 8px;
@@ -142,6 +177,19 @@ h3 {
 
     <h3>Saved Notes</h3>
     <ul id="notesList">none</ul>
+
+
+    <script type="module">
+	import { escapeHTML, navigateTo, setupSettingsListener } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
+
+        //so the page can ues it
+        window.escapeHTML = escapeHTML;
+        window.navigateTo = navigateTo;
+
+	//set this up right away
+	setupSettingsListener();
+    </script>
+
 
     <script>
         var map = null ;
@@ -237,15 +285,11 @@ function deleteNote(index) {
     renderNotesList();
 }
 
-// Initial render
-renderNotesList();
-
-function escapeHTML(str) {
-    const p = document.createElement('p');
-    p.textContent = str;
-    return p.innerHTML;
-}
-
+//need to defer, so happens after the module is loaded
+window.addEventListener('DOMContentLoaded', function() {
+	// Initial render
+	renderNotesList();
+});
 
 ///////////////////////////////////
 // Map Functions
@@ -477,5 +521,6 @@ function escapeHTML(str) {
         });
 
     </script>
+
 </body>
 </html>
