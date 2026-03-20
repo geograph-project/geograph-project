@@ -76,16 +76,43 @@ $tok = base64_encode("$n.$t").".".hash_hmac('sha256',$t.$n, $CONF['token_secret'
             --primary: #007AFF;
             --success: #28a745;
             --bg: #f8f9fa;
+    	    --content-text: #ffffff;
+            --card-faded: #666666; /* Slightly softer than #333 for better hierarchy */
+
             --accent: #6c757d;
+            --input-bg: #ffffff;
+            --input-placeholder: #999999;
+
+
+            /* Light Mode Secondary */
+            --secondary-bg: #e9ecef;
+            --secondary-text: #333333;
+            --secondary-hover: #dee2e6; /* Slightly darker for interaction */
         }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .card { background: white; padding: 24px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; }
+        body.dark-mode {
+        	--bg: #121212;
+            --content-text: #e0e0e0;
+            --card-faded: #a0a0a0;     /* Light grey to stand out on dark cards */
+
+            /* New: Dark Mode Inputs */
+            --input-bg: #2c2c2c;       /* Slightly lighter than card-bg to "lift" the input */
+            --input-placeholder: #757575;
+
+            /* Dark Mode Secondary */
+            --secondary-bg: #333333;    /* Dark grey to sit quietly on the card */
+            --secondary-text: #e0e0e0;  /* Off-white text */
+            --secondary-hover: #444444; /* Slightly lighter for interaction */
+        }
+
+        body {
+    	    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    	    background-color: var(--app-bg);
+    	    color: var(--content-text);
+    	    margin: 0; padding: 20px;
+    	}
 
         @media screen and (max-width: 500px) {
                 body {
-                        padding:20px 2px;
-                }
-                .card {
                         padding:20px 2px;
                 }
         }
@@ -93,9 +120,7 @@ $tok = base64_encode("$n.$t").".".hash_hmac('sha256',$t.$n, $CONF['token_secret'
         /* Custom Buttons */
         .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; touch-action: manipulation; user-select: none; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
         .btn-select { background: var(--primary); color: white; width: 100%; box-sizing: border-box; text-align:center }
-        .btn-upload { background: var(--primary); color: white; width: 100%; }
-        .btn-upload:disabled { background: #ccc; cursor: not-allowed; }
-        .btn-secondary { background: #e9ecef; color: #333; width: 100%; }
+        .btn-secondary { background: var(--secondary-bg); color: var(--secondary-text); width: 100%; }
 
 
 .report-form .form-group {
@@ -120,6 +145,7 @@ $tok = base64_encode("$n.$t").".".hash_hmac('sha256',$t.$n, $CONF['token_secret'
 
 .report-form .input-group input[type="text"],
 .report-form .input-group input[type="email"],
+.report-form .input-group select,
 .report-form .input-group textarea {
     width: 100%; /* Make inputs fill their container */
     max-width: 640px; /* Optional: prevent inputs from becoming too wide */
@@ -127,6 +153,12 @@ $tok = base64_encode("$n.$t").".".hash_hmac('sha256',$t.$n, $CONF['token_secret'
     padding: 0.4em; /* Added padding for better appearance */
     border: 1px solid #ccc; /* Added border for better appearance */
     border-radius: 3px; /* Added border-radius for better appearance */
+    background-color: var(--input-bg);
+    color: var(--content-text);
+}
+
+.report-form input::placeholder, textarea::placeholder {
+     color: var(--input-placeholder);
 }
 
 .report-form .input-group textarea {
@@ -142,7 +174,7 @@ $tok = base64_encode("$n.$t").".".hash_hmac('sha256',$t.$n, $CONF['token_secret'
 
 .report-form .input-group small {
     font-size: 0.85em;
-    color: #555;
+    color: var(--card-faded);
     margin-top: 0.25em;
 }
 
@@ -281,7 +313,7 @@ $tok = base64_encode("$n.$t").".".hash_hmac('sha256',$t.$n, $CONF['token_secret'
 	    <div class="form-group">
 	        <label for="subject" class="form-label">Subject:</label>
 	        <div class="input-group">
-	            <input type="text" id="subject" name="subject" size="35" value="<? echo $subject; ?>" required>
+	            <input type="text" id="subject" name="subject" size="35" value="<? echo $subject; ?>" placeholder="short subject for your message" required>
 	        </div>
 	    </div>
 

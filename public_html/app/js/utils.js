@@ -36,12 +36,14 @@ export function updateAppState(detail) {
 export function setupSettingsListener() {
     window.addEventListener('message', (event) => {
         if (event.origin !== window.location.origin) return;
-
-        console.log("Received:", event.data);
-
-        if (event.data.settings) {
-                // Handle Dark Mode
-		document.body.classList.toggle('dark-mode', event.data.settings.darkMode);
-        }
+	try {
+		const data = JSON.parse(event.data);
+        	if (data.settings) {
+	                // Handle Dark Mode
+			document.body.classList.toggle('dark-mode', data.settings.darkMode);
+	        }
+	} catch (e) {
+		//just catching if fail to decode JSON
+	}
     });
 }
