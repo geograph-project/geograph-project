@@ -1222,12 +1222,11 @@ function lookForLocationMatches(loc,originalElement) {
         container.innerHTML = ''; // Clear 'Searching...'
         if (data && data.total_found > 1) {
             if (originalElement && originalElement == 'q') {
-		correction_prompt.textContent = "There are a number of places matching your query. Below are combined keyword results. Use the dropdown above to pick a specific place.";
-		//todo, inlcude a link to finder/groups.php?
+                correction_prompt.textContent = "There are a number of places matching your query. Below are combined keyword results. Use the dropdown above to pick a specific place.";
+                //todo, inlcude a link to finder/groups.php?
             }
-		//todo if originalElement == 'loc'
-		// ... should still say 'There are a number of places matching your query.' (but note the results are NOT 'combined'. its still likly a query without location!
-		//
+            //todo if originalElement == 'loc'
+            // ... should still say 'There are a number of places matching your query.' (but note the results are NOT 'combined'. its still likly a query without location!
 
             const label = document.createElement('label');
             label.innerHTML = '<b>Did you mean</b>:';
@@ -1240,6 +1239,11 @@ function lookForLocationMatches(loc,originalElement) {
             defaultOption.value = '';
             select.appendChild(defaultOption);
 
+            const mapoption = document.createElement('option');
+            mapoption.value = '--map--';
+            mapoption.textContent = '[-- Open these results on map --]';
+            select.appendChild(mapoption);
+
             data.items.forEach(function(item) {
                 const option = document.createElement('option');
                 option.value = `${item.gr} ${item.name}`;
@@ -1249,9 +1253,23 @@ function lookForLocationMatches(loc,originalElement) {
 
             select.addEventListener('change', function(event) {
                 if (event.target.value) {
+                    if (event.target.value == '--map--') {
+                        openPlaceSearch(loc, function(name, gr, lat, lng) {
+                            //defer to the callback
+                            document.getElementById('loc').value = `${gr} ${name}`;
+                            if (originalElement && originalElement == 'q')
+                                document.querySelector('input[name="q"]').value = '';
+                            performSearch();
+                            container.innerHTML = ''; // Clear the dropdown
+                            correction_prompt.innerHTML = '';
+                        });
+                        //but delect for now, incase cancel
+                        select.selectedIndex=0;
+                        return;
+                    }
                     document.getElementById('loc').value = event.target.value;
                     if (originalElement && originalElement == 'q')
-			document.querySelector('input[name="q"]').value = '';
+                        document.querySelector('input[name="q"]').value = '';
                     performSearch();
                     container.innerHTML = ''; // Clear the dropdown
                     correction_prompt.innerHTML = '';
@@ -1260,22 +1278,24 @@ function lookForLocationMatches(loc,originalElement) {
 
             container.appendChild(select);
 
-		if (originalElement && originalElement == 'loc') {
-			const note = document.createElement('div');
-			note.innerHTML = 'Note, below results are not yet filtered by location';
-			container.appendChild(note);
-		}
+            if (originalElement && originalElement == 'loc') {
+                const note = document.createElement('div');
+                //todo, if 'q' is empty, could run keyword results??
+                note.innerHTML = 'Note, below results are not yet filtered by location. Choose place above';
+                note.style.backgroundColor = 'yellow';
+                container.appendChild(note);
+            }
 
         } else if (data && data.total_found == 1) {
             // If only one result, just use it directly
             document.getElementById('loc').value = `${data.items[0].gr} ${data.items[0].name}`;
             if (originalElement && originalElement == 'q')
-		document.querySelector('input[name="q"]').value = '';
+                document.querySelector('input[name="q"]').value = '';
             performSearch();
         } else {
             if (originalElement && originalElement == 'loc')
                 container.innerHTML = 'No locations found.';
-		//todo, should make clear, the results are NOT filtered by location
+            //todo, should make clear, the results are NOT filtered by location
         }
     };
 
