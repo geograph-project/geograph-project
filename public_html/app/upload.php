@@ -84,21 +84,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--app-bg);
+            background-color: var(--bg);
             color: var(--content-text);
-            margin: 0; padding: 20px;
+            margin: 0; padding: 2px;
+            display: flex; justify-content: center;
         }
-	.card { --background: white; padding: 24px; border-radius: 20px; --box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; }
-
-
-        @media screen and (max-width: 500px) {
-                body {
-                        padding:20px 2px;
-                }
-		.card {
-	        	padding:20px 2px;
-		}
-        }
+        .card { --background: white; padding: 24px 0; border-radius: 20px; --box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; }
 
         /* Custom Buttons */
         .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; touch-action: manipulation; user-select: none; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
@@ -129,16 +120,43 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         .uploaded img { opacity: 0.3; filter: grayscale(100%); }
         .uploaded::after { content: "\2713"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; color: var(--success); text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-	/* need to specifically fade to dark! */
-	body.dark-mode .uploaded img {
-		background-color: var(--bg);
-		filter: grayscale(100%) brightness(0.2);
-		opacity: 0.8;
-	}
+    	/* need to specifically fade to dark! */
+	    body.dark-mode .uploaded img {
+    		background-color: var(--bg);
+	    	filter: grayscale(100%) brightness(0.2);
+    		opacity: 0.8;
+	    }
 
         .settings { margin-top: 25px; padding-top: 15px; border-top: 1px solid #eee; text-align: left; }
         .settings label { cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--accent); }
         .hidden { display: none; }
+
+        #missing-btn { margin-top:20px; opacity:0.9; }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.5);
+	        backdrop-filter: blur(3px);
+        }
+
+        dialog {
+            /* Ensures it doesn't look like a standard browser alert */
+
+            max-height: 85vh; /* Give a bit more vertical breathing room */
+            max-width: 90vw;  /* Prevents it from hitting the screen edges on mobile */
+            width: 500px;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            background-color: var(--input-bg);
+		    color: var(--content-text);
+        }
+
+        dialog button {
+            display:block;
+            width:100%;
+        }
+
     </style>
 </head>
 <body>
@@ -169,10 +187,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
     <div class="settings hidden">
         <label>
             <input type="checkbox" id="auto-proceed">
-            Proceed directly after single upload
+            Proceed automatically after single upload completes
         </label>
     </div>
+
+
+	<button id="missing-btn" onclick="openModal('geo-modal')"  class="btn btn-help hidden" type="button">Why am I seeing a 'Missing Geo' error?</button>
 </div>
+
+
+<dialog id="geo-modal" onclick="closeModal('geo-modal')">
+	<p>If you believe the image should have location data (e.g., it was taken on a GPS-enabled device), your browser may be stripping the 
+	metadata to prevent accidental location sharing.</p>
+
+	<h4>Is there a workaround for mobile devices?</h4>
+
+	<p>While there isn't a universal fix, some Android/Samsung users find success by clicking <strong>'Browse'</strong> and selecting the image 
+	from the <strong>'Recent'</strong> list rather than the Gallery. This often allows the file to retain its location data during upload. </p>
+
+	<h4>Is there a more reliable way to capture the location?</h4>
+
+	<p>Yes. Using our <strong>'Take Photo'</strong> page allows you to take images that save the coordinates directly into the filename. This 
+	prevents the browser from stripping the data and ensures the photo is quickly placed on the map. </p>
+
+        <button type="button" class="btn" onclick="closeModal('geo-modal')">Close</button>
+</dialog>
+
 
 <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js"></script>
 <script src="<?php echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
@@ -186,6 +226,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
     </script>
 
 <script>
+
+function openModal(id) {
+    const modal = document.getElementById(id);
+    modal.showModal();
+    modal.scrollTop = 0;
+}
+function closeModal(id) {
+    document.getElementById(id).close();
+}
+
+
+
     const fileInput = document.getElementById('file-input');
     const selectLabel = document.getElementById('select-label');
     const displayArea = document.getElementById('display-area');
@@ -359,8 +411,10 @@ async function renderUI() {
     });
 
     // Render based on count
+    let missingGeo = 0;
     if (processedItems.length === 1) {
         const { item, exifData } = processedItems[0];
+        if(!exifData.hasGeo) missingGeo++;
         displayArea.innerHTML = `
             <div class="hero-view" id="wrapper-${item.id}">
                 <img src="${item.isHeic?'/app/assets/heic-placeholder.png':item.dataUri}">
@@ -374,6 +428,7 @@ async function renderUI() {
             const div = document.createElement('div');
             div.className = 'img-wrapper';
             div.id = `wrapper-${item.id}`;
+            if(!exifData.hasGeo) missingGeo++;
             div.innerHTML = `
                 <img src="${item.isHeic?'/app/assets/heic-placeholder.png':item.dataUri}">
                 ${exifData.hasGeo ? '' : '<div class="warning">Missing Geo</div>'}
@@ -388,6 +443,8 @@ async function renderUI() {
 
     uploadBtn.disabled = false;
     uploadBtn.innerText = `Upload ${fileQueue.length} ${fileQueue.length === 1 ? 'Image' : 'Images'}`;
+
+    document.getElementById('missing-btn').classList.toggle('hidden', !missingGeo);
 }
 
 
