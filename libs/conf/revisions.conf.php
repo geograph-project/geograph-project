@@ -133,4 +133,5 @@ $REVISIONS['/app/js/router.js']=42057627;
 $REVISIONS['/js/Leaflet.GeographScout.js']=96671335;
 $REVISIONS['/js/Leaflet.GeographCameraButton.js']=59260151;
 $REVISIONS['/app/js/modules/faq-view.js']=11996494;
+$REVISIONS['/js/location-selector.module.js']=65836082;
 ?>
