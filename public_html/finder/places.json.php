@@ -255,8 +255,15 @@ if (!empty($_GET['q'])) {
 					$sphinx->q = "({$sphinx->q}) | \"{$sphinx->q}\" | @Place \"^{$sphinx->q}\$\" | @Place (^{$sphinx->q})";
 				} else
 					$client->SetRankingMode(SPH_RANK_SPH04);
+
+				//4fig GR at start is automaitcally expanded by sphinxwrapper!
+				$sphinx->q = str_replace('@grid_reference','@km_ref', $sphinx->q);
+
 				$ids = $sphinx->returnIds($pg,'gaznew');
 			} else {
+
+				$sphinx->q = str_replace('@grid_reference','@gr', $sphinx->q);
+
 				$ids = $sphinx->returnIds($pg,'gaz');
 			}
 
