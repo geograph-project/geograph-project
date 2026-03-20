@@ -2,7 +2,8 @@ L.GeographScout = L.LayerGroup.extend({
     options: {
         apiUrl: 'https://api.geograph.org.uk/api-scout.php',
         user_id: 0,
-	    storageKey: 'geograph_scout_filters'
+	    storageKey: 'geograph_scout_filters',
+        opacity: 0.8
     },
 
     initialize: function (options) {
@@ -52,6 +53,26 @@ L.GeographScout = L.LayerGroup.extend({
 
         // Merge: saved values will overwrite defaultFilters keys
         this._filters = L.extend(defaultFilters, saved);
+    },
+
+    setOpacity: function(opacity) {
+        // Store the value in options so Leaflet "remembers" the current state
+        if (this.options) this.options.opacity = opacity;
+
+console.log('S',opacity);
+
+if (opacity>0.8)
+	opacity = 1;
+
+        this._squareLayer.eachLayer((layer) => {
+            if (layer.setStyle) {
+                layer.setStyle({
+                    opacity: opacity,           // Stroke opacity
+                    fillOpacity: opacity * 0.3   // Fill opacity (kept slightly more transparent)
+                });
+            }
+        });
+        return this; // Return 'this' to allow Leaflet-style chaining
     },
 
     onAdd: function (map) {
@@ -398,7 +419,8 @@ L.GeographScout = L.LayerGroup.extend({
     		    L.polygon(latLngs, {
                     color: color,
                     weight: 1,
-                    fillOpacity: 0.2,
+                    opacity: this.options.opacity,
+                    fillOpacity: 0.3*this.options.opacity,
                     dashArray: dash,
                     interactive: true
                 }).addTo(this._squareLayer).bindPopup(`Square: <a href="/gridref/${sq.gr}" target="_blank">${sq.gr}</a><br>${label}<br>Images: ${sq.c}`);
