@@ -5,7 +5,7 @@ import AppState from '/app/js/app-state.js';
 
 export function render() {
     return `
-        <div class="view settings-view">
+        <form class="view settings-view" onsubmit="return false">
             <h2>Settings</h2>
             <p>Adjust your preferences for the Geograph application.<br><br></p>
 
@@ -40,7 +40,7 @@ export function render() {
                 </div>
             </div>
 
-        </div>
+        </form>
     `;
 }
 
