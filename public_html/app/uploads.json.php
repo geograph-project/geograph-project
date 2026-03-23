@@ -36,20 +36,33 @@ $uploadmanager=new UploadManager;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a login request!
 	//delete submisisons
-
+	$data = array();
 
         // Get the raw POST data
         $input = file_get_contents('php://input');
-        $data = json_decode($input, true);
+        $info = json_decode($input, true);
 
-	if (is_array($data['ids'])) {
-		sleep(3); //fake!
+	if (is_array($info['ids'])) {
+		$startTime = microtime(true);
+		$timeLimit = 15; // seconds
+
+		$done = 0;
+		foreach ($info['ids'] as $id) {
+			if ($uploadmanager->setUploadId($id,false)) { //automatically checks for bad charactors
+				$uploadmanager->cleanUp();
+				$done++;
+			}
+			if ((microtime(true) - $startTime) >= $timeLimit) {
+			        $data['error'] = "Processing stopped due to timeout after " . $timeLimit . " seconds";
+				break; // Exit the loop
+		        }
+		}
+		$data['done'] = $done;
 	}
-	//noop!
 
 } else {
 
-	$data = $uploadmanager->getUploadedFiles();
+	$data = $uploadmanager->getUploadedFiles(200);
 
 }
 

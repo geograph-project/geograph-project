@@ -53,6 +53,8 @@ export async function onMount() {
             gridContainer.innerHTML = `No Images! <button class="btn btn-primary" data-route="/app/upload">Upload Image(s)</button>`;
             return;
         }
+	if (currentData.length == 200 && !isDeleteMode)
+		titlePrompt.textContent = "Showing 200 random items. Recent items may be hidden. Use the 'Select for Deletion' button to remove images you don't intend to submit, and refresh the list.";
 
         // 1. Sort based on select value
         const val = sortSelect.value;

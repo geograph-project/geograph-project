@@ -1321,7 +1321,7 @@ $this->db->raiseErrorFn = 'adodb_throw';
 		//@unlink($this->_originalJPEG($this->upload_id));
 	}
 
-	function getUploadedFiles()
+	function getUploadedFiles($truncate = false)
 	{
 		global $CONF,$USER;
 
@@ -1355,6 +1355,8 @@ $this->db->raiseErrorFn = 'adodb_throw';
                                         $row['transfer_id'] = $m[2];
 
                                         $data[] = $this->setRowFromEXIF('/mnt/combined'.$row['filename'],$row,$conv);
+					if ($truncate && count($data) == $truncate)
+						break;
                                 }
                         }
 
@@ -1378,6 +1380,8 @@ $this->db->raiseErrorFn = 'adodb_throw';
 					$row = array('transfer_id'=>$m[2],'uploaded'=>filemtime($file));
 
 					$data[] = $this->setRowFromEXIF($file,$row,$conv);
+					if ($truncate && count($data) == $truncate)
+						break;
 				}
 			}
 		}
