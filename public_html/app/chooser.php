@@ -25,7 +25,7 @@ $USER->mustHavePerm('basic');
         .stats { font-size: 12px; color: #888; }
         
         /* Controls */
-        .toolbar { padding: 10px; display: flex; gap: 8px; background: #111; }
+        .toolbar { padding: 10px; display: flex; gap: 8px; background: #111; scroll-margin-top: 60px; }
         button { background: #2c2c2e; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 500; cursor: pointer; }
         button.primary { background: var(--accent); }
 
@@ -36,7 +36,7 @@ $USER->mustHavePerm('basic');
         
         .thumb-strip { display: flex; gap: 4px; overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
         .thumb-wrapper { flex: 0 0 100px; width: 100px; height: 100px; background: #222; border-radius: 4px; overflow: hidden; scroll-snap-align: start; }
-        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s; }
+        .thumb-wrapper img { width: 100%; height: 100%; object-fit: contain; transition: opacity 0.3s; }
 
         /* Modal */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; padding: 20px; z-index: 1000; }
@@ -52,7 +52,7 @@ $USER->mustHavePerm('basic');
 
 <header>
     <div>
-        <strong>Gallery</strong>
+        <strong>Not Yet Uploaded</strong>
         <div id="file-count" class="stats">Initializing...</div>
     </div>
     <button onclick="toggleModal('settings-modal')">Settings</button>
@@ -79,7 +79,7 @@ function toggleGrouping() {
         <h3>Monitored Folders</h3>
         <div id="folder-list"></div>
         <hr style="border: 0.5px solid #333; margin: 20px 0;">
-        <button class="primary" style="width:100%" onclick="addFolder()">+ Add New Folder</button>
+        <button class="primary" style="width:100%" onclick="startFolderScan()">+ Add New Folder</button>
         <button style="width:100%; margin-top:10px;" onclick="toggleModal('settings-modal')">Close</button>
     </div>
 </div>
@@ -105,114 +105,166 @@ const initDB = () => {
     });
 };
 
-async function addFolder() {
+async function startFolderScan() {
     try {
-        const handle = await window.showDirectoryPicker();
-        await updateStore('folders', { path: handle.name, handle });
-        refreshFolderList();
-        scanDirectory(handle);
-    } catch (e) {}
-}
+        const dirHandle = await window.showDirectoryPicker();
+        
+        // 1. Setup Folder Record
+        await updateStore('folders', { path: dirHandle.name, handle: dirHandle, count: 0 });
+        await refreshFolderList();
 
-async function scanDirectory(dirHandle, rootPath = null) {
-    isScanning = true;
-    const targetPath = rootPath || dirHandle.name;
-    const safePath = btoa(targetPath).replace(/=/g, '');
-    let newFound = 0;
+        const safePath = btoa(dirHandle.name).replace(/=/g, '');
+        const counterEl = document.getElementById(`count-${safePath}`);
+        if (counterEl) counterEl.innerText = 'Scanning folder...';
 
-// FOR MOBILE: Re-verify permission specifically for this sub-handle
-    // This often "refreshes" the token for the duration of this function
-    const opts = { mode: 'read' };
-    if ((await dirHandle.queryPermission(opts)) !== 'granted') {
-        if ((await dirHandle.requestPermission(opts)) !== 'granted') {
-            console.error("User denied access to " + targetPath);
+        // 2. THE CRAWL: Fast collection of File objects
+        const fileQueue = [];
+        await fastCrawl(dirHandle, dirHandle.name, fileQueue);
+
+        if (fileQueue.length === 0) {
+            if (counterEl) counterEl.innerText = 'No new images found.';
             return;
         }
-    }
 
-    let folderRecord = await getFromStore('folders', targetPath);
-    let currentCount = folderRecord?.count || 0;
+        if (counterEl) counterEl.innerText = `Processing ${fileQueue.length} images...`;
 
-    for await (const entry of dirHandle.values()) {
-        if (entry.kind === 'file' && /\.(jpe?g|png|webp|avif)$/i.test(entry.name)) {
-            const fileId = `${dirHandle.name}/${entry.name}`;
-            if (await getFromStore('images', fileId)) continue;
-console.log(entry.name);
-            const file = await entry.getFile();
-            let date = new Date(file.lastModified);
-            let gridref = "Unknown Location";
-            try {
-                const meta = await exifr.parse(file, {
-                    translateKeys: true,  // Keep this true so you get 'latitude'/'longitude'
-                    translateValues: false // THIS is what gives you '1' instead of "Horizontal (normal)"
-                 //   reviveValues: false     // This prevents it from turning date strings into JS Date objects
-                });
-
-                console.log(meta,file);
-
-                // Waterfall: Original > Created > Modified > File System
-                const rawDate = meta?.DateTimeOriginal || meta?.CreateDate || meta?.ModifyDate;
-
-                if (rawDate) {
-                    date = new Date(rawDate);
-                }
-
-// GridRef Logic
-if (meta?.latitude && meta?.longitude) {
-    const wgs84 = new GT_WGS84();
-    wgs84.setDegrees(meta.latitude, meta.longitude);
-    let grid = false;
-    if (wgs84.isIreland2()) {
-        grid = wgs84.getIrish(true);
-    } else if (wgs84.isGreatBritain()) {
-        grid = wgs84.getOSGB();
-    }
-    if (grid) {
-        gridref = grid.getGridRef(2).replace(/ /g,''); // e.g. TQ33
+        // 3. THE PROCESS: Thumbnails & EXIF
+        await processFileQueue(fileQueue, dirHandle.name);
+        
+    } catch (e) {
+        console.error("Scan failed", e);
+        if (e.name === 'NotAllowedError') {
+            alert("Security timeout. Mobile Chrome requires you to stay on the page while it starts the scan.");
+        }
     }
 }
 
-            } catch (e) { console.log(e); }
+//simple version, ro rescan an exicting directory, for reauth. Still needs to use fastCrawl
+async function scanDirectory(dirHandle) {
+    const fileQueue = [];
+    const targetPath = dirHandle.name;
+    const opts = { mode: 'read' };
 
-            const thumbBlob = await createThumbnail(file);
-            const imgData = {
-                fileId,
-                day: date.toISOString().split('T')[0],
-                date: date.getTime(),
-gridref: gridref, // Store for sorting/grouping
-                thumb: thumbBlob,
-                handle: entry // This 'entry' is the FileSystemFileHandle
-            };
-
-
-            await updateStore('images', imgData);
-            newFound++;
-
-		currentCount++;
-    const counterEl = document.getElementById(`count-${safePath}`);
-            if (counterEl) {
-                counterEl.innerText = `${currentCount} images indexed`;
+    try {
+        // 1. Check/Request Permission
+        if ((await dirHandle.queryPermission(opts)) !== 'granted') {
+            if ((await dirHandle.requestPermission(opts)) !== 'granted') {
+                console.error("Access denied to " + targetPath);
+                return;
             }
-            
-            // Update folder count in DB every 5 images to avoid heavy DB writes
-            if (newFound % 5 === 0) {
-                await incrementFolderCount(targetPath, 5);
-                refreshFolderList(); 
-            }
+        }
 
-            appendToUI(imgData);
+        // 2. Identify the counter element for feedback
+        const safePath = btoa(targetPath).replace(/=/g, '');
+        const counterEl = document.getElementById(`count-${safePath}`);
+        if (counterEl) counterEl.innerText = 'Re-scanning...';
+
+        // 3. Run the fast collection
+        await fastCrawl(dirHandle, targetPath, fileQueue);
+
+        if (fileQueue.length > 0) {
+            // 4. Fire and forget the processing so the UI stays responsive
+            processFileQueue(fileQueue, targetPath);
+        } else {
+            if (counterEl) counterEl.innerText = 'Up to date.';
+        }
+    } catch (err) {
+        console.error("Scan Directory Error:", err);
+    }
+}
+
+
+//this is intended to quickly gather files, for later processing. the permission expires if dont use it quickly!
+async function fastCrawl(dirHandle, path, fileQueue) {
+    for await (const entry of dirHandle.values()) {
+        if (entry.kind === 'file' && /\.(jpe?g|png|webp|avif)$/i.test(entry.name)) {
+            const fileId = `${path}/${entry.name}`;
+            const existing = await getFromStore('images', fileId);
+
+            if (!existing) {
+                try {
+                    // CRITICAL: Get the File object NOW while we have permission
+                    const file = await entry.getFile(); 
+                    fileQueue.push({ file, handle: entry, fileId });
+                } catch (err) {
+                    console.error("Failed to grab file early:", entry.name);
+                }
+            }
         } else if (entry.kind === 'directory') {
-            await scanDirectory(entry, targetPath);
+            await fastCrawl(entry, `${path}/${entry.name}`, fileQueue);
         }
     }
-    
-    // Final update for the remainder
-    if (newFound % 5 !== 0) {
-        await incrementFolderCount(targetPath, newFound % 5);
+}
+
+
+
+async function processFileQueue(fileQueue, rootPath) {
+    isScanning = true;
+    const safePath = btoa(rootPath).replace(/=/g, '');
+    let folderRecord = await getFromStore('folders', rootPath);
+    let currentCount = folderRecord?.count || 0;
+
+    for (const item of fileQueue) {
+        // We already have the 'item.file' object, no more 'getFile()' calls needed!
+        try {
+            const meta = await exifr.parse(item.file, { translateKeys: true, translateValues: false });
+            let date = new Date(meta?.DateTimeOriginal || meta?.CreateDate || item.file.lastModified);
+
+            let gridref = "Unknown Location";
+            if (meta?.latitude && meta?.longitude) {
+                const wgs84 = new GT_WGS84();
+                wgs84.setDegrees(meta.latitude, meta.longitude);
+                let grid = wgs84.isIreland2() ? wgs84.getIrish(true) : (wgs84.isGreatBritain() ? wgs84.getOSGB() : null);
+                if (grid) gridref = grid.getGridRef(2).replace(/ /g,'');
+            }
+                /*    const match = item.file.name.match(/_([A-Z]{1,2}\d{4,10})\./i);
+             if (!exifData.hasGeo || match[1].length > 7) {
+                let wgs84 = GT_WGS84.parseGridRef(match[1]);
+                if (wgs84 && wgs84.status === 'OK') {
+                    exifData.lat = wgs84.latitude;
+                    exifData.long = wgs84.longitude;
+                //actually as want gridref not lat/long, dont need GT_WGS84
+
+                                                         //todo, perhaps a bit fragile computing 4fig GR outself!
+                                                        $e = substr($m[2],0,strlen($m[2])/2);
+                                                        $n = substr($m[2],strlen($m[2])/2);
+                                                        $row['grid_reference'] = $m[1].substr($e,0,2).substr($n,0,2);
+
+Geotools.getGrid = function (gridref) ... (returns right grid-object)
+
+            */
+
+
+            const thumbBlob = await createThumbnail(item.file);
+
+            const imgData = {
+                fileId: item.fileId,
+                day: date.toISOString().split('T')[0],
+                date: date.getTime(),
+                gridref: gridref,
+                thumb: thumbBlob,
+                handle: item.handle // Store the handle for future uploads
+            };
+
+            await updateStore('images', imgData);
+            currentCount++;
+
+            // Update UI
+            const counterEl = document.getElementById(`count-${safePath}`);
+            if (counterEl) counterEl.innerText = `${currentCount} images indexed`;
+            appendToUI(imgData);
+
+            if (currentCount % 10 === 0) {
+                folderRecord.count = currentCount;
+                await updateStore('folders', folderRecord);
+refreshFolderList();
+            }
+        } catch (err) {
+            console.error("Processing error:", err);
+        }
     }
-    
     isScanning = false;
-    refreshFolderList();
+refreshFolderList();
     updateStats();
 }
 
@@ -255,18 +307,35 @@ function createThumbElement(img) {
 }
 let groupBy = 'day'; // 'day' or 'gridref'
 
+function focusGroup(day) {
+    filteredDay = day;
+    document.querySelector('.toolbar').scrollIntoView({ behavior: 'smooth' });
+    renderFullGallery();
+}
+
 async function renderFullGallery() {
     const root = document.getElementById('gallery-root');
     const images = await getAllFromStore('images');
-if (images.length === 0) {
-    root.innerHTML = '<div id="drop-zone">No images found. Add a folder in Settings.</div>';
-    updateStats();
-    return;
-}
-    if (images.length === 0) return;
+
+    if (images.length === 0) {
+        root.innerHTML = '<div id="drop-zone">No images found. Add a folder in Settings.</div>';
+        updateStats();
+        return;
+    }
+
+    root.innerHTML = '';
+
+    // If we are in "Focus Mode", show a Back button
+    if (filteredDay) {
+        const backBtn = document.createElement('button');
+        backBtn.innerText = "< Show All Images";
+        backBtn.style.margin = "0 0 15px 5px";
+        backBtn.onclick = () => { filteredDay = null; renderFullGallery(); };
+        root.appendChild(backBtn);
+    }
 
     // 1. Group images
-    const groups = images.reduce((acc, img) => {
+    let groups = images.reduce((acc, img) => {
         const key = img[groupBy] || "Unknown";
         acc[key] = acc[key] || { items: [], latest: 0 };
         acc[key].items.push(img);
@@ -275,13 +344,16 @@ if (images.length === 0) {
         return acc;
     }, {});
 
-    // 2. Sort the Groups themselves (based on the latest image in that group)
-    const sortedGroupKeys = Object.keys(groups).sort((a, b) => {
-        return sortOrder === 'desc' ? groups[b].latest - groups[a].latest : groups[a].latest - groups[b].latest;
-    });
+    let sortedGroupKeys;
+    if (filteredDay) {
+        sortedGroupKeys = [filteredDay];
+    } else {
+        // 2. Sort the Groups themselves (based on the latest image in that group)
+        sortedGroupKeys = Object.keys(groups).sort((a, b) => {
+            return sortOrder === 'desc' ? groups[b].latest - groups[a].latest : groups[a].latest - groups[b].latest;
+        });
+    }
 
-    root.innerHTML = '';
-    
     // Add a toggle in your UI to call this with 'gridref'
     sortedGroupKeys.forEach(key => {
         const groupData = groups[key];
@@ -293,12 +365,19 @@ if (images.length === 0) {
         sec.innerHTML = `
             <div class="day-header" onclick="focusGroup('${key}')">
                 <span>${key} (${groupData.items.length})</span>
-                <span style="font-size:10px; color:var(--accent)">VIEW</span>
+                ${(!filteredDay && groupData.items.length>3)?`<span style="font-size:10px; color:var(--accent)">VIEW</span>`:''}
             </div>
             <div class="thumb-strip"></div>
         `;
-        
+
         const strip = sec.querySelector('.thumb-strip');
+
+        // If focused, we might want to wrap the images instead of a horizontal strip
+        if (filteredDay) {
+            strip.style.flexWrap = "wrap";
+            strip.style.overflowX = "hidden";
+        }
+
         groupData.items.forEach(img => strip.appendChild(createThumbElement(img)));
         root.appendChild(sec);
     });
@@ -325,7 +404,7 @@ async function refreshFolderList() {
         const count = f.count || 0;
         item.innerHTML = `
             <div style="display:flex; flex-direction:column;">
-                <span style="font-weight:500;">📁 ${f.path}</span>
+                <span style="font-weight:500;">${f.path}</span>
                 <span id="count-${safePath}" style="font-size:11px; color:var(--accent);">${count} images indexed</span>
             </div>
             <button class="remove-btn" onclick="removeFolder('${f.path}')">Remove</button>
