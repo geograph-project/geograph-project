@@ -105,6 +105,9 @@ const initDB = () => {
     });
 };
 
+////////////////////////////////////////////
+// main scan process
+
 async function startFolderScan() {
     try {
         const dirHandle = await window.showDirectoryPicker();
@@ -252,19 +255,19 @@ Geotools.getGrid = function (gridref) ... (returns right grid-object)
             // Update UI
             const counterEl = document.getElementById(`count-${safePath}`);
             if (counterEl) counterEl.innerText = `${currentCount} images indexed`;
-            appendToUI(imgData);
+            appendToUI(imgData); //just add one image, without redrawing!
 
             if (currentCount % 10 === 0) {
                 folderRecord.count = currentCount;
                 await updateStore('folders', folderRecord);
-refreshFolderList();
+                refreshFolderList();
             }
         } catch (err) {
             console.error("Processing error:", err);
         }
     }
     isScanning = false;
-refreshFolderList();
+    refreshFolderList();
     updateStats();
 }
 
@@ -276,36 +279,44 @@ async function incrementFolderCount(path, amount) {
     }
 }
 
-function appendToUI(img) {
-    let dayContainer = document.getElementById(`day-${img.day}`);
-    if (!dayContainer) {
-        renderFullGallery(); // If it's a new day, we refresh the structure once
-        return;
-    }
-    const strip = dayContainer.querySelector('.thumb-strip');
-    const thumb = createThumbElement(img);
-    sortOrder === 'desc' ? strip.prepend(thumb) : strip.appendChild(thumb);
-}
+/////////////////////////////////////////////
+// Render Functions
 
-// NEW: Global variable to track if we are filtered to one day
 let filteredDay = null;
+let groupBy = 'day'; // 'day' or 'gridref'
 
 function createThumbElement(img) {
     const div = document.createElement('div');
     div.className = 'thumb-wrapper';
+
+    // Add CSS class if already submitted
+    if (img.uploadStatus) {
+        div.classList.add('already-submitted');
+        div.style.border = img.uploadStatus.match === 'exact' ? '3px solid #2ecc71' : '3px solid #f1c40f';
+    }
+
     const url = URL.createObjectURL(img.thumb);
     // Fixed the URL revoke by using window.URL and being more explicit
     div.innerHTML = `<img src="${url}" loading="lazy" onload="window.URL.revokeObjectURL(this.src)">`;
     
     // Add click handler for "Upload" (Get full DataURL)
-    div.onclick = async () => {
-        const fullFile = await img.handle.getFile();
-        console.log("Full resolution file ready for upload:", fullFile.name);
-        // You can now use FileReader or URL.createObjectURL(fullFile)
+    div.onclick = () => {
+        if (img.uploadStatus) {
+            const info = img.uploadStatus.info;
+            const msg = img.uploadStatus.match === 'exact' 
+                ? `Already uploaded: ${info.title}`
+                : `Close match (${img.uploadStatus.dist} bits): ${info.title}`;
+            
+            if (confirm(`${msg}\n\nView on Geograph?`)) {
+                window.open(`https://www.geograph.org.uk/photo/${info.id}`, '_blank');
+            }
+        } else {
+            // Trigger your upload logic here...
+        }
     };
+
     return div;
 }
-let groupBy = 'day'; // 'day' or 'gridref'
 
 function focusGroup(day) {
     filteredDay = day;
@@ -361,6 +372,7 @@ async function renderFullGallery() {
         groupData.items.sort((a, b) => sortOrder === 'desc' ? b.date - a.date : a.date - b.date);
 
         const sec = document.createElement('div');
+        sec.id = `day-${key}`; //no longer technically just days!
         sec.className = 'day-section';
         sec.innerHTML = `
             <div class="day-header" onclick="focusGroup('${key}')">
@@ -385,6 +397,18 @@ async function renderFullGallery() {
     updateStats();
 }
 
+//function to render just one image - adding to current gallery, without full reload
+function appendToUI(img) {
+    let dayContainer = document.getElementById(`day-${img[groupBy]}`);
+    if (!dayContainer && !filteredDay) {
+        renderFullGallery(); // If it's a new day, we refresh the structure once
+        return;
+    }
+    const strip = dayContainer.querySelector('.thumb-strip');
+    const thumb = createThumbElement(img);
+    sortOrder === 'desc' ? strip.prepend(thumb) : strip.appendChild(thumb);
+}
+
 async function toggleSort() {
     sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
     document.getElementById('sort-btn').innerText = `Sort: ${sortOrder === 'desc' ? 'Newest' : 'Oldest'}`;
@@ -395,7 +419,7 @@ async function refreshFolderList() {
     const list = document.getElementById('folder-list');
     const folders = await getAllFromStore('folders');
     list.innerHTML = folders.length ? '' : '<p style="color:#666; padding:10px;">No folders added</p>';
-    
+
     folders.forEach(f => {
         const item = document.createElement('div');
         item.className = 'folder-item';
@@ -453,7 +477,9 @@ async function updateStats() {
     document.getElementById('file-count').innerText = `${imgs.length} images indexed`;
 }
 
-// Reuse previous thumbnail & DB helper logic...
+////////////////////////////////////////////////////////////////
+// general functions and events
+
 async function createThumbnail(file) {
     const bitmap = await createImageBitmap(file);
     const canvas = document.createElement('canvas');
