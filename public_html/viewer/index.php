@@ -61,10 +61,13 @@ concept can find copies regardless of resolution.
 		<li>If you need to interrupt it just close the tab/window, and reopen it again later.
 		<li>if the process 'breaks' for whatever reason, might have to restart it manually. (reload the tab)
 		<br><br>
-		<li>The hashes are saved on Geograph servers, so processing entire back-catalogue would be a one-off. But you will see this message again to process any new submissions since last time
+		<li>The hashes are saved on Geograph servers, so processing entire back-catalogue would be a one-off. But you will see this message again to process any new 
+		submissions since last time
 	</ul>
 
-	<p>If you don't want to wait, you can <a href="viewer.php">proceed</a> to the app. But note that any images/squares not processed will not be identified. Note that if you continue without waiting for the processor to complete, then new images wont show for 24 hours, even if processing has completed in the meantime. (its best to continue AFTER the process completes)
+	<p>If you don't want to wait, you can <a href="viewer.php">proceed</a> to the app. But note that any images/squares not processed will not be identified. Note that if you 
+	continue without waiting for the processor to complete, then new images wont show for 24 hours, even if processing has completed in the meantime. (its best to continue AFTER 
+	the process completes)
 </div>
 <?
 
