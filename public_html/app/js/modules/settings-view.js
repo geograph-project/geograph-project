@@ -40,6 +40,7 @@ export function render() {
                 </div>
             </div>
 
+            NOTE: These settings affect this device/browser only, not synced between devices.
         </form>
     `;
 }
