@@ -23,12 +23,6 @@ if (defined('SPHINX_INDEX')) {
 if (!headers_sent())
 	customGZipHandlerStart();
 
-	switch(1) {
-		case !empty($_GET['long']) : customExpiresHeader(3600*24*30,true); break;
-		case !empty($_GET['mid']) : customExpiresHeader(3600*24*3,true); break;
-		default : customExpiresHeader(3600*24,true); break;
-	}
-
 	$res = array();
 
 ###########################################
@@ -102,11 +96,29 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 
 	//2. get results
 	$limit = empty($_GET['limit'])?10:intval($_GET['limit']);
-	$limit = min($limit, 100);
+	$offset = empty($_GET['offset']) ? 0 : intval($_GET['offset']);
 
-	$start = microtime(true);
-	$results = $imagelist->getRawVectorsByCriteria($criteria, $limit, $metadata);
-	$end = microtime(true);
+	// Guard Clause: If the offset starts past our maximum capacity, return empty results
+	if ($offset < 100) {
+
+		// We need to fetch enough rows to reach the end of the current page.
+		$totalToFetch = $offset + $limit + 1; //add one to see if there is a 'next' page
+
+		//cap this, if limit is very high, just return truncated results (offset beeing too high is already handled)
+	        $totalToFetch = min($totalToFetch, 100);
+
+//$res['debug'] = 'totalToFetch:'.$totalToFetch;
+
+		$start = microtime(true);
+		$results = $imagelist->getRawVectorsByCriteria($criteria, $totalToFetch, $metadata);
+		$end = microtime(true);
+	} else {
+		$start = $end = microtime(true); // Default to essentially zero duration
+	}
+
+	//Slice the results array to mimic SQL OFFSET
+	$slicedVectors = array_slice($results['vectors'] ?? [], $offset, $limit);
+
 
 	//3. output or fetch further data from local index
 	if (preg_match('/^(,?(id|wgs84_lat|wgs84_long|user_id|takenday|grid_reference))+$/',$_GET['select'])) {
@@ -114,8 +126,8 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 
 		$res['rows'] = array();
 		//$res['rows'][] ...
-		if (!empty($results['vectors']))
-		foreach ($results['vectors'] as $i => $vector) {
+		if (!empty($slicedVectors))
+		foreach ($slicedVectors as $i => $vector) {
 			$row = array('id'=>intval($vector['key']));
 			if (isset($vector['distance'])) {
 				$row['k'] = $vector['distance'];
@@ -138,19 +150,33 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 			$res['rows'][] = $row;
 	        }
 
-		$res['meta'] = array('total_found'=>count($res['rows']), 'total'=>count($res['rows']), 'time' => $end-$start); //always 30 (or less), no paging!
+		//total_found is how many we think there are, whereas total is how many available
+		$rawCount = count($results['vectors'] ?? []);
 
-	} elseif (!empty($results['vectors'])) {
+		// If we hit the 100 cap, we tell the UI there are 100 total.
+		// If the vector search returned fewer than what we asked for, 
+		// it means the actual database has fewer than 100 matches.
+		if ($rawCount < $totalToFetch) {
+		    $totalFound = $rawCount;
+		} else {
+		    $totalFound = 100; // The known ceiling for S3Vectors
+		}
+
+		$res['meta'] = array('total_found'=>$totalFound, 'total'=>$totalFound, 'time' => $end-$start);
+
+	} elseif (!empty($slicedVectors)) {
 
 		//will have to lookup ids, from s3vectors, then load from sample8!
+		//setup the query to mass to the original SPhinx code below!
 		$ids = array();
-		foreach ($results['vectors'] as $i => $vector) {
+		foreach ($slicedVectors as $i => $vector) {
 			$ids[intval($vector['key'])] = floatval($vector['distance']);
 		}
 
 		$idstr = implode(',',array_keys($ids));
 
 		$SPHINX_INDEX = 'sample8';
+		$_GET['offset'] = 0; //if was a offset applied need to nullify (so sphinx/manticore doesnt also offeset the results)
 		$_GET['label'] = ""; //already done KNN lookup, dont need to do it again!
 		$_GET['where'] = "id IN ($idstr)";
 		$_GET['select'] = str_replace(",image_vector",",0 as image_vector", $_GET['select']); //this attribute doesnt exist, will have to fetch from database later!
@@ -163,6 +189,7 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 	} else {
 		//no results
 		//todo, if due to error, add customExpiresHeader(10,true); //maybe? (to REDUCE the caching)
+		
 
 		$res['rows'] = false;
 		$res['meta'] = array('total_found'=>0, 'total'=>0, 'time' => $end-$start);
@@ -340,6 +367,30 @@ if ($order == 'RAND()' && empty($_GET['rnd'])) {
             unset($row); // Unset the reference
         }
 
+		//if was actully a vector query, should return to proper distance order, but only if user didnt choose a explicit order (which allowed sphinx to reorder the vector query anyway)
+		if (empty($_GET['order']) && !empty($idstr) && !empty($res['rows'])) {
+			usort($res['rows'], function($a, $b) {
+			    // Sort by distance ('k') ascending (closest first)
+			    return ($a['k'] ?? 0) <=> ($b['k'] ?? 0);
+			});
+		}
+
+		//if was a actually a vector query, should so manipulate hte total_found to hint there are more records
+		//otherwise total_found still just comes from sphinx, which only fetched $limit rows anyway
+		if (!empty($totalToFetch)) {
+		        $rawCount = count($results['vectors'] ?? []);
+
+	                // If we hit the 100 cap, we tell the UI there are 100 total.
+        	        // If the vector search returned fewer than what we asked for,
+                	// it means the actual database has fewer than 100 matches.
+	                if ($rawCount < $totalToFetch) {
+        	            $totalFound = $rawCount;
+	                } else {
+        	            $totalFound = 100; // The known ceiling for S3Vectors
+                	}
+			$res['meta']['total'] = $totalFound; //important to update to 100, to stop paging
+			$res['meta']['total_found'] = $totalFound; //we can't really support finding the total number, so just use the same
+		}
 
 	} else {
 		die("no");
@@ -355,6 +406,13 @@ if (function_exists("call_with_results")) {
 if (empty($res['meta'])) {
 	$res['meta'] = array('error'=>'Unable to obtain results');
 }
+
+	//should only be set if results!
+	switch(1) {
+		case !empty($_GET['long']) : customExpiresHeader(3600*24*30,true); break;
+		case !empty($_GET['mid']) : customExpiresHeader(3600*24*3,true); break;
+		default : customExpiresHeader(3600*24,true); break;
+	}
 
 	if (isset($_GET['callback'])) {
 		$callback=preg_replace('/[^\w\.$]+/','',$_GET['callback']);
@@ -405,6 +463,8 @@ function getAllWithUTF($query) {
 
 		//manticore, should in general already be in utf8, so test without. Should change this to perhaps use 'detect_encoding' to do conditionally!
 		while($row = mysqli_fetch_assoc($result)) {
+			if (!empty($ids) && !empty($ids[intval($row['id'])]))
+				$row['k'] = $ids[intval($row['id'])];
 			$a[] = $row;
 		}
 		return $a;
