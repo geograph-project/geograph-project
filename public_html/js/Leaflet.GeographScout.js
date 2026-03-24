@@ -184,12 +184,15 @@ if (opacity>0.8)
 
 ///////////////////////////////////////////////////////
 
-    _onMapMove: async function () {
-        if (this._map.getZoom() < 11) return;
+    _onMapMove: async function (e, map) {
+	const activeMap = map || this._map;
+	if (!activeMap) return; // Guard against calls before layer is initialized
 
-        const centerLL = this._map.getCenter();
-        const bounds = this._map.getBounds();
-        
+        if (activeMap.getZoom() < 11) return;
+
+        const centerLL = activeMap.getCenter();
+        const bounds = activeMap.getBounds();
+
         // 1. Get Center in Grid terms
         const centerGrid = this._convertLLtoEN(centerLL.lat, centerLL.lng);
         if (!centerGrid) return; // Off-grid entirely
@@ -198,7 +201,7 @@ if (opacity>0.8)
         // Distance from center to West edge and North edge
         const westPoint = L.latLng(centerLL.lat, bounds.getWest());
         const northPoint = L.latLng(bounds.getNorth(), centerLL.lng);
-        
+
         const widthMeters = centerLL.distanceTo(westPoint);
         const heightMeters = centerLL.distanceTo(northPoint);
 
@@ -493,6 +496,8 @@ if (opacity>0.8)
         });
 
         this._renderSquares(Object.values(this._localSquareCache));
+        //this is mainly if GeographCoverage is also in use
+        this.fire('dataupdated');
     },
 
     _fetchFromGeographAPIHectad: async function(hectad) {

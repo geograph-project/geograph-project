@@ -20,6 +20,7 @@ $USER->mustHavePerm('basic');
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.67.0/dist/L.Control.Locate.min.css">
     <!--link rel="stylesheet" href="<? echo smarty_modifier_revision("/js/Leaflet.GeographClickLayer.css"); ?>"-->
+    <link rel="stylesheet" href="<? echo smarty_modifier_revision("/js/Leaflet.GeographCoverage/Leaflet.GeographCoverage.css"); ?>?v=2">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
@@ -36,6 +37,10 @@ $USER->mustHavePerm('basic');
     <script src="/js/Leaflet.GeographScout.js?<? echo filemtime(__DIR__.'/../js/Leaflet.GeographScout.js'); ?>"></script>
     <script src="/js/Leaflet.GeographCameraButton.js?<? echo filemtime(__DIR__.'/../js/Leaflet.GeographCameraButton.js'); ?>"></script>
     <script src="/js/Leaflet.enhanceButton.js?<? echo filemtime(__DIR__.'/../js/Leaflet.enhanceButton.js'); ?>"></script>
+
+
+    <script src="/js/Leaflet.GeographCoverage/Leaflet.GeographCoverage.js?<? echo filemtime(__DIR__.'/../js/Leaflet.GeographCoverage/Leaflet.GeographCoverage.js'); ?>"></script>
+
     <script src="<?php echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
     <style>
         body { margin: 0; display: flex; flex-direction: column; height: 100vh; font-family: sans-serif; }
@@ -148,9 +153,13 @@ map.on('mousedown dragstart', function(e) {
 		    apiUrl: '/api-scout.php'
 		});
 
-
 		overlayMaps['Geograph Scout'] = geographScout;
 		geographScout.addTo(map);
+
+		//we dont add to map, just but, can test it use
+		if (L.geographCoverage) {
+		        overlayMaps['Geograph Coverage'] = L.geographCoverage({scoutLayer: geographScout});
+		}
 
 	 L.control.layers(baseMaps,overlayMaps).addTo(map);
 
