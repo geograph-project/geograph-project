@@ -16,6 +16,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
     $db = GeographDatabaseConnection(false);
 
+    $GLOBALS['STARTTIME'] = microtime(true);
+
     $um = new UploadManager();
     $gs = new GridSquare();
 
@@ -2290,9 +2292,9 @@ map.on('mousedown dragstart', function(e) {
         if (!map)
                 loadmap();
 
-
+        let z;
         if (map && element) {  //only call if specifying a element. If no element, it probably just a map drag!
-            var z = map.getZoom();
+            z = map.getZoom();
             if (!z || z < 13) {
                     map.setView([lat,long],15);
             } else {
@@ -2310,24 +2312,37 @@ map.on('mousedown dragstart', function(e) {
             grid=wgs84.getOSGB();
         }
         if (grid) {
-            gridref = grid.getGridRef(5);//.replace(/ /g,'');
+            let precision = 4; //default 8fig GR
+            if (!z) //might already fetched
+                z = map.getZoom();
+            if (source === 'EXIF') precision = 5;
+            else if (map.options.crs?.code === 'EPSG:27700') {
+                //OS maps use differnt projection
+                if (z < 7) precision = 3;
+                else if (z > 9) precision = 5;
+            } else {
+                if (z < 7) precision = 1;
+                else if (z < 10) precision = 2;
+                else if (z < 13) precision = 3;
+                else if (z > 17) precision = 5;
+            }
+
+            gridref = grid.getGridRef(precision); //.replace(/ /g,''); -- actully lets show spaced GRs!
 
             if (!element) {
-        		if (!element) {
-        		    if (document.getElementById('photographer_gridref')?.classList.contains('active')) {
-        		        element = 'photographer_gridref';
-        		    } else if (document.getElementById('grid_reference')?.classList.contains('active')) {
-        		        element = 'grid_reference';
-        		    }
-        		}
+      		    if (document.getElementById('photographer_gridref')?.classList.contains('active')) {
+        	        element = 'photographer_gridref';
+        	    } else if (document.getElementById('grid_reference')?.classList.contains('active')) {
+        	        element = 'grid_reference';
+        	    }
             }
 
             if (element) {
-                    document.forms['theForm'].elements[element].value = gridref;
-                    if (element == 'photographer_gridref' && !marker2) { //updateMapMarker WILL create subject marker, but not photographer marker?
-                            createPMarker([lat,long]);
-                    }
-                    updateMapMarker(document.forms['theForm'].elements[element],false);
+                document.forms['theForm'].elements[element].value = gridref;
+                if (element == 'photographer_gridref' && !marker2) { //updateMapMarker WILL create subject marker, but not photographer marker?
+                    createPMarker([lat,long]);
+                }
+                updateMapMarker(document.forms['theForm'].elements[element],false);
             }
             if (source) {
         		const exifElement = document.getElementById('exiflocation');
