@@ -10,6 +10,16 @@ $USER->mustHavePerm("basic");
 $db = GeographDatabaseConnection(true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Processing</title>
+</head>
+<body>
+<?
 
 //cant use a template, as the fake jquery geograph.js creates, as conflicts with imagehash
 //$smarty->display('_std_begin.tpl');
@@ -17,15 +27,23 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $images = array();
 
 $user_id = intval($USER->user_id);
+$where = "auto_id is null"; //look for unprocessed ones
+$limit = 50;
+
+if (!empty($_GET['retry'])) {
+	 //note to do this 'propelly' will need to either delete the old failed record, otherwise will just keep appearing in the join!
+	$where = "ahash = 'failed'";
+	$limit = 10;
+}
 
 //include user_id just to make fastInit easy
 $sql = "select s.*,gi.user_id from gridimage_search gi inner join gridimage_size s using (gridimage_id) left join gridimage_hash using (gridimage_id)
- where gi.user_id = {$user_id} and auto_id is null limit 50";
+ where gi.user_id = {$user_id} and $where limit $limit";
 
 $data = $db->getAll($sql);
 
 if (empty($data))
-	die('No images to process - yay! - can close this window.');
+	die('<h4>No images to process - yay!</h4> - can <a href="javascript:window.close();">close this window</a>.');
 
 foreach($data as $row) {
 	$image = new GridImage();
@@ -55,6 +73,7 @@ foreach($data as $row) {
 			$images[] = array('gridimage_id'=>$row['gridimage_id'], 'source'=>'original', 'path'=> $path);
 		}
 	}
+	//todo if (!empty($_GET['failed']) delete from gridimage_hash where gridimage_id = {$row['gridimage_id']} - so doesnt keep appearing in the join
 }
 
 print "<p id=msg>Found ".count($images)." image(s) to process...</p><hr>";
@@ -146,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function next_image() {
 	if (images.length) {
-		document.getElementById('msg').innerHTML = images.length+' remain to process';
+		document.getElementById('msg').innerHTML = images.length+' remain to process (in current batch only)';
 
 		current = images.shift();
 		img.src = current.path;
