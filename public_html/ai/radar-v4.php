@@ -158,7 +158,32 @@ map.on('mousedown dragstart', function(e) {
 
 		//we dont add to map, just but, can test it use
 		if (L.geographCoverage) {
-		        overlayMaps['Geograph Coverage'] = L.geographCoverage({scoutLayer: geographScout});
+
+		        //overlayMaps['Geograph Coverage'] = L.geographCoverage({scoutLayer: geographScout});
+			//actully lets test adding as part of layer group! (how will be used in coverage-v4
+
+		        var coverageClose = L.geographCoverage({scoutLayer: geographScout});
+
+		        var layerUrl='https://t0.geograph.org.uk/tile/tile-coverage.php?z={z}&x={x}&y={y}';
+	        	var coverageCoarse = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6});
+
+			overlayMaps["Coverage - Standard"] = L.layerGroup([coverageClose, coverageCoarse]);
+
+			// Scout turned ON - turn off the tillayer, (but KEEP coverageClose!)
+			overlayMaps["Geograph Scout"].on('add', function() {
+			    setTimeout(function () {
+			        // Surgically remove tiles from the other group so they disappear from map
+			        overlayMaps["Coverage - Standard"].removeLayer(coverageCoarse);
+			    }, 100);
+			});
+
+			// Scout turned OFF -- add it back!
+			overlayMaps["Geograph Scout"].on('remove', function() {
+			    setTimeout(function () {
+			        // Restore tiles to the other group
+			        overlayMaps["Coverage - Standard"].addLayer(coverageCoarse);
+			    }, 100);
+			});
 		}
 
 	 L.control.layers(baseMaps,overlayMaps).addTo(map);
