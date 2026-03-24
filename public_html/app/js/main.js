@@ -98,3 +98,67 @@ function init() {
 
 // Start the application
 document.addEventListener('DOMContentLoaded', init);
+
+// gather some stats
+async function getUsageStats() {
+    let stats = {
+        browser: 'Unknown',
+        version: '0',
+        os: 'Unknown',
+        device: getDeviceType(),
+        standalone: window.matchMedia('(display-mode: standalone)').matches
+    };
+
+    // 1. Try Modern Client Hints (Chrome/Edge)
+    if (navigator.userAgentData) {
+        const highEntropy = await navigator.userAgentData.getHighEntropyValues(['model', 'platformVersion']);
+        const brandObj = navigator.userAgentData.brands.find(b => !b.brand.includes('Not')) || {};
+        
+        stats.browser = brandObj.brand || 'Chromium';
+        stats.version = brandObj.version || '0';
+        stats.os = navigator.userAgentData.platform;
+    } 
+    // 2. Fallback to Regex (Safari/Firefox/Legacy)
+    else {
+        const ua = navigator.userAgent;
+        if (/iPhone|iPad|iPod/.test(ua)) {
+            stats.os = 'iOS';
+            stats.browser = 'Safari';
+        } else if (/Android/.test(ua)) {
+            stats.os = 'Android';
+            stats.browser = 'Chrome/WebView';
+        }
+        
+        const match = ua.match(/(firefox|msie|chrome|safari|trident|edg(?=\/))\/?\s*(\d+)/i);
+        if (match) stats.version = match[2];
+    }
+
+    return stats;
+}
+
+function getDeviceType() {
+    const ua = navigator.userAgent;
+    const width = window.screen.width;
+    
+    // 1. Check for iPad (Modern iPads identify as Macintosh/Intel but have touch)
+    const isIPad = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 0;
+    if (isIPad || /iPad/i.test(ua)) return "Tablet (iPad)";
+
+    // 2. Check for Android Tablet
+    // Android phones usually have "Mobile" in the UA; tablets usually don't.
+    if (/Android/i.test(ua)) {
+        return /Mobile/i.test(ua) ? "Phone (Android)" : "Tablet (Android)";
+    }
+
+    // 3. Check for iPhone
+    if (/iPhone/i.test(ua)) return "Phone (iPhone)";
+
+    // 4. Default to Desktop
+    return "Desktop";
+}
+
+// Usage
+getUsageStats().then(data => {
+    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+    navigator.sendBeacon("/app/usage.php", blob);
+});
