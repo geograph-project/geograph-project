@@ -454,7 +454,7 @@ if (opacity>0.8)
     	// 2. Perform calculations only if we have data
 	    const total = validValues.reduce((sum, val) => sum + val, 0);
     	const avg = validValues.length > 0 ? total / validValues.length : 0;
-	    const criteria = Math.max(4, avg *0.2);
+	    const criteria = Math.min(Math.max(4, avg *0.2), 25);
 
         allSquares.forEach(sq => {
             //the hectad API, also gives us all at sea squares, which dont want to bother with
