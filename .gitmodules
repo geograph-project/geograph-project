@@ -4,3 +4,6 @@
 [submodule "public_html/showcase"]
 	path = public_html/showcase
 	url = https://github.com/geograph-project/showcase-gallery.git
+[submodule "public_html/js/Leaflet.GeographCoverage"]
+	path = public_html/js/Leaflet.GeographCoverage
+	url = https://github.com/geograph-project/Leaflet.GeographCoverage
