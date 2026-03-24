@@ -105,8 +105,24 @@ export async function onMount() {
         const selectedIds = Array.from(document.querySelectorAll('.delete-check:checked')).map(c => c.value);
         if(selectedIds.length === 0) return alert("Select images first");
 
-        //Confirm and process
-        if (confirm(`Delete ${selectedIds.length} images from temporary uploads area?`)) {
+        // Check if the active ID is among those being deleted
+        const isActiveBeingDeleted = AppState.upload_id &&
+                                     AppState.upload_id !== 'none' &&
+                                     selectedIds.includes(AppState.upload_id);
+
+        // Build a dynamic message
+        let msg = `Delete ${selectedIds.length} images from temporary uploads area?`;
+        if (isActiveBeingDeleted) {
+            msg = `The image currently active in Submission is selected for deletion. ${msg} This will lose the in-progress submission.`;
+        }
+
+        // Single confirmation check
+        if (confirm(msg)) {
+            if (isActiveBeingDeleted) {
+                //as about to be deleted, it can't be resumed
+                AppState.setState({ upload_id: 'none' });
+            }
+
             await performDelete(selectedIds);
 
             deleteToggle.click(); //turn off delete mode!
@@ -152,7 +168,7 @@ async function performDelete(selectedIds) {
     const BATCH_SIZE = 50;
     const total = selectedIds.length;
     const deleteBtn = document.getElementById('delete-btn');
-     deleteBtn.textContent = `Processing...`;
+    deleteBtn.textContent = `Processing...`;
 
     // Split the array into chunks of 50
     const batches = Math.ceil(selectedIds.length/BATCH_SIZE);
