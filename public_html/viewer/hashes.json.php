@@ -27,7 +27,7 @@ $sql = array();
 	$sql['wheres'][] = "gi.user_id = $id";
 	$sql['wheres'][] = "$hash != ''";
 
-        $sql['columns'] = 'gridimage_id,substr(source,1,1),phash,grid_reference,imagetaken,title';
+        $sql['columns'] = 'gridimage_id,substr(source,1,1) as source,phash,grid_reference,imagetaken,title';
 	$sql['group'] = $hash; //removes the duplicate hashes - particully multi size for same image
         $sql['order'] = 'NULL';
 
