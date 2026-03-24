@@ -611,6 +611,15 @@ input[type="search"] {
 	white-space: nowrap;
 }
 
+.faq-view {
+    max-width: 600px; margin: 0 auto; padding: 10px;
+}
+.faq-view h2 {
+    text-align:center;
+}
+.tap-prompt {
+    text-align:center;
+}
 div.faq-item {
 	border-bottom: 1px solid var(--card-bg); padding: 15px 0;
 }
@@ -618,8 +627,12 @@ button.faq-button {
 	background: none; border: none; width: 100%; text-align: left; font-size: 1rem; cursor: pointer; padding: 0; color: var(--faq-question);
 }
 
+button.faq-button:has(+ .faq-content:not(.hidden)) {
+    border-bottom: 1px dashed silver;
+}
+
 div.faq-content {
-	margin-top: 10px; color: var(--faq-answer); line-height: 1.5; font-size: 0.95rem; white-space: pre-line;
+	margin-bottom: 12px; margin-left:8px; line-height: 1.5; font-size: 0.95rem; white-space: pre-line;
 }
 
 .error-text {

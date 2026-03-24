@@ -21,9 +21,20 @@ export function render() {
     color:gray;
 }
 
-.faq-link {
-    margin: 0;
+/* Switch to side-by-side layout on screens wider than 600px */
+@media (min-width: 800px) {
+    .app-header .btn {
+        width: auto;      /* Override the 100% width */
+        max-width: 400px; /* Cap the width as requested */
+        flex: 0 1 auto;   /* Don't grow, but can shrink if needed */
+        text-align: right;
+    }
+    
+    .app-header {
+        flex-wrap: nowrap; /* Keep them on one line on desktop */
+    }
 }
+
 
     section h3 {
 	border-bottom:1px solid gray;
@@ -62,8 +73,8 @@ export function render() {
 </style>
 
     <div class="app-header">
-        <h2>Welcome to the Geograph App <sup>V0.99</sup></h2>
-        <p class="faq-link">See also <a href="/app/faq">App and Contributor Questions</a></p>
+        <h2>Welcome to the Geograph App <sup>V0.995</sup></h2>
+        <button class="btn btn-primary" data-route="/app/faq">App and Contributor Questions &gt;</button>
     </div>
 
     <hr>
