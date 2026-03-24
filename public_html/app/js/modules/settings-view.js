@@ -5,7 +5,7 @@ import AppState from '/app/js/app-state.js';
 
 export function render() {
     return `
-        <form class="view settings-view" onsubmit="return false">
+        <form class="view settings-view" action="javascript:void(0);" onsubmit="return false">
             <h2>Settings</h2>
             <p>Adjust your preferences for the Geograph application.<br><br></p>
 
