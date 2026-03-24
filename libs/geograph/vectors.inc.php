@@ -357,15 +357,19 @@ if (empty($ch)) {
  * or an empty array on failure (e.g., download error, API error, invalid response).
  */
 function getImageEmbedding($image, $use_ai_thumb = false, $check_exists = false, $model = 'clip') {
-    // 1. Get image URL and grab the .jpg
-    if ($use_ai_thumb) {
-        $url = $image->getAIThumbnail('fullpath', $check_exists);
+    if (is_string($image)) {
+        $url = $image;
     } else {
-        $url = $image->_getFullpath($check_exists, true);
-    }
-    if (empty($url)) {
-        error_log('get_image_embedding: Image URL is empty.');
-        return [];
+        // 1. Get image URL and grab the .jpg
+        if ($use_ai_thumb) {
+            $url = $image->getAIThumbnail('fullpath', $check_exists);
+        } else {
+            $url = $image->_getFullpath($check_exists, true);
+        }
+        if (empty($url) || basename($url) == 'error.jpg') {
+            error_log('get_image_embedding: Image URL is empty.');
+            return [];
+        }
     }
 
     $image_bytes = @file_get_contents($url);
