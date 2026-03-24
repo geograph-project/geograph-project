@@ -130,9 +130,11 @@ $REVISIONS['/app/js/modules/uploaded-view.js']=17418221;
 $REVISIONS['/app/js/sw.js']=38837486;
 $REVISIONS['/app/js/utils.js']=52921156;
 $REVISIONS['/app/js/router.js']=42057627;
-$REVISIONS['/js/Leaflet.GeographScout.js']=17865249;
+$REVISIONS['/js/Leaflet.GeographScout.js']=97250726;
 $REVISIONS['/js/Leaflet.GeographCameraButton.js']=59260151;
 $REVISIONS['/app/js/modules/faq-view.js']=86629695;
 $REVISIONS['/js/location-selector.module.js']=19429724;
 $REVISIONS['/js/Leaflet.enhanceButton.js']=38966944;
+$REVISIONS['/js/Leaflet.GeographCoverage/Leaflet.GeographCoverageScout.js']=75708360;
+$REVISIONS['/js/Leaflet.GeographCoverage/Leaflet.GeographCoverage.js']=75708360;
 ?>
