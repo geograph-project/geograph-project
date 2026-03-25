@@ -2177,6 +2177,12 @@ map.on('mousedown dragstart', function(e) {
         });
 
        // setupMess(); //TODO!
+
+
+        if (typeof setupQuota === 'function') {
+            setupQuota(map, baseMaps['Modern OS - GB']);
+        }
+
     }
 
         function updateActiveMode() {
@@ -2874,6 +2880,8 @@ myForm.addEventListener('change', updateFormProgress);
 updateFormProgress();
 
 </script>
+
+<script src="/js/Leaflet.map-limits.js?<? echo filemtime('../js/Leaflet.map-limits.js'); ?>"></script>
 
 </body>
 </html>
