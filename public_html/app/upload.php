@@ -171,6 +171,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         <div class="progress-bar" id="progress-fill"></div>
     </div>
 
+	<button id="missing-btn" onclick="openModal('geo-modal')"  class="btn btn-help hidden" type="button">Why am I seeing a 'Missing Geo' error?</button>
+
     <button id="upload-btn" class="btn btn-upload hidden">Start Upload</button>
 
     <div id="post-upload-actions" class="hidden">
@@ -191,23 +193,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         </label>
     </div>
 
-
-	<button id="missing-btn" onclick="openModal('geo-modal')"  class="btn btn-help hidden" type="button">Why am I seeing a 'Missing Geo' error?</button>
 </div>
 
 
 <dialog id="geo-modal" onclick="closeModal('geo-modal')">
-	<p>If you believe the image should have location data (e.g., it was taken on a GPS-enabled device), your browser may be stripping the 
+	<p>If you believe the image should have location data (e.g., it was taken on a GPS-enabled device), your browser may be stripping the
 	metadata to prevent accidental location sharing.</p>
+
+	<p>This unfortunately happening before the image reaches this page, and is outside of our control.</p>
 
 	<h4>Is there a workaround for mobile devices?</h4>
 
-	<p>While there isn't a universal fix, some Android/Samsung users find success by clicking <strong>'Browse'</strong> and selecting the image 
-	from the <strong>'Recent'</strong> list rather than the Gallery. This often allows the file to retain its location data during upload. </p>
+	<p>While there isn't a universal fix, some Android/Samsung users find success by clicking <strong>'Browse'</strong> and selecting the image
+	from the <strong>'Recent'</strong> list rather than the Gallery. This often allows the file to retain its location data when it reaches the
+	upload process. </p>
 
 	<h4>Is there a more reliable way to capture the location?</h4>
 
-	<p>Yes. Using our <strong>'Take Photo'</strong> page allows you to take images that save the coordinates directly into the filename. This 
+	<p>Using our <strong>'Take Photo'</strong> page allows you to take images that save the coordinates directly into the filename. This
 	prevents the browser from stripping the data and ensures the photo is quickly placed on the map. </p>
 
         <button type="button" class="btn" onclick="closeModal('geo-modal')">Close</button>
