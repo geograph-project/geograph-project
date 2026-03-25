@@ -65,7 +65,7 @@ if (!empty($where)) {
 	customExpiresHeader(3600*24, true,true);
 
 	$ids = implode(',',$db->getCol("select feature_type_id,title from feature_type where status = 1 AND licence != 'none'"));
-	$where[] = "nearby_images = 0"; //we might change this!
+	$where[] = "nearby_images between 0 and 4"; //want to avoid null
 	$where[] = "feature_type_id IN ($ids)";
 
 	$where = implode(" AND ",$where);
@@ -74,7 +74,8 @@ if (!empty($where)) {
 	    name AS n,
 	    wgs84_lat AS lt,
 	    wgs84_long AS lg,
-	    feature_type_id AS t
+	    feature_type_id AS t,
+	    nearby_images as c
 	FROM feature_item
 	WHERE $where
 	LIMIT 1000");

@@ -102,9 +102,6 @@ map.on('mousedown dragstart', function(e) {
 
 		baseMaps['OSM'] = tileLayer;
 
-                if (L.GeographRecentUploads)
-                        overlayMaps["Recent Uploads"] = L.geographRecentUploads();
-
                 // dots layer
                 var layerUrl='https://t0.geograph.org.uk/tile/tile-density.php?z={z}&x={x}&y={y}&match=&l=1&6=1';
                 var layerAttrib='&copy; Geograph Project';
@@ -185,6 +182,9 @@ map.on('mousedown dragstart', function(e) {
 			    }, 100);
 			});
 		}
+
+                if (L.GeographRecentUploads)
+                        overlayMaps["Recent Uploads"] = L.geographRecentUploads();
 
 	 L.control.layers(baseMaps,overlayMaps).addTo(map);
 

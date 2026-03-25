@@ -37,7 +37,8 @@ L.GeographScout = L.LayerGroup.extend({
             fewPhotos: true,
             noRecent: true,
             personal: true,
-            personalUpdate: true
+            personalUpdate: true,
+            done: false //Our general policy to to highlight unvisited, but maybe want to highlight them.
         };
 
         // Try to load from localStorage
@@ -53,16 +54,33 @@ L.GeographScout = L.LayerGroup.extend({
 
         // Merge: saved values will overwrite defaultFilters keys
         this._filters = L.extend(defaultFilters, saved);
+
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = `
+            .number-icon {
+                background-color: #0000ff;
+                border-radius: 50%;
+                color: white;
+                font-weight: bold;
+                text-align: center;
+                line-height: 20px; /* Matches height for vertical centering */
+                font-family: sans-serif;
+            }
+            .number-icon.number-zero {
+                border: 2px solid white;
+            }
+        `;
+        document.head.appendChild(style);
+
     },
 
     setOpacity: function(opacity) {
         // Store the value in options so Leaflet "remembers" the current state
         if (this.options) this.options.opacity = opacity;
 
-console.log('S',opacity);
-
-if (opacity>0.8)
-	opacity = 1;
+        if (opacity>0.8)
+        	opacity = 1;
 
         this._squareLayer.eachLayer((layer) => {
             if (layer.setStyle) {
@@ -145,11 +163,12 @@ if (opacity>0.8)
                     </div>
                     <div>
                         <strong>Grid Squares:</strong><br>
-		            <label style="color:#e74c3c"><input type="checkbox" id="gs-unphoto" ${this._filters.unphotographed ? 'checked':''}> Unphotographed</label>
+		            <label style="color:#068d37"><input type="checkbox" id="gs-unphoto" ${this._filters.unphotographed ? 'checked':''}> Unphotographed</label>
 		            <label style="color:#7b7a7a"><input type="checkbox" id="gs-few-photo" ${this._filters.fewPhotos ? 'checked':''}> Few Photos</label>
 		            <label style="color:#9b59b6"><input type="checkbox" id="gs-no-recent" ${this._filters.noRecent ? 'checked':''}> No Recent</label><br>
 		            <label style="color:#3498db"><input type="checkbox" id="gs-personal" ${this._filters.personal ? 'checked':''}> Personal</label>
 		            <label style="color:#f39c12"><input type="checkbox" id="gs-update" ${this._filters.personalUpdate ? 'checked':''}> Personal Redo (>5yrs)</label>
+		            <label style="color:#e74c3c"><input type="checkbox" id="gs-done" ${this._filters.done ? 'checked':''}> Done</label>
                     </div>
                 </div>
                 <br><button type="submit" style="width:100%">Close & Update</button>
@@ -164,6 +183,7 @@ if (opacity>0.8)
             this._filters.noRecent = document.getElementById('gs-no-recent').checked;
             this._filters.personal = document.getElementById('gs-personal').checked;
             this._filters.personalUpdate = document.getElementById('gs-update').checked;
+            this._filters.done = document.getElementById('gs-done').checked;
 
             // Map the category checkboxes
             const checked = Array.from(this._dialog.querySelectorAll('.filter:checked'));
@@ -185,8 +205,8 @@ if (opacity>0.8)
 ///////////////////////////////////////////////////////
 
     _onMapMove: async function (e, map) {
-	const activeMap = map || this._map;
-	if (!activeMap) return; // Guard against calls before layer is initialized
+    	const activeMap = map || this._map;
+    	if (!activeMap) return; // Guard against calls before layer is initialized
 
         if (activeMap.getZoom() < 11) return;
 
@@ -239,8 +259,7 @@ if (opacity>0.8)
         //no refreshDisplay, as we now let leaflet handle visibiliy, features are always plotted!
     },
 
-
-    //using our own libary alas, the working with multi-grid is awkward
+    //using our own libary, alas working with multi-grid is awkward
     _convertLLtoHectad: function(lat,lng) {
     	var wgs84 = new GT_WGS84();
   	    wgs84.setDegrees(lat, lng);
@@ -338,10 +357,17 @@ if (opacity>0.8)
         const poiLatLng = L.latLng(poi.lt, poi.lg);
         const title = this._typeLookup[poi.t] || "Point of Interest";
 
+var icon = L.divIcon({
+    className: `number-icon ${poi.c>0?'':'number-zero'}`,
+    html: poi.c ?? 0, //old responses only include 0 anyway (but would be undefined)
+    iconSize: [20, 20], // The width/height of your circle
+    iconAnchor: [10, 10] // Half of size to keep it centered on coordinates
+});
+
         // Bind a function instead of a static string
-        const marker = L.marker(poiLatLng).bindPopup(() => {
+        const marker = L.marker(poiLatLng, { icon: icon }).bindPopup(() => {
             // This code runs ONLY when the marker is clicked
-            let popupContent = `<b>${poi.n}</b><br>${title}`;
+            let popupContent = `<b>${poi.n || 'unnamed'}</b><br><i>${title}</i><br>${poi.c || 0} Photos Nearby`;
 
             if (this._lastGpsResult && this._lastGpsResult.latlng) {
                 const distKm = this._lastGpsResult.latlng.distanceTo(poiLatLng) / 1000;
@@ -385,7 +411,7 @@ if (opacity>0.8)
 
             // Priority 1: Globally Unphotographed
             if (this._filters.unphotographed && sq.status.nonGeograph) {
-                color = "#e74c3c";
+                color = "#068d37";
                 label = "Unphotographed Square";
             }
             // Priority 2: Globally Non-Recent
@@ -407,6 +433,10 @@ if (opacity>0.8)
                 color = "#f39c12";
                 label = "You haven't visited in 5+ years";
                 dash = "5, 5";
+            }
+            else if (this._filters.done && sq.status.visited) {
+                color = "#e74c3c";
+                label = "Visited Square";
             }
 
             if (color) {
@@ -480,8 +510,8 @@ if (opacity>0.8)
             // Check if the user's specific record for this square says has_recent (r) is 0
             const isNeedsUpdate = hasVisited && userData.r === 0;
 
-            // Decide if we should track/show this square
-            if (isNonGeograph || isFewPhotos || isNonRecent || isPersonallyNeeded || isNeedsUpdate) {
+            // Decide if we should track/show this square -- Actully now we track all squares (including visited) - this includes because GeographCoverage uses our cache!
+//            if (isNonGeograph || isFewPhotos || isNonRecent || isPersonallyNeeded || isNeedsUpdate) {
                 // Add metadata so the renderer knows WHY it's showing
                 sq.status = {
                     nonGeograph: isNonGeograph,
@@ -489,10 +519,11 @@ if (opacity>0.8)
                     nonRecent: isNonRecent,
                     personallyNeeded: isPersonallyNeeded,
                     needsUpdate: isNeedsUpdate,
-		    average: avg
+                    visited: hasVisited,
+                    average: avg
                 };
                 this._localSquareCache[sq.gr] = sq;
-            }
+//            }
         });
 
         this._renderSquares(Object.values(this._localSquareCache));
@@ -502,7 +533,7 @@ if (opacity>0.8)
 
     _fetchFromGeographAPIHectad: async function(hectad) {
         // 1. Construct URLs
-        const scoutUrl = `${this.options.apiUrl}?hectad=${hectad}`;
+        const scoutUrl = `${this.options.apiUrl}?hectad=${hectad}&v=2`;
         const allSquaresUrl = `https://t0.geograph.org.uk/tile-hectad.json.php?hectad=${hectad}`;
         const userSquaresUrl = `https://t0.geograph.org.uk/tile-hectad.json.php?hectad=${hectad}&user_id=${this.options.user_id}`;
 
