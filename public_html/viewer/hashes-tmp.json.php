@@ -29,7 +29,7 @@ $data = $uploadmanager->getUploadedFiles(); //todo, maybe want a wayt to skip ex
 if (empty($data))
         die('[]');
 
-$done = $db->getAssoc("SELECT gridimage_id,1 FROM gridimage_hash WHERE source = 'tmp' AND user_id = $user_id");
+$done = $db->getAssoc("SELECT gridimage_id,phash FROM gridimage_hash WHERE source = 'tmp' AND user_id = $user_id");
 
 	$fields = array('gid','phash','transfer_id','uploaded','gridref');
         print $sep.json_encode($fields,JSON_PARTIAL_OUTPUT_ON_ERROR);
