@@ -28,7 +28,7 @@ map $http_x_forwarded_proto $forwarded_proto {
 server {
   listen 80;
   listen [::]:80;
-  server_name api.* *.api.geograph.org.uk;
+  server_name api.geograph.org.uk mobile.api.geograph.org.uk ~^(?<prefix>.+)-api\.geograph\.org\.uk$;
 
   # then setup the custom logs - containers write the log to standard output
   error_log stderr notice;
@@ -85,7 +85,7 @@ server {
 server {
   listen 80;
   listen [::]:80;
-  server_name t0.* *.t0.geograph.org.uk;
+  server_name t0.geograph.org.uk ~^(?<prefix>.+)-t0\.geograph\.org\.uk$;
 
   # then setup the custom logs - containers write the log to standard output
   error_log stderr notice;
