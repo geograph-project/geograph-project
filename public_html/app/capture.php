@@ -153,7 +153,9 @@ h3 {
             background-color: var(--input-bg);
                     color: var(--content-text);
         }
-
+	dialog ul {
+		padding-inline-start: 10px;
+	}
         dialog button {
             display:block;
             width:100%;
