@@ -383,10 +383,19 @@ async function renderUI() {
 
             // UI Update: Progress Bar
             uploadBtn.innerText = `Uploading ${uploadedCount + 1} / ${fileQueueLength}...`;
-            progressFill.style.width = ((uploadedCount + 1) / fileQueueLength) * 100 + '%';
+//            progressFill.style.width = ((uploadedCount + 1) / fileQueueLength) * 100 + '%';
 
             // Sequential POST request
-            const result = await sendToPHP(item.dataUri, item.file.name);
+            const result = await sendToPHP(item.dataUri, item.file.name, (percent) => {
+
+                // 1. Update Button Text: Show which file and its specific %
+                uploadBtn.textContent = `Uploading ${uploadedCount + 1} / ${fileQueueLength} (${percent}% done)`;
+
+                // 2. Update Progress Bar: Smooth movement across the whole batch
+                const smoothWidth = ((i + (percent / 100)) / fileQueue.length) * 100;
+                progressFill.style.width = smoothWidth + '%';
+            });
+
             if (result && result.success) {
                 // SUCCESS: Remove from queue and mark visually
                 document.getElementById(`wrapper-${item.id}`).classList.add('uploaded');
