@@ -87,15 +87,18 @@ $(function() {
       description: "Click to center the map on your current location, if your browser is able to figure it out!"
     });
 
+var hasenlarge = document.getElementById("enlargelink") !== null;
+
     guiders.createGuider({
       attachTo: ".leaflet-control-filelayer", highlight: ".leaflet-control-container.leaflet-top.leaflet-left",
       position: 'right',
       title: "Upload Control",
       id: "g_upload",
-      next: "g_enlarge",
+      next: hasenlarge?"g_enlarge":"g_layers",
       description: "Upload a KML (not KMZ), or GPX file to display on the map. 1Mb file limit, should display points and line/shape features"
     });
 
+if (hasenlarge) {
     guiders.createGuider({
       attachTo: "#enlargelink", highlight: "#enlargelink",
 	autoFocus:true,
@@ -116,23 +119,37 @@ $(function() {
       description: "Shows the grid-reference of the map cursor"
     });
 
+}
+
+var hasmaplinks = document.getElementById("mapLinkSelector") !== null;
+
     guiders.createGuider({
       attachTo: ".leaflet-control-layers", highlight: ".leaflet-control-layers",
       position: 'left',
       title: "Layers Control",
       id: "g_layers",
-      next: "g_other",
+      next: hasmaplinks?"g_other":"g_final",
       description: "This map has a large selection of different layers."
     });
 
+if (hasmaplinks) {
     guiders.createGuider({
       attachTo: "#mapLinkSelector", highlight: "#mapLinkSelector",
 	autoFocus:true,
       position: 'left',
       title: "Other Map Links",
       id: "g_other",
-      next: "g_welcome",
+      next: "g_final",
       description: "Can this control to access a number of other maps, where possible centered the same as the current map. <br/><br/>Click close to return to the application. Or Next to go back to the start of the tour!"
+    });
+}
+
+    guiders.createGuider({
+      position: 'center',
+      title: "That's it for the quick tour",
+      id: "g_final",
+      next: "g_welcome",
+      description: "Click close to return to the application. Or Next to go back to the start of the tour!"
     });
 
 
