@@ -57,6 +57,9 @@ function get_base_query($param, $add_pattern = false) {
 	if (!empty($param['second']))
 	        $query .= ' |= "'.str_replace('"','\"',$param['second']).'"';
 
+	if (!empty($param['third']))
+	        $query .= ' |= "'.str_replace('"','\"',$param['third']).'"';
+
         if (!empty($param['common'])) {
 		//some internal requests
 		$query .= ' != "Geograph Mobile Site"';
@@ -69,6 +72,9 @@ function get_base_query($param, $add_pattern = false) {
 
 	if (!empty($param['not']))
 	        $query .= ' != "'.str_replace('"','\"',$param['not']).'"';
+
+	if (!empty($param['not2']))
+	        $query .= ' != "'.str_replace('"','\"',$param['not2']).'"';
 
 	if (!empty($param['duration'])) // && strpos($param['base'],'nginx"'))
 	        $query .= ' | regexp `" (?P<duration>\\d+\.\\d+) http` | duration > '.$param['duration'];
