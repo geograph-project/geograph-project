@@ -305,8 +305,10 @@ function closeModal(id) {
     }
 
     async function processItem(item) {
-        item.isHeic = item.file.name.toLowerCase().endsWith('.heic') || item.file.type === 'image/heic';
+        if (item.dataUri) //might of already been processed on previous run
+		return item;
 
+        item.isHeic = item.file.name.toLowerCase().endsWith('.heic') || item.file.type === 'image/heic';
 
         // 1. Analyze EXIF (Handles JPEG and HEIC automatically)
         // By default, exifr parses the most common tags (GPS, Orientation, etc.)
@@ -341,10 +343,9 @@ function closeModal(id) {
                 }
             }
         }
+        item.exifData = exifData;
 
         // 3. Resize if necessary (converts file to a DataURL, resizeFileWorker, will naturally convert file to data URL naturally too)
-        if (!item.dataUri) { //might of already been processed on previous run
-            item.dataUri = await new Promise(async (resolve) => {
                 let needsResize = (item.file.size > max_size);
 
                 if (!needsResize && uploadMaxDimension < 65536) {
@@ -367,6 +368,7 @@ function closeModal(id) {
                     }
                 }
 
+        item.dataUri = await new Promise((resolve, reject) => {
                 if (needsResize && !item.isHeic) {
                     resizeFileWorker(item.file, max_size, (url) => {
                         const finished = document.getElementById('messageDiv');
@@ -376,17 +378,18 @@ function closeModal(id) {
                 } else {
                     const reader = new FileReader();
                     reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = (e) => reject(e); // Good to handle errors!
                     reader.readAsDataURL(item.file);
                 }
-            });
-        }
+        });
 
-        return { item, exifData };
+        return item; // Still return it for Promise.all convenience
     }
 
 async function renderUI() {
     displayArea.innerHTML = '';
     selectLabel.style.opacity = 0.5;
+    selectLabel.textContent = "Choose different image(s)";
     postActions.classList.add('hidden');
     progressCont.style.display = 'none';
 
@@ -403,39 +406,31 @@ async function renderUI() {
     if (existing) existing.remove();
 
     // Process all images in the queue
-    const processedItems = await Promise.all(fileQueue.map(processItem));
-
-    // Store EXIF data back to fileQueue
-    processedItems.forEach(({ item, exifData }) => {
-        const queueItem = fileQueue.find(f => f.id === item.id);
-        if (queueItem) queueItem.exifData = exifData;
-        //really should store the dataUri too!
-        if (queueItem) queueItem.dataUri = item.dataUri;
-    });
+    await Promise.all(fileQueue.map(processItem));
 
     // Render based on count
     let missingGeo = 0;
-    if (processedItems.length === 1) {
-        const { item, exifData } = processedItems[0];
-        if(!exifData.hasGeo) missingGeo++;
+    if (fileQueue.length === 1) {
+        const item = fileQueue[0];
+        if(!item.exifData.hasGeo) missingGeo++;
         displayArea.innerHTML = `
             <div class="hero-view" id="wrapper-${item.id}">
                 <img src="${item.isHeic?'/app/assets/heic-placeholder.png':item.dataUri}">
-                ${exifData.hasGeo ? '' : '<div class="warning">Missing Geo-tags</div>'}
-                ${(exifData.orientation && exifData.orientation !== 1) ? '<div class="warning">Needs Rotating</div>' : ''}
+                ${item.exifData.hasGeo ? '' : '<div class="warning">Missing Geo-tags</div>'}
+                ${(item.exifData.orientation && item.exifData.orientation !== 1) ? '<div class="warning">Needs Rotating</div>' : ''}
             </div>`;
     } else {
         const grid = document.createElement('div');
         grid.className = 'grid';
-        for (const { item, exifData } of processedItems) {
+        for (const item of fileQueue) {
             const div = document.createElement('div');
             div.className = 'img-wrapper';
             div.id = `wrapper-${item.id}`;
-            if(!exifData.hasGeo) missingGeo++;
+            if(!item.exifData.hasGeo) missingGeo++;
             div.innerHTML = `
                 <img src="${item.isHeic?'/app/assets/heic-placeholder.png':item.dataUri}">
-                ${exifData.hasGeo ? '' : '<div class="warning">Missing Geo</div>'}
-                ${(exifData.orientation && exifData.orientation !== 1) ? '<div class="warning">Needs Rotating</div>' : ''}
+                ${item.exifData.hasGeo ? '' : '<div class="warning">Missing Geo</div>'}
+                ${(item.exifData.orientation && item.exifData.orientation !== 1) ? '<div class="warning">Needs Rotating</div>' : ''}
                 <div class="remove-overlay" onclick="removeItem('${item.id}')">
                     <span class="remove-icon">&#10005;</span>
                 </div>`;
@@ -518,7 +513,9 @@ async function renderUI() {
 
         // All submitted OK!
         if (fileQueue.length === 0) {
-            selectLabel.style.opacity = 0.7;
+            selectLabel.style.opacity = 0.8;
+            selectLabel.textContent = "Choose more image(s)";
+
             uploadBtn.classList.add('hidden');
             if (fileQueueLength === 1 && autoProceedCheck.checked && document.visibilityState === 'visible') {
                 navigateTo('/app/submit',{message: JSON.stringify({
