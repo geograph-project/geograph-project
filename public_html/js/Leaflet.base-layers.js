@@ -475,13 +475,16 @@ function addOurControls(map) {
 	if (L.geographGeocoder && !geocoder)
 		map.addControl(geocoder = L.geographGeocoder());
 
-	if (L.control.locate)
-		L.control.locate({
+	if (L.control.locate) {
+		var locateControl = L.control.locate({
 			keepCurrentZoomLevel: [13,18],
 			locateOptions: {
 				maxZoom: 16,
 	       			enableHighAccuracy: true
 		}}).addTo(map);
+		if (window.location.search && window.location.search.indexOf('locate')>-1)
+			locateControl.start();
+	}
 
 	if (L.Control.fileLayerLoad) {
 		filelayer = L.Control.fileLayerLoad({fileSizeLimit:10240}).addTo(map);

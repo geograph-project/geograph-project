@@ -31,6 +31,13 @@ export function render() {
 
             <div class="settings-group">
                 <div class="setting-item">
+                    <label for="mapAutoLocate">Auto-Locate Me on Map</label>
+                    <input type="checkbox" id="mapAutoLocate">
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="setting-item">
                     <label for="showBottomButtons">Show Navigation Buttons</label>
                     <input type="checkbox" id="showBottomButtons">
                 </div>
