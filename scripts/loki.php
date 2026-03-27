@@ -56,6 +56,7 @@ $param=array(
 	'status'=>false, //limit resuts to specifc https status (not compatible with json/stream filter!)
 	'duration'=>false, //extra duration filter
 	'hours'=>false, //specify a number of hours to use with 'string' query. Defaults to one hour!
+	'minutes'=>false,
 
 	//which stream to get
 	'stream'=>'', //on nginx container at least, access_log is on stdout, and error on stderr!
@@ -75,6 +76,8 @@ if (in_array('--string',$_SERVER['argv'])) {
 		$_SERVER['argv'] = array_values($_SERVER['argv']); //reset the keys, so count matches
 	}
 }
+
+$ABORT_GLOBAL_EARLY=1; //avoids global.inc.php auto connecteding to redis to with "$memcache" variable
 
 
 chdir(__DIR__);
@@ -126,7 +129,9 @@ if (empty($CONF['loki_address']))
 				//{job="tcl-ingress/ingress-nginx", stream="stdout"} |= "production-geograph-http"
 				$cmd .= " --base=".escapeshellarg('{job="tcl-ingress/ingress-nginx", stream="stdout"}')." --string=production-geograph-http";
 			elseif ($param['auto'] == 'dataserver')
-				$cmd .= " --base=".escapeshellarg('{job="tcl-ingress/ingress-nginx", stream="stdout"}')." --string=production-dataserver-http --not=monitoring-plugins";
+				//$cmd .= " --base=".escapeshellarg('{job="tcl-ingress/ingress-nginx", stream="stdout"}')." --string=production-dataserver-http --not=monitoring-plugins";
+				//$cmd .= " --base=".escapeshellarg('{job="tcl-ingress/haproxy-ingress", stream="stdout"}'." --string=production_dataserver_http --not=monitoring-plugins";
+				$cmd .= " --base=".escapeshellarg('{job="production/dataserver", container="nginx", stream="stdout"}')." --string=http --not=monitoring-plugins";
 			else
 				//base is ok, for 'nginxaccess', but histroically have included all streams
 				$cmd .= " --stream=all";
@@ -244,7 +249,14 @@ if (empty($CONF['loki_address']))
 		//getlogs automatcially adds $param['string'] anyway!
 
 		$start = null;
-		if (!empty($param['hours'])) {
+		//minutes
+		if (!empty($param['minutes'])) {
+		        $start = strtotime("-{$param['minutes']} minute");
+
+		        $start = $start.'000000000';  //as a nanosecond Unix epoch.
+
+		//hours
+		} elseif (!empty($param['hours'])) {
 			$start = strtotime("-{$param['hours']} hour");
 
 			$start = $start.'000000000';  //as a nanosecond Unix epoch.
