@@ -272,16 +272,6 @@ function closeModal(id) {
 
     fileInput.addEventListener('change', handleFiles);
 
-	function toDecimal(number) {
-        //oddly exif.js returns signed rationals as a plain number, but unsigned as a 'Number' object with numerator/denominator so need to cope with EITHER
-        // some old files seem to have lat/long in signed format (even tough the number wont be negative)
-        if (typeof number[0] == 'number')
-             return number[0] + (number[1]/60.0) + (number[2]/3600);
-
-        return number[0].numerator + number[1].numerator /
-            (60 * number[1].denominator) + number[2].numerator / (3600 * number[2].denominator);
-    }
-
     async function handleFiles(e) {
         const files = Array.from(e.target.files);
         if (!files.length) return;
@@ -302,88 +292,6 @@ function closeModal(id) {
         document.querySelector('.settings').classList.toggle('hidden', files.length>1);
 
         renderUI();
-    }
-
-    async function processItem(item) {
-        if (item.dataUri) //might of already been processed on previous run
-		return item;
-
-        item.isHeic = item.file.name.toLowerCase().endsWith('.heic') || item.file.type === 'image/heic';
-
-        // 1. Analyze EXIF (Handles JPEG and HEIC automatically)
-        // By default, exifr parses the most common tags (GPS, Orientation, etc.)
-        const data = await exifr.parse(item.file, {
-            translateKeys: true,  // Keep this true so you get 'latitude'/'longitude'
-            translateValues: false, // THIS is what gives you '1' instead of "Horizontal (normal)"
-            reviveValues: false     // This prevents it from turning date strings into JS Date objects
-        });
-
-        const lat = data?.latitude ?? null;   // exifr helpfully maps GPSLatitude to 'latitude'
-        const long = data?.longitude ?? null; // and GPSLongitude to 'longitude'
-        const exifData = {
-            // The Fix: Check if the value is NOT null/undefined, rather than if it is "truthy"
-            hasGeo: (lat !== null && long !== null),
-            lat: lat,
-            long: long,
-            date: data?.DateTimeOriginal || data?.CreateDate || null,
-            orientation: data?.Orientation || null
-        };
-
-        // 2. Support reading a Grid Ref from filename (e.g., photo_SU12345678.jpg)
-        const match = item.file.name.match(/_([A-Z]{1,2}\d{4,10})\./i);
-        if (match) {
-            // Trust filename if EXIF is missing OR if user provided high precision GR (> 6 figures)
-            if (!exifData.hasGeo || match[1].length > 7) {
-                let wgs84 = GT_WGS84.parseGridRef(match[1]);
-                if (wgs84 && wgs84.status === 'OK') {
-                    exifData.lat = wgs84.latitude;
-                    exifData.long = wgs84.longitude;
-                    exifData.hasGeo = true;
-                    exifData.source = 'filename';
-                }
-            }
-        }
-        item.exifData = exifData;
-
-        // 3. Resize if necessary (converts file to a DataURL, resizeFileWorker, will naturally convert file to data URL naturally too)
-                let needsResize = (item.file.size > max_size);
-
-                if (!needsResize && uploadMaxDimension < 65536) {
-                    // Also check dimensions
-                    const dimensions = await new Promise(res => {
-                        const img = new Image();
-                        img.onload = () => {
-                            const dims = {w: img.width, h: img.height};
-                            URL.revokeObjectURL(img.src);
-                            res(dims);
-                        };
-                        img.onerror = () => {
-                            URL.revokeObjectURL(img.src);
-                            res(null);
-                        };
-                        img.src = URL.createObjectURL(item.file);
-                    });
-                    if (dimensions && (dimensions.w > uploadMaxDimension || dimensions.h > uploadMaxDimension)) {
-                        needsResize = true;
-                    }
-                }
-
-        item.dataUri = await new Promise((resolve, reject) => {
-                if (needsResize && !item.isHeic) {
-                    resizeFileWorker(item.file, max_size, (url) => {
-                        const finished = document.getElementById('messageDiv');
-                        if (finished) finished.remove();
-                        resolve(url);
-                    }, uploadMaxDimension);
-                } else {
-                    const reader = new FileReader();
-                    reader.onload = (e) => resolve(e.target.result);
-                    reader.onerror = (e) => reject(e); // Good to handle errors!
-                    reader.readAsDataURL(item.file);
-                }
-        });
-
-        return item; // Still return it for Promise.all convenience
     }
 
 async function renderUI() {
@@ -556,44 +464,6 @@ function addIdtoBtn(btnId, upload_id, width, height, exifData) {
 		displayArea.innerHTML = '';
 	};
 }
-
-
-async function sendToPHP(dataUri, name) {
-    try {
-        const response = await fetch('upload.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: dataUri, name })
-        });
-
-        // 1. Always check HTTP status first
-        if (!response.ok) throw new Error('Network response was not ok');
-
-        // 2. Parse the JSON returned by your PHP script
-        const result = await response.json();
-
-        // 3. Handle your custom application-level success/error
-        if (result.ok) {
-            console.log('Upload successful! ID:', result.upload_id, result.width);
-            return { success: true, upload_id: result.upload_id, width: result.width, height: result.height };
-        } else {
-            console.error('Upload failed:', result.error);
-            return { success: false, error: result.error };
-        }
-
-    } catch (e) {
-        console.error('Fetch error:', e);
-        return { success: false, error: e.message };
-    }
-}
-
-    function toBase64(file) {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-        });
-    }
 
 
 </script>
