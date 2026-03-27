@@ -64,7 +64,7 @@ init_session();
 
         /* Custom Buttons */
         .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; touch-action: manipulation; user-select: none; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
-        .btn-select { background: var(--primary); color: white; width: 100%; box-sizing: border-box; text-align:center }
+        .btn-primary { background: var(--primary); color: white; width: 100%; box-sizing: border-box; text-align:center }
         .btn-upload { background: var(--primary); color: white; width: 100%; }
         .btn-upload:disabled { background: #ccc; cursor: not-allowed; }
         .btn-secondary { background: var(--secondary-bg); color: var(--secondary-text); width: 100%; }
@@ -147,6 +147,16 @@ h3 {
     <script src="<?php echo smarty_modifier_revision("/js/Leaflet.MetricGrid.js"); ?>"></script>
     <script src="<?php echo smarty_modifier_revision("/js/mappingLeaflet.js"); ?>"></script>
     <script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographRecentUploads.js"); ?>"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js"></script>
+    <script src="<?php echo smarty_modifier_revision("/js/submission_utils.js"); ?>"></script>
+    <script src="<?php echo smarty_modifier_revision("/viewer/ExifRestorer.js"); ?>"></script>
+
+    <script type="module">
+        import { navigateTo, setupSettingsListener } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
+        window.navigateTo = navigateTo;
+        setupSettingsListener();
+    </script>
 </head>
 
 <body>
@@ -154,20 +164,22 @@ h3 {
     <p>Use this button to take a photo with your camera. Location data will be included in the filename, which will be saved to your
     Downloads folder. If you don't receive a download notification, you can try the download again.
 
-	<label for="cameraInput" class="btn btn-select" id="select-label">Take Photo</label>
-    <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
+	<label for="cameraInput" class="btn btn-primary" id="select-label">Take Photo</label>
+    <input type="file" id="cameraInput" accept="image/jpeg" capture="environment" hidden>
 
 	<div id="takeMessage"></div>
-    <button id="downloadBtn" class="btn" style="display:none;">Save to Downloads</button>
+    <button id="downloadBtn" class="btn btn-secondary" style="display:none;">Retry Download</button>
+    <button id="uploadBtn" class="btn btn-secondary" style="display:none;">Upload Last Photo now</button>
+    <button id="submitBtn" class="btn btn-primary" style="display:none;">Submit Last Photo now</button>
 
     <p>Or seperately, use this button to save a note tagged with your location which can be used during submission (accessible on this device only). Notes are listed at the bottom of the page.
-    <button id="saveBtn" class="btn btn-select">Create Location Note</button>
+    <button id="saveBtn" class="btn btn-primary">Create Location Note</button>
 
     <div id="noteForm" style="display:none;">
         <textarea id="noteText" wrap="soft" maxlength="255" placeholder="Enter note..."></textarea>
         <p>Drag the map to refine position of the cross-hairs...<br><input type="text" id="noteCoords" readonly></p>
 	<div id="positionNote"></div>
-        <button class="btn btn-select" onclick="saveNoteToLocalStorage()">Save Note</button>
+        <button class="btn btn-primary" onclick="saveNoteToLocalStorage()">Save Note</button>
     </div>
 
 	<br>
@@ -337,56 +349,56 @@ window.addEventListener('DOMContentLoaded', function() {
                 latestCoords = { lat: latitude, lng: longitude };
 
             }, (err) => {
-		//enableHighAccuracy Failed
-		console.error(err);
-		document.getElementById('noteCoords').value = getFriendlyError(err);
+        		//enableHighAccuracy Failed
+        		console.error(err);
+		        document.getElementById('noteCoords').value = getFriendlyError(err);
 
-		if (mapMarker) //if already initialized dont need anything more
-			return;
+        		if (mapMarker) //if already initialized dont need anything more
+		        	return;
 
-		document.getElementById('positionNote').textContent = "GPS position failed. Will need to manually center the map";
+        		document.getElementById('positionNote').textContent = "GPS position failed. Will need to manually center the map";
 
-		// Helper to avoid repeating code
-		const setFallbackView = (latlng, zoom = 16) => {
-		        if (mapMarker) return; // Guard against race conditions
-		        mapMarker = L.marker(latlng).addTo(map);
-		        map.setView(latlng, zoom);
-		        latestCoords = { lat: latlng[0], lng: latlng[1] };
-		};
+		        // Helper to avoid repeating code
+        		const setFallbackView = (latlng, zoom = 16) => {
+		            if (mapMarker) return; // Guard against race conditions
+		            mapMarker = L.marker(latlng).addTo(map);
+    		        map.setView(latlng, zoom);
+	    	        latestCoords = { lat: latlng[0], lng: latlng[1] };
+		        };
 
-		// 1. Try low accuracy (Fast fix)
-		navigator.geolocation.getCurrentPosition(
-		        (pos) => setFallbackView([pos.coords.latitude, pos.coords.longitude]),
-		        (err) => {
-		            // 2. Low accuracy failed, try Last Note
-		            const storage = JSON.parse(localStorage.getItem('savedNotes') || '[]');
-		            if (storage.length > 0) {
-		                const lastNote = storage[storage.length - 1];
-				const latlng = lastNote.coords.trim().split(/\s*,\s*/).map(Number);
-		                setFallbackView(latlng);
-		            } else {
-		                // 3. Absolute fallback (The "Random" point)
-		                setFallbackView([57.4, -2.9], 6);
-		            }
-		        },
-		        { enableHighAccuracy: false, timeout: 3000 }
-		);
+        		// 1. Try low accuracy (Fast fix)
+		        navigator.geolocation.getCurrentPosition(
+		            (pos) => setFallbackView([pos.coords.latitude, pos.coords.longitude]),
+    		        (err) => {
+	    	            // 2. Low accuracy failed, try Last Note
+		                const storage = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+		                if (storage.length > 0) {
+		                    const lastNote = storage[storage.length - 1];
+            				const latlng = lastNote.coords.trim().split(/\s*,\s*/).map(Number);
+		                    setFallbackView(latlng);
+		                } else {
+		                    // 3. Absolute fallback (The "Random" point)
+    		                setFallbackView([57.4, -2.9], 6);
+	    	            }
+		            },
+		            { enableHighAccuracy: false, timeout: 3000 }
+        		);
 
-		//all least try to prevent going to far attray when manually location.
-		var bounds = L.latLngBounds(L.latLng(49.863788, -13.688451), L.latLng(60.860395, 1.795260));
-		map.setMaxBounds(bounds);
+        		//all least try to prevent going to far attray when manually location.
+        		var bounds = L.latLngBounds(L.latLng(49.863788, -13.688451), L.latLng(60.860395, 1.795260));
+		        map.setMaxBounds(bounds);
 
-	    }, { enableHighAccuracy: true, timeout: 5000 });
+    	    }, { enableHighAccuracy: true, timeout: 5000 });
         }
 
-    function getFriendlyError(err) {
-        switch(err.code) {
-            case 1: return "Location access denied by browser.";
-            case 2: return "GPS signal unavailable.";
-            case 3: return "GPS timed out.";
-            default: return err.message || "Location error.";
+        function getFriendlyError(err) {
+            switch(err.code) {
+                case 1: return "Location access denied by browser.";
+                case 2: return "GPS signal unavailable.";
+                case 3: return "GPS timed out.";
+                default: return err.message || "Location error.";
+            }
         }
-    }
 
        function loadmap() {
 
@@ -411,17 +423,14 @@ window.addEventListener('DOMContentLoaded', function() {
             //   }
             });
 
-        L.geotagPhoto.crosshair({
-          //      crosshairHTML: '<img alt="Center of the map; crosshair location" title="Crosshair" src="https://unpkg.com/leaflet-geotag-photo@0.5.1/images/crosshair.svg" width="100px" />'
-
-            crosshairHTML: `
+            L.geotagPhoto.crosshair({
+                crosshairHTML: `
                 <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="50" cy="50" r="45" fill="none" stroke="black" stroke-width="3" class="main-crosshair" stroke-opacity="0.5"/>
                     <g stroke="black" stroke-width="1" stroke-linecap="round" stroke-opacity="0.5" class="reticle-lines">
                         <line x1="50" y1="43" x2="50" y2="47" /> <line x1="50" y1="53" x2="50" y2="57" /> <line x1="43" y1="50" x2="47" y2="50" /> <line x1="53" y1="50" x2="57" y2="50" /> </g>
                 </svg>`
-
-        }).addTo(map); //.on('input', function (event) { //really jsut called when the map is recentered!
+            }).addTo(map); //.on('input', function (event) { //really jsut called when the map is recentered!
 
        }
 
@@ -431,8 +440,17 @@ window.addEventListener('DOMContentLoaded', function() {
 //////////////////////////////////
 // Save Image Functions
 
+        const max_size = 8 * 1024 * 1024; //larger files will be downsized!
+        let uploadMaxDimension = 65536; // Default to effectively unlimited (will be updated by the settings listener!)
+
+
         let latestFile = null;
-    	let fileList = document.getElementById('fileList');
+    	const fileList = document.getElementById('fileList');
+        const selectLabel = document.getElementById('select-label');
+    	const takeMessage = document.getElementById('takeMessage');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const submitBtn = document.getElementById('submitBtn');
 
     	// Pad function to ensure 05 becomes '05'
 	    const pad = (n) => n.toString().padStart(2, '0');
@@ -440,51 +458,62 @@ window.addEventListener('DOMContentLoaded', function() {
 	    let timePart;
 
         document.getElementById('cameraInput').addEventListener('change', (e) => {
+            if (!e.target.files || e.target.files.length === 0) {
+                // User cancelled the camera or no file selected
+                return;
+            }
             latestFile = e.target.files[0];
 
+            //making sure to save at time of capture (or as as close as possible!) (its technically when they click OK)
        		const now = new Date();
      		datePart = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
 	        timePart = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-
 
             // Get location immediately on capture
             navigator.geolocation.getCurrentPosition((pos) => {
                 latestCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
 
-		const divElement = document.getElementById('takeMessage');
-		if (divElement)
-			divElement.textContent = '';
+                selectLabel.textContent = "Take Another Photo";
+       			takeMessage.textContent = '';
 
-                document.getElementById('downloadBtn').style.display = 'block';
-                document.getElementById('downloadBtn').textContent = `Download ${timePart} Again`;
-                document.getElementById('downloadBtn').click();
+                downloadBtn.style.display = 'block';
+                downloadBtn.textContent = `Download ${timePart} Again`;
+                downloadBtn.click();
+
+                uploadBtn.style.display = 'block';
+                uploadBtn.textContent = `Upload ${timePart} Now`;
+                uploadBtn.disabled = false; //incase it was previuslly disabled
+
+                submitBtn.style.display = 'none';
 
             }, (err) => {
-		//still trigger the download on error!
-		latestCoords = null; //will write an unknown file
+        		//still trigger the download on error!
+		        latestCoords = null; //will write an unknown file
 
-		let errorMessage = "Unknown error";
-		switch(err.code) {
-		        case 1:  errorMessage = "Location access denied"; break;
-		        case 2:  errorMessage = "GPS signal lost or unavailable"; break;
-		        case 3:  errorMessage = "GPS request timed out"; break;
-		        default: errorMessage = err.message || "Positioning error"; break;
-		}
+        		let errorMessage = "Unknown error";
+		        switch(err.code) {
+		            case 1:  errorMessage = "Location access denied"; break;
+    		        case 2:  errorMessage = "GPS signal lost or unavailable"; break;
+	    	        case 3:  errorMessage = "GPS request timed out"; break;
+		            default: errorMessage = err.message || "Positioning error"; break;
+        		}
 
-		const divElement = document.getElementById('takeMessage');
-		if (divElement)
-			divElement.textContent = `${errorMessage} (image should be saved with _unknown location)`;
+		        takeMessage.textContent = `${errorMessage} (image should be saved with _unknown location)`;
 
-                document.getElementById('downloadBtn').style.display = 'block';
-                document.getElementById('downloadBtn').textContent = `Download ${timePart} Again`;
-                document.getElementById('downloadBtn').click();
+                //still download!
+                downloadBtn.style.display = 'block';
+                downloadBtn.textContent = `Download ${timePart} Again`;
+                downloadBtn.click();
+
+                //but lets not upload/submit
+                uploadBtn.style.display = 'none';
+                submitBtn.style.display = 'none';
 
             }, { enableHighAccuracy: true, timeout: 5000 });
         });
 
-        document.getElementById('downloadBtn').addEventListener('click', () => {
-            if (!latestFile) return;
-
+        function getLatestFilename() {
+            let newName;
     		if (!latestCoords || !latestCoords.lat) {
     			 newName = `IMG_${datePart}_${timePart}_unknown.jpg`;
     		} else {
@@ -500,6 +529,22 @@ window.addEventListener('DOMContentLoaded', function() {
     			    newName = `IMG_${latestCoords.lat.toFixed(6)}_${latestCoords.lng.toFixed(6)}.jpg`;
     			}
     		}
+            return newName;
+        }
+
+        // Converts YYYYMMDD and HHMMSS to "YYYY:MM:DD HH:MM:SS"
+        const getExifFormattedDate = () => {
+            const d = datePart; // e.g., "20241006"
+            const t = timePart; // e.g., "134525"
+
+            // Slice and dice the strings into the EXIF format
+            return `${d.slice(0, 4)}:${d.slice(4, 6)}:${d.slice(6, 8)} ${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)}`;
+        };
+
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            if (!latestFile) return;
+
+            let newName = getLatestFilename();
 
             // Trigger download
             const link = document.createElement('a');
@@ -518,6 +563,48 @@ window.addEventListener('DOMContentLoaded', function() {
     		if (map && historyPoints) {
     			L.circleMarker([latestCoords.lat, latestCoords.lng], {radius:6, color:'blue'}).addTo(historyPoints);
     		}
+        });
+
+        document.getElementById('uploadBtn').addEventListener('click', async () => {
+            if (!latestFile) return; //was latestFile = e.target.files[0];
+
+            uploadBtn.textContent = "Processing & Uploading...";
+            uploadBtn.disabled = true;
+
+            const newName = getLatestFilename();
+            const fallbackExifDate = getExifFormattedDate();
+
+            //convert to 'file' to dateUri, BUT, use our resize handler!
+
+            //does resize - if needed, as well as fetching Exif data!
+            //we COULD put the newly generated filename into file.name, and processItem would read it, but better to just use the saved lat/long directly
+            const item = await processItem({ file: latestFile });
+
+            const result = await sendToPHP(item.dataUri, newName, (percent) => {
+                // Update the button text to show progress
+                uploadBtn.textContent = `Uploading... ${percent}%`;
+            });
+            if (result && result.success) {
+                // SUCCESS: Allow direct submission
+
+                document.getElementById('submitBtn').onclick = function() {
+                    navigateTo('/app/submit',{message: JSON.stringify({
+                        transfer_id: result.upload_id,
+                        width: result.width,
+                        height: result.height,
+                        lat: latestCoords.lat, //use saved coordinates, as dont trust exif!
+                        long: latestCoords.lng,
+                        // Priority: 1. EXIF date from file, 2. Formatted capture time
+                        imagetaken: item.exifData?.date || fallbackExifDate,
+                        orientation: item.exifData?.orientation
+                    })});
+                }
+                uploadBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+                submitBtn.textContent = `Submit ${timePart} Now`;
+            } else {
+                uploadBtn.textContent = "Upload Failed. Try again";
+            }
         });
 
     </script>
