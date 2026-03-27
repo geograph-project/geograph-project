@@ -4,6 +4,8 @@ import { escapeHTML } from '/app/js/utils.js';
 const formatTitle = (text) => text.replace(/\[(.*?)\]/g, '<b>$1</b>');
 
 export function render() {
+	const versionNumber = document.getElementById('versionNumber').textContent;
+
     return `
 
 <style>
@@ -73,7 +75,7 @@ export function render() {
 </style>
 
     <div class="app-header">
-        <h2>Welcome to the Geograph App <sup>V0.995</sup></h2>
+        <h2>Welcome to the Geograph App <sup>${versionNumber}</sup></h2>
         <button class="btn btn-primary" data-route="/app/faq">App and Contributor Questions &gt;</button>
     </div>
 
@@ -222,7 +224,7 @@ export function render() {
     </main>
 
 	<hr>
-        <p>App version number: v0.99</p>
+        <p>App version number: ${versionNumber}</p>
         <p><i>Please quote this if contacting us with feedback about a specific app issue, for example if reporting something not working.</i></p>
 
     `;

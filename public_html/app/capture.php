@@ -68,6 +68,7 @@ init_session();
         .btn-upload { background: var(--primary); color: white; width: 100%; }
         .btn-upload:disabled { background: #ccc; cursor: not-allowed; }
         .btn-secondary { background: var(--secondary-bg); color: var(--secondary-text); width: 100%; }
+	.btn-help { background-color:#8ddf8d; }
 
 	#map {
 	 width:350px; height:350px; max-height:90vh; max-width:90vw;
@@ -132,6 +133,32 @@ h3 {
     background: #f8d7da;
 }
 
+
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(3px);
+        }
+
+        dialog {
+            /* Ensures it doesn't look like a standard browser alert */
+
+            max-height: 85vh; /* Give a bit more vertical breathing room */
+            max-width: 90vw;  /* Prevents it from hitting the screen edges on mobile */
+            width: 500px;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            background-color: var(--input-bg);
+                    color: var(--content-text);
+        }
+
+        dialog button {
+            display:block;
+            width:100%;
+        }
+
 </style>
 
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
@@ -153,13 +180,41 @@ h3 {
     <script src="<?php echo smarty_modifier_revision("/viewer/ExifRestorer.js"); ?>"></script>
 
     <script type="module">
-        import { navigateTo, setupSettingsListener } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
+        import { navigateTo, setupSettingsListener, openModal, closeModal } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
         window.navigateTo = navigateTo;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
         setupSettingsListener();
     </script>
 </head>
 
 <body>
+	<dialog id="why-modal" onclick="closeModal('why-modal')">
+	    <h3>Take Photo</h3>
+	    <ul>
+	        <li>You don't have to use this page to take photos. You can use your standard camera app if preferred.
+	        <li><b>Why use this page?</b> Mobile browsers often strip location data from uploads. Photos taken here bypass this by saving the location directly in the filename.
+	        <li>Photos are saved to your "Downloads" folder. You must still upload them manually later.
+	        <li>Select 'OK' after snapping a photo to save it, or choose to retake.
+	    </ul>
+
+	    <h3>Location Note</h3>
+	    <ul>
+	        <li>Use "Create Location Note" to save your current coordinates as a waypoint for later.
+	        <li>Notes are stored locally on this device only.
+		<li>Can be referenced during your final image submission.
+	    </ul>
+
+	    <h3>Live Map</h3>
+	    <ul>
+	        <li>Enable the Live Map to see your real-time position, or to refine a Location Note before saving.
+	        <li>Use this to verify your GPS has a "lock" after waking your device, ensuring accurate data before you take a photo.
+	    </ul>
+
+	    <button type="button" class="btn" onclick="closeModal('why-modal')">Close</button>
+	</dialog>
+
+    <button id="missing-btn" onclick="openModal('why-modal')" style="float:right" class="btn btn-help hidden" type="button">Why this page?</button>
 
     <p>Use this button to take a photo with your camera. Location data will be included in the filename, which will be saved to your
     Downloads folder. If you don't receive a download notification, you can try the download again.

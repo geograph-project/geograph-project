@@ -97,6 +97,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         .btn-upload { background: var(--primary); color: white; width: 100%; }
         .btn-upload:disabled { background: var(--secondary-bg); color: var(--secondary-text); cursor: not-allowed; }
         .btn-secondary { background: var(--secondary-bg); color: var(--secondary-text); width: 100%; }
+	.btn-help { background-color:#8ddf8d; }
+
 
         /* Progress Bar */
         .progress-container { width: 100%; height: 6px; background: #eee; border-radius: 10px; margin: 10px 0; overflow: hidden; display: none; }
@@ -223,24 +225,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 <script src="<?php echo smarty_modifier_revision("/viewer/ExifRestorer.js"); ?>"></script>
 
     <script type="module">
-	import { navigateTo, setupSettingsListener } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
+	import { navigateTo, setupSettingsListener, openModal, closeModal } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
 	window.navigateTo = navigateTo;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
         setupSettingsListener();
     </script>
 
 <script>
-
-function openModal(id) {
-    const modal = document.getElementById(id);
-    modal.showModal();
-    modal.scrollTop = 0;
-}
-function closeModal(id) {
-    document.getElementById(id).close();
-}
-
-
-
     const fileInput = document.getElementById('file-input');
     const selectLabel = document.getElementById('select-label');
     const displayArea = document.getElementById('display-area');

@@ -208,7 +208,7 @@ async function displayStats() {
             "Personal Points": data.geosquares,
             "Firsts": data.points,
             "T-Points": data.tpoints,
-            "Pending Uploads": data.pending
+            "Pending Moderation": data.pending
         };
 
         let htmlOutput = '';

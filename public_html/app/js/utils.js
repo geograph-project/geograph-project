@@ -47,3 +47,12 @@ export function setupSettingsListener() {
 	}
     });
 }
+
+export function openModal(id) {
+    const modal = document.getElementById(id);
+    modal.showModal();
+    modal.scrollTop = 0;
+}
+export function closeModal(id) {
+    document.getElementById(id).close();
+}

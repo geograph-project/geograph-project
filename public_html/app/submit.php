@@ -534,7 +534,7 @@ span.tag-pill button {
 #maparea {
     display: flex;
     flex-direction: column; /* Default: Stacked */
-align-items: center;    /* This centers the 350px map horizontally */
+    align-items: center;    /* This centers the 350px map horizontally */
 
     margin-left: auto;      /* The "Magic" centering combo */
     margin-right: auto;
@@ -546,17 +546,23 @@ align-items: center;    /* This centers the 350px map horizontally */
 }
 
 #map {
-	max-width: min( 350px , 100% );
+    max-width: min( 350px , 100% );
     width: 350px;
     margin:auto;
-	aspect-ratio: 1 / 1;
-	border:1px solid silver; border-radius:5px;
+    aspect-ratio: 1 / 1;
+    border:1px solid silver; border-radius:5px;
     flex-shrink: 0;         /* Prevents the map from squishing */
 }
 
 #maparea .controls {
     text-align:center;
     padding:0;
+}
+
+@media all and (max-width: 450px) {
+    #maparea #map {
+	margin:1px; /*undo auto, to allow the map to be left centered, to give more area on side to swipe the page */
+    }
 }
 
 /* Switch to Row layout in Landscape */
@@ -1189,11 +1195,13 @@ align-items: center;    /* This centers the 350px map horizontally */
 <script src="<? echo smarty_modifier_revision("/js/anyascii.js"); ?>"></script>
 
 <script type="module">
-        import { escapeHTML, escapeRegex, navigateTo } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
+        import { escapeHTML, escapeRegex, navigateTo, openModal, closeModal } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
         //so the page can use it
         window.escapeHTML = escapeHTML;
         window.escapeRegex = escapeRegex;
         window.navigateTo = navigateTo;
+	window.openModal = openModal;
+	window.closeModal = closeModal;
 </script>
 
 <script>
@@ -2026,19 +2034,6 @@ console.log("Error", e);
     }
 
     document.forms['theForm'].addEventListener('submit', validateForm);
-
-
-// --------------------------------
-// General Page Stuff
-
-function openModal(id) {
-    const modal = document.getElementById(id);
-    modal.showModal();
-    modal.scrollTop = 0;
-}
-function closeModal(id) {
-    document.getElementById(id).close();
-}
 
 // --------------------------------
 // Map - ported from mobile submit
