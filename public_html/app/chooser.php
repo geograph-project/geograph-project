@@ -264,6 +264,7 @@ async function processFileQueue(fileQueue, rootPath) {
     let folderRecord = await getFromStore('folders', rootPath);
     let currentCount = folderRecord?.count || 0;
 
+		//todo, convert to use processFile, which already does the exif logic, and will also do downsizing to create a dataUri, but maybe best defered anyway!
     for (const item of fileQueue) {
         // We already have the 'item.file' object, no more 'getFile()' calls needed!
         try {
@@ -711,6 +712,37 @@ async function triggerUpload(img) {
     try {
         // 2. Background Processing
         const file = await img.handle.getFile();
+
+	/*
+            //convert to 'file' to dateUri, BUT, use our resize handler!
+
+            //does resize - if needed, as well as fetching Exif data!
+            //we COULD put the newly generated filename into file.name, and processItem would read it, but better to just use the saved lat/long directly
+            const item = await processItem({ file: latestFile });
+
+            const result = await sendToPHP(item.dataUri, newName, (percent) => {
+                // Update the button text to show progress
+                uploadBtn.textContent = `Uploading... ${percent}%`;
+            });
+            if (result && result.success) {
+                // SUCCESS: Allow direct submission
+
+                document.getElementById('submitBtn').onclick = function() {
+                    navigateTo('/app/submit',{message: JSON.stringify({
+                        transfer_id: result.upload_id,
+                        width: result.width,
+                        height: result.height,
+                        lat: latestCoords.lat, //use saved coordinates, as dont trust exif!
+                        long: latestCoords.lng,
+                        // Priority: 1. EXIF date from file, 2. Formatted capture time
+                        imagetaken: item.exifData?.date || fallbackExifDate,
+                        orientation: item.exifData?.orientation
+                    })});
+                }
+*/
+
+
+
         const reader = new FileReader();
         reader.onload = async (e) => {
             const result = await sendToPHP(e.target.result, file.name);
@@ -724,35 +756,6 @@ async function triggerUpload(img) {
         reader.readAsDataURL(file);
     } catch (err) {
         console.error("Upload failed", err);
-    }
-}
-
-async function sendToPHP(dataUri, name) {
-    try {
-        const response = await fetch('upload.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: dataUri, name })
-        });
-
-        // 1. Always check HTTP status first
-        if (!response.ok) throw new Error('Network response was not ok');
-
-        // 2. Parse the JSON returned by your PHP script
-        const result = await response.json();
-
-        // 3. Handle your custom application-level success/error
-        if (result.ok) {
-            console.log('Upload successful! ID:', result.upload_id, result.width);
-            return { success: true, upload_id: result.upload_id, width: result.width, height: result.height };
-        } else {
-            console.error('Upload failed:', result.error);
-            return { success: false, error: result.error };
-        }
-
-    } catch (e) {
-        console.error('Fetch error:', e);
-        return { success: false, error: e.message };
     }
 }
 
