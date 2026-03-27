@@ -159,6 +159,8 @@ svg.svgFilter {
 
         <script src="{"/js/Leaflet.GeographClickLayer.js"|revision}"></script>
 
+	<script src="{"/js/Leaflet.GeographCameraButton.js"|revision}"></script>
+
 <script>
      {if $os_api_key}
               var OSAPIKey = "{$os_api_key}";
@@ -379,6 +381,15 @@ svg.svgFilter {
                 if (L.GeographRecentUploads)
                         overlayMaps["Recent Uploads"] = L.geographRecentUploads();
 
+		{literal}
+		if (L.geographCameraButton && window.location.search && window.location.search.indexOf('camera')>-1 ) {
+			$(function() {
+				document.getElementById('cameraHelp').style.display='';
+			});
+			overlayMaps["Taken Photos"] = new L.FeatureGroup().addTo(map);
+		        cameraButton = L.geographCameraButton({historyPoints: overlayMaps["Taken Photos"]}).addTo(map);
+		}
+		{/literal}
 	{else}
 		 delete overlayMaps["(Personalize Coverage)"];
 	{/if}
@@ -537,6 +548,7 @@ svg.svgFilter {
 	<a class="tab" data-layer="Photo Thumbnails">Thumbnails</a>
 </div>
 
+{if !$inner}
 <h3>Location &amp; Map Links</h3>
 <ul class="tips">
 	<li><a href="#" onclick="linkToMap('/browser/#!/loc=$gridref/dist=2000/display=map_dots')">Image Browser Map</a></li>
@@ -555,82 +567,86 @@ svg.svgFilter {
 	<li><a href="#" onclick="linkToMap('https://www.geograph.org/leaflet/all.php#$zoom/$lat/$long')">All Projects Map</a></li>
 	<li><a href="#" onclick="linkToMap('http://mapapps.bgs.ac.uk/geologyofbritain/home.html?lat=$lat&long=$long')">Geology of Britain Viewer (GB Only)</a></li>
 </ul>
+{/if}
 
-<h3>Tips</h3>
-<ul class=tips>
-	<li><b>Tap the map briefly</b> to get the Grid-Reference for that location</li>
-	<li><b>Hold-down</b> to load images near that location<ul>
-		<li>In the popup tap photo briefly to locate the photo on map
-		<li>Hold-down on photo thumbnail, to load the full photo page
-		</ul></li>
+    <div style="text-align: center; margin-top: 15px;">
+        <button type="button" class="btn-tour" onclick="startTour()">Interactive Tour of Features</button>
+    </div>
 
-	<li>Use the <b>Pin icon</b> (top left) to attempt to center the map on your current location</li>
-	<li>Use the <b>Search icon</b> (also top left) to search for a place and recenter the map</li>
-
+    <h3>Gestures &amp; Icons</h3>
+    <ul>
+        <li><b>Search Icon:</b> Search for a place and recenter the map.
+        <li><b>Single Tap:</b> Get the Grid Reference for that location.
+        <li><b>Long Press:</b> Load images near that location.
 {dynamic}
 	{if $stats && $stats.images}
-		<li>Enable (Personalize Coverage) in the layer switcher (top right of the map) to just count <b>your images</b></li>
+        <li><b>Personalize:</b> Enable "Personalize Coverage" to show only your own images.
         {/if}
 {/dynamic}
+        <li id="cameraHelp" style="display:none"><b>Camera Icon:</b> Take a photo instantly. It saves to your Downloads folder (same as the "Take Photo" page).
+        <li><b>Focus Icon:</b> Change if the background or the overlay is more prominent.
+        <li><b>Pin Icon:</b> Center the map on your current GPS location.
+	<li>Upload a KML (not KMZ), or GPX file to display on the map. 1Mb file limit, should display points and line/shape features.
+    </ul>
 
-	<li>Try experimenting with the <b>various map layers</b> (top right!) - there are a wide range of base maps, as well as overlay alternatives.<ul>
-		<li>May need to zoom in or out to use some layers, as well as some only working for Great Britain or Ireland </li>
-		<li>Reduce the number of layers to improve performance!</li>
-		</ul></li>
+    <h3>Interacting with Photos</h3>
+    <ul>
+        <li><b>Tap Thumbnail:</b> Briefly view the photo and locate it on the map.
+        <li><b>Long Press Thumbnail:</b> Open the full photo details page.
+        <li><b>Clusters:</b> Numbers on the map indicate multiple photos. Zoom in to see them split into individual markers.
+    </ul>
 
-	<li><b>Click the map</b> to view some nearby images, or can enable the 'Photo Thumbnails' layer. (click thumbs to view larger)</li>
-	<li>The <b>Photo Thumbnails</b> layer, automatically clusters images, to reduce overlap. The number show is a hint of the size of the cluster, but there can be significately more photos, which will load automatically when zoom in!
-	<li><a href="javascript:void(startTour())">Interactive Tour of the main features</a></li>
-</ul>
+    <h3>Layers &amp; Performance</h3>
+    <ul>
+        <li><b>Experiment:</b> Try different base maps and overlays. Note: some only work for Great Britain or Ireland.
+        <li><b>Zoom:</b> Some layers only appear at specific zoom levels.
+        <li><b>Performance:</b> Reduce the number of active layers to keep the map fast.
+    </ul>
 
-<h3>Coverage Colours</h3>
-<ul class=tips>
-        <li><b>OS National Grid</b>: Displays both OSGB and Irish Grid over the top of the map</li>
+    <h3>Coverage Colors</h3>
 
-        <li><b>Extra Dense Grid</b>: At some scales is able to display extra detailed grid lines, particully useful to be able to see centisquare (100m square) grid.</li>
+	<table class="help-table">
+	    <tr>
+	        <th>Status</th>
+	        <th>Close (100m/1km)</th>
+	        <th>Coarse (1km)</th>
+	    </tr>
+	    <tr>
+	        <td>Recent (5yrs)</td>
+	        <td><span class="swatch" style="color:#FF0000;">Red Text</span></td>
+	        <td><span class="swatch" style="background-color:#FF0000;">Red Fill</span></td>
+	    </tr>
+	    <tr>
+	        <td>Older Only</td>
+	        <td><span class="swatch" style="color:#FF00FF;">Pink Text</span></td>
+	        <td><span class="swatch" style="background-color:#FF8800;">Orange Fill</span></td>
+	    </tr>
+	    <tr>
+	        <td>No Images</td>
+	        <td><span class="swatch" style="color:gray;">Gray Text</span></td>
+	        <td><span class="swatch" style="background-color:#75FF65; text-shadow: none; color: black;">Green Fill</span></td>
+	    </tr>
+	</table>
 
-	<li><b>Photo Subjects</b>: A blue dot presents one or more photos - dot plotted at photo <b>Subject</b> position (only images with 6fig+ grid-reference plotted!)
-		<ul>
-			<li>Note: when zoom out, this layer will change to show coverage by square, darker = more photos. Zoom out further and it shows by 10km (hectad) squares.
-			(because becomes too many individual dots to plot, and can't see patterns at these scale anyway)</li>
-		</ul></li>
+    <ul>
+        <li><b>Blue Dots (Subjects):</b> Where the subject of the photo is located.
+        <li><b>Purple Markers (Viewpoints):</b> Where the photographer was standing.
+        <li><b>Red Lines:</b> Connects Viewpoint to Subject (visible when both layers are enabled).
+    </ul>
 
-	<li><b>Photo Viewpoints</b><sup style=color:red>NEW!</sup>: A purple marker - one per photo, showing where the photo was taken <b>from</b>, pointing in the approximate direction of view
-		<ul>
-			<li>If have <b>both</b> Viewpoints and Subjects layers enabled, at close zoom will draw red lines joining each purple to blue dots
-			<li>Disable one or other layer to remove the lines, keeping just one set of dots
-		</ul></li>
+    <ul>
+        <li><b>Grid Lines:</b> Displays OSGB or Irish Grid. At close zoom, shows 100m "centisquare" lines.
+        <li><b>Heatmap:</b> When zoomed out, colors shift from Yellow to Red based on the density of recent photos.
+    </ul>
 
-	<li><b>Coverage - Standard</b>: Shows coverage by squares, optionally personalized to just your images. Split into different versions at different resolution:<ul>
+    <h3>Specialized Layers</h3>
+    <ul>
+        <li><b>Opportunities:</b> Experimental layer. Lighter (Yellow) means more opportunities; Darker (Red) means the area is well-covered.
+        <li><b>Recent Uploads:</b> (Contributors only) Shows images from the last 3 days, including those pending moderation. Toggle the layer to refresh in real-time.
+        <li><b>Taken Photos:</b> Displays dots where you took photos during your current session.
+        <li><b>Geology (BGS):</b> For a key to the BGS layers, use the "Other Maps" link at the top to visit the official Geology of Britain Viewer.
+    </ul>
 
-		<li style="padding:3px;"><b>Close</b>: Shows number of photos in square (either 1km or 100m squares), and coloured by what Geograph image(s) in the square<br>
-		<span style="opacity:0.92; font-family:'Trebuchet MS','Comic Sans MS',Georgia,Verdana,Arial,serif; text-shadow:1px 1px 1px black; font-size:16px;">
-                <span style="color:#FF0000;padding:3px;">Square with recent Images</span><br>
-                <span style="color:#FF00FF;padding:3px;">No Images in last 5 years</span><br>
-                <span style="color:gray;padding:3px;">No Geograph Images</span>
-		</span></li>
-
-		<li style="padding:3px;"><b>Coarse</b>: Coloured by what Geograph(s) are in the 1km square. <br>
-		<span style="opacity:0.7">
-		<span style="background-color:#FF0000;padding:3px;">Recent Geographs (last 5 years)</span><br>
-		<span style="background-color:#FF8800;padding:3px;">Only older Geographs</span><br>
-		<span style="background-color:#75FF65;padding:3px;">No Geograph Images</span>
-		</span></li>
-
-                <li>When zoom out, changes to hectad (10km square) grid resolution, and is coloured yellow->red on the number of squares with recent (last 5 years) Geographs</li>
-
-	</ul></li>
-
-	<li><b>Coverage - Large Squares</b>: Duplicates the <i>Coverage - Coarse</i> layer to provide coloured squares at a closer zoom level</li>
-
-	<li><b>Coverage - Opportunities</b>: Lighter (yellow) - more opportunties for points, up to, darker (red) less opportunties, as already lots of photos in square.
-		Experimental coverage layer to see if concept works. Exact specififications of layer subject to change or withdrawl.
-
-	<li><b>Recent Uploads</b><sup style=color:red>NEW!</sup> (for contributors only!): Shows images submitted in last 3 days. Regardless of moderation (so can see still pending images on map to follow coverage), so this layer should see new images before visible on other layers.
-                Note: Can turn the layer off, and when turn it back on, it will immiidately check for new images, so can use this to follow submissions in real time.
-
-	<li>We don't have a key of the <b>BGS layer(s)</b>, but use the link (in [Other Maps...] at top!) to the offical Geology of Britain Viewer, which provides some functions to explain the colouring</li>
-</ul>
 
 <h3>Image Enhancement</h3>
 <div class="no_print">
