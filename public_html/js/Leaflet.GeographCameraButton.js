@@ -17,7 +17,7 @@ L.GeographCameraButton = L.Control.extend({
         // Create a hidden file input bound to this instance
         this._fileInput = L.DomUtil.create('input', 'hidden-camera-input');
         this._fileInput.type = 'file';
-        this._fileInput.accept = 'image/*';
+        this._fileInput.accept = 'image/jpeg';
         this._fileInput.capture = 'environment';
         this._fileInput.style.display = 'none';
 
