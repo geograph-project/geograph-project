@@ -26,11 +26,24 @@ $hashesUrl .= "?t=".$token->getToken();
     <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js"></script>
     <script src="https://unpkg.com/imagehash-web/dist/imagehash-web.min.js"></script>
     <script src="<?php echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
-<script>
-let user_id = <? echo intval($USER->user_id); ?>;
-let hashes_url = <? echo json_encode($hashesUrl); ?>;
-let hashes_url2 = "/viewer/hashes-tmp.json.php";
-</script>
+
+    <script src="<?php echo smarty_modifier_revision("/js/submission_utils.js"); ?>"></script>
+    <script src="<?php echo smarty_modifier_revision("/viewer/ExifRestorer.js"); ?>"></script>
+
+    <script type="module">
+        import { navigateTo, setupSettingsListener } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
+        window.navigateTo = navigateTo;
+        setupSettingsListener();
+    </script>
+
+    <script>
+        let user_id = <? echo intval($USER->user_id); ?>;
+        let hashes_url = <? echo json_encode($hashesUrl); ?>;
+        let hashes_url2 = "/viewer/hashes-tmp.json.php";
+
+        const max_size = 8 * 1024 * 1024; //larger files will be downsized!
+        let uploadMaxDimension = 65536; // Default to effectively unlimited (will be updated by the settings listener!)
+    </script>
 
     <style>
         :root { --bg: #000; --card: #1a1a1a; --text: #eee; --accent: #007AFF; }
