@@ -14,9 +14,10 @@ function init() {
         'home':    { module: '/app/js/modules/home-view.js', title: 'Geograph' },
         'search':  { module: '/app/js/modules/search-view.js', title: 'Search' },
         'results': { isIframe: true, url: '/finder/finder.php?inner=1', title: 'Results' },
-        'map':     { isIframe: true, url: '/mapper/combined.php?mobile=1&inner=1', title: 'Map' },
+        'map':     { isIframe: true, url: '/mapper/combined.php?mobile=1&inner=1&camera=1', title: 'Map' },
 
         'upload':  { isIframe: true, url: '/app/upload.php', title: 'Upload' },
+        'chooser':  { isIframe: true, url: '/app/chooser.php', title: 'Chooser' },
         'uploaded':{ module: '/app/js/modules/uploaded-view.js', title: 'Submit' },
         'submit':  { isIframe: true, url: '/app/submit.php', title: 'Submission' },
 
