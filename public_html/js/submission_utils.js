@@ -295,34 +295,52 @@ function dataURLtoBlob(dataURL) {
     }
 
 
-async function sendToPHP(dataUri, name) {
-    try {
-        const response = await fetch('upload.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: dataUri, name })
-        });
-
-        // 1. Always check HTTP status first
-        if (!response.ok) throw new Error('Network response was not ok');
-
-        // 2. Parse the JSON returned by your PHP script
-        const result = await response.json();
-
-        // 3. Handle your custom application-level success/error
-        if (result.ok) {
-            console.log('Upload successful! ID:', result.upload_id, result.width);
-            return { success: true, upload_id: result.upload_id, width: result.width, height: result.height };
-        } else {
-            console.error('Upload failed:', result.error);
-            return { success: false, error: result.error };
+function sendToPHP(dataUri, name, onProgress) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        
+        // The magic happens here: track upload progress
+        if (xhr.upload && onProgress) {
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    const percentComplete = Math.round((e.loaded / e.total) * 100);
+                    onProgress(percentComplete);
+                }
+            });
         }
 
-    } catch (e) {
-        console.error('Fetch error:', e);
-        return { success: false, error: e.message };
-    }
+        xhr.open('POST', '/app/upload.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                try {
+                    const result = JSON.parse(xhr.responseText);
+                    if (result.ok) {
+                        resolve({ 
+                            success: true, 
+                            upload_id: result.upload_id, 
+                            width: result.width, 
+                            height: result.height 
+                        });
+                    } else {
+                        resolve({ success: false, error: result.error });
+                    }
+                } catch (e) {
+                    reject(new Error("Invalid JSON response from server"));
+                }
+            } else {
+                reject(new Error(`Server returned status ${xhr.status}`));
+            }
+        };
+
+        xhr.onerror = () => reject(new Error("Network error occurred"));
+        
+        // Send the JSON payload
+        xhr.send(JSON.stringify({ image: dataUri, name }));
+    });
 }
+
 
     function toBase64(file) {
         return new Promise((resolve) => {
