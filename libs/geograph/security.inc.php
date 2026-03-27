@@ -320,7 +320,7 @@ function appearsToBePerson() {
 		'http', 'bot', 'mediapartners', 'preview', 'magnus', 'curl',
 		'oembed', 'go-http-client', 'java/', 'python', 'lwp::simple',
 		'siege', 'httrack', 'cyotekwebcopy', 'headlesschrome',
-		'inspectiontool', 'the knowledge ai', 'googleother'
+		'inspectiontool', 'the knowledge ai', 'googleother', 'wordpress'
 	];
 	foreach ($forbidden as $term) {
 		if (strpos($ua, $term) !== false) {
