@@ -181,6 +181,11 @@ h3 {
     <script src="<?php echo smarty_modifier_revision("/js/submission_utils.js"); ?>"></script>
     <script src="<?php echo smarty_modifier_revision("/viewer/ExifRestorer.js"); ?>"></script>
 
+    <script>
+        window.max_size = 8 * 1024 * 1024; //larger files will be downsized!
+        window.uploadMaxDimension = 65536; // Default to effectively unlimited (will be updated by the settings listener!)
+    </script>
+
     <script type="module">
         import { escapeHTML, navigateTo, setupSettingsListener, openModal, closeModal } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
 	window.escapeHTML = escapeHTML;
@@ -485,10 +490,6 @@ window.addEventListener('DOMContentLoaded', function() {
 //////////////////////////////////
 // Save Image Functions
 
-        const max_size = 8 * 1024 * 1024; //larger files will be downsized!
-        let uploadMaxDimension = 65536; // Default to effectively unlimited (will be updated by the settings listener!)
-
-
         let latestFile = null;
     	const fileList = document.getElementById('fileList');
         const selectLabel = document.getElementById('select-label');
@@ -526,7 +527,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 downloadBtn.click();
 
                 uploadBtn.style.display = 'block';
-                uploadBtn.textContent = `Upload ${timePart} Now`;
+                uploadBtn.textContent = `Upload ${timePart} Now (${window.uploadMaxDimension})`;
                 uploadBtn.disabled = false; //incase it was previuslly disabled
 
                 submitBtn.style.display = 'none';

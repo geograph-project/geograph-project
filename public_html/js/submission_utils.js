@@ -254,9 +254,9 @@ function dataURLtoBlob(dataURL) {
         item.exifData = exifData;
 
         // 3. Resize if necessary (converts file to a DataURL, resizeFileWorker, will naturally convert file to data URL naturally too)
-                let needsResize = (item.file.size > max_size);
+                let needsResize = (item.file.size > window.max_size);
 
-                if (!needsResize && uploadMaxDimension < 65536) {
+                if (!needsResize && window.uploadMaxDimension < 65535) {
                     // Also check dimensions
                     const dimensions = await new Promise(res => {
                         const img = new Image();
@@ -271,18 +271,18 @@ function dataURLtoBlob(dataURL) {
                         };
                         img.src = URL.createObjectURL(item.file);
                     });
-                    if (dimensions && (dimensions.w > uploadMaxDimension || dimensions.h > uploadMaxDimension)) {
+                    if (dimensions && (dimensions.w > window.uploadMaxDimension || dimensions.h > window.uploadMaxDimension)) {
                         needsResize = true;
                     }
                 }
 
         item.dataUri = await new Promise((resolve, reject) => {
                 if (needsResize && !item.isHeic) {
-                    resizeFileWorker(item.file, max_size, (url) => {
+                    resizeFileWorker(item.file, window.max_size, (url) => {
                         const finished = document.getElementById('messageDiv');
                         if (finished) finished.remove();
                         resolve(url);
-                    }, uploadMaxDimension);
+                    }, window.uploadMaxDimension);
                 } else {
                     const reader = new FileReader();
                     reader.onload = (e) => resolve(e.target.result);

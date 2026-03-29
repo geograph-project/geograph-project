@@ -1216,7 +1216,8 @@ span.tag-pill button {
 
     let upload_id = null;
 //    let update_data = [];
-    let uploadMaxDimension = 65536;
+    window.max_size = 8 * 1024 * 1024; //larger files will be downsized!
+    window.uploadMaxDimension = 65536;
 
     window.addEventListener('message', (event) => {
         if (event.origin !== window.location.origin) return;
@@ -1227,8 +1228,8 @@ span.tag-pill button {
 //            upload_data = data;
 
             if (data.settings && data.settings.uploadMaxDimension) {
-                uploadMaxDimension = parseInt(data.settings.uploadMaxDimension, 10);
-                theForm.elements['largestsize'].value = uploadMaxDimension;
+                window.uploadMaxDimension = parseInt(data.settings.uploadMaxDimension, 10);
+                theForm.elements['largestsize'].value = window.uploadMaxDimension;
                 updateDimensionsDisplay();
             }
 	    if (data.settings && data.settings.darkMode) {
@@ -1374,14 +1375,14 @@ console.log("Error", e);
         let finalHeight = currentHeight;
         let downsized = false;
 
-        if (uploadMaxDimension < 65536 && (currentWidth > uploadMaxDimension || currentHeight > uploadMaxDimension)) {
+        if (window.uploadMaxDimension < 65536 && (currentWidth > window.uploadMaxDimension || currentHeight > window.uploadMaxDimension)) {
             const aspect = currentWidth / currentHeight;
             if (aspect > 1) {
-                finalWidth = uploadMaxDimension;
-                finalHeight = Math.floor(uploadMaxDimension / aspect);
+                finalWidth = window.uploadMaxDimension;
+                finalHeight = Math.floor(window.uploadMaxDimension / aspect);
             } else {
-                finalHeight = uploadMaxDimension;
-                finalWidth = Math.floor(uploadMaxDimension * aspect);
+                finalHeight = window.uploadMaxDimension;
+                finalWidth = Math.floor(window.uploadMaxDimension * aspect);
             }
             downsized = true;
         }
@@ -1394,7 +1395,7 @@ console.log("Error", e);
 
         const finalDimsEl = document.getElementById('final-dimensions');
         if (finalDimsEl) {
-            finalDimsEl.textContent = finalDimText + (uploadMaxDimension >= 65536 ? ' (Full Resolution)' : '');
+            finalDimsEl.textContent = finalDimText + (window.uploadMaxDimension >= 65536 ? ' (Full Resolution)' : '');
             //todo, the " the larger size (if any) wont be released" should be dynamic too!
         }
     }

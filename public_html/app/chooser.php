@@ -31,19 +31,19 @@ $hashesUrl .= "?t=".$token->getToken();
     <script src="<?php echo smarty_modifier_revision("/js/submission_utils.js"); ?>"></script>
     <script src="<?php echo smarty_modifier_revision("/viewer/ExifRestorer.js"); ?>"></script>
 
-    <script type="module">
-        import { navigateTo, setupSettingsListener } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
-        window.navigateTo = navigateTo;
-        setupSettingsListener();
-    </script>
-
     <script>
         let user_id = <? echo intval($USER->user_id); ?>;
         let hashes_url = <? echo json_encode($hashesUrl); ?>;
         let hashes_url2 = "/viewer/hashes-tmp.json.php";
 
-        const max_size = 8 * 1024 * 1024; //larger files will be downsized!
-        let uploadMaxDimension = 65536; // Default to effectively unlimited (will be updated by the settings listener!)
+        window.max_size = 8 * 1024 * 1024; //larger files will be downsized!
+        window.uploadMaxDimension = 65536; // Default to effectively unlimited (will be updated by the settings listener!)
+    </script>
+
+    <script type="module">
+        import { navigateTo, setupSettingsListener } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
+        window.navigateTo = navigateTo;
+        setupSettingsListener();
     </script>
 
     <style>
@@ -96,7 +96,6 @@ $hashesUrl .= "?t=".$token->getToken();
         .uploaded { background-color:#073902; position: relative; }
         .uploaded::after { content: "\2713"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; color: #0000ff; text-shadow: 0 2px 4px rgba(0,0,0,0.1); pointer-events: none; }
         .uploaded img { filter: grayscale(0.5);  opacity: 0.4 };
-
 
     .muted { display: none !important; } /* Hard hide from UI */
 

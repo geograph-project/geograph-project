@@ -195,8 +195,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         </label>
     </div>
 
+	<br><br>
+    <div class="settings2">
+        <label><input type="radio" name=ctype id="image" onclick="setAcceptValue(this)" value="image/jpeg, image/heic" checked>Image Selector</label>
+        <label><input type="radio" name=ctype id="file" onclick="setAcceptValue(this)" value="*">File Selector</label>
+    </div>
+	<script>
+		function setAcceptValue(that) {
+			//seems most robust by setAttribute
+			document.getElementById("file-input").setAttribute("accept", that.value);
+		}
+	</script>
+	<p>
+	if you are having issues with location getting stripped, try using the File select method. It might be more tricky to select your images,
+	 but it likly means we can read the location. If dont have issue then stick with the simpler Image Selector
+	</p>
+
+
+
 
 	<div style="position:sticky; bottom:0; right:0">
+		Experimental:
 		<button type=button onclick="navigateTo('/app/chooser')">Advanced File Chooser</button>
 	</div>
 
@@ -229,6 +248,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 <script src="<?php echo smarty_modifier_revision("/js/submission_utils.js"); ?>"></script>
 <script src="<?php echo smarty_modifier_revision("/viewer/ExifRestorer.js"); ?>"></script>
 
+<script>
+    window.max_size = 8 * 1024 * 1024; //larger files will be downsized!
+    window.uploadMaxDimension = 65536; // Default to effectively unlimited
+</script>
+
     <script type="module">
 	import { navigateTo, setupSettingsListener, openModal, closeModal } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
 	window.navigateTo = navigateTo;
@@ -248,20 +272,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
     const autoProceedCheck = document.getElementById('auto-proceed');
 
     let fileQueue = [];
-    const max_size = 8 * 1024 * 1024; //larger files will be downsized!
-    let uploadMaxDimension = 65536; // Default to effectively unlimited
-
-    window.addEventListener('message', (event) => {
-        if (event.origin !== window.location.origin) return;
-        try {
-            const data = JSON.parse(event.data);
-            if (data.settings && data.settings.uploadMaxDimension) {
-                uploadMaxDimension = parseInt(data.settings.uploadMaxDimension, 10);
-            }
-        } catch (e) {
-            // Not JSON or other message type
-        }
-    });
 
     // Persist Preference
     autoProceedCheck.checked = localStorage.getItem('autoProceed') === 'true';
