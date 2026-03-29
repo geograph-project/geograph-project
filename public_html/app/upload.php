@@ -195,6 +195,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         </label>
     </div>
 
+
+	<div style="position:sticky; bottom:0; right:0">
+		<button type=button onclick="navigateTo('/app/chooser')">Advanced File Chooser</button>
+	</div>
+
 </div>
 
 
