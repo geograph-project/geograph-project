@@ -182,7 +182,8 @@ h3 {
     <script src="<?php echo smarty_modifier_revision("/viewer/ExifRestorer.js"); ?>"></script>
 
     <script type="module">
-        import { navigateTo, setupSettingsListener, openModal, closeModal } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
+        import { escapeHTML, navigateTo, setupSettingsListener, openModal, closeModal } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
+	window.escapeHTML = escapeHTML;
         window.navigateTo = navigateTo;
         window.openModal = openModal;
         window.closeModal = closeModal;
@@ -246,19 +247,6 @@ h3 {
 
     <h3>Saved Notes</h3>
     <ul id="notesList">none</ul>
-
-
-    <script type="module">
-	import { escapeHTML, navigateTo, setupSettingsListener } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
-
-        //so the page can ues it
-        window.escapeHTML = escapeHTML;
-        window.navigateTo = navigateTo;
-
-	//set this up right away
-	setupSettingsListener();
-    </script>
-
 
     <script>
         var map = null ;

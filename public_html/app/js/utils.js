@@ -36,15 +36,17 @@ export function updateAppState(detail) {
 export function setupSettingsListener() {
     window.addEventListener('message', (event) => {
         if (event.origin !== window.location.origin) return;
-	try {
-		const data = JSON.parse(event.data);
-        	if (data.settings) {
-	                // Handle Dark Mode
-			document.body.classList.toggle('dark-mode', data.settings.darkMode);
-	        }
-	} catch (e) {
-		//just catching if fail to decode JSON
-	}
+       	try {
+            const data = JSON.parse(event.data);
+            if (data.settings) {
+                document.body.classList.toggle('dark-mode', data.settings.darkMode);
+            }
+            if (data.settings && data.settings.uploadMaxDimension) {
+                window.uploadMaxDimension = parseInt(data.settings.uploadMaxDimension, 10);
+            }
+        } catch (e) {
+    		//just catching if fail to decode JSON
+    	}
     });
 }
 
