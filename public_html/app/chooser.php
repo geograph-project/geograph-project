@@ -568,7 +568,7 @@ async function renderFullGallery() {
 
     if (focusedGroupId && viewMode === 'gallery') {
         const backBtn = document.createElement('button');
-        backBtn.innerText = "← Show All Groups";
+        backBtn.innerText = "< Show All Groups";
         backBtn.style.marginBottom = "15px";
         backBtn.onclick = () => { focusedGroupId = null; renderFullGallery(); };
         root.appendChild(backBtn);
