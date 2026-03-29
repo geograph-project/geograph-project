@@ -19,26 +19,31 @@ export function render() {
             <h2 align=center>Welcome to Geograph</h2>
 
             <div class="content-body">
-		<button data-route="/app/upload" class="demo-btn">Upload Image</button>
-		<button data-route="/app/uploaded" id="submit-btn" class="demo-btn">Submit Image</button>
-		<button data-route="/app/submit" id="resume-btn" class="demo-btn">Resume Submission</button>
-		<button data-route="/app/profile" class="demo-btn">Your Profile</button>
+        		<button data-route="/app/help" class="demo-btn">Getting Started</button>
 
-		<button data-route="/app/capture" class="demo-btn">Take Photo / Save Location</button>
-		<button data-route="/app/map" class="demo-btn">View Map</button>
-		<button data-route="/app/help" class="demo-btn">Getting Started</button>
+        		<button data-route="/app/capture" class="demo-btn">Take Photo / Save Location</button>
 
-	        <button id="install-btn" class="demo-btn" style="display: none;">Add to Home Screen</button>
+        		<button data-route="/app/upload" class="demo-btn">Upload Image(s)</button>
+		        <button data-route="/app/uploaded" id="submit-btn" class="demo-btn">Submit Image</button>
+        		<button data-route="/app/submit" id="resume-btn" class="demo-btn">Resume Submission</button>
+
+        		<button data-route="/app/map" class="demo-btn">View Map</button>
+		        <button data-route="/app/profile" class="demo-btn">Your Profile</button>
+
+	            <button id="install-btn" class="demo-btn" style="display: none;">Add to Home Screen</button>
             </div>
 
-	    <p align=center><a href="/" target="_blank">Open Main Site</a><br><br>
+    	    <p align=center><a href="/" target="_blank">Open Main Site</a><br><br>
 
             <p align=center><a href=# data-route="/app/settings">Settings &gt;</a>
 
-		<br><br>
-	    <p align=center class="install-tip">Tip: Use 'Add to Home Screen' from the Chrome menu to install quick loading icon</p>
-
+	    	<br><br>
+	        <p align=center class="install-tip">Tip: Use 'Add to Home Screen' from the Chrome menu to install quick loading icon</p>
         </div>
+
+        <!--div style="background-color:#e4e4fc; padding:5px; position:sticky; bottom:0; left:0; right:0; color:blue; border-radius:8px;">
+		    Grid Square #02 - March 2026 - <a href=# style="color:blue">view the project newsletter</a>
+       	</div-->
     `;
 }
 
