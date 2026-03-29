@@ -986,13 +986,13 @@ async function wipeAllData() {
 async function createThumbnail(file) {
     const bitmap = await createImageBitmap(file);
     const canvas = document.createElement('canvas');
-    const MAX = 120;
+    const MAX = 320;
     let w = bitmap.width, h = bitmap.height;
     const aspect = w / h;
     if (w > h && aspect < 4.8) { h *= MAX/w; w = MAX; } else { w *= MAX/h; h = MAX; }
     canvas.width = w; canvas.height = h;
     canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
-    return new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.8));
+    return new Promise(r => canvas.toBlob(r, 'image/webp', 0.6));
 }
 
 function updateStore(s, d) { return new Promise(r => { const t = db.transaction(s, 'readwrite'); t.objectStore(s).put(d); t.oncomplete = r; }); }
