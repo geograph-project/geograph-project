@@ -107,7 +107,7 @@ $hashesUrl .= "?t=".$token->getToken();
 
 <header>
     <div>
-        <strong>Not Yet Uploaded</strong>
+        <strong>Local Folders</strong>
         <div id="file-count" class="stats">Initializing...</div>
     </div>
     <button onclick="toggleModal('settings-modal')">Settings</button>
@@ -117,7 +117,7 @@ $hashesUrl .= "?t=".$token->getToken();
     <select id="date-filter" onchange="setDateFilter(this.value)">
         <option value="all">All Time</option>
         <option value="0">Today</option>
-        <option value="3">Last 3 Days</option>
+        <option value="3" selected>Last 3 Days</option>
         <option value="7">Last 7 Days</option>
         <option value="30">Last 30 Days</option>
     </select>
@@ -211,6 +211,10 @@ const initDB = () => {
 // main scan process
 
 async function startFolderScan() {
+    if (isScanning) {
+        alert("scanning currently in progress, please wait before adding another folder");
+        return;
+    }
     try {
         const dirHandle = await window.showDirectoryPicker();
         
@@ -232,10 +236,13 @@ async function startFolderScan() {
         }
 
         if (counterEl) counterEl.innerText = `Processing ${fileQueue.length} images...`;
+//TODO, think best to chose close the folder popup
+toggleModal('settings-modal');
+//let it scan, and update the main stats!
 
         // 3. THE PROCESS: Thumbnails & EXIF
-        await processFileQueue(fileQueue, dirHandle.name);
-        
+        processFileQueue(fileQueue, dirHandle.name);
+
     } catch (e) {
         console.error("Scan failed", e);
         if (e.name === 'NotAllowedError') {
@@ -260,8 +267,7 @@ async function scanDirectory(dirHandle) {
         }
 
         // 2. Identify the counter element for feedback
-        const safePath = btoa(targetPath).replace(/=/g, '');
-        const counterEl = document.getElementById(`count-${safePath}`);
+        const counterEl = document.getElementById(`file-count`);
         if (counterEl) counterEl.innerText = 'Re-scanning...';
 
         // 3. Run the fast collection
@@ -314,6 +320,7 @@ async function processFileQueue(fileQueue, rootPath) {
     const safePath = btoa(rootPath).replace(/=/g, '');
     let folderRecord = await getFromStore('folders', rootPath);
     let currentCount = folderRecord?.count || 0;
+    let fileCount = fileQueue.length + currentCount; //want what the total will be!
 
 		//todo, convert to use processFile, which already does the exif logic, and will also do downsizing to create a dataUri, but maybe best defered anyway!
     for (const item of fileQueue) {
@@ -407,30 +414,21 @@ async function processFileQueue(fileQueue, rootPath) {
             currentCount++;
 
             // Update UI
-            const counterEl = document.getElementById(`count-${safePath}`);
-            if (counterEl) counterEl.innerText = `${currentCount} images indexed`;
+            updateStats((currentCount/fileCount * 100).toFixed(1));
             appendToUI(imgData); //just add one image, without redrawing!
 
             if (currentCount % 10 === 0) {
                 folderRecord.count = currentCount;
                 await updateStore('folders', folderRecord);
-                refreshFolderList();
             }
         } catch (err) {
             console.error("Processing error:", err);
         }
     }
+    folderRecord.count = currentCount;
+    updateStore('folders', folderRecord);
     isScanning = false;
-    refreshFolderList();
     updateStats();
-}
-
-async function incrementFolderCount(path, amount) {
-    const folder = await getFromStore('folders', path);
-    if (folder) {
-        folder.count = (folder.count || 0) + amount;
-        await updateStore('folders', folder);
-    }
 }
 
 /////////////////////////////////////////////
@@ -595,14 +593,14 @@ async function renderFullGallery() {
 }
 
 //function to render just one image - adding to current gallery, without full reload
-//now just thottled to avoid too many redraws during scan
+//now just thottled to avoid too many redraws during scan (because dont know what group to add it to!)
 let redrawTimeout;
 function appendToUI(img) {
     if (redrawTimeout) return;
     redrawTimeout = setTimeout(() => {
         renderFullGallery();
         redrawTimeout = null;
-    }, 500);
+    }, 5000);
 }
 
 async function toggleSort() {
@@ -892,7 +890,7 @@ console.log(img);
 
                 // SUCCESS: Allow direct submission
 
-                /* we could setup a submit button, but dont have the all the exif data yet
+                /* we could setup a submit button, but dont have the all the exif data yet, item.exifData should be good though!
                 document.getElementById('submitBtn').onclick = function() {
                     navigateTo('/app/submit',{message: JSON.stringify({
                         transfer_id: result.upload_id,
