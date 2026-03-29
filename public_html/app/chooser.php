@@ -24,6 +24,7 @@ $hashesUrl .= "?t=".$token->getToken();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NanoGallery Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
     <script src="https://unpkg.com/imagehash-web/dist/imagehash-web.min.js"></script>
     <script src="<?php echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
 
@@ -250,14 +251,20 @@ async function scanDirectory(dirHandle) {
 //this is intended to quickly gather files, for later processing. the permission expires if dont use it quickly!
 async function fastCrawl(dirHandle, path, fileQueue) {
     for await (const entry of dirHandle.values()) {
-        if (entry.kind === 'file' && /\.(jpe?g|png|webp|avif)$/i.test(entry.name)) {
+        if (entry.kind === 'file' && /\.(jpe?g|png|webp|avif|heic|heif)$/i.test(entry.name)) {
             const fileId = `${path}/${entry.name}`;
             const existing = await getFromStore('images', fileId);
 
             if (!existing) {
                 try {
                     // CRITICAL: Get the File object NOW while we have permission
-                    const file = await entry.getFile(); 
+                    const file = await entry.getFile();
+
+                    if (file.size === 0) {
+                        console.warn(`Skipping 0-byte file during crawl: ${entry.name}`);
+                        continue;
+                    }
+
                     fileQueue.push({ file, handle: entry, fileId });
                 } catch (err) {
                     console.error("Failed to grab file early:", entry.name);
@@ -281,46 +288,87 @@ async function processFileQueue(fileQueue, rootPath) {
     for (const item of fileQueue) {
         // We already have the 'item.file' object, no more 'getFile()' calls needed!
         try {
-            const meta = await exifr.parse(item.file, { translateKeys: true, translateValues: false });
-            let date = new Date(meta?.DateTimeOriginal || meta?.CreateDate || meta?.ModifyDate || meta?.DateTime || item.file.lastModified);
+            let fileToProcess = item.file;
+            const isHeic = fileToProcess.name.toLowerCase().endsWith('.heic') ||
+                           fileToProcess.name.toLowerCase().endsWith('.heif');
 
-            let gridref = "Unknown Location";
-            if (meta?.latitude && meta?.longitude) {
-                const wgs84 = new GT_WGS84();
-                wgs84.setDegrees(meta.latitude, meta.longitude);
-                let grid = wgs84.isIreland2() ? wgs84.getIrish(true) : (wgs84.isGreatBritain() ? wgs84.getOSGB() : null);
-                if (grid) gridref = grid.getGridRef(2).replace(/ /g,'');
+            let gridref = "Unknown Location"; //overwitten from exif or filename!
+            let date = new Date(item.file.lastModified); //note may be overritten from exif
+
+            //////////////////////////////////////
+
+            // exifr handles HEIC natively,so we use the original file in case meta data was lost in conversion
+            try {
+                const meta = await exifr.parse(item.file, { translateKeys: true, translateValues: false });
+                const exifDate = meta.DateTimeOriginal || meta.CreateDate || meta.ModifyDate || meta.DateTime;
+                if (exifDate) {
+                    date = new Date(exifDate);
+                }
+
+                if (Number.isFinite(meta?.latitude) && Number.isFinite(meta?.longitude)) {
+                    const wgs84 = new GT_WGS84();
+                    wgs84.setDegrees(meta.latitude, meta.longitude);
+                    let grid = wgs84.isIreland2() ? wgs84.getIrish(true) : (wgs84.isGreatBritain() ? wgs84.getOSGB() : null);
+                    if (grid) gridref = grid.getGridRef(2).replace(/ /g,'');
+                }
+
+            } catch (exifErr) {
+                console.warn(`Metadata skipped for ${item.file.name}:`, exifErr.message);
             }
-                /*    const match = item.file.name.match(/_([A-Z]{1,2}\d{4,10})\./i);
-             if (!exifData.hasGeo || match[1].length > 7) {
-                let wgs84 = GT_WGS84.parseGridRef(match[1]);
-                if (wgs84 && wgs84.status === 'OK') {
-                    exifData.lat = wgs84.latitude;
-                    exifData.long = wgs84.longitude;
-                //actually as want gridref not lat/long, dont need GT_WGS84
 
-                                                         //todo, perhaps a bit fragile computing 4fig GR outself!
-                                                        $e = substr($m[2],0,strlen($m[2])/2);
-                                                        $n = substr($m[2],strlen($m[2])/2);
-                                                        $row['grid_reference'] = $m[1].substr($e,0,2).substr($n,0,2);
+            //////////////////////////////////////
 
-Geotools.getGrid = function (gridref) ... (returns right grid-object)
+            const match = item.file.name.match(/_([A-Z]{1,2})(\d{4,10})\./i);
+            if (match && (gridref == "Unknown Location" || match[2].length > 6)) {
+                let grid = (match[1].length === 2) ? new GT_OSGB() : new GT_Irish();
+                grid.parseGridRef(match[1]+match[2]);
+                if (grid && grid.status == 'OK')
+                    gridref = grid.getGridRef(2).replace(/\s/g, ''); //get a 4fig GR specifically
+            }
 
-            */
+            //////////////////////////////////////
 
-            const thumbBlob = await createThumbnail(item.file);
+            // --- HEIC TO JPEG CONVERSION (THUMBNAIL ONLY) ---
+            if (isHeic) {
+                try {
+                    // convert to a lightweight blob for thumbnailing
+                    const converted = await heic2any({
+                        blob: fileToProcess,
+                        toType: "image/jpeg",
+                        quality: 0.7 // Lower quality for speed, we only need a thumb
+                    });
+                    // heic2any can return an array if the HEIC is an animation/burst
+                    fileToProcess = Array.isArray(converted) ? converted[0] : converted;
+                } catch (heicErr) {
+                    console.error("HEIC conversion failed:", heicErr);
+                }
+            }
 
-            // --- NEW: GENERATE PHASH ---
+            // Use the converted fileToProcess (which is now a JPEG if it was HEIC)
+            const thumbBlob = await createThumbnail(fileToProcess);
+
+            // --- GENERATE PHASH ---
             // Create an image element to feed the phash library
-                //todo, create a 640px version, rather than using tiny-thumb?
             const hash = await new Promise(resolve => {
                 const img = new Image();
                 img.onload = async () => {
+
+            // 1. Modern fix: Use .decode() to ensure pixels are ready
+            // This is better than just waiting for onload
+            if ('decode' in img) {
+                await img.decode();
+            }
+console.log(img,img.width, img.naturalWidth);
+
                     const h = await phash(img, 8);
                     resolve(h.toHexString());
+
+                    URL.revokeObjectURL(img.src); // Clean up memory immediately
                 };
                 img.src = URL.createObjectURL(thumbBlob);
             });
+
+            //////////////////////////////////////
 
             const imgData = {
                 fileId: item.fileId,
@@ -332,6 +380,7 @@ Geotools.getGrid = function (gridref) ... (returns right grid-object)
                 handle: item.handle // Store the handle for future uploads
             };
 
+console.log(imgData);
             await updateStore('images', imgData);
             currentCount++;
 
