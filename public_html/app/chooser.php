@@ -383,14 +383,6 @@ async function processFileQueue(fileQueue, rootPath) {
             const hash = await new Promise(resolve => {
                 const img = new Image();
                 img.onload = async () => {
-
-            // 1. Modern fix: Use .decode() to ensure pixels are ready
-            // This is better than just waiting for onload
-            if ('decode' in img) {
-                await img.decode();
-            }
-console.log(img,img.width, img.naturalWidth);
-
                     const h = await phash(img, 8);
                     resolve(h.toHexString());
 
@@ -406,13 +398,11 @@ console.log(img,img.width, img.naturalWidth);
                 day: date.toISOString().split('T')[0],
                 date: date.getTime(),
                 gridref: gridref,
-                size: item.file.size,
                 thumb: thumbBlob,
                 phash: hash,
-                handle: item.handle // Store the handle for future uploads
+                file: item.file // Store the file for future uploads (handle wont work later!)
             };
 
-console.log(imgData);
             await updateStore('images', imgData);
             currentCount++;
 
@@ -483,7 +473,7 @@ function createDetailsElement(img) {
             <div><span class="label">Folder:</span> ${folder}</div>
             <div><span class="label">Date:</span> ${formatDate(img.date)}</div>
             <div><span class="label">Gridref:</span> ${img.gridref}</div>
-            <div><span class="label">Size:</span> ${formatSize(img.size)}</div>
+            <div><span class="label">Size:</span> ${formatSize(img.file.size)}</div>
         </div>
     `;
 
@@ -681,7 +671,7 @@ function toggleModal(id) {
 let imagesUploaded = 0; // Increments when a file starts
 let imagesFinished = 0; // Increments when a file completes
 
-async function updateStats() {
+async function updateStats(percent) {
     const imgs = await getAllFromStore('images');
     let statusText = `${imgs.length} images indexed`;
 
@@ -694,6 +684,8 @@ async function updateStats() {
             statusText += `, ${imagesFinished} images uploaded successfully`;
         }
     }
+    if (percent)
+        statusText += `, ${percent}%`;
 
     const el = document.getElementById('file-count');
     if (el) el.innerText = statusText;
@@ -761,10 +753,9 @@ async function runDuplicateCheck() {
     // -------------------------------
 
     for (let img of images) {
-        console.log("checking", img.handle?.name);
         // 1. Check Local History first (Filename match)
-        // We look for any record where the filename matches img.handle.name
-        const localMatch = localHistory.find(record => record.filename === img.handle?.name);
+        // We look for any record where the filename matches img.file.name
+        const localMatch = localHistory.find(record => record.filename === img.file?.name);
         if (localMatch) {
             img.uploadStatus = {
                 match: 'local',
@@ -828,7 +819,7 @@ async function openActionModal(img) {
 
     // 1. Setup Preview
     preview.src = URL.createObjectURL(img.thumb);
-    name.innerText = img.fileId.replaceAll('/', '/\u200B') || img.handle.name;
+    name.innerText = img.fileId.replaceAll('/', '/\u200B') || img.file.name;
     status.innerText = ( img.gridref || "No Location") + " | " + (img.day || "No Date");
 
     modal.classList.add('active');
@@ -879,22 +870,29 @@ async function triggerUpload(img) {
 
     try {
         // 2. Background Processing
-        const file = await img.handle.getFile();
 
-	/*
+console.log(img);
             //convert to 'file' to dateUri, BUT, use our resize handler!
 
             //does resize - if needed, as well as fetching Exif data!
             //we COULD put the newly generated filename into file.name, and processItem would read it, but better to just use the saved lat/long directly
-            const item = await processItem({ file: latestFile });
+            const item = await processItem(img); //expects a .file, which we happen to have!
 
-            const result = await sendToPHP(item.dataUri, newName, (percent) => {
+            const result = await sendToPHP(item.dataUri, img.file.name, (percent) => {
                 // Update the button text to show progress
-                uploadBtn.textContent = `Uploading... ${percent}%`;
+                //uploadBtn.textContent = `Uploading... ${percent}%`;
+                updateStats(percent);
             });
             if (result && result.success) {
+                img.uploadStatus = { match: 'exact', info: { gid: 1, transfer_id:result.upload_id, title: 'Just Uploaded' } };
+                await updateStore('images', img);
+                imagesFinished++;
+                updateStats();
+
+
                 // SUCCESS: Allow direct submission
 
+                /* we could setup a submit button, but dont have the all the exif data yet
                 document.getElementById('submitBtn').onclick = function() {
                     navigateTo('/app/submit',{message: JSON.stringify({
                         transfer_id: result.upload_id,
@@ -906,22 +904,10 @@ async function triggerUpload(img) {
                         imagetaken: item.exifData?.date || fallbackExifDate,
                         orientation: item.exifData?.orientation
                     })});
-                }
-*/
-
-
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const result = await sendToPHP(e.target.result, file.name);
-            if (result && result.success) {
-                img.uploadStatus = { match: 'exact', info: { gid: 1, transfer_id:result.upload_id, title: 'Just Uploaded' } };
-                await updateStore('images', img);
-                imagesFinished++;
-                updateStats();
+                }*/
             }
-        };
-        reader.readAsDataURL(file);
+            return;
+
     } catch (err) {
         console.error("Upload failed", err);
     }
