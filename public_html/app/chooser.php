@@ -62,11 +62,23 @@ $hashesUrl .= "?t=".$token->getToken();
         /* Gallery Layout */
         #gallery-root { padding: 10px; }
         .day-section { margin-bottom: 20px; }
-        .day-header { font-size: 14px; font-weight: 600; margin: 0 0 10px 5px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
+        .day-header { font-size: 14px; font-weight: 600; margin: 0 0 10px 5px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .day-header:hover { color: #fff; }
         
         .thumb-strip { display: flex; gap: 4px; overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
-        .thumb-wrapper { flex: 0 0 100px; width: 100px; height: 100px; background: #222; border-radius: 4px; overflow: hidden; scroll-snap-align: start; }
+        .thumb-strip.wrapped { flex-wrap: wrap; overflow-x: hidden; }
+        .thumb-wrapper { flex: 0 0 100px; width: 100px; height: 100px; background: #222; border-radius: 4px; overflow: hidden; scroll-snap-align: start; position: relative; }
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: contain; transition: opacity 0.3s; }
+
+        /* Details Mode */
+        .details-list { display: flex; flex-direction: column; gap: 10px; overflow-x: hidden; }
+        .details-item { display: flex; gap: 15px; background: #1a1a1a; padding: 10px; border-radius: 8px; align-items: flex-start; }
+        .details-thumb { width: 100px; height: 100px; flex-shrink: 0; background: #222; border-radius: 4px; overflow: hidden; position: relative; }
+        .details-thumb img { width: 100%; height: 100%; object-fit: contain; }
+        .details-info { flex-grow: 1; font-size: 13px; color: #ccc; overflow: hidden; }
+        .details-info div { margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .details-info strong { color: #fff; font-size: 14px; display: block; margin-bottom: 6px; }
+        .details-info .label { color: #888; font-size: 11px; text-transform: uppercase; margin-right: 5px; }
 
         /* Modal */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; padding: 20px; z-index: 1000; }
@@ -102,15 +114,34 @@ $hashesUrl .= "?t=".$token->getToken();
 </header>
 
 <div class="toolbar">
-    <button id="group-btn" onclick="toggleGrouping()">Group: By Day</button>
-    <button id="sort-btn" onclick="toggleSort()">Sort: Newest</button>
+    <select id="date-filter" onchange="setDateFilter(this.value)">
+        <option value="all">All Time</option>
+        <option value="0">Today</option>
+        <option value="3">Last 3 Days</option>
+        <option value="7">Last 7 Days</option>
+        <option value="30">Last 30 Days</option>
+    </select>
+
+    <button id="sort-btn" onclick="toggleSort()">Newest First</button>
+
+    <button id="view-btn" onclick="toggleViewMode()">View: Gallery</button>
+
     <button id="reauth-btn" class="hidden primary" onclick="reauthAll()">Unlock Folders</button>
 </div>
 
 <script>
-function toggleGrouping() {
-    groupBy = (groupBy === 'day') ? 'gridref' : 'day';
-    document.getElementById('group-btn').innerText = `Group: By ${groupBy === 'day' ? 'Day' : 'Location'}`;
+let dateFilter = 'all';
+let viewMode = 'gallery'; // 'gallery' or 'details'
+let focusedGroupId = null;
+
+function setDateFilter(val) {
+    dateFilter = val;
+    renderFullGallery();
+}
+
+function toggleViewMode() {
+    viewMode = (viewMode === 'gallery') ? 'details' : 'gallery';
+    document.getElementById('view-btn').innerText = `View: ${viewMode.charAt(0).toUpperCase() + viewMode.slice(1)}`;
     renderFullGallery();
 }
 </script>
@@ -375,6 +406,7 @@ console.log(img,img.width, img.naturalWidth);
                 day: date.toISOString().split('T')[0],
                 date: date.getTime(),
                 gridref: gridref,
+                size: item.file.size,
                 thumb: thumbBlob,
                 phash: hash,
                 handle: item.handle // Store the handle for future uploads
@@ -414,110 +446,157 @@ async function incrementFolderCount(path, amount) {
 /////////////////////////////////////////////
 // Render Functions
 
-let filteredDay = null;
-let groupBy = 'day'; // 'day' or 'gridref'
-
 function createThumbElement(img) {
     const div = document.createElement('div');
-
     const safeId = btoa(img.fileId).replace(/=/g,'');
     div.id = `wrapper-${safeId}`;
     div.className = 'thumb-wrapper';
 
-    // Add CSS class if already submitted
     if (img.uploadStatus) {
-        if (img.uploadStatus.info.id)
-            div.classList.add('already-submitted');
-        if (img.uploadStatus.info.gid || img.uploadStatus.info.filename)
-            div.classList.add('uploaded');
+        if (img.uploadStatus.info.id) div.classList.add('already-submitted');
+        if (img.uploadStatus.info.gid || img.uploadStatus.info.filename) div.classList.add('uploaded');
         div.classList.add(`${img.uploadStatus.match}-match`);
     }
 
     const url = URL.createObjectURL(img.thumb);
-    // Fixed the URL revoke by using window.URL and being more explicit
     div.innerHTML = `<img src="${url}" loading="lazy" onload="window.URL.revokeObjectURL(this.src)">`;
-
-    // Add click handler for "Upload" (Get full DataURL)
     div.onclick = () => openActionModal(img);
+    return div;
+}
+
+function createDetailsElement(img) {
+    const div = document.createElement('div');
+    div.className = 'details-item';
+    const safeId = btoa(img.fileId).replace(/=/g,'');
+    div.id = `details-${safeId}`;
+
+    const url = URL.createObjectURL(img.thumb);
+    const filename = img.fileId.split('/').pop();
+    const folder = img.fileId.substring(0, img.fileId.lastIndexOf('/'));
+
+    div.innerHTML = `
+        <div class="details-thumb">
+            <img src="${url}" onload="window.URL.revokeObjectURL(this.src)">
+        </div>
+        <div class="details-info">
+            <strong>${filename}</strong>
+            <div><span class="label">Folder:</span> ${folder}</div>
+            <div><span class="label">Date:</span> ${formatDate(img.date)}</div>
+            <div><span class="label">Gridref:</span> ${img.gridref}</div>
+            <div><span class="label">Size:</span> ${formatSize(img.size)}</div>
+        </div>
+    `;
+
+    div.querySelector('.details-thumb').onclick = () => openActionModal(img);
+
+    if (img.uploadStatus) {
+        if (img.uploadStatus.info.id) div.classList.add('already-submitted');
+        if (img.uploadStatus.info.gid || img.uploadStatus.info.filename) div.classList.add('uploaded');
+    }
 
     return div;
 }
 
-function focusGroup(day) {
-    filteredDay = day;
-    document.querySelector('.toolbar').scrollIntoView({ behavior: 'smooth' });
+function formatSize(bytes) {
+    if (!bytes) return "0 B";
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+function formatDate(ts) {
+    const d = new Date(ts);
+    return d.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function focusGroup(groupId) {
+    focusedGroupId = (focusedGroupId === groupId) ? null : groupId;
     renderFullGallery();
 }
 
 async function renderFullGallery() {
     const root = document.getElementById('gallery-root');
-    const images = await getAllFromStore('images');
+    let images = await getAllFromStore('images');
+    images = images.filter(img => !img.muted);
+
+    // Apply Date Filter
+    if (dateFilter !== 'all') {
+        const now = new Date();
+        now.setHours(0,0,0,0);
+        const limit = new Date(now);
+        limit.setDate(now.getDate() - parseInt(dateFilter));
+        images = images.filter(img => img.date >= limit.getTime());
+    }
 
     if (images.length === 0) {
-        root.innerHTML = '<div id="drop-zone">No images found. Add a folder in Settings.</div>';
+        root.innerHTML = '<div id="drop-zone">No images found for this filter.</div>';
         updateStats();
         return;
     }
 
+    // Sort images by date
+    images.sort((a, b) => sortOrder === 'desc' ? b.date - a.date : a.date - b.date);
+
+    // Sequential Grouping
+    const groups = [];
+    if (images.length > 0) {
+        let currentGroup = {
+            id: `${images[0].day}-${images[0].gridref}`,
+            day: images[0].day,
+            gridref: images[0].gridref,
+            items: [images[0]]
+        };
+        for (let i = 1; i < images.length; i++) {
+            const img = images[i];
+            if (img.day !== currentGroup.day || img.gridref !== currentGroup.gridref) {
+                groups.push(currentGroup);
+                currentGroup = {
+                    id: `${img.day}-${img.gridref}-${i}`, // Add index to ensure uniqueness if visited twice
+                    day: img.day,
+                    gridref: img.gridref,
+                    items: [img]
+                };
+            } else {
+                currentGroup.items.push(img);
+            }
+        }
+        groups.push(currentGroup);
+    }
+
     root.innerHTML = '';
 
-    // If we are in "Focus Mode", show a Back button
-    if (filteredDay) {
+    if (focusedGroupId && viewMode === 'gallery') {
         const backBtn = document.createElement('button');
-        backBtn.innerText = "< Show All Images";
-        backBtn.style.margin = "0 0 15px 5px";
-        backBtn.onclick = () => { filteredDay = null; renderFullGallery(); };
+        backBtn.innerText = "← Show All Groups";
+        backBtn.style.marginBottom = "15px";
+        backBtn.onclick = () => { focusedGroupId = null; renderFullGallery(); };
         root.appendChild(backBtn);
     }
 
-    // 1. Group images
-    let groups = images.reduce((acc, img) => {
-        const key = img[groupBy] || "Unknown";
-        acc[key] = acc[key] || { items: [], latest: 0 };
-        acc[key].items.push(img);
-        // Track latest image in this group for group-sorting
-        if (img.date > acc[key].latest) acc[key].latest = img.date;
-        return acc;
-    }, {});
-
-    let sortedGroupKeys;
-    if (filteredDay) {
-        sortedGroupKeys = [filteredDay];
-    } else {
-        // 2. Sort the Groups themselves (based on the latest image in that group)
-        sortedGroupKeys = Object.keys(groups).sort((a, b) => {
-            return sortOrder === 'desc' ? groups[b].latest - groups[a].latest : groups[a].latest - groups[b].latest;
-        });
-    }
-
-    // Add a toggle in your UI to call this with 'gridref'
-    sortedGroupKeys.forEach(key => {
-        const groupData = groups[key];
-        // Sort images INSIDE the group
-        groupData.items.sort((a, b) => sortOrder === 'desc' ? b.date - a.date : a.date - b.date);
+    groups.forEach(group => {
+        if (focusedGroupId && focusedGroupId !== group.id && viewMode === 'gallery') return;
 
         const sec = document.createElement('div');
-        sec.id = `day-${key}`; //no longer technically just days!
         sec.className = 'day-section';
+
+        const isFocused = focusedGroupId === group.id;
+
         sec.innerHTML = `
-            <div class="day-header" onclick="focusGroup('${key}')">
-                <span>${key} (${groupData.items.length})</span>
-                ${(!filteredDay && groupData.items.length>3)?`<span style="font-size:10px; color:var(--accent)">VIEW</span>`:''}
+            <div class="day-header" onclick="focusGroup('${group.id}')">
+                <span>${group.day} - ${group.gridref} (${group.items.length})</span>
+                ${(viewMode === 'gallery' && !isFocused && group.items.length > 3) ? '<span style="font-size:10px; color:var(--accent)">EXPAND</span>' : ''}
             </div>
-            <div class="thumb-strip"></div>
+            <div class="thumb-strip ${isFocused ? 'wrapped' : ''} ${viewMode === 'details' ? 'details-list' : ''}"></div>
         `;
 
-        const strip = sec.querySelector('.thumb-strip');
-
-        // If focused, we might want to wrap the images instead of a horizontal strip
-        if (filteredDay) {
-            strip.style.flexWrap = "wrap";
-            strip.style.overflowX = "hidden";
-        }
-
-        groupData.items.forEach(img => {
-            if (img.muted) return; // Completely ignore muted files
-            strip.appendChild(createThumbElement(img))
+        const container = sec.querySelector('.thumb-strip');
+        group.items.forEach(img => {
+            if (viewMode === 'gallery') {
+                container.appendChild(createThumbElement(img));
+            } else {
+                container.appendChild(createDetailsElement(img));
+            }
         });
         root.appendChild(sec);
     });
@@ -526,20 +605,19 @@ async function renderFullGallery() {
 }
 
 //function to render just one image - adding to current gallery, without full reload
+//now just thottled to avoid too many redraws during scan
+let redrawTimeout;
 function appendToUI(img) {
-    let dayContainer = document.getElementById(`day-${img[groupBy]}`);
-    if (!dayContainer && !filteredDay) {
-        renderFullGallery(); // If it's a new day, we refresh the structure once
-        return;
-    }
-    const strip = dayContainer.querySelector('.thumb-strip');
-    const thumb = createThumbElement(img);
-    sortOrder === 'desc' ? strip.prepend(thumb) : strip.appendChild(thumb);
+    if (redrawTimeout) return;
+    redrawTimeout = setTimeout(() => {
+        renderFullGallery();
+        redrawTimeout = null;
+    }, 500);
 }
 
 async function toggleSort() {
     sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
-    document.getElementById('sort-btn').innerText = `Sort: ${sortOrder === 'desc' ? 'Newest' : 'Oldest'}`;
+    document.getElementById('sort-btn').innerText = sortOrder === 'desc' ? 'Newest First' : 'Oldest First';
     renderFullGallery();
 }
 
