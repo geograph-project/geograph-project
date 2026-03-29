@@ -229,8 +229,8 @@ function dataURLtoBlob(dataURL) {
         const lat = data?.latitude ?? null;   // exifr helpfully maps GPSLatitude to 'latitude'
         const long = data?.longitude ?? null; // and GPSLongitude to 'longitude'
         const exifData = {
-            // The Fix: Check if the value is NOT null/undefined, rather than if it is "truthy"
-            hasGeo: (lat !== null && long !== null),
+            // Number.isFinite returns false for NaN, null, undefined, and Infinity
+            hasGeo: Number.isFinite(lat) && Number.isFinite(long),
             lat: lat,
             long: long,
             date: data?.DateTimeOriginal || data?.CreateDate || null,
@@ -317,6 +317,8 @@ function sendToPHP(dataUri, name, onProgress) {
                 try {
                     const result = JSON.parse(xhr.responseText);
                     if (result.ok) {
+                        saveUploadToLocal(name, result.upload_id);
+
                         resolve({ 
                             success: true, 
                             upload_id: result.upload_id, 
@@ -350,3 +352,37 @@ function sendToPHP(dataUri, name, onProgress) {
         });
     }
 
+/**
+ * Helper function to manage the upload history
+ */
+function saveUploadToLocal(filename, uploadId) {
+    const STORAGE_KEY = 'upload_history';
+    const MAX_FILES = 100;
+
+    // 1. Retrieve existing data or initialize empty array
+    let history = [];
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        history = stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        history = [];
+    }
+
+    // 2. Create the new record
+    const newRecord = {
+        filename: filename,
+        upload_id: uploadId,
+        timestamp: new Date().toISOString()
+    };
+
+    // 3. Add to the beginning of the list (newest first)
+    history.unshift(newRecord);
+
+    // 4. Cap at 100 records
+    if (history.length > MAX_FILES) {
+        history = history.slice(0, MAX_FILES);
+    }
+
+    // 5. Save back to localStorage
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+}
