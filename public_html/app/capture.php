@@ -527,7 +527,8 @@ window.addEventListener('DOMContentLoaded', function() {
                 downloadBtn.click();
 
                 uploadBtn.style.display = 'block';
-                uploadBtn.textContent = `Upload ${timePart} Now (${window.uploadMaxDimension})`;
+		uploadBtn.textContent = `Upload ${timePart} Now (${window.uploadMaxDimension < 65535 ? `@${window.uploadMaxDimension}px` : 'Full size'})`;
+
                 uploadBtn.disabled = false; //incase it was previuslly disabled
 
                 submitBtn.style.display = 'none';
