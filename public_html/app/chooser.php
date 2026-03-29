@@ -81,9 +81,9 @@ $hashesUrl .= "?t=".$token->getToken();
         .exact-match {}
         .close-match {}
 
-        .uploaded { filter: grayscale(0.5); opacity: 0.8;}
+        .uploaded { background-color:#073902; position: relative; }
         .uploaded::after { content: "\2713"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; color: #0000ff; text-shadow: 0 2px 4px rgba(0,0,0,0.1); pointer-events: none; }
-
+        .uploaded img { filter: grayscale(0.5);  opacity: 0.4 };
 
 
     .muted { display: none !important; } /* Hard hide from UI */
@@ -428,7 +428,7 @@ function createThumbElement(img) {
     if (img.uploadStatus) {
         if (img.uploadStatus.info.id)
             div.classList.add('already-submitted');
-        if (img.uploadStatus.info.gid)
+        if (img.uploadStatus.info.gid || img.uploadStatus.info.filename)
             div.classList.add('uploaded');
         div.classList.add(`${img.uploadStatus.match}-match`);
     }
@@ -672,7 +672,31 @@ async function runDuplicateCheck() {
     const images = await getAllFromStore('images');
     const remoteKeys = Object.keys(remoteHashes);
 
+    // --- Local Storage Retrieval ---
+    let localHistory = [];
+    try {
+        const stored = localStorage.getItem('upload_history');
+        localHistory = stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        localHistory = [];
+    }
+    // -------------------------------
+
     for (let img of images) {
+        console.log("checking", img.handle?.name);
+        // 1. Check Local History first (Filename match)
+        // We look for any record where the filename matches img.handle.name
+        const localMatch = localHistory.find(record => record.filename === img.handle?.name);
+        if (localMatch) {
+            img.uploadStatus = {
+                match: 'local',
+                info: localMatch
+            };
+            await updateStore('images', img);
+
+            continue;
+        }
+
         if (!img.phash) continue;
 
         // 1. Exact match
@@ -733,15 +757,19 @@ async function openActionModal(img) {
 
     // 2. Logic for "Already Submitted"
     if (img.uploadStatus) {
+        btnView.style.display = 'none';
         btnUpload.style.display = 'none';
         if (img.uploadStatus.info.id) {
             btnView.style.display = 'block';
             btnView.onclick = () => window.open(`https://www.geograph.org.uk/photo/${img.uploadStatus.info.id}`, '_blank');
             btnView.textContent = `View [[${img.uploadStatus.info.id}]] Online`;
             status.innerText += ` - Already on Geograph (${img.uploadStatus.info.title})`
+
+        } else if (img.uploadStatus.info.filename) {
+            status.innerText += ` - Uploaded recently on this device`;
+
         } else { //if (img.uploadStatus.info.gid) {
-            btnView.style.display = 'none';
-            //todo, could navigateTo('/app/submit') //But would need to supply the full exif data (which we dont have) 
+            //todo, could navigateTo('/app/submit') //But would need to supply the full exif data (which we dont have)
             status.innerText += " - Already Uploaded";
         }
     } else {
