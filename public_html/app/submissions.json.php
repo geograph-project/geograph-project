@@ -52,7 +52,7 @@ if (!empty($_GET['since'])) {
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 //needs to use gridimage/gridsquare because may be pending images. but join in gridimage_search, as may already be moderated, which case have the lat/long ready to use!
-$sql = "select gridimage_id,g.submitted,gs.grid_reference,g.title,nateastings,natnorthings,natgrlen,gs.reference_index,wgs84_lat,wgs84_long,g.imagetaken, g.user_id, g.moderation_status, gs.x, gs.y
+$sql = "select gridimage_id,g.submitted,gs.grid_reference,g.title,nateastings,natnorthings,natgrlen,gs.reference_index,wgs84_lat,wgs84_long,g.imagetaken, g.user_id, g.moderation_status, gs.x, gs.y, tags
 	from gridimage g
 		inner join gridsquare gs using (gridsquare_id)
 		left join gridimage_search gi using (gridimage_id)

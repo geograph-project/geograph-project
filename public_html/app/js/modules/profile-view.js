@@ -179,14 +179,23 @@ async function loadSubmissions(filter = 'recent') {
                 return 0;
             });
 
-	        gridContainer.innerHTML = sorted.map(item => `
-	            <div class="submission-tile"
-	                 data-large="${item.thumbnail.replace(/_\d+x\d+/, '')}"
-	                 data-id="${item.gridimage_id}" title="${escapeHTML(item.title)}">
-	                <img src="${item.thumbnail}" loading="lazy" alt="${escapeHTML(item.title)}" draggable="false">
-	                <div class="tile-overlay"><span>${item.moderation_status} / ${item.grid_reference}</span></div>
-	            </div>
-	        `).join('');
+            gridContainer.innerHTML = sorted.map(item => {
+                let displayStatus = item.moderation_status;
+                if (item.tags) {
+                    const typeTags = item.tags.split('?').filter(tag => tag.startsWith('type:'))
+                        .map(tag => tag.replace('type:', '').trim().toLowerCase());
+                    if (typeTags.length > 0)
+                        displayStatus = typeTags.join(', ');
+                }
+                return `
+                    <div class="submission-tile"
+                         data-large="${item.thumbnail.replace(/_\d+x\d+/, '')}"
+                         data-id="${item.gridimage_id}" title="${escapeHTML(item.title)}">
+                        <img src="${item.thumbnail}" loading="lazy" alt="${escapeHTML(item.title)}" draggable="false">
+                        <div class="tile-overlay"><span>${escapeHTML(displayStatus)} / ${item.grid_reference}</span></div>
+                    </div>
+                `;
+            }).join('');
     	}
 
         updateGrid(); // Initial render
