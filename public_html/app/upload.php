@@ -195,6 +195,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         </label>
     </div>
 
+
 	<br><br>
     <div class="settings2">
         <label><input type="radio" name=ctype id="image" onclick="setAcceptValue(this)" value="image/jpeg, image/heic" checked>Image Selector</label>
@@ -206,17 +207,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 			document.getElementById("file-input").setAttribute("accept", that.value);
 		}
 	</script>
-	<p>
-	if you are having issues with location getting stripped, try using the File select method. It might be more tricky to select your images,
-	 but it likly means we can read the location. If dont have issue then stick with the simpler Image Selector
-	</p>
 
-
-
+	<p>If location data is missing, try the File Selector method. While navigating to your images this way can be a bit more involved, it's often more reliable for reading GPS data.
+	 If you aren't having issues, feel free to stick with the simpler Image Selector.</p>
 
 	<div>
-		Experimental:
-		<button type=button onclick="navigateTo('/app/chooser')">Advanced File Chooser</button>
+		Or can try our: 
+		<button type=button onclick="navigateTo('/app/chooser')">Enhanced Image Browser (Beta)</button>
 	</div>
 
 </div>
