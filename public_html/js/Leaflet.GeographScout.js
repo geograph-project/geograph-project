@@ -70,6 +70,11 @@ L.GeographScout = L.LayerGroup.extend({
             .number-icon.number-zero {
                 border: 2px solid white;
             }
+	    #geograph-settings-dialog::backdrop {
+	        background-color: rgba(0, 0, 0, 0.3); /* Slight darkening */
+	        backdrop-filter: blur(3px);
+	        -webkit-backdrop-filter: blur(3px); /* Support for Safari */
+	    }
         `;
         document.head.appendChild(style);
 
@@ -127,7 +132,15 @@ L.GeographScout = L.LayerGroup.extend({
             options: { position: 'topright' },
             onAdd: (map) => {
                 const btn = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-                btn.innerHTML = '<button style="font-size:18px; cursor:pointer; width:30px; height:30px; border:none; background:white;">&#x2699;</button>';
+
+		// Radar SVG Icon
+                const radarIcon = `
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:4px;">
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path>
+                </svg>`;
+		btn.innerHTML = `<button title="Geograph Scout Settings" style="cursor:pointer; width:30px; height:30px; border:none; background:white; display:flex; align-items:center; justify-content:center;">${radarIcon}</button>`;
+
                 btn.onclick = () => this._showSettings();
                 return btn;
             }
@@ -141,6 +154,14 @@ L.GeographScout = L.LayerGroup.extend({
             dialog.style.padding = '20px';
             dialog.style.borderRadius = '8px';
             dialog.style.border = '1px solid #ccc';
+
+	    // Close when clicking the backdrop
+            dialog.addEventListener('click', (event) => {
+		if (event.target === dialog) {
+        	    dialog.close(); //will still submit the form
+	        }
+            });
+
             this._dialog = dialog;
         }
     },
