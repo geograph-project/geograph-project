@@ -308,7 +308,6 @@ svg.svgFilter {
             sidebar.show();
         }).addTo( map );
 
-        map.addLayer(baseMaps["OpenStreetMap"]); //todo, make this configure like in mappingLeaflet.js
 	map.addLayer(overlayMaps["OS National Grid"]);
 
 	if (baseMaps["Geograph PhotoMap"]) delete baseMaps["Geograph PhotoMap"];
