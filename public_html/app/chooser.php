@@ -7,6 +7,114 @@ init_session();
 
 $USER->mustHavePerm('basic');
 
+customNoCacheHeader();
+
+$db = GeographDatabaseConnection(true);
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+if (!empty($_GET['mail'])) {
+	$subject = "[Geograph] Link to process your submissions";
+	$body = <<< END
+Open this link:
+https://www.geograph.org.uk/viewer/processor.php
+To process your submissions. This is a one-off task, but can rerun it periodically to process new submissions.
+
+On a computer, you can leave this running in a tab until it finishes.
+
+Any problems contact as at {$CONF['contact_email']}
+END;
+
+	$r = mail_wrapper($USER->email, $subject, $body, "From: Geograph <noreply@geograph.org.uk>");
+
+	if ($r) print "Email sent;<hr>";
+}
+
+$user_id = intval($USER->user_id);
+
+$count = $db->getOne("select count(*) from gridimage_search gi left join gridimage_hash using (gridimage_id) where gi.user_id = $user_id and gridimage_hash.gridimage_id is null");
+
+//$count = $db->getOne("select count(*) from gridimage gi left join gridimage_hash using (gridimage_id) where gi.user_id = $user_id and gridimage_hash.gridimage_id is null and moderation_status = 'pending'");
+
+$count = 1000;
+
+if (!empty($count) && empty($_GET['ignore'])) {
+	$seconds = intval($count * 20 / 50);
+	if ($seconds < 360) {
+        	$seconds += 10; //just to will be a bit of extra overhead
+	        $time = "$seconds seconds";
+	} elseif ($seconds < 60*60) {
+        	$seconds += 100;
+	        $time = ceil($seconds/60)." minutes";
+	} else {
+        	$seconds += 1000;
+	        $time = "<b>".ceil($seconds/60/60)." hours</b> - you can leave it processing overnight";
+	}
+	?>
+
+	<div style="max-width:940px">
+
+	<p>You have <b><? echo number_format($count, 0); ?></b> images awaiting processing. We use "perceptual hashing" to visually match your submissions across different 
+	resolutions and identify duplicates.</p>
+
+
+    <h2>One-Time Archive Scan</h2
+
+    <p>Status: <strong><?php echo $count; ?> images to process.</strong> (Estimated time: <strong><?php echo $time; ?></strong>)</p>
+
+    <?php if ($count <= 30) { ?>
+        <div id="inline-processor">
+            <p>Since this is a small batch, you can run it right here:</p>
+
+            <a href="/viewer/processor.php?inner=1" target="processor"
+               onclick="document.getElementById('proces').style.display=''; this.style.display='none'; return true;">
+               &#9654; Start Processing Now
+            </a>
+            <iframe src="about:blank" name="processor" id="proces" style="display:none" width="100%" height="200" frameborder="1"></iframe>
+
+            <p><small>Once finished, <a href="?">click here to refresh</a>.</small></p>
+        </div>
+
+    <?php } else { ?>
+        <div id="external-processor">
+            <p><strong>Desktop Recommended:</strong> This is a processor-intensive task. To ensure it finishes quickly and doesn't "sleep" on your mobile device, we recommend running this on a computer.</p>
+
+            <ul>
+                <li>
+                    <a href="/viewer/processor.php" target="_blank"><strong>Launch Processor in New Tab</strong></a>
+                    <br><small>Note: Please open only one window.</small>
+                </li>
+                <li>
+			<? if (!empty($r)) { ?>
+			    <a href="?ignore=1">If want can continue to the app now</a>
+			<? } else { ?>
+	                    <a href="?mail=true"><strong>Email me a link to complete this on Desktop</strong></a>
+			<? } ?>
+                </li>
+            </ul>
+
+            <p>Already finished? <a href="?">Click here to refresh</a>.</p>
+        </div>
+
+	<h3>How it works</h3>
+	<ul>
+	    <li><b>Keep the tab open:</b> The processor will continue in the background, though it may run faster if the tab is active.</li>
+	    <li><b>Performance:</b> Expect a rate of roughly 50 images every 20 seconds.</li>
+	    <li><b>Local Processing:</b> Images are downloaded and hashed on your computer; the resulting hashes are then saved to our servers.</li>
+	    <li><b>Stopping/Restarting:</b> You can safely close the processor at any time. To resume, simply reopen the link. If the process appears to stall, refresh the page.</li>
+	    <li><b>Maintenance:</b> This is a one-off process for your existing catalog. In the future, you will only need to process new submissions.</li>
+	</ul>
+
+    <?php } ?>
+
+	<p><strong>Want to skip this?</strong> You can <a href="?ignore=1">proceed to the app</a> now, but unprocessed images will not be identified. 
+	<em>Warning: Skipping this step may delay new images from appearing in the app for up to 24 hours. For the best experience, wait for the processor to complete.</em></p>
+
+	<?
+	exit;
+}
+
+
+################################################
 
 //todo, check user_stat, if no images, pointless even trying to do custmization
 $hashesUrl = $CONF['API_HOST']."/viewer/hashes.json.php";
@@ -184,6 +292,58 @@ function toggleViewMode() {
         </div>
     </div>
 </div>
+
+
+<div id="help-modal" class="modal" onclick="closeActionModal(event)">
+
+	<h1>Enhanced Image Browser (Beta)</h1>
+
+	<p>This page provides an alternative way to browse and select photos from your device for upload to Geograph.</p>
+
+	<p>Instead of using your device's standard file picker one photo at a time, you can grant the app access to specific folders. This creates a customized local gallery optimized for 
+	Geograph contributors.</p>
+
+	<h2>Why use the Enhanced Browser?</h2>
+	<ul>
+
+	    <li><strong>Duplicate Detection:</strong> We automatically track which images have already been submitted (including those uploaded before you used this app), so you can 
+	    see at a glance what still needs to be shared.</li>
+
+	    <li><strong>Smarter Sorting:</strong> Unlike a standard list of thumbnails, you can group your local photos by date or Grid Square.</li>
+
+	    <li><strong>Preserve Location Data:</strong> This method helps sidestep browser "privacy" filters that often strip GPS data. By browsing folders this way, we can more reliably 
+	    read the original coordinates to help place your photo on the map.</li>
+
+	</ul>
+
+	<h2>How it works</h2>
+
+	<p>Once you've added a folder, the app remembers it for future visits. Simply click "Unlock Folders" to refresh the view and scan for new shots. You still have full control - 
+	nothing is uploaded until you manually select an image for submission.</p>
+
+	<h2>Privacy & Data</h2>
+	<p>We take your privacy seriously. While this tool "scans" your folders to help you organize them:</p>
+	<ul>
+	    <li><strong>On-Device Processing:</strong> Extraction of location data and the creation of thumbnails happens locally on your device.</li>
+	    <li><strong>No Hidden Syncing:</strong> These details (and the photos themselves) never leave your device without your permission.</li>
+	    <li><strong>Manual Upload Only:</strong> Only the specific images you choose to submit are ever sent to the Geograph servers.</li>
+	</ul>
+
+	<h2>One-Time Archive Scan (Beta)</h2>
+	<p>To help the app identify which of your photos are already on Geograph, we need to generate a digital "fingerprint" (perceptual hash) of your existing submission history.</p>
+	<ul>
+
+	    <li><strong>Desktop Recommended:</strong> This is a processor-intensive task. While you can run it on mobile (Wi-Fi recommended), it is much faster on a desktop computer 
+	    where the browser won't "sleep" and pause the process.</li>
+
+	    <li><strong>Background Running:</strong> On a computer, you can leave this running in a tab until it finishes.</li>
+	</ul>
+
+	<p><a href="#">[Send me an email with a link to complete this on a Desktop]</a></p>
+
+</div>
+
+
 
 <script>
 let db;

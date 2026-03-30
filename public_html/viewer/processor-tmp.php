@@ -85,25 +85,25 @@ function retryCross(that) {
 document.addEventListener("DOMContentLoaded", function() {
 	img = document.getElementById('img');
 
-	img.onload = function (event) {
+	img.onload = async function (event) {
 		let result = {};
 		result['gridimage_id'] = current['gridimage_id'];
 		result['source'] = current['source'];
 		result['user_id'] = user_id;
 
 		//we dont current use all the hashes, but for now lets compute them anyway
-		ahash(img, 8).then(hash => {
-			result['ahash'] = hash.toHexString();
-		});
-		dhash(img, 8).then(hash => {
-			result['dhash'] = hash.toHexString();
-		});
-		phash(img, 8).then(hash => {
-			result['phash'] = hash.toHexString();
-		});
-		whash(img, 8).then(hash => {
-			result['whash'] = hash.toHexString();
-		});
+		// Run all hashes in parallel and wait for all to finish
+	        const [a, d, p, w] = await Promise.all([
+        	    ahash(img, 8),
+	            dhash(img, 8),
+        	    phash(img, 8),
+	            whash(img, 8)
+        	]);
+
+	        result['ahash'] = a.toHexString();
+        	result['dhash'] = d.toHexString();
+	        result['phash'] = p.toHexString();
+        	result['whash'] = w.toHexString();
 
 		/* cropResistantHash doesnt sem to work, doesnt get converted to canvas?
 		Uncaught (in promise) TypeError: Cannot assign to read only property 'Symbol(Symbol.toStringTag)' of object '#<HTMLCanvasElement>'

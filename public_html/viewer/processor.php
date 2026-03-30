@@ -34,20 +34,45 @@ if (!empty($_GET['retry'])) {
 	 //note to do this 'propelly' will need to either delete the old failed record, otherwise will just keep appearing in the join!
 	$where = "ahash = 'failed'";
 	$limit = 10;
+} elseif (!empty($_GET['missing'])) {
+	 //note to do this 'propelly' will need to either delete the old failed record, otherwise will just keep appearing in the join!
+	$where = "ahash = ''";
+	$limit = 10;
 }
 
-//include user_id just to make fastInit easy
-$sql = "select s.*,gi.user_id from gridimage_search gi inner join gridimage_size s using (gridimage_id) left join gridimage_hash using (gridimage_id)
- where gi.user_id = {$user_id} and $where limit $limit";
+if (!empty($_GET['all'])) {
+	//offset??
+	$sql = "select s.*,gi.user_id from gridimage_search gi inner join gridimage_size s using (gridimage_id)
+	 inner join (SELECT DISTINCT user_id FROM usage_app) u using (user_id)
+	 left join gridimage_hash using (gridimage_id)
+	where $where limit $limit";
+
+} elseif (!empty($_GET['pending'])) {
+	$sql = "select s.*,gi.user_id from gridimage gi inner join gridimage_size s using (gridimage_id) left join gridimage_hash using (gridimage_id)
+	 where gi.user_id = {$user_id} and $where and moderation_status = 'pending' limit $limit";
+} else {
+	//include user_id just to make fastInit easy
+	$sql = "select s.*,gi.user_id from gridimage_search gi inner join gridimage_size s using (gridimage_id) left join gridimage_hash using (gridimage_id)
+	 where gi.user_id = {$user_id} and $where limit $limit";
+}
 
 $data = $db->getAll($sql);
 
-if (empty($data))
-	die('<h4>No images to process - yay!</h4> - can <a href="javascript:window.close();">close this window</a>.');
+if (empty($data)) {
+    echo '<h4>No images to process &mdash; yay!</h4>';
+    if (!empty($_GET['inner'])) {
+        // If in an iframe, refresh the main page
+        echo '<p><a href="javascript:window.parent.location.reload();">Click here to continue</a></p>';
+    } else {
+        // If in a standard popup/tab, close it
+        echo '<p>You can <a href="javascript:window.close();">close this window</a>.</p>';
+    }
+    exit;
+}
 
 foreach($data as $row) {
 	$image = new GridImage();
-    $image->fastInit($row);
+	$image->fastInit($row);
 
 //| gridimage_id | width | height | original_width | original_height | original_diff | user_id |
 
@@ -126,25 +151,25 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	}
 
-	img.onload = function (event) {
+	img.onload = async function (event) {
 		let result = {};
 		result['gridimage_id'] = current['gridimage_id'];
 		result['user_id'] = user_id;
 		result['source'] = current['source'];
 
 		//we dont current use all the hashes, but for now lets compute them anyway
-		ahash(img, 8).then(hash => {
-			result['ahash'] = hash.toHexString();
-		});
-		dhash(img, 8).then(hash => {
-			result['dhash'] = hash.toHexString();
-		});
-		phash(img, 8).then(hash => {
-			result['phash'] = hash.toHexString();
-		});
-		whash(img, 8).then(hash => {
-			result['whash'] = hash.toHexString();
-		});
+		// Run all hashes in parallel and wait for all to finish
+	        const [a, d, p, w] = await Promise.all([
+        	    ahash(img, 8),
+	            dhash(img, 8),
+        	    phash(img, 8),
+	            whash(img, 8)
+        	]);
+
+	        result['ahash'] = a.toHexString();
+        	result['dhash'] = d.toHexString();
+	        result['phash'] = p.toHexString();
+        	result['whash'] = w.toHexString();
 
 		/* cropResistantHash doesnt sem to work, doesnt get converted to canvas?
 		Uncaught (in promise) TypeError: Cannot assign to read only property 'Symbol(Symbol.toStringTag)' of object '#<HTMLCanvasElement>'
@@ -176,7 +201,7 @@ async function next_image() {
         msgElement.innerHTML = 'Done all in current batch. Submitting...';
 
         try {
-            const response = await fetch("/viewer/processor.json.php", {
+            const response = await fetch("/viewer/processor.json.php"+window.location.search, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
