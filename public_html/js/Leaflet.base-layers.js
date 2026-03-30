@@ -519,15 +519,17 @@ function addOurControls(map) {
 			for(i in overlayMaps) {
 				if (i.indexOf('Grid') > 0) {
 					if (typeof overlayMaps[i].eachLayer == 'function') {
-						overlayMaps[i].eachLayer(function(layer) { 
+						overlayMaps[i].eachLayer(function(layer) {
 							layer.options.color = color;
 	                                	        layer.setOpacity(opacity);
-		                                        layer._reset();
+							if (map.hasLayer(overlayMaps[i])) //only reset if actully on the map!
+			                                        layer._reset();
 						});
 					} else {
 						overlayMaps[i].options.color = color;
 						overlayMaps[i].setOpacity(opacity);
-						overlayMaps[i]._reset();
+						if (map.hasLayer(overlayMaps[i])) //only reset if actully on the map!
+							overlayMaps[i]._reset();
 					}
 				}
 			}

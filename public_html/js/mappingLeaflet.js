@@ -717,7 +717,8 @@ basemap2.beforeAdd = function() {};
 				if (i.indexOf('Grid') > 0 && overlayMaps[i].options.color != color && overlayMaps[i].setOpacity) {
 					overlayMaps[i].options.color = color;
 					overlayMaps[i].setOpacity(opacity);
-					overlayMaps[i]._reset();
+					if (map.hasLayer(overlayMaps[i])) //only reset if actully on the map!
+						overlayMaps[i]._reset();
 				}
 			}
 		});
