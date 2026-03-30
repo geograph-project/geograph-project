@@ -448,7 +448,6 @@ svg.svgFilter {
 
 		opacityButton.addTo(map);
 
-
 	//needs calling AFTER updating overlayMaps
         addOurControls(map);
 
@@ -468,23 +467,6 @@ svg.svgFilter {
 				$('div.leaflet-tile-pane').removeClass(this.value);
 			});
 			$('div.leaflet-tile-pane').addClass(this.value);
-		});
-
-		$('.tabHolder a').on('click',function() {
-			var layeron = $(this).data('layer');
-			$('.tabHolder a.tabSelected').each(function() {
-				var layeroff = $(this).data('layer');
-				if (overlayMaps[layeroff] && layeron != '(Personalize Coverage)') {
-					overlayMaps[layeroff].removeFrom(map);
-					$(this).removeClass('tabSelected');
-				}
-			});
-			if (overlayMaps[layeron]) {
-				overlayMaps[layeron].addTo(map);
-				$(this).addClass('tabSelected');
-				if (layeron == 'Photo Viewpoints' && map.getZoom() < 11)
-					map.setZoom(11);
-			}
 		});
 	});
 
@@ -528,17 +510,6 @@ svg.svgFilter {
 <div id="sidebar">
 
 <a href="/"><img src="https://s1.geograph.org.uk/templates/basic/img/logo.gif"></a>
-
-<h3>Quick Mode</h3>
-<div class="tabHolder">
-	<a class="tab{if !$filter}Selected{/if}" data-layer="Coverage - Standard">Coverage</a> 
-	{if $stats && $stats.images}
-	<a class="tab{if $filter}Selected{/if}" data-layer="(Personalize Coverage)">Personalized</a> 
-	{/if}
-	<a class="tab" data-layer="Photo Subjects">Subjects</a> 
-	<a class="tab" data-layer="Photo Viewpoints">Viewpoints</a> 
-	<a class="tab" data-layer="Photo Thumbnails">Thumbnails</a>
-</div>
 
 {if !$inner}
 <h3>Location &amp; Map Links</h3>
