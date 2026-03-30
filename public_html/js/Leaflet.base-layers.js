@@ -455,7 +455,15 @@ function addBaseLayer(defaultLayer) {
 	}
 
 	// 1. Handle Basemap Persistence
-	var savedBasemap = JSON.parse(localStorage.getItem('LeafletBaseMap'));
+    var savedBasemap = localStorage.getItem('LeafletBaseMap');
+    if (savedBasemap) {
+        try {
+            // Try to parse it as JSON first
+            savedBasemap = JSON.parse(savedBasemap);
+        } catch (e) {
+            console.warn("LeafletBaseMap was not valid JSON, using as plain string.");
+        }
+    }
 	var layerToLoad = baseMaps[defaultLayer]; // Start with fallback
 
 	if (savedBasemap && baseMaps[savedBasemap]) {
