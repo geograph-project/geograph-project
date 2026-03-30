@@ -443,10 +443,73 @@ var layerswitcher;
 var geocoder;
 var filelayer;
 
+//traditionally, baselayer, is added by the main map, but put in a function for easier reuse and migration to new code
+function addBaseLayer(defaultLayer) {
+	if (!defaultLayer || !baseMaps[defaultLayer])
+		defaultLayer = "OpenStreetMap";
+
+	//just in case!
+	if (!window.localStorage) {
+		map.addLayer(baseMaps[defaultLayer]);
+		return;
+	}
+
+	// 1. Handle Basemap Persistence
+	var savedBasemap = localStorage.getItem('LeafletBaseMap');
+
+	if (savedBasemap && baseMaps[savedBasemap]) {
+	    map.addLayer(baseMaps[savedBasemap]);
+	} else {
+	    map.addLayer(baseMaps[defaultLayer]);
+	}
+
+	// 3. Listen for Changes to Save State
+	map.on('baselayerchange', function(e) {
+	    localStorage.setItem('LeafletBaseMap', e.name);
+	});
+}
+
 function addOurControls(map) {
-	
+
+	///////////////////////
+	// Layer Control, with Persistance
+	// by now layers may have added themselves to the map by default, so still need to remove them!
+
+	if (window.localStorage) {
+		// Get the saved object, or an empty object if nothing exists yet
+		var savedOverlays = JSON.parse(localStorage.getItem('LeafletOverlays') || '{}');
+		Object.keys(overlayMaps).forEach(function(name) {
+		    var isVisible = map.hasLayer(overlayMaps[name]); // Current state in code
+		    var wanted = savedOverlays[name];               // Saved state (true, false, or undefined)
+
+		    // Only take action if we have a saved preference for this specific layer
+		    if (wanted === true && !isVisible) {
+		        map.addLayer(overlayMaps[name]);
+		    } else if (wanted === false && isVisible) {
+		        map.removeLayer(overlayMaps[name]);
+		    }
+		});
+	}
+
 	//the parent map will now have modified the baseMaps/overlayMaps lists!
 	layerswitcher = L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+	if (window.localStorage) {
+		map.on('overlayadd overlayremove', function() {
+		    // 1. Get current state from storage to avoid losing data for layers not currently in the loop
+		    var state = JSON.parse(localStorage.getItem('LeafletOverlays') || '{}');
+
+		    // 2. Update the state for every layer defined in your overlayMaps variable
+		    Object.keys(overlayMaps).forEach(function(name) {
+		        state[name] = map.hasLayer(overlayMaps[name]);
+		    });
+
+		    // 3. Save the updated object back to localStorage
+		    localStorage.setItem('LeafletOverlays', JSON.stringify(state));
+		});
+	}
+
+	///////////////////////
 
 	if (L.britishGrid) {
 		//not strictly a control, this is just setting event to mutate the Grid layers depending on baselayer
