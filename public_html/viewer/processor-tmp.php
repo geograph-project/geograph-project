@@ -10,6 +10,16 @@ $USER->mustHavePerm("basic");
 $db = GeographDatabaseConnection(true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Processing</title>
+</head>
+<body>
+<?
 
 //cant use a template, as the fake jquery geograph.js creates, as conflicts with imagehash
 //$smarty->display('_std_begin.tpl');
@@ -102,35 +112,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		}); */
 
 		results.push(result);
+        next_image();
+    }
 
-		if (images.length) {
-			document.getElementById('msg').innerHTML = images.length+' remain to process';
-
-			current = images.shift();
-			img.src = current.path;
-		} else {
-			//NOTE, we CANT use jqyery here, conflicts with imagehash (both use $)
-			if ('sendBeacon' in navigator) {
-				document.getElementById('msg').innerHTML = 'Done all in current batch. Submitting...';
-				setTimeout(function() {
-					done = navigator.sendBeacon("/viewer/processor.json.php", JSON.stringify(results));
-					if (done) {
-						//with beacon, dont have to wait - should be queued, even if not sent immidately. 
-						//.. but we should wait, so it has been processed, otherwise will get the same images again!
-						setTimeout(function() {
-							window.location.reload();
-						}, 5000);
-					} else {
-						alert('unable to save results. please contact us!');
-					}
-				}, 1000); //should use await, but for now just to make sure results come back for last limage. 
-
-			} else {
-				alert('unable to save results. please contact us!');
-			}
-		}
-	}
-
+    //start going...
 	if (images.length) {
 		current = images.shift();
 		img.src = current.path;
@@ -139,10 +124,41 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 });
 
+// NOTE: Replacing sendBeacon with Fetch to ensure server processing finishes before reload
+async function next_image() {
+    const msgElement = document.getElementById('msg');
+	if (images.length) {
+		msgElement.innerHTML = images.length+' remain to process (in current batch only)';
+
+		current = images.shift();
+		img.src = current.path; //processing happens in .onload event
+	} else {
+        msgElement.innerHTML = 'Done all in current batch. Submitting...';
+
+        try {
+            const response = await fetch("/viewer/processor.json.php", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(results)
+            });
+
+            if (response.ok) {
+                // Success! The server has finished processing.
+                msgElement.innerHTML = 'Success! Reloading...';
+                window.location.reload();
+            } else {
+                // Server returned an error (e.g., 404 or 500)
+                alert('Unable to save results. Please contact us!');
+                //throw new Error('Server responded with an error');
+            }
+
+        } catch (error) {
+            console.error('Submission failed:', error);
+            alert('Unable to save results. Please contact us!');
+        }
+	}
+}
+
 </script>
-
-<?
-
-
-//$smarty->display('_std_end.tpl',md($_SERVER['PHP_SELF']));
-
