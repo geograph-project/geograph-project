@@ -2193,6 +2193,7 @@ map.on('mousedown dragstart', function(e) {
         const tab2 = document.getElementById('maparea');
         if (!tab2) return;
 
+        //gather Map inputs
         const inputs = tab2.querySelectorAll('input[type=text]');
         const labels = tab2.querySelectorAll('label.gr');
         const mapInfo = document.getElementById('mapInfo');
@@ -2207,6 +2208,11 @@ map.on('mousedown dragstart', function(e) {
         inputs.forEach(input => {
             // Focus event
             input.addEventListener('focus', function() {
+                //special rule, as subject may be prefilled with a 4fig GR which would cause a disconcerting jump!
+                if (this.name == 'grid_reference' && this.value && this.value.match(/^[A-Z]{1,2}\s*\d{2}\s*\d{2}$/)
+                    && document.getElementById('photographer_gridref').value.length > 8) {
+                    this.value = document.getElementById('photographer_gridref').value;
+                }
                 clearActive();
                 this.classList.add('active');
                 if (this.previousElementSibling) {
