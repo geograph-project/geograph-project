@@ -47,12 +47,9 @@ if (!empty($_GET['all'])) {
 	 left join gridimage_hash using (gridimage_id)
 	where $where limit $limit";
 
-} elseif (!empty($_GET['pending'])) {
-	$sql = "select s.*,gi.user_id from gridimage gi inner join gridimage_size s using (gridimage_id) left join gridimage_hash using (gridimage_id)
-	 where gi.user_id = {$user_id} and $where and moderation_status = 'pending' limit $limit";
 } else {
 	//include user_id just to make fastInit easy
-	$sql = "select s.*,gi.user_id from gridimage_search gi inner join gridimage_size s using (gridimage_id) left join gridimage_hash using (gridimage_id)
+	$sql = "select s.*,gi.user_id from gridimage gi inner join gridimage_size s using (gridimage_id) left join gridimage_hash using (gridimage_id)
 	 where gi.user_id = {$user_id} and $where limit $limit";
 }
 
