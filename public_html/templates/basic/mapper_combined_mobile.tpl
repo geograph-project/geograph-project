@@ -281,21 +281,7 @@ svg.svgFilter {
 	var map = L.map('map', mapOptions);
         var hash = new L.Hash(map);
 
-
-	if ($.localStorage && $.localStorage('LeafletBaseMap')) {
-		basemap = $.localStorage('LeafletBaseMap');
-		if (baseMaps[basemap])
-			map.addLayer(baseMaps[basemap]);
-		else
-			map.addLayer(baseMaps["OpenStreetMap"]);
-	} else {
-		map.addLayer(baseMaps["OpenStreetMap"]);
-	}
-	if ($.localStorage) {
-		map.on('baselayerchange', function(e) {
-			$.localStorage('LeafletBaseMap', e.name);
-		});
-	}
+	addBaseLayer("OpenStreetMap"); //the default layer from Leaflet.base-layers.js, but will automatically use user prefernce too!
 
 	var sidebar;
 	setTimeout(function() {
@@ -370,6 +356,13 @@ svg.svgFilter {
 		                btn.state('general');
 		            }
 		    }]
+		});
+		//keep in sync, if layer is added/removed manually, or via user-preference
+		overlayMaps["(Personalize Coverage)"].on('add', function() {
+		    stateChangingButton.state('personal');
+		});
+		overlayMaps["(Personalize Coverage)"].on('remove', function() {
+		    stateChangingButton.state('general');
 		});
 		{/literal}
 		{if $filter}
