@@ -236,7 +236,7 @@ baseMaps['Historic OS - GB 1920s'] = L.tileLayer('https://api.maptiler.com/tiles
                                 bounds: [[49.6, -9], [61.7, 3]] });
 
 	//note this layer is used with specific permission of NLS, need to ask before using it in other sites
-baseMaps['Historic OS - Ireland'] = L.tileLayer('https://geo.nls.uk/maps/ireland/gsgs4136/{z}/{x}/{y}.png',
+baseMaps['Historic OS - Ireland'] = L.tileLayer('https://mapseries-tilesets.s3.amazonaws.com/ireland/gsgs4136/{z}/{x}/{y}.png',
                         {mapLetter: 'i', tms: true, minZoom: 5, maxZoom: 15, attribution: 'Provided by <a href="https://geo.nls.uk/">NLS Geo</a>',
                                 bounds: [[51.371780, -10.810546], [55.422779, -5.262451]] });
 
