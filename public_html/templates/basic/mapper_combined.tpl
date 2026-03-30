@@ -58,14 +58,11 @@
 		</div>
 		Quick Mode: 
 		{dynamic}
-	        <a class="tab{if !$filter}Selected{/if}" data-layer="Coverage - Standard">Coverage</a>
-	        {if $stats && $stats.images}
-			<a class="tab{if $filter}Selected{/if}" data-layer="(Personalize Coverage)">Personalized</a>
-		{/if}
-		{/dynamic}
-	        <a class="tab" data-layer="Photo Subjects">Subjects</a>
-	        <a class="tab" data-layer="Photo Viewpoints">Viewpoints</a>
+	        <a class="tab{if !$dots && !$views}Selected{/if}" data-layer="Coverage - Standard">Coverage</a>
+	        <a class="tab{if $dots}Selected{/if}" data-layer="Photo Subjects">Subjects</a>
+	        <a class="tab{if $views}Selected{/if}" data-layer="Photo Viewpoints">Viewpoints</a>
 	        <a class="tab" data-layer="Photo Thumbnails">Thumbnails</a>
+		{/dynamic}
 	</div>
 
 	<div style="position:relative; width:800px; height:600px">
@@ -311,6 +308,13 @@
 		            }
 		    }]
 		});
+                //keep in sync, if layer is added/removed manually, or via user-preference
+                overlayMaps["(Personalize Coverage)"].on('add', function() {
+                    stateChangingButton.state('personal');
+                });
+                overlayMaps["(Personalize Coverage)"].on('remove', function() {
+                    stateChangingButton.state('general');
+                });
 		{/literal}
 		{if $filter}
 			stateChangingButton.state('personal');
@@ -392,6 +396,24 @@
 
 /////////////////////////////////////////////////////
 
+		// Sync the Tabs to the Layers (allows for muliple, but importantly so tabs react to edits via layer (or from saved layers!)
+		//needs to be done BEOFRE addOurControls !
+		$('.tabHolder a[data-layer]').each(function() {
+		    var $tab = $(this);
+		    var layerName = $tab.data('layer');
+		    var layer = overlayMaps[layerName];
+		    if (layer) {
+		        layer.on('add', function() {
+		            $tab.addClass('tabSelected').removeClass('tab');
+		        });
+		        layer.on('remove', function() {
+		            $tab.addClass('tab').removeClass('tabSelected');
+		        });
+		    }
+		});
+
+/////////////////////////////////////////////////////
+
 	addOurControls(map);
 
 	if (layerswitcher)
@@ -446,18 +468,18 @@ function startTour() {
 	}
 	$(function() {
 
+		//note! the tab/tabSelected classes are added by events setup on the layers directly! (which must be setup before addOurControls!) 
 		$('.tabHolder a').on('click',function() {
 			var layeron = $(this).data('layer');
 			$('.tabHolder a.tabSelected').each(function() {
 				var layeroff = $(this).data('layer');
-				if (overlayMaps[layeroff] && layeron != '(Personalize Coverage)') {
+				if (overlayMaps[layeroff] && layeroff !== layeron) {
 					overlayMaps[layeroff].removeFrom(map);
-					$(this).addClass('tab').removeClass('tabSelected');
 				}
 			});
 			if (overlayMaps[layeron]) {
-				overlayMaps[layeron].addTo(map);
-				$(this).addClass('tabSelected').removeClass('tab');
+				if (!map.hasLayer(overlayMaps[layeron]))
+					overlayMaps[layeron].addTo(map);
 				if (layeron == 'Photo Viewpoints' && map.getZoom() < 11)
 					map.setZoom(11);
 			}
