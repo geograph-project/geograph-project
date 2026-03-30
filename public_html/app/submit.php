@@ -2325,7 +2325,7 @@ map.on('mousedown dragstart', function(e) {
             } else {
                 if (z < 7) precision = 1;
                 else if (z < 10) precision = 2;
-                else if (z < 13) precision = 3;
+                else if (z < 14) precision = 3;
                 else if (z > 17) precision = 5;
             }
 
