@@ -33,9 +33,7 @@ $user_id = intval($USER->user_id);
 
 $count = $db->getOne("select count(*) from gridimage_search gi left join gridimage_hash using (gridimage_id) where gi.user_id = $user_id and gridimage_hash.gridimage_id is null");
 
-//$count = $db->getOne("select count(*) from gridimage gi left join gridimage_hash using (gridimage_id) where gi.user_id = $user_id and gridimage_hash.gridimage_id is null and moderation_status = 'pending'");
-
-$count = 1000;
+//for now, dont check pending+tmp. recent images are likly being tracked locally anyway
 
 if (!empty($count) && empty($_GET['ignore'])) {
 	$seconds = intval($count * 20 / 50);
@@ -97,7 +95,7 @@ if (!empty($count) && empty($_GET['ignore'])) {
 
 	<h3>How it works</h3>
 	<ul>
-	    <li><b>Keep the tab open:</b> The processor will continue in the background, though it may run faster if the tab is active.</li>
+	    <li><b>Keep the tab open:</b> (on Desktop) The processor will continue in the background, though it may run faster if the tab is active.</li>
 	    <li><b>Performance:</b> Expect a rate of roughly 50 images every 20 seconds.</li>
 	    <li><b>Local Processing:</b> Images are downloaded and hashed on your computer; the resulting hashes are then saved to our servers.</li>
 	    <li><b>Stopping/Restarting:</b> You can safely close the processor at any time. To resume, simply reopen the link. If the process appears to stall, refresh the page.</li>
@@ -159,7 +157,8 @@ $hashesUrl .= "?t=".$token->getToken();
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
         
         /* Header & Nav */
-        header { sticky: top; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid #333; z-index: 100; position: sticky; top: 0; }
+        header { sticky: top; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); gap: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid #333; z-index: 100; position: sticky; top: 0; }
+	header .btn-help { margin-left: auto; }
         .stats { font-size: 12px; color: #888; }
         
         /* Controls */
@@ -217,6 +216,7 @@ $hashesUrl .= "?t=".$token->getToken();
         <strong>Local Folders</strong>
         <div id="file-count" class="stats">Initializing...</div>
     </div>
+    <button class="btn btn-help" onclick="toggleModal('help-modal')">?</button>
     <button onclick="toggleModal('settings-modal')">Settings</button>
 </header>
 
@@ -237,7 +237,7 @@ $hashesUrl .= "?t=".$token->getToken();
 </div>
 
 <script>
-let dateFilter = 'all';
+let dateFilter = '3';
 let viewMode = 'gallery'; // 'gallery' or 'details'
 let focusedGroupId = null;
 
@@ -257,11 +257,12 @@ function toggleViewMode() {
 
 <div id="settings-modal" class="modal">
     <div class="modal-content">
+        <button style="float:right" onclick="toggleModal('settings-modal')">Close</button>
+
         <h3>Monitored Folders</h3>
         <div id="folder-list"></div>
-        <hr style="border: 0.5px solid #333; margin: 20px 0;">
+
         <button class="primary" style="width:100%" onclick="startFolderScan()">+ Add New Folder</button>
-        <button style="width:100%; margin-top:10px;" onclick="toggleModal('settings-modal')">Close</button>
 
         <div style="margin-top: 50px; border-top: 1px solid #333;">
             <button style="width:100%; margin-bottom: 8px;" onclick="reFetchHashes()">
@@ -276,6 +277,7 @@ function toggleViewMode() {
         </div>
 
     </div>
+    <button style="width:100%; margin-top:10px;" onclick="toggleModal('settings-modal')">Close</button>
 </div>
 
 <div id="action-modal" class="modal" onclick="closeActionModal(event)">
@@ -295,6 +297,8 @@ function toggleViewMode() {
 
 
 <div id="help-modal" class="modal" onclick="closeActionModal(event)">
+    <div class="modal-content" style="max-width: 60em; margin:auto;" onclick="event.stopPropagation()">
+	<button onclick="toggleModal('help-modal')" class="btn" style=float:right>Close</button>
 
 	<h1>Enhanced Image Browser (Beta)</h1>
 
@@ -339,8 +343,9 @@ function toggleViewMode() {
 	    <li><strong>Background Running:</strong> On a computer, you can leave this running in a tab until it finishes.</li>
 	</ul>
 
-	<p><a href="#">[Send me an email with a link to complete this on a Desktop]</a></p>
-
+	<p><a href="?send=1" style=color:cyan>[Send me an email with a link to complete this on a Desktop]</a></p>
+    </div>
+    <button onclick="toggleModal('help-modal')" class="btn btn-primary">Close</button>
 </div>
 
 
@@ -593,6 +598,28 @@ async function processFileQueue(fileQueue, rootPath) {
 /////////////////////////////////////////////
 // Render Functions
 
+// Create a single observer to handle all thumbnails
+const thumbObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const imgElement = entry.target;
+            const blob = imgElement._blobReference; // Retrieve the stored blob
+
+            if (blob) {
+                const url = URL.createObjectURL(blob);
+                imgElement.src = url;
+
+                // Cleanup: Revoke after load and stop observing
+                imgElement.onload = () => {
+                    URL.revokeObjectURL(url);
+                    imgElement.removeAttribute('_blobReference');
+                };
+            }
+            observer.unobserve(imgElement);
+        }
+    });
+}, { rootMargin: '200px' }); // Load 200px before they scroll into view
+
 function createThumbElement(img) {
     const div = document.createElement('div');
     const safeId = btoa(img.fileId).replace(/=/g,'');
@@ -605,26 +632,31 @@ function createThumbElement(img) {
         div.classList.add(`${img.uploadStatus.match}-match`);
     }
 
-    const url = URL.createObjectURL(img.thumb);
-    div.innerHTML = `<img src="${url}" loading="lazy" onload="window.URL.revokeObjectURL(this.src)">`;
+    //const url = URL.createObjectURL(img.thumb);
+    //div.innerHTML = `<img src="${url}" loading="lazy" onload="window.URL.revokeObjectURL(this.src)">`;
+
+    // Store the blob directly on the element object (no memory overhead vs a variable)
+    const thumbImg = document.createElement('img');
+    thumbImg._blobReference = img.thumb;
+    thumbImg.alt = img.fileId;
+    thumbObserver.observe(thumbImg);
+    div.appendChild(thumbImg);
+
     div.onclick = () => openActionModal(img);
     return div;
 }
 
 function createDetailsElement(img) {
     const div = document.createElement('div');
-    div.className = 'details-item';
     const safeId = btoa(img.fileId).replace(/=/g,'');
     div.id = `details-${safeId}`;
+    div.className = 'details-item';
 
-    const url = URL.createObjectURL(img.thumb);
     const filename = img.fileId.split('/').pop();
     const folder = img.fileId.substring(0, img.fileId.lastIndexOf('/'));
 
     div.innerHTML = `
-        <div class="details-thumb">
-            <img src="${url}" onload="window.URL.revokeObjectURL(this.src)">
-        </div>
+        <div class="details-thumb"></div>
         <div class="details-info">
             <strong>${filename}</strong>
             <div><span class="label">Folder:</span> ${folder}</div>
@@ -634,7 +666,14 @@ function createDetailsElement(img) {
         </div>
     `;
 
-    div.querySelector('.details-thumb').onclick = () => openActionModal(img);
+    const thumbImg = document.createElement('img');
+    thumbImg._blobReference = img.thumb;
+    thumbImg.alt = filename;
+    thumbObserver.observe(thumbImg);
+
+    const thumbContainer = div.querySelector('.details-thumb');
+    thumbContainer.appendChild(thumbImg);
+    thumbContainer.onclick = () => openActionModal(img);
 
     if (img.uploadStatus) {
         if (img.uploadStatus.info.id) div.classList.add('already-submitted');
@@ -677,7 +716,20 @@ async function renderFullGallery() {
     }
 
     if (images.length === 0) {
-        root.innerHTML = '<div id="drop-zone">No images found for this filter.</div>';
+        const folders = await getAllFromStore('folders');
+        const hasFolders = folders && folders.length > 0;
+
+        root.innerHTML = `
+            <div id="drop-zone">
+                <p>No images found for this filter.</p>
+                ${!hasFolders ? `
+                    <p>
+                        Go to <button onclick="toggleModal('settings-modal')">Settings</button> to add a folder to be scanned,
+                        or click the <button onclick="toggleModal('help-modal')">?</button> button for information about this tool.
+                    </p>
+                ` : ''}
+            </div>`;
+
         updateStats();
         return;
     }
@@ -1123,6 +1175,8 @@ async function wipeAllData() {
 
     deleteReq.onblocked = () => {
         alert("Database deletion blocked. Please close all other tabs of this app and try again.");
+	//still reload, seems like often it actully deelrted it anyway!
+        window.history.go(0);
     };
 }
 
