@@ -157,14 +157,15 @@ $hashesUrl .= "?t=".$token->getToken();
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
         
         /* Header & Nav */
-        header { sticky: top; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); gap: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid #333; z-index: 100; position: sticky; top: 0; }
+        header { sticky: top; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); padding: 4px; gap: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid #333; z-index: 100; position: sticky; top: 0; }
 	header .btn-help { margin-left: auto; }
         .stats { font-size: 12px; color: #888; }
         
         /* Controls */
         .toolbar { padding: 10px; display: flex; gap: 8px; background: #111; scroll-margin-top: 60px; }
-        button { background: #2c2c2e; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 500; cursor: pointer; }
+        button { background: #2c2c2e; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 500; cursor: pointer; }
         button.primary { background: var(--accent); }
+	select { background: #2c2c2e; color: white; border: none;  padding: 8px 12px; border-radius: 8px; }
 
         /* Gallery Layout */
         #gallery-root { padding: 10px; }
@@ -193,6 +194,7 @@ $hashesUrl .= "?t=".$token->getToken();
         .modal-content { background: var(--card); border-radius: 12px; padding: 20px; max-height: 80vh; overflow-y: auto; }
         .folder-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #333; }
         .remove-btn { color: #ff3b30; font-size: 12px; }
+	.modal a { color: cyan; }
 
         .already-submitted {background-color:#073902; filter: grayscale(0.5); opacity: 0.8; }
 
@@ -343,7 +345,7 @@ function toggleViewMode() {
 	    <li><strong>Background Running:</strong> On a computer, you can leave this running in a tab until it finishes.</li>
 	</ul>
 
-	<p><a href="?send=1" style=color:cyan>[Send me an email with a link to complete this on a Desktop]</a></p>
+	<p><a href="?send=1">[Send me an email with a link to complete this on a Desktop]</a></p>
     </div>
     <button onclick="toggleModal('help-modal')" class="btn btn-primary">Close</button>
 </div>
@@ -1213,7 +1215,7 @@ window.onload = async () => {
     renderFullGallery();
 };
 </script>
-<a href="javascript:(function () {var script=document.createElement('script');script.src='//cdn.jsdelivr.net/npm/eruda';document.body.appendChild(script); script.onload = function () { eruda.init() } })();">dev</a>
+<a href="javascript:(function () {var script=document.createElement('script');script.src='//cdn.jsdelivr.net/npm/eruda';document.body.appendChild(script); script.onload = function () { eruda.init() } })();" style="color:#333">dev-tools, for developers only</a>
 
 
 </body>
