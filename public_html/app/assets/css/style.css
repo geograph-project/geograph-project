@@ -611,8 +611,12 @@ input[type="search"] {
 	white-space: nowrap;
 }
 
+.view {
+    max-width: 60em; margin: 0 auto;
+}
+
 .faq-view {
-    max-width: 600px; margin: 0 auto; padding: 10px;
+    padding: 10px;
 }
 .faq-view h2 {
     text-align:center;

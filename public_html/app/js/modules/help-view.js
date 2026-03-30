@@ -81,7 +81,7 @@ export function render() {
 
     <hr>
 
-    <main>
+    <main class="view">
         <section class="intro">
             <p>Geograph is a free-to-use photographic archive of Britain and Ireland.</p>
             <p>This is a test version of the Geograph app which is still in development.</p>
