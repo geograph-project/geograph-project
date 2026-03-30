@@ -456,12 +456,39 @@ function addBaseLayer(defaultLayer) {
 
 	// 1. Handle Basemap Persistence
 	var savedBasemap = localStorage.getItem('LeafletBaseMap');
+	var layerToLoad = baseMaps[defaultLayer]; // Start with fallback
 
 	if (savedBasemap && baseMaps[savedBasemap]) {
-	    map.addLayer(baseMaps[savedBasemap]);
-	} else {
-	    map.addLayer(baseMaps[defaultLayer]);
+		var preferredLayer = baseMaps[savedBasemap];
+
+		var currentCenter = null;
+		try {
+		        currentCenter = map.getCenter();
+		} catch (e) {
+		        // Map might not be initialized with a view yet
+			if (typeof mapOptions !== 'undefined') {
+			        currentCenter = mapOptions.center || null;
+			}
+		}
+
+		// Suitability Check:
+                // 1. Is the map centered?
+		// 2. Does the layer have bounds defined?
+		// 3. Is the current map center inside those bounds?
+		var hasBounds = preferredLayer.options && preferredLayer.options.bounds;
+		var isWithinBounds = false;
+
+		if (hasBounds && currentCenter) {
+		    // Construct LatLngBounds just in case it's a simple array/object literal
+		    var bounds = L.latLngBounds(preferredLayer.options.bounds);
+		    isWithinBounds = bounds.contains(currentCenter);
+		}
+
+		if (!hasBounds || isWithinBounds || !currentCenter) {
+		    layerToLoad = preferredLayer;
+		}
 	}
+	map.addLayer(layerToLoad);
 
 	// 3. Listen for Changes to Save State
 	map.on('baselayerchange', function(e) {
