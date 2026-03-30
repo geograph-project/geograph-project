@@ -455,7 +455,7 @@ function addBaseLayer(defaultLayer) {
 	}
 
 	// 1. Handle Basemap Persistence
-	var savedBasemap = localStorage.getItem('LeafletBaseMap');
+	var savedBasemap = JSON.parse(localStorage.getItem('LeafletBaseMap'));
 	var layerToLoad = baseMaps[defaultLayer]; // Start with fallback
 
 	if (savedBasemap && baseMaps[savedBasemap]) {
@@ -492,7 +492,7 @@ function addBaseLayer(defaultLayer) {
 
 	// 3. Listen for Changes to Save State
 	map.on('baselayerchange', function(e) {
-	    localStorage.setItem('LeafletBaseMap', e.name);
+	    localStorage.setItem('LeafletBaseMap', JSON.stringify(e.name)); //stringify to maintain compatbity!
 	});
 }
 
