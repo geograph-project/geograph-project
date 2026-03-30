@@ -7,7 +7,8 @@ L.Control.EnhanceButton = L.Control.extend({
     options: {
         position: 'topleft',
         title: 'Map Enhancement',
-        icon: '&#10024;'
+        icon: '&#10024;',
+	storageKey: 'LeafletMapEnhance'
     },
 
     onAdd: function (map) {
@@ -17,7 +18,8 @@ L.Control.EnhanceButton = L.Control.extend({
 
         // Container
         const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-enhance-control');
-        
+        this._container = container; // Ensure reference for _hideMenu
+
         // Toggle Button
         const button = L.DomUtil.create('a', 'enhance-toggle-btn', container);
         button.innerHTML = this.options.icon;
@@ -40,6 +42,12 @@ L.Control.EnhanceButton = L.Control.extend({
             { id: 'enableHighContrast', val: 'applyHighContrast', label: 'High Contrast' }
         ];
 
+	// 1. Determine the initial state from localStorage
+        let savedState = 'applyNone';
+        if (window.localStorage && this.options.storageKey) {
+            savedState = localStorage.getItem(this.options.storageKey) || 'applyNone';
+        }
+
         options.forEach(opt => {
             const wrapper = L.DomUtil.create('div', 'enhance-opt', menu);
             const input = L.DomUtil.create('input', '', wrapper);
@@ -47,7 +55,7 @@ L.Control.EnhanceButton = L.Control.extend({
             input.name = 'enhance_radio';
             input.id = opt.id;
             input.value = opt.val;
-            if (opt.val === 'applyNone') input.checked = true;
+            if (opt.val === savedState) input.checked = true;
 
             const label = L.DomUtil.create('label', '', wrapper);
             label.htmlFor = opt.id;
@@ -55,6 +63,11 @@ L.Control.EnhanceButton = L.Control.extend({
 
             L.DomEvent.on(input, 'change', (e) => {
                 this._applyFilter(e.target.value);
+
+		//Save the preference
+	        if (window.localStorage && this.options.storageKey) {
+        	    localStorage.setItem(this.options.storageKey, e.target.value);
+	        }
             });
         });
 
@@ -76,6 +89,12 @@ L.Control.EnhanceButton = L.Control.extend({
                 this._map.once('mousedown touchstart movestart', this._hideMenu, this);
             }
         });
+
+	// Restore the filter on load
+        // We use a timeout or a nextTick to ensure the pane is ready
+        setTimeout(() => {
+            this._applyFilter(savedState);
+        }, 0);
 
         return container;
     },
@@ -173,7 +192,8 @@ L.Control.OpacityMenu = L.Control.extend({
         title: 'Layer Opacity Settings',
         icon: '<i class="fa fa-adjust"></i>', // Using an emoji, but you can use <i class="fa fa-adjust"></i>
         baseMaps: {},
-        overlayMaps: {}
+        overlayMaps: {},
+	storageKey: 'LeafletMapOpacity'
     },
 
     onAdd: function (map) {
@@ -183,7 +203,8 @@ L.Control.OpacityMenu = L.Control.extend({
 
         // Container
         const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-opacity-control');
-        
+	this._container = container; // Ensure reference for _hideMenu
+
         // Toggle Button
         const button = L.DomUtil.create('a', 'opacity-toggle-btn', container);
         button.innerHTML = this.options.icon;
@@ -198,10 +219,16 @@ L.Control.OpacityMenu = L.Control.extend({
         L.DomEvent.disableScrollPropagation(container);
 
         const modes = [
-            { id: 'opNominal', label: 'Standard', base: 1.0, over: 1.0, checked: true },
+            { id: 'opNominal', label: 'Standard', base: 1.0, over: 1.0 },
             { id: 'opHighlightBase', label: 'Highlight Base Map', base: 1.1, over: 0.6 },
             { id: 'opHighlightOver', label: 'Highlight Overlays', base: 0.6, over: 1.1 }
         ];
+
+        // 1. Determine the initial state from localStorage
+        let savedState = 'opNominal';
+        if (window.localStorage && this.options.storageKey) {
+            savedState = localStorage.getItem(this.options.storageKey) || 'opNominal';
+        }
 
         modes.forEach(mode => {
             const wrapper = L.DomUtil.create('div', 'opacity-opt', menu);
@@ -209,7 +236,7 @@ L.Control.OpacityMenu = L.Control.extend({
             input.type = 'radio';
             input.name = 'opacity_preset';
             input.id = mode.id;
-            if (mode.checked) input.checked = true;
+            if (savedState === mode.id) input.checked = true;
 
             const label = L.DomUtil.create('label', '', wrapper);
             label.htmlFor = mode.id;
@@ -217,6 +244,10 @@ L.Control.OpacityMenu = L.Control.extend({
 
             L.DomEvent.on(input, 'change', () => {
                 this._applyOpacityPreset(mode.base, mode.over);
+		//Save the preference
+		if (window.localStorage && this.options.storageKey) {
+		    localStorage.setItem(this.options.storageKey, mode.id);
+		}
             });
         });
 
@@ -239,6 +270,15 @@ L.Control.OpacityMenu = L.Control.extend({
                 this._map.once('mousedown touchstart movestart', this._hideMenu, this);
             }
         });
+
+	if (savedState != 'opNominal') {
+		const mode = modes.find(record => record.id == savedState);
+		if (mode) {
+			setTimeout(() => {
+		            this._applyOpacityPreset(mode.base, mode.over);
+	        	}, 0);
+		}
+	}
 
         return container;
     },
