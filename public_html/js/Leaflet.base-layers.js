@@ -475,10 +475,24 @@ function addOurControls(map) {
 	// Layer Control, with Persistance
 	// by now layers may have added themselves to the map by default, so still need to remove them!
 
+	let excludedLayerNames = window.excludedLayerNames || [];
+
 	if (window.localStorage) {
+		const urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.has('views'))    excludedLayerNames.push("Photo Viewpoints");
+		if (urlParams.has('dots'))     excludedLayerNames.push("Photo Subjects");
+        //if added a dots layer, would of removed the coverage too!
+        if (excludedLayerNames.length) excludedLayerNames.push("Coverage - Standard");
+
 		// Get the saved object, or an empty object if nothing exists yet
 		var savedOverlays = JSON.parse(localStorage.getItem('LeafletOverlays') || '{}');
 		Object.keys(overlayMaps).forEach(function(name) {
+
+			// IF this layer is forced by URL, skip restoration logic entirely
+            if (excludedLayerNames.includes(name)) {
+                return;
+            }
+
 		    var isVisible = map.hasLayer(overlayMaps[name]); // Current state in code
 		    var wanted = savedOverlays[name];               // Saved state (true, false, or undefined)
 
@@ -501,7 +515,10 @@ function addOurControls(map) {
 
 		    // 2. Update the state for every layer defined in your overlayMaps variable
 		    Object.keys(overlayMaps).forEach(function(name) {
-		        state[name] = map.hasLayer(overlayMaps[name]);
+                // Don't save layers that are only on/off because of the URL
+                if (!excludedLayerNames.includes(name)) {
+		            state[name] = map.hasLayer(overlayMaps[name]);
+                }
 		    });
 
 		    // 3. Save the updated object back to localStorage
