@@ -88,12 +88,13 @@ class Router {
         this.hideAllIframes();
 
         let iframe = this.iframes[id];
+        let finalUrl = baseUrl;
 
 	if (id === 'map' && AppState.getPreference('mapAutoLocate',false))
-		options.param = "locate=1";
+		//options.param = "locate=1"; //triggers reload every time
+		finalUrl += "&locate=1";
 
-        // 1. URL Param Logic: If data-param exists, we force a URL update/reload
-        let finalUrl = baseUrl;
+        // If data-param exists, we force a URL update/reload
         if (options.param) {
             const separator = baseUrl.includes('?') ? '&' : '?';
             finalUrl = `${baseUrl}${separator}${options.param}`;
