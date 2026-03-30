@@ -9,10 +9,10 @@ export function render() {
 
             <button id="edit-btn" class="btn btn-secondary hidden" data-route="/app/recent">Edit Recent Submissions</button>
 
-		<form id="search-form" class="search-container">
-		    <input type="search" name="q" placeholder="Search your submissions..." enterkeyhint="search">
-		    <button type="submit" aria-label="Search">&#x1F50D;</button>
-		</form>
+    		<form id="search-form" class="search-container">
+	    	    <input type="search" name="q" placeholder="Search your submissions..." enterkeyhint="search">
+		        <button type="submit" aria-label="Search">&#x1F50D;</button>
+    		</form>
 
             <div class="controls">
                 <select id="sort-select">
@@ -43,18 +43,18 @@ export function render() {
                     <h4 id="modal-title"></h4>
                     <img id="modal-img" src="" alt="Draft Preview">
                     <div class="modal-controls">
-			<a href="#" id="full-page-link" target="_blank" class="btn">View Photo Page</a>
-			<a href="#" id="edit-page-link" target="_blank" class="btn">Open Edit Page</a>
+            			<a href="#" id="full-page-link" target="_blank" class="btn">View Photo Page</a>
+            			<a href="#" id="edit-page-link" target="_blank" class="btn">Open Edit Page</a>
                         <button id="close-modal" class="btn btn-secondary">Close</button>
                     </div>
                 </div>
             </dialog>
+
+  	        <br>
+         	<p>Only shows a submissions (including Pending) from last 3 days, view <a href="/profile.php" target="_blank">Full site Profile</a> for more.
+
+	        <p id="timestamp"></p>
         </div>
-
-	<br>
-	<p>Only shows a submissions (including Pending) from last 3 days, view <a href="/profile.php" target="_blank">Full site Profile</a> for more.
-
-	<p id="timestamp"></p>
 
 <style>
 
