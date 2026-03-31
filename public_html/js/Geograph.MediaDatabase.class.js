@@ -406,6 +406,7 @@ class MediaDatabase {
                     upload_id: item.upload_id,
                     uploaded: item.uploaded,
                     status: 'uploaded',
+                    hasGeo: 0, //as an indexed field
                     // Use the uploaded date as the sort key for migrated items
                     lastActivity: this.#toSortableDate(item.uploaded)
                 };
