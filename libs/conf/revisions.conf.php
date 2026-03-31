@@ -140,4 +140,5 @@ $REVISIONS['/js/Leaflet.GeographCoverage/Leaflet.GeographCoverage.js']=75708360;
 $REVISIONS['/js/Leaflet.map-limits.js']=23921325;
 $REVISIONS['/guider/mapper_guider.js']=67206456;
 $REVISIONS['/js/gallery-popup.js']=84187528;
+$REVISIONS['/js/Geograph.MediaDatabase.class.js']=98683818;
 ?>
