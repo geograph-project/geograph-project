@@ -1,4 +1,5 @@
 //assumes, L.easyButton, Font-Awesome, and GeoTools2 are already installed!
+// if MediaDatabase is available, will save taken photos to long term storage
 
 L.GeographCameraButton = L.Control.extend({
     // Default options
@@ -14,6 +15,11 @@ L.GeographCameraButton = L.Control.extend({
     },
 
     onAdd: function(map) {
+	    // we'll assume the user had already created and added the layer to map, but we will take care of loading from history for them
+        if (typeof MediaDatabase !== 'undefined' && this.options.historyPoints) {
+            this._loadHistoryIntoMap();
+        }
+
         // Create a hidden file input bound to this instance
         this._fileInput = L.DomUtil.create('input', 'hidden-camera-input');
         this._fileInput.type = 'file';
@@ -34,6 +40,23 @@ L.GeographCameraButton = L.Control.extend({
         this._setupListeners();
 
         return L.DomUtil.create('div', 'leaflet-camera-control-wrapper');
+    },
+
+    _loadHistoryIntoMap: async function() {
+        const dbHistory = window.dbHistory || new MediaDatabase();
+        const historyPoints = this.options.historyPoints;
+
+        historyPoints.clearLayers();
+        const geoRecords = await dbHistory.getGeoHistory();
+
+        geoRecords.forEach(record => {
+            L.circleMarker([record.exifData.lat, record.exifData.long], {
+                radius: 6,
+                color: record.status === 'uploaded' ? 'green' : 'blue'
+            })
+            .bindPopup(`<b>${record.status.toUpperCase()}</b><br>${record.filename}`)
+            .addTo(historyPoints);
+        });
     },
 
     _setupListeners: function() {
@@ -58,8 +81,8 @@ L.GeographCameraButton = L.Control.extend({
             const now = Date.now();
             if (this._lastGpsResult && (now - this._lastGpsResult.timestamp < 15000)) {
                 console.log("Using 'Fresh' GPS from Map Events");
-                this._processDownload(file, this._lastGpsResult.latlng, false);
-                this._addToHistory(this._lastGpsResult.latlng, false);
+                newName = this._processDownload(file, this._lastGpsResult.latlng, false);
+                this._addToHistory(newName, this._lastGpsResult.latlng, false);
                 btnIcon.className = originalClass;
                 return;
             }
@@ -67,16 +90,16 @@ L.GeographCameraButton = L.Control.extend({
             // 2. Fallback to API if we don't have a fresh fix
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
-                    this._processDownload(file, pos.coords, false);
-                    this._addToHistory(pos.coords, false);
+                    newName = this._processDownload(file, pos.coords, false);
+                    this._addToHistory(newName, pos.coords, false);
                     btnIcon.className = originalClass;
                 },
                 (err) => {
                     // 3. Last Resort: Map Center
                     const mapCenter = this._map.getCenter();
                     this._notify(this._getFriendlyError(err) + " Using map center", 'orange');
-                    this._processDownload(file, mapCenter, true);
-                    this._addToHistory(mapCenter, true);
+                    newName = this._processDownload(file, mapCenter, true);
+                    this._addToHistory(newName, mapCenter, true);
                     btnIcon.className = originalClass;
                 },
                 { enableHighAccuracy: true, timeout: 8000, maximumAge: 10000 }
@@ -103,21 +126,28 @@ L.GeographCameraButton = L.Control.extend({
         }, 3000);
     },
 
-    _addToHistory: function(coords, isFromMap = false) {
+    //_uploadImage: function(newName, exifData) ...
+	    //reminder! if we implement a upload button here, will need to save (via sendToPHP), but ALSO update/resync .historyPoints
+
+    _addToHistory: function(newName, coords, isFromMap = false) {
+        // Try .lat (Leaflet) first, fall back to .latitude (Sensor API)
+        const lat = coords.lat !== undefined ? coords.lat : coords.latitude;
+        const lng = coords.lng !== undefined ? coords.lng : coords.longitude;
+
+       	// Save in long term storage (even if dont have historyPoints layer!)
+	    if (typeof MediaDatabase !== 'undefined' && newName) {
+	        const dbHistory = window.dbHistory || new MediaDatabase();
+    	    dbHistory.savePhotoTaken(newName, lat, lng);
+        }
+
         // Only plot if the historyPoints layer was provided in options
         if (this.options.historyPoints) {
-            const timestamp = new Date().toLocaleTimeString();
 
-            // Try .lat (Leaflet) first, fall back to .latitude (Sensor API)
-            const lat = coords.lat !== undefined ? coords.lat : coords.latitude;
-            const lng = coords.lng !== undefined ? coords.lng : coords.longitude;
+            const timestamp = new Date().toLocaleTimeString();
 
             const marker = L.circleMarker([lat, lng], {
                 radius: 6,
-                color: '#0078ff',
-                fillColor: '#0078ff',
-                fillOpacity: 0.5,
-                weight: 2
+                color: 'blue'
             });
             marker.bindPopup(`<b>Photo Taken</b><br>${isFromMap ? '(Map Center)' : '(GPS)'}<br>${timestamp}`);
 
@@ -167,6 +197,8 @@ L.GeographCameraButton = L.Control.extend({
         // Clean up
         URL.revokeObjectURL(link.href);
         this._fileInput.value = ''; // Reset input for next photo
+
+        return newName; //needed to for saving to history!
     }
 });
 
