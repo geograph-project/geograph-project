@@ -1020,9 +1020,8 @@ if (filesize($file) > 4000000) {
 		if (!empty($this->realname) && !isValidRealName($this->realname))
 			return 'Only letters A-Z, a-z, hyphens and apostrophes allowed';
 
-		if (empty($existing)) {
-			$existing = $this->db->getOne("select gridimage_id from gridimage g inner join submission_method m using (gridimage_id) where submitted > date_sub(now(), interval 1 hour) and preview_key = '{$this->upload_id}'");
-		}
+
+		$existing = $this->db->getOne("select gridimage_id from gridimage g inner join submission_method m using (gridimage_id) where submitted > date_sub(now(), interval 1 hour) and preview_key = '{$this->upload_id}'");
 
 		if (!empty($existing)) {
 					ob_start();
@@ -1032,8 +1031,10 @@ if (filesize($file) > 4000000) {
                                         $con = ob_get_clean();
                                         debug_message('[Geograph] Duplicate Submission',$con);
 
-			return("Duplicate Submission detected. This image appears to have already been submitted. If you think this is an error, please press F5 key in about 5 minutes time to try again.");
+			$this->existing = $existing;
+			return "This upload is already complete!";
 		}
+
 
 		$viewpoint = new GridSquare;
 		if ($this->viewpoint_gridreference) {

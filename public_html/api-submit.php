@@ -32,8 +32,12 @@ $USER->mustHavePerm('basic');
 $db = GeographDatabaseConnection(false);
 
 
-function failMessage($text) {
+function failMessage($text, $um = null) {
 	print "<p>".htmlentities($text)."</p>";
+	if (!empty($um->existing)) {
+		$existing = intval($um->existing);
+		echo "<p>This image was already processed as ID: <strong>$existing</strong>.</p>";
+	}
 	exit;
 }
 
@@ -147,7 +151,7 @@ function failMessage($text) {
 			}
 
 		} else {
-			failMessage($rc);
+			failMessage($rc, $um);
 		}
 	}
 
