@@ -181,7 +181,7 @@ map.on('mousedown dragstart', function(e) {
 		}
 
                 if (L.GeographRecentUploads)
-                        overlayMaps["Recent Uploads"] = L.geographRecentUploads();
+                        overlayMaps["Recent Submissions"] = L.geographRecentUploads();
 
 		if (L.geographCameraButton) {
 			//write markers onto custom pane, so they OVER the scout polygons!

@@ -480,7 +480,7 @@ function enlargeMap() {
 ///////////////////////////////////////////
 
 		if (L.GeographRecentUploads)
-			overlayMaps["Recent Uploads"] = L.geographRecentUploads();
+			overlayMaps["Recent Submissions"] = L.geographRecentUploads();
 
 		// dots layer
 	        var layerUrl='https://t0.geograph.org.uk/tile/tile-density.php?z={z}&x={x}&y={y}&match=&l=1&6=1';

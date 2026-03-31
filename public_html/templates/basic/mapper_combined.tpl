@@ -323,7 +323,7 @@
 		stateChangingButton.addTo(map);
 
 		if (L.GeographRecentUploads)
-		        overlayMaps["Recent Uploads"] = L.geographRecentUploads();
+		        overlayMaps["Recent Submissions"] = L.geographRecentUploads();
 
 	{else}
 		 delete overlayMaps["Coverage - Opportunities"];
@@ -597,7 +597,7 @@ function startTour() {
 	
 	<li><b>Collections</b>: Experimentally plotting approximate location for pages from the Collection section, to be able to locate them geographically</li>
 
-	<li><b>Recent Uploads</b><sup style=color:red>NEW!</sup> (for contributors only!): Shows images submitted in last 3 days. Regardless of moderation (so can see still pending images on map to follow coverage), so this layer should see new images before visible on other layers. 
+	<li><b>Recent Submissions</b> (for contributors only!): Shows images submitted in last 3 days. Regardless of moderation (so can see still pending images on map to follow coverage), so this layer should see new images before visible on other layers. 
 		Note: Can turn the layer off, and when turn it back on, it will immiidately check for new images, so can use this to follow submissions in real time. 
 
 	<li>We don't have a key of the <b>BGS Bedrock Geology</b> layers, but use the link (in [Location &amp; Map Links...] at top!) to the offical Geology of Britain Viewer, which provides some functions to explain the colouring</li>

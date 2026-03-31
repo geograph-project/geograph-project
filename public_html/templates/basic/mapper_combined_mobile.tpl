@@ -372,7 +372,7 @@ svg.svgFilter {
 		stateChangingButton.addTo(map);
 
                 if (L.GeographRecentUploads)
-                        overlayMaps["Recent Uploads"] = L.geographRecentUploads();
+                        overlayMaps["Recent Submissions"] = L.geographRecentUploads();
 
 		{literal}
 		if (L.geographCameraButton && window.location.search && window.location.search.indexOf('camera')>-1 ) {
@@ -606,7 +606,7 @@ svg.svgFilter {
     <h3>Specialized Layers</h3>
     <ul>
         <li><b>Opportunities:</b> Experimental layer. Lighter (Yellow) means more opportunities; Darker (Red) means the area is well-covered.
-        <li><b>Recent Uploads:</b> (Contributors only) Shows images from the last 3 days, including those pending moderation. Toggle the layer to refresh in real-time.
+        <li><b>Recent Submissions:</b> (Contributors only) Shows images from the last 3 days, including those pending moderation. Toggle the layer to refresh in real-time.
         <li><b>Taken Photos:</b> Displays dots where you took photos during your current session.
         <li><b>Geology (BGS):</b> For a key to the BGS layers, use the "Other Maps" link at the top to visit the official Geology of Britain Viewer.
     </ul>

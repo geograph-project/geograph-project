@@ -1,5 +1,5 @@
 {if !$inner}
-{assign var="page_title" value="Recent Uploads"}
+{assign var="page_title" value="Recent Submissions"}
 {assign var="meta_description" value="Lists your most recent submissions for easy editing and review"}
 {include file="_basic_begin.tpl"}
 
@@ -37,7 +37,7 @@ h3 {
 {/literal}
 </style>
 
-<h3>Recent Uploads{if $criteria}<small style="font-weight:normal">, before: {$criteria|escape:'html'}</small>{/if}</h3>
+<h3>Recent Submissions{if $criteria}<small style="font-weight:normal">, before: {$criteria|escape:'html'}</small>{/if}</h3>
 
 	<div id="results">
 {/if}

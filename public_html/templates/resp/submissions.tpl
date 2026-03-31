@@ -1,5 +1,5 @@
 {if !$inner}
-{assign var="page_title" value="Recent Uploads"}
+{assign var="page_title" value="Recent Submissions"}
 {assign var="meta_description" value="Lists your most recent submissions for easy editing and review"}
 {include file="_std_begin.tpl"}
 
@@ -24,7 +24,7 @@
 {/literal}
 </style>
 
-<h2>Recent Uploads{if $criteria}<small style="font-weight:normal">, submitted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
+<h2>Recent Submissions{if $criteria}<small style="font-weight:normal">, to: {$criteria|escape:'html'}</small>{/if}</h2>
 
 <p>
 <form method=get action="/search.php" style="padding:2px;background-color:silver;color:black;max-width:600px">
