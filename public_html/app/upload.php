@@ -411,11 +411,11 @@ async function renderUI() {
 
                 // Add the UploadID to buttons
                 if (fileQueueLength === 1) {
-                    addIdtoBtn('btnSingle', result.upload_id, result.width, result.height, item.exifData);
+                    addIdtoBtn('btnSingle', result.upload_id, result.width, result.height, item.exifData, item.file.name);
                 } else if (uploadedCount === 1) {
-                    addIdtoBtn('btnFirst', result.upload_id, result.width, result.height, item.exifData);
+                    addIdtoBtn('btnFirst', result.upload_id, result.width, result.height, item.exifData, item.file.name);
                 } else if (uploadedCount === fileQueueLength) {
-                    addIdtoBtn('btnLast', result.upload_id, result.width, result.height, item.exifData);
+                    addIdtoBtn('btnLast', result.upload_id, result.width, result.height, item.exifData, item.file.name);
                 }
 
                 upload_id = result.upload_id;
@@ -446,6 +446,7 @@ async function renderUI() {
                     height: lastResult.height,
                     lat: lastItem.exifData?.lat,
                     long: lastItem.exifData?.long,
+		    name: lastItem.file?.name,
                     imagetaken: lastItem.exifData?.date,
                     orientation: lastItem.exifData?.orientation
                 })});
@@ -462,7 +463,7 @@ async function renderUI() {
         }
     };
 
-function addIdtoBtn(btnId, upload_id, width, height, exifData) {
+function addIdtoBtn(btnId, upload_id, width, height, exifData, name) {
 	//want to overite any existing click (from a previous call!)
         document.getElementById(btnId).onclick = function() {
 		navigateTo('/app/submit',{message: JSON.stringify({
@@ -471,6 +472,7 @@ function addIdtoBtn(btnId, upload_id, width, height, exifData) {
             height: height,
             lat: exifData?.lat,
             long: exifData?.long,
+            name: name,
             imagetaken: exifData?.date,
             orientation: exifData?.orientation
         })});

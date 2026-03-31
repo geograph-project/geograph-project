@@ -119,6 +119,8 @@ class MediaDatabase {
                     updatedRecord.uploaded = now;
                 } else if (status === 'taken') {
                     updatedRecord.taken = now;
+                } else if (status === 'submitted') {
+                    updatedRecord.submitted = now;
                 }
 
                 const putRequest = store.put(updatedRecord);

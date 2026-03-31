@@ -146,6 +146,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             updateAppState({upload_id: 'none'});
         });
     </script>
+
+	<? if (!empty($_POST['filename'])) { ?>
+		<script src="<?php echo smarty_modifier_revision("/js/Geograph.MediaDatabase.class.js"); ?>"></script>
+		<script>
+			const dbHistory = new MediaDatabase();
+			dbHistory.updateMediaHistory(<? echo json_encode($_POST['filename']); ?>, {
+			    status: 'submitted'
+			});
+		</script>
+	<? } ?>
+
 </body>
 </html>
 <?php
@@ -780,6 +791,7 @@ span.tag-pill button {
 <form method="post" action="/app/submit.php?done" name="theForm" id="theForm">
 	<input type=hidden name="upload_id" value="">
 	<input type=hidden name="largestsize" value="65536">
+	<input type=hidden name="filename" id="filename" value="">
 
     <div style="text-align:center">
         <button type="button" onclick="openModal('map-modal')"
@@ -1269,6 +1281,10 @@ span.tag-pill button {
             if (data.transfer_id)
                 if (typeof updateFormProgress == 'function')
                     updateFormProgress();
+
+            if (data.name)
+                document.getElementById('filename').value = data.name;
+
 
         } catch (e) {
 console.log("Error", e);

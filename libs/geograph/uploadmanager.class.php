@@ -1444,6 +1444,9 @@ $this->db->raiseErrorFn = 'adodb_throw';
 							$row['gridsquare'] = $m[1];
 						}
 					}
+					//actully now we want the name, so can track what gets submitted on device
+					if (!empty($exif['COMPUTED']['name']))
+						$row['name'] = $exif['COMPUTED']['name'];
 				}
 		return $row;
 	}
