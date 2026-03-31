@@ -134,6 +134,7 @@ $hashesUrl .= "?t=".$token->getToken();
     <script src="https://unpkg.com/imagehash-web/dist/imagehash-web.min.js"></script>
     <script src="<?php echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
 
+    <script src="<?php echo smarty_modifier_revision("/js/Geograph.MediaDatabase.class.js"); ?>"></script>
     <script src="<?php echo smarty_modifier_revision("/js/submission_utils.js"); ?>"></script>
     <script src="<?php echo smarty_modifier_revision("/viewer/ExifRestorer.js"); ?>"></script>
 
@@ -1080,39 +1081,28 @@ async function triggerUpload(img) {
     updateStats();
 
     try {
-        // 2. Background Processing
+	    //our processItem method, will automatically convert to dataUri (downsizing if needed), and extract exifData automatically
 
-console.log(img);
-            //convert to 'file' to dateUri, BUT, use our resize handler!
-
-            //does resize - if needed, as well as fetching Exif data!
-            //we COULD put the newly generated filename into file.name, and processItem would read it, but better to just use the saved lat/long directly
             const item = await processItem(img); //expects a .file, which we happen to have!
 
-            const result = await sendToPHP(item.dataUri, img.file.name, (percent) => {
-                // Update the button text to show progress
-                //uploadBtn.textContent = `Uploading... ${percent}%`;
-                updateStats(percent);
-            });
+		//our updateStats just accepts the percent directly!
+            const result = await sendToPHP(item.dataUri, img.file.name, updateStats, item.exifData);
+
             if (result && result.success) {
                 img.uploadStatus = { match: 'exact', info: { gid: 1, transfer_id:result.upload_id, title: 'Just Uploaded' } };
                 await updateStore('images', img);
                 imagesFinished++;
                 updateStats();
 
-
-                // SUCCESS: Allow direct submission
-
-                /* we could setup a submit button, but dont have the all the exif data yet, item.exifData should be good though!
+                /* we could setup a submit button, something like this...
                 document.getElementById('submitBtn').onclick = function() {
                     navigateTo('/app/submit',{message: JSON.stringify({
                         transfer_id: result.upload_id,
                         width: result.width,
                         height: result.height,
-                        lat: latestCoords.lat, //use saved coordinates, as dont trust exif!
-                        long: latestCoords.lng,
-                        // Priority: 1. EXIF date from file, 2. Formatted capture time
-                        imagetaken: item.exifData?.date || fallbackExifDate,
+                        lat: item.exifData?.lat,
+                        long: item.exifData?.long,
+                        imagetaken: item.exifData?.date,
                         orientation: item.exifData?.orientation
                     })});
                 }*/
