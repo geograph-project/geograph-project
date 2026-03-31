@@ -131,7 +131,7 @@ $REVISIONS['/app/js/sw.js']=38837486;
 $REVISIONS['/app/js/utils.js']=99402198;
 $REVISIONS['/app/js/router.js']=98981829;
 $REVISIONS['/js/Leaflet.GeographScout.js']=50174383;
-$REVISIONS['/js/Leaflet.GeographCameraButton.js']=25245086;
+$REVISIONS['/js/Leaflet.GeographCameraButton.js']=88504506;
 $REVISIONS['/app/js/modules/faq-view.js']=86629695;
 $REVISIONS['/js/location-selector.module.js']=19429724;
 $REVISIONS['/js/Leaflet.enhanceButton.js']=46447998;
@@ -140,5 +140,5 @@ $REVISIONS['/js/Leaflet.GeographCoverage/Leaflet.GeographCoverage.js']=75708360;
 $REVISIONS['/js/Leaflet.map-limits.js']=23921325;
 $REVISIONS['/guider/mapper_guider.js']=67206456;
 $REVISIONS['/js/gallery-popup.js']=84187528;
-$REVISIONS['/js/Geograph.MediaDatabase.class.js']=26755965;
+$REVISIONS['/js/Geograph.MediaDatabase.class.js']=36556227;
 ?>
