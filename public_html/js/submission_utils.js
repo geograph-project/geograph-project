@@ -294,11 +294,15 @@ function dataURLtoBlob(dataURL) {
         return item; // Still return it for Promise.all convenience
     }
 
-
-function sendToPHP(dataUri, name, onProgress) {
+/*
+* Send file to server, provide the name to store in local cache
+* provide a onProgress callback, to receive a percentage uploaded
+* exifData is optional, not sent to server (should already be in the image bytes), but it can be saved locallly to help with plotting on map, for example
+*/
+function sendToPHP(dataUri, name, onProgress, exifData) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        
+
         // The magic happens here: track upload progress
         if (xhr.upload && onProgress) {
             xhr.upload.addEventListener('progress', (e) => {
@@ -317,7 +321,8 @@ function sendToPHP(dataUri, name, onProgress) {
                 try {
                     const result = JSON.parse(xhr.responseText);
                     if (result.ok) {
-                        saveUploadToLocal(name, result.upload_id);
+                        if (name)
+                            saveUploadToLocal(name, result.upload_id, exifData ?? null);
 
                         resolve({ 
                             success: true, 
@@ -355,9 +360,26 @@ function sendToPHP(dataUri, name, onProgress) {
 /**
  * Helper function to manage the upload history
  */
-function saveUploadToLocal(filename, uploadId) {
+async function saveUploadToLocal(filename, uploadId, exifData) {
     const STORAGE_KEY = 'upload_history';
     const MAX_FILES = 100;
+
+    // Check if the Class is available
+    if (typeof MediaDatabase !== 'undefined') {
+        const dbHistory = new MediaDatabase();
+
+        // Migrate once (The method already checks if localStorage is empty,
+        // so it won't do anything after the first successful run).
+        await dbHistory.migrateFromLocalStorage(STORAGE_KEY);
+
+	//dbHistory.pruneHistory(MAX_FILES); for now no pruning
+
+        return await dbHistory.updateMediaHistory(filename, {
+            status: 'uploaded',
+            uploadId: uploadId,
+            exifData: exifData ?? null
+        });
+    }
 
     // 1. Retrieve existing data or initialize empty array
     let history = [];
@@ -386,3 +408,5 @@ function saveUploadToLocal(filename, uploadId) {
     // 5. Save back to localStorage
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
 }
+
+

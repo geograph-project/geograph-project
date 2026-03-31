@@ -242,6 +242,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
 <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js"></script>
 <script src="<?php echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
+<script src="<?php echo smarty_modifier_revision("/js/Geograph.MediaDatabase.class.js"); ?>"></script>
 <script src="<?php echo smarty_modifier_revision("/js/submission_utils.js"); ?>"></script>
 <script src="<?php echo smarty_modifier_revision("/viewer/ExifRestorer.js"); ?>"></script>
 
@@ -398,7 +399,7 @@ async function renderUI() {
                 // 2. Update Progress Bar: Smooth movement across the whole batch
                 const smoothWidth = ((i + (percent / 100)) / fileQueue.length) * 100;
                 progressFill.style.width = smoothWidth + '%';
-            });
+            }, item.exifData);
 
             if (result && result.success) {
                 // SUCCESS: Remove from queue and mark visually

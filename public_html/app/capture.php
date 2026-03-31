@@ -178,6 +178,7 @@ h3 {
     <script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographRecentUploads.js"); ?>"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js"></script>
+    <script src="<?php echo smarty_modifier_revision("/js/Geograph.MediaDatabase.class.js"); ?>"></script>
     <script src="<?php echo smarty_modifier_revision("/js/submission_utils.js"); ?>"></script>
     <script src="<?php echo smarty_modifier_revision("/viewer/ExifRestorer.js"); ?>"></script>
 
@@ -203,7 +204,8 @@ h3 {
 	        <li>You don't have to use this page to take photos. You can use your standard camera app if preferred.
 	        <li><b>Why use this page?</b> Mobile browsers often strip location data from uploads. Photos taken here bypass this by saving the location directly in the filename.
 	        <li>Photos are saved to your "Downloads" folder. You must still upload them manually later.
-	        <li>Select 'OK' after snapping a photo to save it, or choose to retake.
+	        <li>Your Camera app, may ask you select 'OK' after snapping a photo to save it, or choose to retake.
+		<li>Taken Photos, leave a trail of dots on the Live Map, a visual reminder of progress.
 	    </ul>
 
 	    <h3>Location Note</h3>
@@ -490,6 +492,8 @@ window.addEventListener('DOMContentLoaded', function() {
 //////////////////////////////////
 // Save Image Functions
 
+	let dbHistory;
+
         let latestFile = null;
     	const fileList = document.getElementById('fileList');
         const selectLabel = document.getElementById('select-label');
@@ -588,6 +592,7 @@ window.addEventListener('DOMContentLoaded', function() {
             return `${d.slice(0, 4)}:${d.slice(4, 6)}:${d.slice(6, 8)} ${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)}`;
         };
 
+	//this is triggered automatically when new photo is taken, the download button just allows retry download
         document.getElementById('downloadBtn').addEventListener('click', () => {
             if (!latestFile) return;
 
@@ -599,6 +604,11 @@ window.addEventListener('DOMContentLoaded', function() {
             link.download = newName;
             link.click();
 
+	    if (!dbHistory)
+		dbHistory = new MediaDatabase();
+
+	    dbHistory.savePhotoTaken(newName, latestCoords.lat, latestCoords.lng);
+
             // Add to list for visual confirmation
     		if (fileList) {
 	    	        const li = document.createElement('li');
@@ -608,6 +618,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
     		//add to map!
     		if (map && historyPoints) {
+			//todo, migrate this to read from dbHistory instead!
     			L.circleMarker([latestCoords.lat, latestCoords.lng], {radius:6, color:'blue'}).addTo(historyPoints);
     		}
         });
@@ -627,14 +638,23 @@ window.addEventListener('DOMContentLoaded', function() {
             //we COULD put the newly generated filename into file.name, and processItem would read it, but better to just use the saved lat/long directly
             const item = await processItem({ file: latestFile });
 
+	    const exifData = { //create fake exif data (becuase we set the location), for storage in cache. (ie dont just send item.exifData)
+		hasGeo: Number.isFinite(latestCoords.lat) && Number.isFinite(latestCoords.lng),
+                lat: latestCoords.lat,
+                long: latestCoords.lng,
+		date: item.exifData?.date || fallbackExifDate,
+                orientation: item.exifData?.orientation
+	    };
+
             const result = await sendToPHP(item.dataUri, newName, (percent) => {
                 // Update the button text to show progress
                 uploadBtn.textContent = `Uploading... ${percent}%`;
-            });
+            }, exifData);
             if (result && result.success) {
                 // SUCCESS: Allow direct submission
 
                 document.getElementById('submitBtn').onclick = function() {
+		    //the submit process, expects the exif data unrolled
                     navigateTo('/app/submit',{message: JSON.stringify({
                         transfer_id: result.upload_id,
                         width: result.width,
@@ -653,6 +673,30 @@ window.addEventListener('DOMContentLoaded', function() {
                 uploadBtn.textContent = "Upload Failed. Try again";
             }
         });
+
+
+async function syncMapFromDB() {
+    let addtoMap = false;
+    if (historyPoints) {
+	historyPoints.clearLayers();
+    } else {
+        historyPoints = new L.FeatureGroup();
+        addtoMap = true; //add to end in one go
+    }
+    if (!dbHistory) dbHistory = new MediaDatabase();
+
+    const geoRecords = await dbHistory.getGeoHistory();
+    geoRecords.forEach(record => {
+        L.circleMarker([record.exifData.lat, record.exifData.long], {
+            radius: 6,
+            color: record.status === 'uploaded' ? 'green' : 'blue'
+        })
+        .bindPopup(`<b>${record.status.toUpperCase()}</b><br>${record.filename}`)
+	.addTo(historyPoints);
+    });
+    if (addtoMap)
+	historyPoints.addTo(map);
+}
 
     </script>
 

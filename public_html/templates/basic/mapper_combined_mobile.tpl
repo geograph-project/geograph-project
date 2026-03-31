@@ -159,6 +159,7 @@ svg.svgFilter {
 
         <script src="{"/js/Leaflet.GeographClickLayer.js"|revision}"></script>
 
+        <script src="{"/js/Geograph.MediaDatabase.class.js"|revision}"></script>
 	<script src="{"/js/Leaflet.GeographCameraButton.js"|revision}"></script>
 
 <script>
