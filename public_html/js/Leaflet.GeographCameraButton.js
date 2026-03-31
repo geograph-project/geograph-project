@@ -59,10 +59,16 @@ L.GeographCameraButton = L.Control.extend({
         historyPoints.clearLayers();
         const geoRecords = await dbHistory.getGeoHistory();
 
+	const colours = {
+		'taken': 'blue',
+		'uploaded': 'red',
+		'submitted': 'green'
+	};
+
         geoRecords.forEach(record => {
             L.circleMarker(L.latLng(record.exifData.lat, record.exifData.long), {
                 radius: 6,
-                color: record.status === 'uploaded' ? 'green' : 'blue'
+                color: colours[record.status] ?? 'blue'
             })
             .bindPopup(`<b>${record.status.toUpperCase()}</b><br>${record.filename}`)
             .addTo(historyPoints);

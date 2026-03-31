@@ -310,6 +310,7 @@ function saveNoteToLocalStorage() {
     localStorage.setItem('savedNotes', JSON.stringify(storage));
 
     document.getElementById('noteText').value = '';
+    getHistoryPoints();
     renderNotesList();
 	btn.style.opacity = 1;
 	document.getElementById('noteForm').style.display = 'none';
@@ -337,7 +338,7 @@ function renderNotesList() {
 
                 if (map && historyPoints) {
 			const latlng = item.coords.trim().split(/\s*,\s*/).map(Number);
-                        L.circleMarker(latlng, {radius:6, color:'red'}).addTo(historyPoints);
+                        L.circleMarker(latlng, {radius:6, color:'orange'}).addTo(historyPoints);
                 }
     });
 }
@@ -346,12 +347,14 @@ function deleteNote(index) {
     let storage = JSON.parse(localStorage.getItem('savedNotes') || '[]');
     storage.splice(index, 1);
     localStorage.setItem('savedNotes', JSON.stringify(storage));
+    getHistoryPoints();
     renderNotesList();
 }
 
 //need to defer, so happens after the module is loaded
 window.addEventListener('DOMContentLoaded', function() {
 	// Initial render
+	//getHistoryPoints() // map not setup by default!
 	renderNotesList();
 });
 
@@ -462,11 +465,14 @@ window.addEventListener('DOMContentLoaded', function() {
             var coverageCoarse = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6});
             overlayMaps["Geograph Coverage"] = coverageCoarse;
 
-            setupBaseMap(); //creates the map, but does not initialize a view
+            historyPoints = new L.LayerGroup();
+            overlayMaps["Taken Photos/Notes"] = historyPoints;
 
-            historyPoints = new L.FeatureGroup().addTo(map);
-            //map.fitBounds(bounds,{maxZoom:15});
+            setupBaseMap(); //creates the map + Controls, but does not initialize a view
 
+	    historyPoints.addTo(map);
+	    getHistoryPoints(); //populates markers onto historyPoints
+	    renderNotesList(); //need to call this after getHistoryPoints, so it can add it own points!
 
             // Update coordinates field when map is dragged
             map.on('moveend', () => {
@@ -675,27 +681,24 @@ window.addEventListener('DOMContentLoaded', function() {
         });
 
 
-async function syncMapFromDB() {
-    let addtoMap = false;
-    if (historyPoints) {
-	historyPoints.clearLayers();
-    } else {
-        historyPoints = new L.FeatureGroup();
-        addtoMap = true; //add to end in one go
-    }
+async function getHistoryPoints() {
+    historyPoints.clearLayers();
     if (!dbHistory) dbHistory = new MediaDatabase();
 
     const geoRecords = await dbHistory.getGeoHistory();
+    const colours = {
+        'taken': 'blue',
+        'uploaded': 'red',
+        'submitted': 'green'
+    };
     geoRecords.forEach(record => {
         L.circleMarker([record.exifData.lat, record.exifData.long], {
             radius: 6,
-            color: record.status === 'uploaded' ? 'green' : 'blue'
+            color: colours[record.status] ?? 'blue'
         })
         .bindPopup(`<b>${record.status.toUpperCase()}</b><br>${record.filename}`)
 	.addTo(historyPoints);
     });
-    if (addtoMap)
-	historyPoints.addTo(map);
 }
 
     </script>
