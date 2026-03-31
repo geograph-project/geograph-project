@@ -35,6 +35,8 @@ $USER->mustHavePerm('basic');
     <!--script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographClickLayer.js"); ?>"></script-->
 
     <script src="/js/Leaflet.GeographScout.js?<? echo filemtime(__DIR__.'/../js/Leaflet.GeographScout.js'); ?>"></script>
+
+    <script src="/js/Geograph.MediaDatabase.class.js?<? echo filemtime(__DIR__.'/../js/Geograph.MediaDatabase.class.js'); ?>"></script>
     <script src="/js/Leaflet.GeographCameraButton.js?<? echo filemtime(__DIR__.'/../js/Leaflet.GeographCameraButton.js'); ?>"></script>
     <script src="/js/Leaflet.enhanceButton.js?<? echo filemtime(__DIR__.'/../js/Leaflet.enhanceButton.js'); ?>"></script>
 
@@ -81,8 +83,6 @@ map.on('mousedown dragstart', function(e) {
         return false;
     }
 });
-
-    const photoHistory = new L.FeatureGroup().addTo(map);
 
 //.setView([57.4, -2.9], 11);
     var osmAttrib='Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
@@ -138,9 +138,6 @@ map.on('mousedown dragstart', function(e) {
 //                if (L.GeographClickLayer)
   //                  clickLayer = L.geographClickLayer().addTo(map);
 
-		if (L.geographCameraButton)
-			cameraButton = L.geographCameraButton({historyPoints: photoHistory}).addTo(map);
-
 
 /////////////////////////////////////////////
 
@@ -185,6 +182,16 @@ map.on('mousedown dragstart', function(e) {
 
                 if (L.GeographRecentUploads)
                         overlayMaps["Recent Uploads"] = L.geographRecentUploads();
+
+		if (L.geographCameraButton) {
+			//write markers onto custom pane, so they OVER the scout polygons!
+			map.createPane('historyDots');
+			map.getPane('historyDots').style.zIndex = 650; // Higher than default overlays (400)
+
+			overlayMaps["Taken Photos"] = new L.LayerGroup().addTo(map);
+
+			cameraButton = L.geographCameraButton({historyPoints: overlayMaps["Taken Photos"]}).addTo(map);
+		}
 
 	 L.control.layers(baseMaps,overlayMaps).addTo(map);
 

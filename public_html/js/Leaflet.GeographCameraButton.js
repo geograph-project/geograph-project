@@ -159,7 +159,8 @@ L.GeographCameraButton = L.Control.extend({
 
             const marker = L.circleMarker([lat, lng], {
                 radius: 6,
-                color: 'blue'
+                color: 'blue',
+		pane: 'historyDots'
             });
             marker.bindPopup(`<b>Photo Taken</b><br>${isFromMap ? '(Map Center)' : '(GPS)'}<br>${timestamp}`);
 
