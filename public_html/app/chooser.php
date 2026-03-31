@@ -617,7 +617,7 @@ function createThumbElement(img) {
 
     if (img.uploadStatus) {
         if (img.uploadStatus.info.id) div.classList.add('already-submitted');
-        if (img.uploadStatus.info.gid || img.uploadStatus.info.filename) div.classList.add('uploaded');
+        if (img.uploadStatus.info.gid || img.uploadStatus.info.uploaded) div.classList.add('uploaded');
         div.classList.add(`${img.uploadStatus.match}-match`);
     }
 
@@ -666,7 +666,7 @@ function createDetailsElement(img) {
 
     if (img.uploadStatus) {
         if (img.uploadStatus.info.id) div.classList.add('already-submitted');
-        if (img.uploadStatus.info.gid || img.uploadStatus.info.filename) div.classList.add('uploaded');
+        if (img.uploadStatus.info.gid || img.uploadStatus.info.uploaded) div.classList.add('uploaded');
     }
 
     return div;
@@ -925,27 +925,19 @@ async function runDuplicateCheck() {
     const images = await dbHistory.getAllFromStore('images');
     const remoteKeys = Object.keys(remoteHashes);
 
-    // --- Local Storage Retrieval ---
-    let localHistory = [];
-    try {
-        const stored = localStorage.getItem('upload_history');
-        localHistory = stored ? JSON.parse(stored) : [];
-    } catch (e) {
-        localHistory = [];
-    }
-    // -------------------------------
+    // Get Upload History (now in IndexdbDB Too!)
+    const localHistory = await dbHistory.getAllFromStore('uploads');
 
     for (let img of images) {
         // 1. Check Local History first (Filename match)
         // We look for any record where the filename matches img.file.name
         const localMatch = localHistory.find(record => record.filename === img.file?.name);
-        if (localMatch) {
+        if (localMatch && localMatch.status == 'uploaded') {
             img.uploadStatus = {
                 match: 'local',
-                info: localMatch
+                info: {uploaded:localMatch.uploaded} //no point duplicating the whole record
             };
             await dbHistory.updateStore('images', img);
-
             continue;
         }
 
@@ -1017,7 +1009,7 @@ async function openActionModal(img) {
             btnView.textContent = `View [[${img.uploadStatus.info.id}]] Online`;
             status.innerText += ` - Already on Geograph (${img.uploadStatus.info.title})`
 
-        } else if (img.uploadStatus.info.filename) {
+        } else if (img.uploadStatus.info.uploaded) {
             status.innerText += ` - Uploaded recently on this device`;
 
         } else { //if (img.uploadStatus.info.gid) {
