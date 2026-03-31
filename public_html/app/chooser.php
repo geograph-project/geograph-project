@@ -358,21 +358,7 @@ let db;
 let sortOrder = 'desc'; // 'desc' = newest first
 let isScanning = false;
 
-const initDB = () => {
-    return new Promise((resolve) => {
-        const request = indexedDB.open('GalleryDB', 2);
-        request.onupgradeneeded = (e) => {
-            const db = e.target.result;
-            if(!db.objectStoreNames.contains('folders')) db.createObjectStore('folders', { keyPath: 'path' });
-            if(!db.objectStoreNames.contains('images')) {
-                const s = db.createObjectStore('images', { keyPath: 'fileId' });
-                s.createIndex('day', 'day', { unique: false });
-                s.createIndex('date', 'date', { unique: false });
-            }
-        };
-        request.onsuccess = (e) => { db = e.target.result; resolve(); };
-    });
-};
+let dbHistory; //the wrapper around indexedDB
 
 ////////////////////////////////////////////
 // main scan process
@@ -386,7 +372,7 @@ async function startFolderScan() {
         const dirHandle = await window.showDirectoryPicker();
         
         // 1. Setup Folder Record
-        await updateStore('folders', { path: dirHandle.name, handle: dirHandle, count: 0 });
+        await dbHistory.updateStore('folders', { path: dirHandle.name, handle: dirHandle, count: 0 });
         await refreshFolderList();
 
         const safePath = btoa(dirHandle.name).replace(/=/g, '');
@@ -457,7 +443,7 @@ async function fastCrawl(dirHandle, path, fileQueue) {
     for await (const entry of dirHandle.values()) {
         if (entry.kind === 'file' && /\.(jpe?g|png|webp|avif|heic|heif)$/i.test(entry.name)) {
             const fileId = `${path}/${entry.name}`;
-            const existing = await getFromStore('images', fileId);
+            const existing = await dbHistory.getFromStore('images', fileId);
 
             if (!existing) {
                 try {
@@ -485,7 +471,7 @@ async function fastCrawl(dirHandle, path, fileQueue) {
 async function processFileQueue(fileQueue, rootPath) {
     isScanning = true;
     const safePath = btoa(rootPath).replace(/=/g, '');
-    let folderRecord = await getFromStore('folders', rootPath);
+    let folderRecord = await dbHistory.getFromStore('folders', rootPath);
     let currentCount = folderRecord?.count || 0;
     let fileCount = fileQueue.length + currentCount; //want what the total will be!
 
@@ -577,7 +563,7 @@ async function processFileQueue(fileQueue, rootPath) {
                 file: item.file // Store the file for future uploads (handle wont work later!)
             };
 
-            await updateStore('images', imgData);
+            await dbHistory.updateStore('images', imgData);
             currentCount++;
 
             // Update UI
@@ -586,14 +572,14 @@ async function processFileQueue(fileQueue, rootPath) {
 
             if (currentCount % 10 === 0) {
                 folderRecord.count = currentCount;
-                await updateStore('folders', folderRecord);
+                await dbHistory.updateStore('folders', folderRecord);
             }
         } catch (err) {
             console.error("Processing error:", err);
         }
     }
     folderRecord.count = currentCount;
-    updateStore('folders', folderRecord);
+    dbHistory.updateStore('folders', folderRecord);
     isScanning = false;
     updateStats();
 }
@@ -706,7 +692,7 @@ function focusGroup(groupId) {
 
 async function renderFullGallery() {
     const root = document.getElementById('gallery-root');
-    let images = await getAllFromStore('images');
+    let images = await dbHistory.getAllFromStore('images');
     images = images.filter(img => !img.muted);
 
     // Apply Date Filter
@@ -719,7 +705,7 @@ async function renderFullGallery() {
     }
 
     if (images.length === 0) {
-        const folders = await getAllFromStore('folders');
+        const folders = await dbHistory.getAllFromStore('folders');
         const hasFolders = folders && folders.length > 0;
 
         root.innerHTML = `
@@ -825,7 +811,7 @@ async function toggleSort() {
 
 async function refreshFolderList() {
     const list = document.getElementById('folder-list');
-    const folders = await getAllFromStore('folders');
+    const folders = await dbHistory.getAllFromStore('folders');
     list.innerHTML = folders.length ? '' : '<p style="color:#666; padding:10px;">No folders added</p>';
 
     folders.forEach(f => {
@@ -848,31 +834,16 @@ async function refreshFolderList() {
 async function removeFolder(path) {
     if (!confirm(`Stop monitoring "${path}" and clear its thumbnails?`)) return;
 
-    const tx = db.transaction(['folders', 'images'], 'readwrite');
-    const folderStore = tx.objectStore('folders');
-    const imageStore = tx.objectStore('images');
+    try {
+        await dbHistory.removeFolder(path);
 
-    // 1. Remove the folder from the monitored list
-    folderStore.delete(path);
-
-    // 2. Remove all images belonging to this folder
-    // We use a IDBKeyRange to find all keys starting with "FolderName/"
-    const range = IDBKeyRange.bound(path + "/", path + "/\uffff");
-    const cursorRequest = imageStore.openCursor(range);
-
-    cursorRequest.onsuccess = (e) => {
-        const cursor = e.target.result;
-        if (cursor) {
-            cursor.delete();
-            cursor.continue();
-        }
-    };
-
-    tx.oncomplete = () => {
-        console.log(`Cleaned up all cached data for: ${path}`);
+        // Refresh your UI components
         refreshFolderList();
         renderFullGallery();
-    };
+
+    } catch (err) {
+        alert("Failed to remove folder data.");
+    }
 }
 
 function toggleModal(id) {
@@ -884,7 +855,7 @@ let imagesUploaded = 0; // Increments when a file starts
 let imagesFinished = 0; // Increments when a file completes
 
 async function updateStats(percent) {
-    const imgs = await getAllFromStore('images');
+    const imgs = await dbHistory.getAllFromStore('images');
     let statusText = `${imgs.length} images indexed`;
 
     if (imagesUploaded > 0) {
@@ -951,7 +922,7 @@ async function syncRemoteHashes(hashesUrl, hashesUrl2) {
 
 
 async function runDuplicateCheck() {
-    const images = await getAllFromStore('images');
+    const images = await dbHistory.getAllFromStore('images');
     const remoteKeys = Object.keys(remoteHashes);
 
     // --- Local Storage Retrieval ---
@@ -973,7 +944,7 @@ async function runDuplicateCheck() {
                 match: 'local',
                 info: localMatch
             };
-            await updateStore('images', img);
+            await dbHistory.updateStore('images', img);
 
             continue;
         }
@@ -1009,7 +980,7 @@ async function runDuplicateCheck() {
                 img.uploadStatus = null; // Clean/New
             }
         }
-        await updateStore('images', img);
+        await dbHistory.updateStore('images', img);
     }
 }
 
@@ -1063,7 +1034,7 @@ async function openActionModal(img) {
     btnMute.onclick = async () => {
         if (confirm("Permanently hide this image from the gallery?")) {
             img.muted = true;
-            await updateStore('images', img);
+            await dbHistory.updateStore('images', img);
             const el = document.getElementById(`wrapper-${btoa(img.fileId).replace(/=/g,'')}`);
             if (el) el.classList.add('muted');
             closeActionModal();
@@ -1090,7 +1061,7 @@ async function triggerUpload(img) {
 
             if (result && result.success) {
                 img.uploadStatus = { match: 'exact', info: { gid: 1, transfer_id:result.upload_id, title: 'Just Uploaded' } };
-                await updateStore('images', img);
+                await dbHistory.updateStore('images', img);
                 imagesFinished++;
                 updateStats();
 
@@ -1123,26 +1094,9 @@ async function triggerUpload(img) {
 async function resetMutedImages() {
     if (!confirm("Are you sure you want to show all hidden/muted images again?")) return;
 
-    const tx = db.transaction('images', 'readwrite');
-    const store = tx.objectStore('images');
-    const request = store.openCursor();
-
-    request.onsuccess = (e) => {
-        const cursor = e.target.result;
-        if (cursor) {
-            const data = cursor.value;
-            if (data.muted) {
-                delete data.muted; // Remove the muted property
-                cursor.update(data);
-            }
-            cursor.continue();
-        }
-    };
-
-    tx.oncomplete = () => {
-        alert("All images restored. Refreshing gallery...");
-        renderFullGallery();
-    };
+    await dbHistory.resetMutedImages();
+    alert("All images restored. Refreshing gallery...");
+    renderFullGallery();
 }
 
 /**
@@ -1152,24 +1106,8 @@ async function wipeAllData() {
     const confirmation = confirm("WARNING: This will delete ALL monitored folders, cached thumbnails (in the app, not from your device).\n\nAre you absolutely sure?");
     if (!confirmation) return;
 
-    // We use a specific IDB method to delete the entire database
-    const deleteReq = indexedDB.deleteDatabase('GalleryDB');
-
-    deleteReq.onsuccess = () => {
-        alert("Database wiped successfully. The app will now reload.");
-        //window.location.reload();
-        window.history.go(0);
-    };
-
-    deleteReq.onerror = () => {
-        alert("Could not delete database. You may need to close other tabs.");
-    };
-
-    deleteReq.onblocked = () => {
-        alert("Database deletion blocked. Please close all other tabs of this app and try again.");
-	//still reload, seems like often it actully deelrted it anyway!
-        window.history.go(0);
-    };
+    await dbHistory.wipeAllData();
+    window.history.go(0); // Reload the page after database is gone
 }
 
 async function createThumbnail(file) {
@@ -1184,12 +1122,8 @@ async function createThumbnail(file) {
     return new Promise(r => canvas.toBlob(r, 'image/webp', 0.6));
 }
 
-function updateStore(s, d) { return new Promise(r => { const t = db.transaction(s, 'readwrite'); t.objectStore(s).put(d); t.oncomplete = r; }); }
-function getFromStore(s, id) { return new Promise(r => { db.transaction(s).objectStore(s).get(id).onsuccess = e => r(e.target.result); }); }
-function getAllFromStore(s) { return new Promise(r => { db.transaction(s).objectStore(s).getAll().onsuccess = e => r(e.target.result); }); }
-
 async function reauthAll() {
-    const folders = await getAllFromStore('folders');
+    const folders = await dbHistory.getAllFromStore('folders');
     for (const f of folders) {
         if ((await f.handle.queryPermission()) === 'granted' || (await f.handle.requestPermission()) === 'granted') {
             scanDirectory(f.handle);
@@ -1199,8 +1133,8 @@ async function reauthAll() {
 }
 
 window.onload = async () => {
-    await initDB();
-    const folders = await getAllFromStore('folders');
+    dbHistory = new MediaDatabase();
+    const folders = await dbHistory.getAllFromStore('folders');
     if (folders.length > 0) document.getElementById('reauth-btn').classList.remove('hidden');
     renderFullGallery();
 };

@@ -1,7 +1,7 @@
 class MediaDatabase {
     constructor() {
         this.DB_NAME = "GalleryDB"; //use same database as existing
-        this.DB_VERSION = 5;
+        this.DB_VERSION = 7;
     	//chooser uses 'folders' and 'images' stores, which are hardcoded
         this.STORE_NAME = "uploads"; //store for media history
 	    this.db = null;
@@ -109,7 +109,7 @@ class MediaDatabase {
                     ...existingRecord,
                     filename,
                     exifData: exifData || existingRecord.exifData || null,
-                    hasGeo: exifData?.hasGeo || existingRecord.exifData?.hasGeo || false, // Copy to top level!
+                    hasGeo: (exifData?.hasGeo || existingRecord.exifData?.hasGeo || false)?1:0, // Copy to top level!
                     status: status,
                     lastActivity: this.#toSortableDate(rawDate)
                 };
@@ -194,7 +194,7 @@ class MediaDatabase {
             const transaction = db.transaction(this.STORE_NAME, "readonly");
             const store = transaction.objectStore(this.STORE_NAME);
             const index = store.index("hasGeo");
-            const request = index.getAll(true);
+            const request = index.getAll(1);
             request.onsuccess = () => resolve(request.result);
         });
     }
@@ -324,7 +324,46 @@ class MediaDatabase {
         });
     }
 
+    /**
+     * Removes a folder and all associated images from the cache.
+     * @param {string} path - The folder path to remove.
+     */
+    async removeFolder(path) {
+        const db = await this.#openDB();
+        
+        return new Promise((resolve, reject) => {
+            // We need 'readwrite' access to both stores
+            const tx = db.transaction(['folders', 'images'], 'readwrite');
+            const folderStore = tx.objectStore('folders');
+            const imageStore = tx.objectStore('images');
 
+            // 1. Remove the folder entry
+            folderStore.delete(path);
+
+            // 2. Remove all images starting with "path/" 
+            // using the high-point character \uffff to catch all sub-files
+            const range = IDBKeyRange.bound(path + "/", path + "/\uffff");
+            const cursorRequest = imageStore.openCursor(range);
+
+            cursorRequest.onsuccess = (e) => {
+                const cursor = e.target.result;
+                if (cursor) {
+                    cursor.delete();
+                    cursor.continue();
+                }
+            };
+
+            tx.oncomplete = () => {
+                console.log(`Cleaned up all cached data for: ${path}`);
+                resolve(true);
+            };
+
+            tx.onerror = (e) => {
+                console.error("Folder removal failed:", e.target.error);
+                reject(e.target.error);
+            };
+        });
+    }
 
     /////////////////////////////////////////////////
     // Nuke the entire database
