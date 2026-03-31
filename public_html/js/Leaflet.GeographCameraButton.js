@@ -43,6 +43,16 @@ L.GeographCameraButton = L.Control.extend({
     },
 
     _loadHistoryIntoMap: async function() {
+        if (this._historyLoading) return;
+
+        //Wait for the map to actually be initialized if it isn't yet
+        if (!this._map || !this._map._loaded || !this._map.getCenter()) {
+            this._map.once('viewreset moveend', () => this._loadHistoryIntoMap());
+            return;
+        }
+
+        this._historyLoading = true; // Lock it (may receive BOTH moveend, and viewreset?
+
         const dbHistory = window.dbHistory || new MediaDatabase();
         const historyPoints = this.options.historyPoints;
 
@@ -50,13 +60,15 @@ L.GeographCameraButton = L.Control.extend({
         const geoRecords = await dbHistory.getGeoHistory();
 
         geoRecords.forEach(record => {
-            L.circleMarker([record.exifData.lat, record.exifData.long], {
+            L.circleMarker(L.latLng(record.exifData.lat, record.exifData.long), {
                 radius: 6,
                 color: record.status === 'uploaded' ? 'green' : 'blue'
             })
             .bindPopup(`<b>${record.status.toUpperCase()}</b><br>${record.filename}`)
             .addTo(historyPoints);
         });
+
+        this._historyLoading = false;
     },
 
     _setupListeners: function() {
