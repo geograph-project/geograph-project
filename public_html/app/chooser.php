@@ -31,9 +31,10 @@ END;
 
 $user_id = intval($USER->user_id);
 
-$count = $db->getOne("select count(*) from gridimage_search gi left join gridimage_hash using (gridimage_id) where gi.user_id = $user_id and gridimage_hash.gridimage_id is null");
+//want to see pending images so use gridimage, but add gridimage_size, to try to exclude rejects etc that dont have a .jpg!
+$count = $db->getOne("select count(*) from gridimage gi inner join gridimage_size s using (gridimage_id) left join gridimage_hash using (gridimage_id) where gi.user_id = $user_id and gridimage_hash.gridimage_id is null");
 
-//for now, dont check pending+tmp. recent images are likly being tracked locally anyway
+//for now, not checking tmp folder. images uploaded via app being tracked locally anyway
 
 if (!empty($count) && empty($_GET['ignore'])) {
 	$seconds = intval($count * 20 / 50);
@@ -51,8 +52,9 @@ if (!empty($count) && empty($_GET['ignore'])) {
 
 	<div style="max-width:940px">
 
-	<p>You have <b><? echo number_format($count, 0); ?></b> images awaiting processing. We use "perceptual hashing" to visually match your submissions across different 
-	resolutions and identify duplicates.</p>
+	<p>You have <b><? echo number_format($count, 0); ?></b> images awaiting processing. We use "perceptual hashing" to visually match your submissions across different
+	resolutions and identify duplicates. Need to process your already submitted images (your entire online profile),
+	 so have a list of already submitted images to compare as we scan local folder(s).</p>
 
 
     <h2>One-Time Archive Scan</h2
@@ -104,8 +106,8 @@ if (!empty($count) && empty($_GET['ignore'])) {
 
     <?php } ?>
 
-	<p><strong>Want to skip this?</strong> You can <a href="?ignore=1">proceed to the app</a> now, but unprocessed images will not be identified. 
-	<em>Warning: Skipping this step may delay new images from appearing in the app for up to 24 hours. For the best experience, wait for the processor to complete.</em></p>
+	<p><strong>Want to skip this?</strong> You can <a href="?ignore=1">proceed to the app</a> now, but unprocessed images will not be identified as already submitted.
+	<em>Warning: Skipping this step may delay new submissions being matched in the app for up to 24 hours. For the best experience, wait for the processor to complete.</em></p>
 
 	<?
 	exit;
