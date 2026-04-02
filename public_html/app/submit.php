@@ -5,6 +5,11 @@ require_once('geograph/uploadmanager.class.php');
 
 init_session();
 
+//equivilent to dieUnderHighLoad();
+if (!empty($CONF['readonly'])) {
+       include __DIR__."/offline-readonly.inc.php";
+}
+
 $USER->mustHavePerm('basic');
 
 function failMessage($text, $um) {
@@ -139,7 +144,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
     <title>Submission Status</title>
     <link rel="stylesheet" href="<? echo smarty_modifier_revision('/app/assets/css/style.css'); ?>">
     <style>
-        body { padding:10px; text-align: center; background-color: #e7ffe7;}
+        body { padding:10px; text-align: center; }
         .idNum { font-size:2em; font-family: math, sans-serif; }
         .nowrap { white-space: nowrap; }
     </style>
@@ -799,6 +804,10 @@ span.tag-pill button {
 </head>
 <body>
 
+<? if (!empty($CONF['submission_message'])) {
+       include __DIR__."/offline-message.inc.php";
+} ?>
+
 <div id="top-boundary"></div>
 
 <div class="main-header" id="mainHeader">
@@ -1205,7 +1214,7 @@ span.tag-pill button {
 
 	</div>
 
-	<button type=submit class="btn btn-primary">I Agree - Submit Image</button>
+	<button type=submit class="btn btn-primary" id="submit_button">I Agree - Submit Image</button>
 
 
 	<button type=button class="btn btn-secondary" onclick="navigateTo('/app/uploaded')" style="width:100%">Return to list Without Submitting</button>

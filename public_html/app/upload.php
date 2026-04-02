@@ -5,6 +5,11 @@ require_once('geograph/uploadmanager.class.php');
 
 init_session();
 
+//equivilent to dieUnderHighLoad();
+if (!empty($CONF['readonly'])) {
+       include __DIR__."/offline-readonly.inc.php";
+}
+
 $USER->mustHavePerm('basic');
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a login request!
@@ -33,6 +38,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 	}
 	outputJSON($response);
 	exit;
+}
+
+if (!empty($CONF['submission_message'])) {
+	//this is mainly just a reminder, that if add caching to this, will still need to make sure NOT to cache the submission_message
+	header("Cache-Control: no-store, no-cache, must-revalidate");  // HTTP/1.1
 }
 
 ###############################
@@ -88,6 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             color: var(--content-text);
             margin: 0; padding: 2px;
             display: flex; justify-content: center;
+	    flex-direction: column;
         }
         .card { --background: white; padding: 24px 0; border-radius: 20px; --box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; }
 
@@ -162,6 +173,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
     </style>
 </head>
 <body>
+
+<? if (!empty($CONF['submission_message'])) {
+	include __DIR__."/offline-message.inc.php";
+} ?>
 
 <div class="card">
     <label for="file-input" class="btn btn-select" id="select-label">Choose Image(s)</label>
