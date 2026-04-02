@@ -15,12 +15,12 @@ import datetime
 # --- Configuration ---
 PUT_BATCH_LIMIT = 500 # S3Vectors PutVectors API limit per call
 
-# Our local encoding API - todo, should be detected from CONF
-api_url = 'http://python-embed13.dev.svc.cluster.local:8000/text'
+# Our local encoding API - should be detected from CONF
+api_url = os.environ.get("CONF_EMBED_API", "http://python-embed16.dev.svc.cluster.local:8000") + "/text"
 
 # Initialize Bedrock and S3Vectors clients globally with the new region
 bedrock = boto3.client("bedrock-runtime", region_name="eu-west-1") # this is available in local region
-s3vectors = boto3.client('s3vectors', region_name='us-east-1') # Changed region to us-east-1 (not available in all regions yet)
+s3vectors = boto3.client('s3vectors', region_name='us-east-1') # s3vectors launched in preview in US region, so most of our indexes are still there
 
 
 def get_embedding(text: str) -> list[float]:
@@ -180,8 +180,9 @@ def insert_from_mysql(
     mysql_where: str = None
 ):
     """
-    Connects to MySQL, fetches data in batches, and inserts it into S3Vectors
-    to prevent connection timeouts during long-running embedding generation.
+    Connects to MySQL, fetches data in batches, and inserts it into S3Vectors.
+    Supports Hybrid Mode: uses existing 'embeddings', otherwise generates from 
+    'input_text' and backfills the DB.
     """
     # --- Column Parsing and Mode Detection ---
     parsed_select_cols = [col.strip() for col in mysql_select_cols.split(',')]
@@ -194,20 +195,36 @@ def insert_from_mysql(
         print("Error: A column aliased as 'id' or named 'id' must be included in the --select option.")
         sys.exit(1)
 
-    if not found_input_text_col and not found_embeddings_col:
-        print("Error: You must include either a column named/aliased as 'input_text' (for embedding generation) or 'embeddings' (for pre-computed vectors) in the --select option.")
+    # --- New Logic: Hybrid Mode Detection ---
+    generate_embeddings_only_mode = found_input_text_col and not found_embeddings_col
+    use_precomputed_embeddings_only_mode = found_embeddings_col and not found_input_text_col
+    hybrid_mode = found_input_text_col and found_embeddings_col
+
+    if not (generate_embeddings_only_mode or use_precomputed_embeddings_only_mode or hybrid_mode):
+        print("Error: You must include either a column named/aliased as 'input_text' (for embedding generation), 'embeddings' (for pre-computed vectors), or BOTH for hybrid mode, in the --select option.")
         sys.exit(1)
 
-    if found_input_text_col and found_embeddings_col:
-        print("Warning: Both 'input_text' and 'embeddings' columns found. 'input_text' will be used for generating new embeddings.")
-
-    generate_embeddings_mode = found_input_text_col
+    # Simplified status printout
+    if hybrid_mode:
+        print("Mode: **Hybrid Mode** (Will use existing 'embeddings' if present, otherwise generate from 'input_text' and backfill DB).")
+    elif generate_embeddings_only_mode:
+        print("Mode: **Generate Embeddings Only** (Using 'input_text').")
+    else: # use_precomputed_embeddings_only_mode
+        print("Mode: **Pre-computed Embeddings Only** (Using 'embeddings').")
 
     id_column_name = 'id'
     for part in parsed_select_cols:
         if ' as id' in part.lower():
             id_column_name = part.lower().split(' as id')[0].strip()
             break
+
+    # We need the actual column name for the 'embeddings' column for the backfill query.
+    embeddings_column_name = 'embeddings'
+    if found_embeddings_col:
+        for part in parsed_select_cols:
+            if ' as embeddings' in part.lower():
+                embeddings_column_name = part.lower().split(' as embeddings')[0].strip()
+                break
 
     ##########################################
 
@@ -230,11 +247,34 @@ def insert_from_mysql(
             print(f"Error connecting to database: {err}")
             return None, None
 
+    def update_embedding_in_db(row_id: int, embedding_bytes: bytes):
+        """
+        Updates the embeddings column for a given row_id.
+        Requires a working connection/cursor.
+        """
+        nonlocal conn, cursor # Use the outer conn/cursor
+        if not conn or not conn.is_connected():
+            print(f"Warning: Cannot backfill DB for ID {row_id}. DB connection is not active.")
+            return
+
+        # Use the dynamically determined column names (id_column_name and embeddings_column_name)
+        update_query = (
+            f"UPDATE {mysql_table} SET {embeddings_column_name} = %s WHERE {id_column_name} = %s"
+        )
+        try:
+            # The bytearray/bytes object is passed directly to the query parameter %s
+            cursor.execute(update_query, (embedding_bytes, row_id))
+            conn.commit()
+        except mysql.connector.Error as err:
+            print(f"Error backfilling embedding for ID {row_id}: {err}")
+        except Exception as e:
+            print(f"Unexpected error during backfill for ID {row_id}: {e}")
+
     conn, cursor = get_db_connection()
 
     ##########################################
 
-    batch_size = PUT_BATCH_LIMIT  # Align MySQL fetch size with S3 vectors limit
+    batch_size = PUT_BATCH_LIMIT
     last_id = 0
     total_inserted = 0
 
@@ -271,7 +311,7 @@ def insert_from_mysql(
 
             # Preview the first row, if it's the first batch
             if not last_id and rows:
-                preview_row = dict(rows[0])  # Create a copy of the first row
+                preview_row = dict(rows[0])
 
                 # Truncate the 'embeddings' column if it exists and is a bytearray
                 if 'embeddings' in preview_row and isinstance(preview_row['embeddings'], bytearray):
@@ -291,32 +331,39 @@ def insert_from_mysql(
                 last_id = row_id
 
                 try:
-                    embedding_list = None
+                    embedding_np = None
                     metadata = {}
 
                     if counter % 10 == 0:
                          print(f"Processing item {counter}...", end="\r", flush=True)
 
-                    if generate_embeddings_mode:
+                    embeddings_bytes = row.get("embeddings")
+
+                    # Case 1: Pre-computed embeddings EXIST and we selected the column
+                    if embeddings_bytes and found_embeddings_col:
+                        embedding_np = np.frombuffer(embeddings_bytes, dtype=np.float32)
+
+                    # Case 2: Embeddings DO NOT EXIST (or we are in Generate-Only mode)
+                    elif (hybrid_mode or generate_embeddings_only_mode):
                         input_text = row.get("input_text")
                         if input_text is None:
                             print(f"Skipping row ID {row_id}: 'input_text' column is NULL.")
                             continue
 
                         embedding = get_embedding(input_text) if model == 'titan' else get_text_embeddings(input_text, model)
-                        if embedding is None:
+                        if not embedding:
                             print(f"Skipping row ID {row_id} due to embedding generation failure.")
                             continue
-                        embedding_list = embedding
 
-                    else: # Pre-computed embeddings mode
-                        embeddings_bytes = row.get("embeddings")
-                        if embeddings_bytes is None:
-                            print(f"Skipping row ID {row_id}: 'embeddings' column is NULL.")
-                            continue
+                        # Convert list to NumPy array for standardization (float32)
+                        embedding_np = np.array(embedding, dtype=np.float32)
 
-                        embedding_np = np.frombuffer(embeddings_bytes, dtype=np.float32)
-                        embedding_list = embedding_np.tolist()
+                        if hybrid_mode:
+                            update_embedding_in_db(row_id, embedding_np.tobytes())
+
+                    else:
+                        print(f"Skipping row ID {row_id}: 'embeddings' column is NULL and 'input_text' is not available for generation.")
+                        continue
 
                     for col_name, col_value in row.items():
                         if col_name.lower() not in ['id', 'embeddings', 'input_text']:
@@ -327,10 +374,10 @@ def insert_from_mysql(
                                 elif isinstance(col_value, bytearray): metadata[col_name] = col_value.decode('utf-8')
                                 else: metadata[col_name] = col_value
 
-                    if embedding_list:
+                    if embedding_np:
                         all_vectors.append({
                             "key": str(row_id),
-                            "data": {"float32": embedding_list},
+                            "data": {"float32": embedding_np.tolist()},
                             "metadata": metadata
                         })
 
@@ -673,6 +720,9 @@ def main():
     )
 
     args = parser.parse_args()
+
+    if arg.model == 'image-pe':
+        s3vectors = boto3.client('s3vectors', region_name='eu-west-1') # s3vector can be tested in eu-west-1 now!
 
     if args.command == "insert-file":
         insert_data(args.bucket, args.index, args.file, args.model)

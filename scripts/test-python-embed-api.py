@@ -4,9 +4,8 @@ import base64
 import json
 import os
 
-#BASE_URL = "http://python-embed13.dev.svc.cluster.local:8000"
+BASE_URL = os.environ.get("CONF_EMBED_API", "http://python-embed16.dev.svc.cluster.local:8000")
 
-BASE_URL = "http://python-embed16.dev.svc.cluster.local:8000"
 
 def test_text_endpoint(input_text: str, model_alias: str):
     """Tests the /text endpoint with a given string and model alias."""
