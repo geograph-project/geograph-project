@@ -263,6 +263,7 @@ svg.svgFilter {
 	var wgs84;
 {/literal}
 {dynamic}
+
 	{if $gridref}
 		var wgs84=GT_WGS84.parseGridRef('{$gridref}'); //Its a factory method
 		if (wgs84) mapOptions.center = L.latLng( wgs84.latitude, wgs84.longitude );
@@ -270,6 +271,15 @@ svg.svgFilter {
 	{elseif $ireland}
 		mapOptions.center = [53.416,-7.877];
 		mapOptions.zoom = 7;
+	{else}
+		{literal}
+                if (window.location.search && window.location.search.indexOf('locate')>-1) {
+			// because we will be auto calling "locateControl.start()", there is no point initializing the map to UK view!
+			// but dont we do still listen for locationerror, so can setup the map in that case!
+			delete mapOptions.center;
+			mapOptions.zoom = 13;
+		}
+		{/literal}
 	{/if}
 
 	{if $zoom}
@@ -281,6 +291,15 @@ svg.svgFilter {
 
 	var map = L.map('map', mapOptions);
         var hash = new L.Hash(map);
+
+	// If we are in 'locate' mode, we need to handle what happens if it fails
+	if (!mapOptions.center) {
+	    map.once('locationerror', function(e) {
+	        console.warn("Location access denied or failed. Reverting to default view.");
+		if (!map._loaded)
+		        map.setView([56.317, -2.769], 5); 
+	    });
+	}
 
 	addBaseLayer("OpenStreetMap"); //the default layer from Leaflet.base-layers.js, but will automatically use user prefernce too!
 
@@ -505,6 +524,105 @@ svg.svgFilter {
 	    });
 	    return false;
 	}
+
+
+L.Control.Peek = L.Control.extend({
+    options: { position: 'topleft' },
+
+    onAdd: function(map) {
+        // Create the button container
+        var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+        container.innerHTML = '<a style="cursor:pointer;" title="Hold to Peek Out">&#127757;</a>';
+        container.style.backgroundColor = 'white';
+        container.style.width = '30px';
+        container.style.height = '30px';
+        container.style.textAlign = 'center';
+        container.style.lineHeight = '30px';
+        container.style.userSelect = 'none';
+        container.style.webkitUserSelect = 'none';     // iOS Safari
+        container.style.webkitTouchCallout = 'none';   // Disable the "save image" popup on iOS
+
+        var self = this;
+	const overlaysToHide = ['Photo Subjects', 'Photo Viewpoints', 'Coverage - Standard', 'Photo Thumbnails'];
+        this._originalState = {};
+        this._hiddenLayers = []; // Track layers we actually removed
+
+	// --- THE FIX ---
+	L.DomEvent.disableClickPropagation(container);
+	L.DomEvent.disableScrollPropagation(container); 
+
+	L.DomEvent.on(container, 'contextmenu', function(e) {
+	    L.DomEvent.stop(e); // Prevents the right-click/long-press menu from appearing
+	});
+	// ---------------
+
+        // MOUSE DOWN: Store state and zoom out
+        L.DomEvent.on(container, 'mousedown touchstart', function(e) {
+            L.DomEvent.stopPropagation(e);
+
+	    if (!map._loaded) return; //getCenter fails if not loaded!            
+	    if (self._isPeeking) return;
+            self._isPeeking = true;
+
+            // Save current view
+            self._originalState = {
+                center: map.getCenter(),
+                zoom: map.getZoom()
+            };
+
+	    // Hide specific overlays if they are currently on the map
+            self._hiddenLayers = [];
+            overlaysToHide.forEach(name => {
+                let layer = overlayMaps[name];
+                if (layer && map.hasLayer(layer)) {
+                    map.removeLayer(layer);
+                    self._hiddenLayers.push(layer);
+                }
+            });
+            // add a small marker to highlight the center
+	    //self._marker = L.circleMarker(self._originalState.center, {color:'black',radius:2, opacity:0.6, interactive:false}).addTo(map);
+	    self._viewfinder = L.rectangle(map.getBounds(), {color: "black", weight: 0.75, opacity:0.6, fill:false, interactive:false}).addTo(map);
+
+            // Zoom out (e.g., current zoom minus 4 levels)
+	    let currentMinZoom = map.getMinZoom(); // Default fallback
+	    for (let name in baseMaps) {
+		    if (map.hasLayer(baseMaps[name])) {
+		        currentMinZoom = baseMaps[name].options.minZoom || currentMinZoom;
+		        break; // Found the active base, stop looking
+		    }
+	    }
+            map.setZoom(Math.max(currentMinZoom, self._originalState.zoom - 4), { animate: true });
+        });
+
+        // MOUSE UP: Restore state
+        L.DomEvent.on(container, 'mouseup mouseleave touchend', function(e) {
+            L.DomEvent.stopPropagation(e);
+	    if (!map._loaded) return;
+	    if (!self._isPeeking) return;
+            if (!self._originalState.center) return;
+
+	    // 2. Wait for the animation to finish before unlocking the button
+	    map.once('moveend', function() {
+        	// Restore layers only after we are back (smoother performance)
+	        self._hiddenLayers.forEach(layer => map.addLayer(layer));
+
+        	// RESET EVERYTHING AT THE END
+		if (self._marker) self._marker.removeFrom(map); self._marker = null;
+		if (self._viewfinder) self._viewfinder.removeFrom(map); self._viewfinder = null;
+	        self._hiddenLayers = [];
+        	self._originalState = {};
+	        self._isPeeking = false; // The lock is finally released
+	    });
+
+            // 1. Restore View
+            map.setView(self._originalState.center, self._originalState.zoom, { animate: true });
+        });
+
+        return container;
+    }
+});
+
+map.addControl(new L.Control.Peek());
 
 {/literal}</script>
 
