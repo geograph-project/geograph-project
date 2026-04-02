@@ -2019,17 +2019,19 @@ console.log("Error", e);
     };
 
     // --------------------------------
-    // only prototype (collecting tags validation stuff ready!)
+    // Check the form is ready to submit. Mostly use standard 'required' but have some custom valdiation too.
 
-    function validateForm(event) {
+    async function validateForm(event) {
         const form = this;
+
+	    // This stops the browser from leaving the page while we 'await'
+        event.preventDefault();
 
         ////////////////////
         // check required
 
         if (localTitle.value.trim() === '') {
-	    //this only happens in isSmall (as the native required didnt work!)
-            event.preventDefault();
+	        //this only happens in isSmall (as the native required didnt work!)
             localTitle.readOnly = false; // Temporarily unlock
             localTitle.setCustomValidity('Please fill out this Field');
             localTitle.reportValidity();
@@ -2041,7 +2043,6 @@ console.log("Error", e);
         const selected = Array.from(select.selectedOptions).map(o => o.value);
 
         if (selected.length === 0) {
-            event.preventDefault();
             //this should never be needed, as should via native 'required', but included for completeness
             alert("Please select at least one Geographical Context");
             return false;
@@ -2061,7 +2062,6 @@ console.log("Error", e);
                 hiddenId.value = match.dataset.id;
                 input.setCustomValidity(""); // Clear any previous error
             } else {
-                event.preventDefault();
                 // This triggers the browser's built-in validation bubble
                 input.setCustomValidity("Please select a subject from the list");
                 input.reportValidity(); // This forces the browser to show the bubble immediately
@@ -2071,6 +2071,14 @@ console.log("Error", e);
         } else {
             input.setCustomValidity(""); // Clear any previous error
         }
+
+        ////////////////////
+        //ah, should check we actully online still!
+
+    	let online = await checkOnline(form);
+	    if (!online)
+		    // The checkOnline function already showed the error message,
+    		return false;
 
         ////////////////////
         //success, so final cleanup..
@@ -2089,10 +2097,80 @@ console.log("Error", e);
         if (map && saveMapPosition)
             saveMapPosition(map, 'Position of Last Submission');
 
+        ////////////////////
+   	    // We use form.submit() instead of triggering another 'submit' event
+    	// to avoid an infinite loop.
+	    form.submit();
+
         return true;
     }
 
     document.forms['theForm'].addEventListener('submit', validateForm);
+
+    async function checkOnline(formElement) {
+        const submitBtn = formElement.querySelector('[type="submit"]');
+        const originalText = submitBtn.innerText;
+
+        // 1. Visual Feedback
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Checking connection...";
+
+        try {
+            // 2. Ping your new Status API (with a short timeout)
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), 5000); // 5 sec timeout
+
+            const response = await fetch('/app/status.json.php', {
+                cache: 'no-store',
+                signal: controller.signal
+            });
+            clearTimeout(id);
+
+            if (response.ok) { //.status = 'online'
+                // SERVER IS ONLINE - Allow the standard POST to happen
+                return true;
+            } else {
+           	    const data = await response.json();
+
+        		//if json fails to parse (eg it a 502/504 from cloudflare, then falls though to the catch block
+
+                // SERVER IS IN MAINTENANCE (503)
+        	    //we dont care about .message which informs about upcoming maintence, instead we care about if the is actully in readonly mode
+                if (data.status === "readonly") {
+    	            showSubmissionError(submitBtn, "Site is currently offline for maintenance. Wait a few minutes and try clicking again.");
+
+    	        //if the within maintaince, but writable, allow the form to continue!
+    	        } else if (data.status === "maintenance") {
+        		    return true;
+        	    } else {
+    	    	    // 3. If we got JSON but no 'status' field, it might be a 3rd party error (Cloudflare/Proxy)
+            	    throw new Error("Invalid Status Format");
+        	    }
+            }
+        } catch (error) {
+            // NETWORK IS DOWN (No internet or DNS failure)
+            showSubmissionError(submitBtn, "Connection failed. Please check your internet and click 'I Agree' again. Your data is safe in this form.");
+        }
+
+        // Reset button if we didn't submit
+        submitBtn.disabled = false;
+        submitBtn.innerText = originalText;
+        return false; // Prevent the form from submitting
+    }
+
+    function showSubmissionError(submitBtn, message) {
+    	let errorBox = document.getElementById('submission_error');
+    	if (!errorBox) {
+            errorBox = document.createElement('div');
+            errorBox.id = 'submission_error';
+            errorBox.style.padding = '20px';
+            errorBox.style.backgroundColor = '#fbfbe1';
+            submitBtn.before(errorBox);
+    	}
+    	errorBox.textContent = message;
+    }
+
+
 
 // --------------------------------
 // Map - ported from mobile submit
@@ -2565,7 +2643,7 @@ function renderNotesList() {
     	currentMode = 'title'; // 'title' or 'desc'
 
     	// store a singleton reference to the local function
-    	if (!parentWin.updateRemoteLayout) {
+    	//if (!parentWin.updateRemoteLayout) {
     	    parentWin.updateRemoteLayout = function() {
     		    if (parentWin.visualViewport && remoteOverlay.style.display === 'flex') {
     		        const vv = parentWin.visualViewport;
@@ -2575,7 +2653,7 @@ function renderNotesList() {
     		    }
     	    }
     	    parentWin.currentMode = currentMode;
-    	}
+    	//}
 
     	// these are inline functions as reference local varaibles
     	const openOverlay = (mode) => {
@@ -2618,8 +2696,9 @@ function renderNotesList() {
 
     	suggBar = parentDoc.getElementById('remoteSuggBar');
 
-    	if (!suggBar.dataset.listenerAttached) {
-    		// Event Listeners for switching modes inside the overlay (only needed once)
+    	//if (!suggBar.dataset.listenerAttached) { --- actully maybe this doesnt work!
+
+    		// Event Listeners for switching modes inside the overlay
     		btnTitle.onclick = () => setMode('title');
     		btnDesc.onclick = () => setMode('desc');
 
@@ -2627,16 +2706,16 @@ function renderNotesList() {
     		titleInp.onfocus = () => setMode('title');
     		descArea.onfocus = () => setMode('desc');
 
-    		//these event handlers only reference content directly in the remote overlay, so only need adding once
-    		suggBar.addEventListener('click', useSuggection);
+		//note we directly setting onclick rather than addEventListener, to make sure clear previous one
+    		suggBar.onclick = useSuggection;
 
     		// 1. Attach listeners to the remote elements
     		// This should be done right after they are created in the parentDoc
-    		titleInp.addEventListener('input', (e) => handleInput(e));
-    		descArea.addEventListener('input', (e) => handleInput(e));
+    		titleInp.oninput = handleInput;
+    		descArea.oninput = handleInput;
 
-    		suggBar.dataset.listenerAttached = "true"; // Flag it as "already handled"
-    	}
+    	//	suggBar.dataset.listenerAttached = "true"; // Flag it as "already handled"
+    	//}
 
     } else { //not isSmall, so large
 

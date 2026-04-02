@@ -22,10 +22,9 @@
  */
 
 require_once('geograph/global.inc.php');
-init_session();
+//init_session();
 
 $result = array();
-
 
 if (!empty($CONF['submission_message'])) {
 	header("HTTP/1.0 503 Unavailable");
@@ -33,7 +32,8 @@ if (!empty($CONF['submission_message'])) {
 
 	$result['message'] = $CONF['submission_message'];
 
-	 if (!empty($CONF['critical'])) { // will contain something like '1400'; for 2pm
+	//this says when will become readonly
+	if (!empty($CONF['critical'])) { // will contain something like '1400'; for 2pm
                 $critical_hour = substr($CONF['critical'], 0, 2);
                 $critical_min  = substr($CONF['critical'], 2, 2);
 
@@ -47,6 +47,11 @@ if (!empty($CONF['submission_message'])) {
 	$result['status'] = 'online';
 }
 
+//technically could be readonly without a submission_message, but usually used together
+if (!empty($CONF['readonly'])) {
+	header("HTTP/1.0 503 Unavailable");
+	$result['status'] = 'readonly';
+}
 
 //if ($USER->hasPerm('basic')) {
 
