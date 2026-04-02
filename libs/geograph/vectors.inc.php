@@ -2,10 +2,7 @@
 
 require_once("3rdparty/s3vectors.inc.php"); //defines queryS3Vectors
 
-//todo, move to global config!
-$CONF['embed_api'] = 'http://python-embed16.dev.svc.cluster.local:8000';
-$CONF['s3_vector_bucket'] = 'geograph-vector-bucket';
-
+//embed_api URL now in global config!
 //for now leave the indexName hardcoded (similarly the manticore index name!)
 
 ###################################################
