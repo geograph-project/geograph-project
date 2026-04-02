@@ -1,0 +1,1 @@
+../basic/function_readonly.tpl
