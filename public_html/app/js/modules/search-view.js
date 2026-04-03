@@ -142,7 +142,30 @@ export function onMount() {
 
     // Initialize Autocomplete //no auto-submit/callback
     setupPlaceAutocomplete('loc', { maplink: true });
+
+    // Check if we have a saved query string
+    const form = document.getElementById('theForm');
+    if (queryString && form) {
+        const params = new URLSearchParams(queryString);
+
+        // Iterate through all entries in the query string
+        for (const [key, value] of params.entries()) {
+            const input = form.elements[key];
+            if (!input) continue;
+
+            if (input.type === 'checkbox') {
+                // Checkboxes are "on" if present in the string
+                input.checked = true;
+            } else {
+                // Standard text, selects, etc.
+                input.value = value;
+            }
+        }
+    }
+
 }
+
+var queryString; //save it locally
 
 function submitForm(event) {
     event.preventDefault();
@@ -153,7 +176,13 @@ function submitForm(event) {
     const formData = new FormData(form);
 
     // 2. Pass that directly into URLSearchParams to get the encoded string
-    const queryString = new URLSearchParams(formData).toString();
+    queryString = new URLSearchParams(formData).toString();
+
+    // 3. Check the "Soft" connection gate
+    if (navigator.onLine === false) {
+        alert("You appear to be offline. Please wait for a connection to search.");
+        return false;
+    }
 
     //this submits the querysting to the /finder/finder.php - in an iframe!)
     navigateTo('/app/results', {param:queryString});
