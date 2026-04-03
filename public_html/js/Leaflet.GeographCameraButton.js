@@ -7,7 +7,8 @@ L.GeographCameraButton = L.Control.extend({
         controlicon: 'fa-camera',
         controltitle: 'Take Photo',
         position: 'topleft', // Standard Leaflet control position
-	historyPoints: null // The caller passes a L.FeatureGroup() here
+    	historyPoints: null, // The caller passes a L.FeatureGroup() here
+        targetPane: 'historyDots' //what pane to historyPoints to (intended to can put them on top of polygons etc)
     },
 
     initialize: function(options) {
@@ -39,6 +40,12 @@ L.GeographCameraButton = L.Control.extend({
 
         this._setupListeners();
 
+        // Ensure the pane exists once when the control is added
+        if (!map.getPane(this.options.targetPane)) {
+            map.createPane(this.options.targetPane);
+            map.getPane(this.options.targetPane).style.zIndex = 450;
+        }
+
         return L.DomUtil.create('div', 'leaflet-camera-control-wrapper');
     },
 
@@ -59,16 +66,17 @@ L.GeographCameraButton = L.Control.extend({
         historyPoints.clearLayers();
         const geoRecords = await dbHistory.getGeoHistory();
 
-	const colours = {
-		'taken': 'blue',
-		'uploaded': 'red',
-		'submitted': 'green'
-	};
+    	const colours = {
+    		'taken': 'blue',
+    		'uploaded': 'red',
+    		'submitted': 'green'
+    	};
 
         geoRecords.forEach(record => {
             L.circleMarker(L.latLng(record.exifData.lat, record.exifData.long), {
                 radius: 6,
-                color: colours[record.status] ?? 'blue'
+                color: colours[record.status] ?? 'blue',
+                pane: this.options.targetPane
             })
             .bindPopup(`<b>${record.status.toUpperCase()}</b><br>${record.filename}`)
             .addTo(historyPoints);
@@ -166,7 +174,7 @@ L.GeographCameraButton = L.Control.extend({
             const marker = L.circleMarker([lat, lng], {
                 radius: 6,
                 color: 'blue',
-		pane: 'historyDots'
+	        	pane: this.options.targetPane
             });
             marker.bindPopup(`<b>Photo Taken</b><br>${isFromMap ? '(Map Center)' : '(GPS)'}<br>${timestamp}`);
 
