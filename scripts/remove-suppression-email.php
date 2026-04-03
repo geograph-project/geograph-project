@@ -48,7 +48,7 @@ print "$uri\n";
 
 
                                                 '', //$this->data
-						'ses'
+						'ses' //$this->service
                                         );
 					//still need to add the amz ones to the headers
                                         foreach ($amzHeaders as $k => $v) {
