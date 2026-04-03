@@ -43,6 +43,11 @@ export async function onMount() {
 
     try {
         const response = await fetch('/app/uploads.json.php');
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         currentData = await response.json();
     } catch (error) {
         // Log the error for debugging

@@ -1474,6 +1474,9 @@ console.log("Error", e);
             // Construct the URL using URLSearchParams (safer than manual string building)
             const params = new URLSearchParams({ rotate:upload_id, degrees, force });
             const response = await fetch(`/submit.php?${params.toString()}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const result = await response.json();
 
             if (result.width && result.upload_id) {
@@ -1556,25 +1559,39 @@ console.log("Error", e);
         if (debounceTimer) clearTimeout(debounceTimer);
 
         debounceTimer = setTimeout(async function() {
-    		//todo, take only the LAST component, if entered text includes a ;
-            const response = await fetch(`/tags/tags.json.php?term=${encodeURIComponent(query)}&mode=ranked`);
-            const results = await response.json(); // Expected: ["tag1", "tag2"]
+            let html = '';
+            let normalizedResults = [];
 
-            // Normalize results for comparison
-            const normalizedResults = results.map(t => t.toLowerCase());
+            try {
+        		//todo, take only the LAST component, if entered text includes a ;
+                const response = await fetch(`/tags/tags.json.php?term=${encodeURIComponent(query)}&mode=ranked`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const results = await response.json(); // Expected: ["tag1", "tag2"]
 
-            let html = results.map(tag => {
-                // 1. Create a Case-Insensitive Regex of the user's query
-                const safeQuery = escapeRegex(query);
-                const regex = new RegExp(`(${safeQuery})`, "gi");
-                // 2. Replace the match with a bold version
-                // $1 keeps the original casing from the database (e.g., "Road" stays "Road")
-                const highlighted = escapeHTML(tag).toTitleCase().replace(regex, "<strong>$1</strong>");
-                return `<div class="suggestion-item">${highlighted}</div>`;
-            }).join('');
+                // Normalize results for comparison
+                normalizedResults = results.map(t => t.toLowerCase());
 
+                html = results.map(tag => {
+                    // 1. Create a Case-Insensitive Regex of the user's query
+                    const safeQuery = escapeRegex(query);
+                    const regex = new RegExp(`(${safeQuery})`, "gi");
+                    // 2. Replace the match with a bold version
+                    // $1 keeps the original casing from the database (e.g., "Road" stays "Road")
+                    const highlighted = escapeHTML(tag).toTitleCase().replace(regex, "<strong>$1</strong>");
+                    return `<div class="suggestion-item">${highlighted}</div>`;
+                }).join('');
+
+            } catch (error) {
+                console.error("Tag fetch failed:", error);
+                // Inform the user that suggestions are currently unavailable
+                html = `<div class="suggestion-item error-text"><em>Suggestions unavailable</em></div>`;
+            }
+
+            //still runs even if fails!
             if (query.length > 2 && !normalizedResults.includes(query.toLowerCase())) {
-        		//todo, perhaps would be nice o auto-split!
+        		// Auto-split, on semicolons
                 if (query.includes(';')) {
                     // 1. Split and clean each tag
                     const tagArray = query.split(/\s*;\s*/).map(t => t.trim()).filter(t => t.length > 0);
@@ -1729,19 +1746,32 @@ console.log("Error", e);
     const suggestionsS = document.getElementById('suggestionsSubjects');
 
     async function loadSubjects() {
-        const response = await fetch("/tags/subject.json.php?v=2");
-        const data = await response.json();
+        try {
+            const response = await fetch("/tags/subject.json.php?v=2");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-        data.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item.tag; // This is what the user sees/types
-            option.dataset.id = item.tag_id; // Store the ID for the form
-            option.dataset.count = parseInt(item.count,10);
-            subjectList.appendChild(option);
-        });
+            const data = await response.json();
+
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.tag; // This is what the user sees/types
+                option.dataset.id = item.tag_id; // Store the ID for the form
+                option.dataset.count = parseInt(item.count,10);
+                subjectList.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Tag fetch failed:", error);
+        }
     }
 
     subjectInput.addEventListener('input', () => {
+        if (subjectList.options.length==0) {
+            suggestionsS.innerHTML = '<div class="suggestion-item">No Suggestions Available</div>';
+            return;
+        }
+
         const query = subjectInput.value.trim().toLowerCase();
 
         if (query.length < 1) {
@@ -1816,6 +1846,10 @@ console.log("Error", e);
     });
 
     subjectInput.addEventListener('focus', (e) => {
+        if (subjectList.options.length==0) {
+            suggestionsS.innerHTML = '<div class="suggestion-item">No Suggestions Available</div>';
+            return;
+        }
         const query = subjectInput.value.trim().toLowerCase();
         if (query.length < 1) {
             subjectInput.placeholder = 'Start typing... (showing popular subjects)';
@@ -1891,6 +1925,9 @@ console.log("Error", e);
         // 2. Fetch Remote Data
         try {
             const response = await fetch("https://www.geograph.org.uk/tags/primary.json.php");
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const data = await response.json();
 
             let currentGroup = null;
@@ -2053,20 +2090,25 @@ console.log("Error", e);
 
             const hiddenId = document.getElementById('subject-id');
             const options = document.querySelectorAll('#subject-list option');
-            const valueLower = input.value.toLowerCase();
+            if (options.length) {
+                const valueLower = input.value.toLowerCase();
 
-            // Find if the typed value matches a valid tag
-            const match = Array.from(options).find(o => o.value.toLowerCase() === valueLower);
+                // Find if the typed value matches a valid tag
+                const match = Array.from(options).find(o => o.value.toLowerCase() === valueLower);
 
-            if (match) {
-                hiddenId.value = match.dataset.id;
-                input.setCustomValidity(""); // Clear any previous error
+                if (match) {
+                    hiddenId.value = match.dataset.id;
+                    input.setCustomValidity(""); // Clear any previous error
+                } else {
+                    // This triggers the browser's built-in validation bubble
+                    input.setCustomValidity("Please select a subject from the list");
+                    input.reportValidity(); // This forces the browser to show the bubble immediately
+                    input.focus();
+                    return false;
+                }
             } else {
-                // This triggers the browser's built-in validation bubble
-                input.setCustomValidity("Please select a subject from the list");
-                input.reportValidity(); // This forces the browser to show the bubble immediately
-                input.focus();
-                return false;
+                //if the subject list failed to load we cant validate anything.
+                //for now, will just have to let the form continue.
             }
         } else {
             input.setCustomValidity(""); // Clear any previous error
@@ -2854,9 +2896,11 @@ async function loadPlaceNames(eastings, northings, ri) {
   try {
     const script_name = (ri==2)?"ie_open_data.json.php":"os_open_names.json.php";
     const response = await fetch(`/stuff/${script_name}?e=${eastings}&n=${northings}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const data = await response.json();
 
-    isFetching = false;
     suggBar.innerHTML = ''; // Clear loading
 
     if (data?.rows?.length) {
@@ -2882,8 +2926,9 @@ async function loadPlaceNames(eastings, northings, ri) {
   } catch (err) {
     suggBar.classList.add('no-results');
 //    suggBar.textContent = 'Failed to load places.';
+  } finally {
+    isFetching = false;
   }
-  isFetching = false;
 }
 
 function insertAtCursor(el, textToInsert) {

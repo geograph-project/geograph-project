@@ -676,7 +676,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 submitBtn.style.display = 'block';
                 submitBtn.textContent = `Submit ${timePart} Now`;
             } else {
-                uploadBtn.textContent = "Upload Failed. Try again";
+                uploadBtn.textContent = "Upload Failed. Click to try again";
             }
         });
 
