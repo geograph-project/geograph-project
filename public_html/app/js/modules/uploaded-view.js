@@ -41,8 +41,21 @@ export async function onMount() {
 
     sortSelect.value = AppState.getPreference('uploadedSort', 'uploaded-desc');
 
-    const response = await fetch('/app/uploads.json.php');
-    currentData = await response.json();
+    try {
+        const response = await fetch('/app/uploads.json.php');
+        currentData = await response.json();
+    } catch (error) {
+        // Log the error for debugging
+        console.error("Failed to fetch uploads:", error);
+
+        // Update the UI with a failure message
+        if (gridContainer) {
+            gridContainer.innerHTML = '<p class="error-msg">Unable to load uploads list. Please try again later.</p>';
+        }
+
+        // Abort the function early
+        return;
+    }
 
     //only show if something to sort!
     sortSelect.classList.toggle('hidden', currentData.length<2);
