@@ -23,7 +23,7 @@
 
 require_once('geograph/global.inc.php');
 
-customExpiresHeader(3600*24);
+customExpiresHeader(3600*24, true, true);
 
 
 $db = GeographDatabaseConnection(true);

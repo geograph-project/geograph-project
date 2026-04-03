@@ -23,8 +23,6 @@
 
 require_once('geograph/global.inc.php');
 
-
-
 $db = GeographDatabaseConnection(true);
 
 if (!empty($_GET['suggestions'])) {
@@ -39,7 +37,7 @@ if (!empty($_GET['suggestions'])) {
 	//cosine_cnt is because currently, only partial data is PE encoded, so some 'iamges tagged with subject' provides few images with the embedding vector!
 
 } else {
-	customExpiresHeader(3600*24);
+	customExpiresHeader(3600*24, true, true);
 
 	$query = "SELECT `prefix`, tag, tag_id, count
 		FROM tag LEFT JOIN tag_stat using (tag_id)
