@@ -12,41 +12,11 @@ if (!empty($CONF['readonly'])) {
 
 $USER->mustHavePerm('basic');
 
-function failMessage($text, $um) {
-    print '<meta name="viewport" content="width=device-width, initial-scale=1">';
-    
-    // Minimal CSS for mobile legibility
-    print "<style>
-	body { font-family: -apple-system, system-ui, sans-serif;  line-height: 1.6;  color: #333;  padding: 16px;  margin: 0; background-color: #f4f7f6; }
-	.card { max-width: 500px;  margin: 20px auto;  background: #fff;  padding: 24px;  border-radius: 12px;  box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-	h3 { color: #d93025; margin-top: 0; font-size: 1.4rem; }
-	p { margin-bottom: 16px; font-size: 1rem; }
-	.explanation { background: #fff3cd;  padding: 12px;  border-radius: 6px;  font-size: 0.95rem;  color: #856404;  border-left: 4px solid #ffeeba; }
-	.btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
-	.btn { display: block;  text-align: center; padding: 14px;  text-decoration: none;  border-radius: 8px;  font-weight: 600; }
-	.btn-primary { background: #1a73e8; color: #fff; }
-	.btn-secondary { background: #e8eaed; color: #3c4043; }
-    </style>";
-
-    print "<div class='card'>";
-    print "<h3>" . htmlentities($text) . "</h3>";
-
-    if (!empty($um->existing)) {
+function failMessage($text, $um = null) {
+    if (!empty($um) && !empty($um->existing))
         $existing = intval($um->existing);
 
-	echo "<p class='explanation'><strong>Note:</strong> The most likely cause is simply that the form was submitted multiple times in quick succession. It doesn't really matter - we already have your submission below.</p>";
-
-        echo "<p>This image was already processed as ID: <strong>$existing</strong>.</p>";
-	echo "<div class='btn-group'>";
-        echo "  <a href='/photo/$existing' class='btn btn-primary'>View the Photo Page</a>";
-    } else {
-        print "<p>Please go back, correct the values, and press <strong>'I Agree'</strong> again.</p>";
-        echo "<div class='btn-group'>";
-    }
-    echo "  <a href='/app/' target='_top' class='btn btn-secondary'>Back to Home</a>";
-    echo "</div>";
-
-    print "</div>";
+    include __DIR__."/submit-fail.inc.php";
     exit;
 }
 
@@ -121,83 +91,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
     $um->setLargestSize($_POST['largestsize']);
 
-
     if (!empty($um->errormsg)) {
         failMessage($um->errormsg, $um);
     } else {
         // so far so good... can we commit the submission?
         $method = 'app';
         $rc = $um->commit($method);
-        if ($rc == "") {
+        if ($rc == "") { //empty string is success!
 
-                        //clear user profile
-                        $ab=floor($USER->user_id/10000);
-                        $smarty = new GeographPage;
-                        $smarty->clear_cache(null, "user$ab|{$USER->user_id}");
+            //clear user profile
+            $ab=floor($USER->user_id/10000);
+            $smarty = new GeographPage;
+            $smarty->clear_cache(null, "user$ab|{$USER->user_id}");
 
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Submission Status</title>
-    <link rel="stylesheet" href="<? echo smarty_modifier_revision('/app/assets/css/style.css'); ?>">
-    <style>
-        body { padding:10px; text-align: center; }
-        .idNum { font-size:2em; font-family: math, sans-serif; }
-        .nowrap { white-space: nowrap; }
-    </style>
-</head>
-<body>
+            $need_larger = false;
+            foreach($uploadmanager->tags as $tag) {
+                if (preg_match('/^panorama:/',$tag)) //todo && $_POST['largestsize'][$key] == '640' ??
+                     $need_larger = 1;
+            }
 
-    <h3 align=center>Submission Successful</h3>
-    <br>
-    <hr>
-    <br>
-    <p>ID: <a class="idNum" href="https://www.geograph.org.uk/photo/<?= (int)$um->gridimage_id ?>" target="_blank"><?= (int)$um->gridimage_id ?></a> <span class=nowrap>(open photo page in browser)</span></p>
-
-    <?php if ($need_larger): ?>
-        <br>
-        <b>If you now need to add the full size Panorama</b>:
-        <a href="/resubmit.php?id=<?= (int)$um->gridimage_id ?>" target="_blank" class="btn btn-primary">Add Larger Image</a>
-        (Opens in browser)<br><br>
-    <?php endif; ?>
-
-    <button class="btn btn-primary" onclick="navigateTo('/app/uploaded')">Submit Another</button>
-
-    <button class="btn btn-primary" onclick="navigateTo('/app/upload')">Upload Another</button>
-
-    <a href="/app/" class="btn" target="_top" onclick="navigateTo('/app/home'); return false;">Back To Home</a>
-
-    <script type="module">
-	import { navigateTo, updateAppState, setupSettingsListener } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
-
-	//so the page can ues it
-	window.navigateTo = navigateTo;
-
-        //set this up right away
-        setupSettingsListener();
-
-        //now the submission is finished, need to tell the app, there is no longer an active upload_id - none is a special value
-        window.addEventListener('DOMContentLoaded', function() {
-            updateAppState({upload_id: 'none'});
-        });
-    </script>
-
-	<? if (!empty($_POST['filename'])) { ?>
-		<script src="<?php echo smarty_modifier_revision("/js/Geograph.MediaDatabase.class.js"); ?>"></script>
-		<script>
-			const dbHistory = new MediaDatabase();
-			dbHistory.updateMediaHistory(<? echo json_encode($_POST['filename']); ?>, {
-			    status: 'submitted'
-			});
-		</script>
-	<? } ?>
-
-</body>
-</html>
-<?php
+            //todo set $need_larger -- if has pano rag?!
+            include __DIR__."/submit-success.inc.php";
 
         } else {
             failMessage($rc, $um);
