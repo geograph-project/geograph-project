@@ -14,6 +14,51 @@ export function render() {
 
             <h2>App Questions</h2>
             <p class="tap-prompt"><i>tap to expand...</i></p>
+
+            <div class="faq-item">
+                <button class="faq-button" onclick="this.nextElementSibling.classList.toggle('hidden')">
+			Why all the complication with taking photos and missing location?
+                </button>
+                <div class="faq-content hidden">
+		    <p>Many mobile devices and browsers automatically strip <strong>GPS metadata</strong> (EXIF data) from photos during the upload process. While this is a privacy feature designed to prevent accidental location sharing on social media, it can be inconvenient for Geograph contributors who want to document exact coordinates.</p>
+
+		    <p>If you find your location data is missing, here are three ways to ensure your coordinates stay attached to your images:</p>
+
+		    <hr>
+
+		    <section>
+		        <h4>1. Use the App's Built-in Camera</h4>
+		        <p>Taking photos directly through the app is the most reliable way to preserve location data.</p>
+		        <ul>
+		            <li><strong>Direct Encoding:</strong> We attempt to encode the GPS location into the filename, making it less likely for browsers to strip the data during upload.</li>
+		            <li><strong>Immediate Upload:</strong> The standalone "Take Photo" page allows you to upload images to the server immediately. This bypasses the local camera roll, guaranteeing the location isn't lost.</li>
+		            <li><strong>Map Integration &amp; Tracking:</strong> Using the camera via <strong>Map Mode</strong> allows you to snap photos without leaving the map. The map also records the location of each photo as it is taken and color-codes them (taken, uploaded, submitted), making it easy to track your progress during a day out.</li>
+		        </ul>
+		    </section>
+
+		    <section>
+		        <h4>2. Switch from "Photo Chooser" to "File Selector"</h4>
+		        <p>On many devices, the standard "Photo Picker" or Gallery view is responsible for stripping of metadata.</p>
+		        <ul>
+		            <li>On the Upload page, try selecting the <strong>File Selector</strong> Mode.</li>
+		            <li>While navigating folders manually can take more effort, this method is often more reliable for preserving original coordinates.</li>
+		        </ul>
+		    </section>
+
+		    <section>
+		        <h4>3. Use the "Advanced File Browser"</h4>
+		        <p>You can grant the app access to specific photo folders to create a customized local gallery optimized for contributors.</p>
+		        <ul>
+		            <li><strong>Bypass Privacy Filters:</strong> This method reads coordinates directly from the source folder, sidestepping browser-based stripping.</li>
+		            <li><strong>Smarter Sorting:</strong> Group your local images by <strong>Date</strong> and <strong>Grid Square</strong>.
+			    <li><strong>Duplicate Detection:</strong> The app will automatically flag images you've already submitted, even those uploaded before you started using the app.</li>
+		            <li><strong>One-Tap Sync:</strong> Once configured, you only need to click <strong>"Rescan Folders"</strong> to pick up new images without having to browse for the folders again.</li>
+		        </ul>
+		    </section>
+                </div>
+            </div>
+
+
             <div id="app-questions" class="faq-list">
                 <p class="loading">Loading frequently asked questions...</p>
             </div>
