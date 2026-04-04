@@ -10,6 +10,7 @@ class Router {
         this.appContainer = document.getElementById('app-container');
         this.iframeContainer = document.getElementById('iframe-container');
         this.iframes = {}; // Cache for persistent iframes
+    	this.activeBusters = {};
 
         // Handle navigation events
         window.addEventListener('popstate', (e) => this.handleNavigation(window.location.pathname));
@@ -65,19 +66,47 @@ class Router {
         }
     }
 
+// 1. Helper to resolve the "Real" URL from your Import Map
+getMappedUrl(modulePath) {
+    const mapScript = document.querySelector('script[type="importmap"]');
+    if (mapScript) {
+        const map = JSON.parse(mapScript.innerHTML);
+        // Returns the versioned URL (e.g., ...module.js?1773435716) 
+        // or the base path if not found
+        return map.imports[modulePath] || modulePath;
+    }
+    return modulePath;
+}
+
     async renderModule(route, options = {}) {
             this.appContainer.innerHTML = '<div class="loading">Loading...</div>';
             this.hideAllIframes();
             this.appContainer.classList.remove('hidden');
 
+	    	// Check if this specific route previously failed and needs the buster
+    		const needsBuster = this.activeBusters[route.module] ?? 0;
+    		const url = needsBuster ? `${this.getMappedUrl(route.module)}?v=${needsBuster}` : route.module;
+
             try {
-                const module = await import(route.module);
+                const module = await import(url);
                 const html = await module.render(options);
                 this.appContainer.innerHTML = html;
                 if (module.onMount) module.onMount(options);
             } catch (err) {
                 console.error('Failed to load module:', err);
-                this.appContainer.innerHTML = '<div class="error">View failed to load.</div>';
+
+	            this.appContainer.innerHTML = `
+                    <div class="error">
+                    <p>Connection lost or view unavailable.</p>
+                    <button id="retry-btn">Retry Connection</button>
+                </div>
+                `;
+
+                document.getElementById('retry-btn').addEventListener('click', () => {
+                    this.activeBusters[route.module] = needsBuster + 1; // Mark this URL as needing a buster
+                    this.renderModule(route, options);
+                });
+
             }
     }
 
@@ -123,6 +152,8 @@ class Router {
             iframe.id = `iframe-${id}`;
             this.iframeContainer.appendChild(iframe);
             this.iframes[id] = iframe;
+
+            //todo, perhaps set a timer, and if the iframe doesnt load (ie fire onload) then consider it failed, and show a retry button??
 
         } else if (baseUrl == '/app/submit.php' && AppState.newSubmission) {
             //we need to explicitly force it to refresh
