@@ -592,6 +592,8 @@ span.tag-pill button {
 
 #orientation_message {
     background-color:pink;
+    padding:6px;
+    font-size:1.1em;
 }
 .field-header .info-icon {
     position: relative; top:0 !important; left:10px;
@@ -733,8 +735,8 @@ span.tag-pill button {
     </div>
 
     <div id="orientation_message" style="display:none">
-	Browsers and devices handle image orientation differently. If you are seeing this warning, please rotate the image sideways (if 
-	needed) and back to upright, <b>even if it looks OK to you</b>. This will ensure it is displayed correctly across all devices.
+	&#9888; Browsers and devices handle image orientation differently. &#9888;<br> If you are seeing this warning, please rotate the image sideways
+	and back to upright, <b class=nowrap">even if it looks OK to you initially</b>. This will ensure it is displayed correctly across all devices.
     </div>
 </div>
 
