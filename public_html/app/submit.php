@@ -1711,6 +1711,19 @@ console.log("Error", e);
             .filter(match => match.score > 0)
             .sort((a, b) => b.score - a.score); // Higher score first
 
+        if (matches.length === 0) {
+            const query_safe = escapeHTML(cleanTag(query));
+
+            // Only show the "Add" pill if the query isn't empty
+            suggestionsS.innerHTML = `
+                <div class="suggestion-item error-text">No matching subjects found</div>
+                <div class="suggestion-item add-new-tag" onclick="addTag('${query_safe}')">
+                    <span class="plus-icon">+</span> Add [<strong>${query_safe}</strong>] as a Tag
+               </div>
+            `;
+            return;
+        }
+
         // Optimized: If we have exactly one perfect match, clear the suggestions
         if (matches.length === 1 && matches[0].score === 3) {
             subjectInput.setCustomValidity("");
@@ -1754,9 +1767,14 @@ console.log("Error", e);
     suggestionsS.addEventListener('click', (e) => {
         const item = e.target.closest('.suggestion-item');
         if (item) {
-            subjectInput.value = item.textContent;
+            if (item.classList.contains('add-new-tag')) { //has it own click hanlder to add the actual tag
+                subjectInput.value = ''; //its been added as tag instead!
+                subjectInput.placeholder = 'Type to search subjects...';
+            } else {
+                subjectInput.value = item.textContent;
+                document.getElementById('subject-id').value = item.dataset.id;
+            }
             subjectInput.setCustomValidity("");
-            document.getElementById('subject-id').value = item.dataset.id;
             suggestionsS.innerHTML = '';
         }
     });
