@@ -1126,12 +1126,40 @@ async function reauthAll() {
     document.getElementById('reauth-btn').classList.add('hidden');
 }
 
+var isInitialLoad = true;
+const reauthBtn = document.getElementById('reauth-btn');
+
+async function checkFolders() {
+    // Only fetch if we have a database instance ready
+    if (!dbHistory) dbHistory = new MediaDatabase();
+
+    const folders = await dbHistory.getAllFromStore('folders');
+    if (folders.length > 0) {
+        reauthBtn.classList.remove('hidden');
+    }
+}
+
+const subObserver = new IntersectionObserver(async (entries) => {
+    if (entries[0].isIntersecting) {
+        // Skip the logic on the very first frame to avoid redundant calls
+        // since window.onload handles the initial setup
+        if (isInitialLoad) {
+            isInitialLoad = false;
+            return;
+        }
+        console.log("Iframe visible: Refreshing state...");
+        await checkFolders();
+    }
+}, { threshold: 0.1 }); // Trigger when at least 10% is visible
+
+subObserver.observe(document.body);
+
 window.onload = async () => {
     dbHistory = new MediaDatabase();
-    const folders = await dbHistory.getAllFromStore('folders');
-    if (folders.length > 0) document.getElementById('reauth-btn').classList.remove('hidden');
+    await checkFolders();
     renderFullGallery();
 };
+
 </script>
 <a href="javascript:(function () {var script=document.createElement('script');script.src='//cdn.jsdelivr.net/npm/eruda';document.body.appendChild(script); script.onload = function () { eruda.init() } })();" style="color:#333">dev-tools, for developers only</a>
 
