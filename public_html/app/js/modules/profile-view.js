@@ -257,6 +257,8 @@ async function displayStats() {
    }
 }
 
+var searchQuery;
+
 export async function onMount() {
     // Initial Load
     loadSubmissions('recent');
@@ -274,8 +276,20 @@ export async function onMount() {
         const query = e.target.elements.q.value;
         const userId = window.GEOGRAPH_USER_PREFERENCES['user_id'];
 
+        //store it so it can be restored later (particully if search fails!)
+        searchQuery = query;
+
+        // Check the "Soft" connection gate
+        if (navigator.onLine === false) {
+            alert("You appear to be offline. Please wait for a connection the click the Search button again.");
+            return false;
+        }
+
         navigateTo('/app/results', {param: `q=${encodeURIComponent(query)}&contributor=${encodeURIComponent(userId)}+Myself&inner=true&standalone=true`});
     });
+
+    if (searchQuery) //alas we dont know, but maybe only want to restore if search failed!
+        document.getElementById('search-form').elements.q.value = searchQuery;
 
     //modal controler for image previews
     const gridContainer = document.getElementById('submissions-grid');
