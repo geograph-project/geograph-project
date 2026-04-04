@@ -44,6 +44,8 @@ if (isset($_REQUEST['http_referer']))
       	$smarty->assign('http_referer',$_REQUEST['http_referer']);
 elseif (isset($_SERVER['HTTP_REFERER']))
       	$smarty->assign('http_referer',$_SERVER['HTTP_REFERER']);
+if ($_REQUEST['redir'])
+	$smarty->assign('redir',1); //we currently only use to redirect to app, so dont store the actual URL!
 
 if (isset($_GET['confirm']))
 {
@@ -105,6 +107,12 @@ elseif (isset($_POST['name']))
 
 	if ($ok)
 		$ok=$USER->register($_POST, $errors);
+
+	if ($ok && !empty($_REQUEST['redir'])) {
+		//technically only use for app registration, hardcode link to avoid risk of being tampered with
+		header("Location: /help/app?registered");
+		exit;
+	}
 
 	//store registration errors and error errors
 	$smarty->assign('registration_ok', $ok);

@@ -104,13 +104,6 @@
 
 	<br/><br/>
 
-        <div class="interestBox" style="position:absolute;left:-1000px;top:-200px">
-        <label for="email2">leave this box blank</label><br/>
-        <input size="15" id="email2" name="email2" value="" autocomplete="no"/>
-
-        <br/><br/>
-        </div>
-
 	<label for="password1">Choose a password</label><br/>
 	<input size="15" type="password" id="password1" name="password1" value="{$password1|escape:'html'}" required/>
 	<span class="formerror">{$errors.password1}</span>
@@ -136,6 +129,15 @@
 	<br/>
 	<br/>
 
+
+        <div class="interestBox" style="position:absolute;left:-1000px;top:-200px">
+        <label for="email2">leave this box blank</label><br/>
+        <input size="15" id="email2" name="email2" value="" autocomplete="no"/>
+
+        <br/><br/>
+        </div>
+
+	<input type=hidden name="redir" value="{$redir|escape:'html'}">
 	<input type=hidden name="http_referer" value="{$http_referer|escape:'html'}">
 	<input type=hidden id="register_timing" name="register_timing" value="-1">
 	<input type="submit" name="register" value="Register"/>
