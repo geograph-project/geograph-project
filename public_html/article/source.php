@@ -60,7 +60,13 @@ if (count($page)) {
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
-	header("Content-Type: text/plain");
+	if (!empty($_GET['utf8'])) {
+		header('Content-Type: text/plain; charset=utf-8');
+		$page['content'] = latin1_to_utf8($page['content']);
+	} else {
+		header("Content-Type: text/plain");
+	}
+
 	print $page['content'];
 
 } else {
