@@ -97,7 +97,7 @@ if (!empty($CONF['submission_message'])) {
             background-color: var(--bg);
             color: var(--content-text);
             margin: 0; padding: 2px;
-            display: flex; justify-content: center;
+            display: flex; align-items: center;
 	    flex-direction: column;
         }
         .card { --background: white; padding: 24px 0; border-radius: 20px; --box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; }
