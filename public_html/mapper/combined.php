@@ -97,6 +97,10 @@ if (!empty($_GET['inner'])) {
 	//hides the logo at the top!
         $smarty->assign('inner',1);
 }
+//the 'app' version has extra functions
+if (!empty($_GET['camera'])) {
+        $smarty->assign('camera',1);
+}
 
 $smarty->assign('g_time',filemtime("../guider/mapper_guider.js"));
 

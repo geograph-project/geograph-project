@@ -1,52 +1,102 @@
-//assumes, L.easyButton, Font-Awesome, and GeoTools2 are already installed!
-// if MediaDatabase is available, will save taken photos to long term storage
+/* * Leaflet.GeographCameraButton
+ * * Assumes: Font-Awesome and GeoTools2 are already installed!
+ * - If MediaDatabase is available: saves taken photos to long-term local history.
+ * - If submission_utils (sendToPHP & processItem) is available: provides an
+ * upload button that handles EXIF extraction and client-side resizing.
+ */
 
 L.GeographCameraButton = L.Control.extend({
-    // Default options
     options: {
         controlicon: 'fa-camera',
         controltitle: 'Take Photo',
-        position: 'topleft', // Standard Leaflet control position
-    	historyPoints: null, // The caller passes a L.FeatureGroup() here
-        targetPane: 'historyDots' //what pane to historyPoints to (intended to can put them on top of polygons etc)
+        position: 'topleft',
+        historyPoints: null,
+        targetPane: 'historyDots'
     },
 
     initialize: function(options) {
         L.setOptions(this, options);
+        this._state = {
+            latestFile: null,
+            latestCoords: null,
+            latestName: null,
+            isFromMap: false
+        };
     },
 
     onAdd: function(map) {
-	    // we'll assume the user had already created and added the layer to map, but we will take care of loading from history for them
-        if (typeof MediaDatabase !== 'undefined' && this.options.historyPoints) {
-            this._loadHistoryIntoMap();
-        }
+        this._map = map;
+        this._injectStatusCSS();
 
-        // Create a hidden file input bound to this instance
-        this._fileInput = L.DomUtil.create('input', 'hidden-camera-input');
+        // 1. Create main container
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control geograph-camera-container');
+ 
+        // Prevent map clicks from leaking through
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.on(container, 'contextmenu', L.DomEvent.stop); // Prevent right-click context menu
+
+        // 2. The Main "Take Photo" Button
+        this._mainBtn = L.DomUtil.create('a', 'leaflet-camera-main-btn', container);
+        this._mainBtn.innerHTML = `<i class="fa ${this.options.controlicon}"></i>`;
+        this._mainBtn.href = '#';
+        this._mainBtn.title = this.options.controltitle;
+
+        // 3. The "Action Bar" (Hidden by default)
+        this._actionBar = L.DomUtil.create('div', 'camera-action-bar', container);
+        this._actionBar.style.display = 'none';
+        this._actionBar.style.flexDirection = 'row';
+
+        this._uploadBtn = L.DomUtil.create('a', 'leaflet-camera-upload-btn', this._actionBar);
+        this._uploadBtn.innerHTML = '<i class="fa fa-upload"></i> Upload';
+        this._uploadBtn.href = '#';
+        this._uploadBtn.style.background = '#4CAF50';
+        this._uploadBtn.style.color = 'white';
+        this._uploadBtn.style.width = 'auto';
+        this._uploadBtn.style.padding = '0 10px';
+
+        this._cancelBtn = L.DomUtil.create('a', 'leaflet-camera-cancel-btn', this._actionBar);
+        this._cancelBtn.innerHTML = '<i class="fa fa-times"></i>';
+        this._cancelBtn.href = '#';
+        this._cancelBtn.style.background = '#f44336';
+        this._cancelBtn.style.color = 'white';
+
+        // 4. Hidden File Input
+        this._fileInput = L.DomUtil.create('input', 'hidden-camera-input', container);
         this._fileInput.type = 'file';
         this._fileInput.accept = 'image/jpeg';
         this._fileInput.capture = 'environment';
         this._fileInput.style.display = 'none';
 
-        // Append to the map container so it's part of the DOM
-        map.getContainer().appendChild(this._fileInput);
+        // Listeners
+        L.DomEvent.on(this._mainBtn, 'click', L.DomEvent.stop).on(this._mainBtn, 'click', () => {
+            this._fileInput.click();
+        });
 
-        // Setup the EasyButton using options
-        this._button = L.easyButton(
-            this.options.controlicon,
-            () => { this._fileInput.click(); },
-            this.options.controltitle
-        ).addTo(map);
+        L.DomEvent.on(this._uploadBtn, 'click', L.DomEvent.stop).on(this._uploadBtn, 'click', this._handleUpload, this);
+        L.DomEvent.on(this._cancelBtn, 'click', L.DomEvent.stop).on(this._cancelBtn, 'click', this._hideActions, this);
 
         this._setupListeners();
 
-        // Ensure the pane exists once when the control is added
         if (!map.getPane(this.options.targetPane)) {
             map.createPane(this.options.targetPane);
             map.getPane(this.options.targetPane).style.zIndex = 450;
         }
 
-        return L.DomUtil.create('div', 'leaflet-camera-control-wrapper');
+        if (typeof MediaDatabase !== 'undefined' && this.options.historyPoints) {
+            this._loadHistoryIntoMap();
+        }
+
+        return container;
+    },
+
+    _showActions: function() {
+        this._actionBar.style.display = 'flex';
+        this._uploadBtn.innerHTML = '<i class="fa fa-upload"></i> Upload';
+    },
+
+    _hideActions: function() {
+        this._actionBar.style.display = 'none';
+        this._state.latestFile = null;
     },
 
     _loadHistoryIntoMap: async function() {
@@ -88,48 +138,54 @@ L.GeographCameraButton = L.Control.extend({
     _setupListeners: function() {
         // We'll keep track of the last known "Good GPS" fix globally within this control
         this._lastGpsResult = null;
-
         // Listen to the map's location event (which L.Control.Locate triggers)
-        this._map.on('locationfound', (e) => {
-            this._lastGpsResult = e; // Stores latlng, accuracy, timestamp, etc.
-        });
+        this._map.on('locationfound', (e) => { this._lastGpsResult = e; });
 
-        this._fileInput.addEventListener('change', (e) => {
+        this._fileInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // We look for the span that has the FontAwesome 'fa' class
-            const btnIcon = this._button.button.querySelector('.fa');
+            const now = new Date(); //as close to possible when image taken (but will be when press 'OK' not when pressed shutter
+
+            // Start spinning while we resolve location and save
+            const btnIcon = this._mainBtn.querySelector('.fa');
             const originalClass = btnIcon.className;
             btnIcon.className = 'fa fa-spinner fa-spin';
 
-            // 1. Check if we have a "Fresh" GPS fix from the Locate control (within last 15s)
-            const now = Date.now();
-            if (this._lastGpsResult && (now - this._lastGpsResult.timestamp < 15000)) {
-                console.log("Using 'Fresh' GPS from Map Events");
-                newName = this._processDownload(file, this._lastGpsResult.latlng, false);
-                this._addToHistory(newName, this._lastGpsResult.latlng, false);
-                btnIcon.className = originalClass;
-                return;
+            let coords, isFromMap = false;
+
+            // 1. Check for "Fresh" Map Fix (within 15s)
+            if (this._lastGpsResult && (now.getTime() - this._lastGpsResult.timestamp < 15000)) {
+                coords = this._lastGpsResult.latlng;
+            } else {
+                // 2. Fallback: Request fresh GPS from browser
+                try {
+                    const pos = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, {
+                            enableHighAccuracy: true,
+                            timeout: 8000,
+                            maximumAge: 10000
+                        });
+                    });
+                    coords = pos.coords;
+                } catch (err) {
+                    // 3. Final Resort: Map Center
+                    this._notify(this._getFriendlyError(err) + " Using map center", 'orange');
+                    coords = this._map.getCenter();
+                    isFromMap = true;
+                }
             }
 
-            // 2. Fallback to API if we don't have a fresh fix
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    newName = this._processDownload(file, pos.coords, false);
-                    this._addToHistory(newName, pos.coords, false);
-                    btnIcon.className = originalClass;
-                },
-                (err) => {
-                    // 3. Last Resort: Map Center
-                    const mapCenter = this._map.getCenter();
-                    this._notify(this._getFriendlyError(err) + " Using map center", 'orange');
-                    newName = this._processDownload(file, mapCenter, true);
-                    this._addToHistory(newName, mapCenter, true);
-                    btnIcon.className = originalClass;
-                },
-                { enableHighAccuracy: true, timeout: 8000, maximumAge: 10000 }
-            );
+            const newName = this._processDownload(now, file, coords, isFromMap);
+            this._addToHistory(newName, coords, isFromMap);
+
+            // Store state for the Upload button
+            this._state = { latestFile: file, latestCoords: coords, latestName: newName, isFromMap };
+
+            btnIcon.className = originalClass;
+
+            if (typeof window.sendToPHP === 'function') //if have submission libary loaded, can enable upload
+                this._showActions();
         });
     },
 
@@ -182,8 +238,7 @@ L.GeographCameraButton = L.Control.extend({
         }
     },
 
-    _processDownload: function(file, coords, isFromMap) {
-        const now = new Date();
+    _processDownload: function(now, file, coords, isFromMap) {
         const pad = (n) => n.toString().padStart(2, '0');
         const datePart = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
         const timePart = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
@@ -226,6 +281,91 @@ L.GeographCameraButton = L.Control.extend({
         this._fileInput.value = ''; // Reset input for next photo
 
         return newName; //needed to for saving to history!
+    },
+
+    _handleUpload: async function() {
+        if (!this._state.latestFile) return;
+
+        const { latestFile, latestCoords, latestName } = this._state;
+        const btnIcon = this._mainBtn.querySelector('.fa');
+        const originalClass = btnIcon.className;
+
+        try {
+            this._uploadBtn.textContent = "Processing...";
+            btnIcon.className = 'fa fa-spinner fa-spin';
+
+            // Provided by submission_utils
+            const item = await processItem({ file: latestFile });
+
+            const lat = latestCoords.lat ?? latestCoords.latitude;
+            const lng = latestCoords.lng ?? latestCoords.longitude;
+
+            const exifData = {
+                hasGeo: Number.isFinite(lat) && Number.isFinite(lng),
+                lat: lat,
+                long: lng,
+                date: item.exifData?.date || this._getExifDate(latestName),
+                orientation: item.exifData?.orientation
+            };
+
+            const result = await sendToPHP(item.dataUri, latestName, (percent) => {
+                this._uploadBtn.textContent = `${percent}%`;
+            }, exifData);
+
+            if (result && result.success) {
+                this._notify("Upload Successful", "green");
+                this._hideActions();
+                // Re-sync history to show the 'green' (submitted) marker
+                if (typeof MediaDatabase !== 'undefined' && this.options.historyPoints) this._loadHistoryIntoMap();
+            } else {
+                this._uploadBtn.textContent = "Retry?";
+            }
+        } catch (err) {
+            console.error(err);
+            this._uploadBtn.textContent = "Error";
+        } finally {
+            btnIcon.className = originalClass;
+        }
+    },
+
+    _getExifDate: function(fileName) {
+        // Expects "IMG_20260405_215337_..."
+        // Matches the parts: 20260405 and 215337
+        const parts = fileName.split('_');
+        if (parts.length < 3) return ""; // Fallback or error handling
+
+        const d = parts[1]; // "20260405"
+        const t = parts[2]; // "215337"
+
+        // Format to "YYYY:MM:DD HH:MM:SS"
+        return `${d.slice(0, 4)}:${d.slice(4, 6)}:${d.slice(6, 8)} ${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)}`;
+    },
+
+    _injectStatusCSS: function() {
+        if (document.getElementById('geograph-camera-styles')) return;
+        
+        const style = L.DomUtil.create('style', '', document.head);
+        style.id = 'geograph-camera-styles';
+        style.innerHTML = `
+            .geograph-camera-container { display: flex; flex-direction: row; background: white; align-items: stretch; }
+            .geograph-camera-container a {
+                display: flex !important; align-items: center; justify-content: center;
+                transition: all 0.2s; color: #444; text-decoration: none; gap:5px;
+            }
+            .leaflet-camera-main-btn { width: 30px; height: 30px; }
+            .camera-action-bar { display: flex; border-left: 1px solid #ccc; overflow: hidden; }
+            .leaflet-camera-upload-btn { 
+                background: #4CAF50 !important; color: white !important; 
+                padding: 0 12px; font-size: 11px; font-weight: bold; font-family: sans-serif;
+                white-space: nowrap; border-left: 1px solid rgba(0,0,0,0.1);
+            }
+            .leaflet-camera-cancel-btn { 
+                background: #f44336 !important; color: white !important; 
+                width: 26px; border-left: 1px solid rgba(0,0,0,0.1);
+            }
+            .leaflet-camera-upload-btn:hover { background: #45a049 !important; }
+            .leaflet-camera-cancel-btn:hover { background: #da190b !important; }
+        `;
     }
 });
 

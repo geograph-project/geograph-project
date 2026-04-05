@@ -159,8 +159,23 @@ svg.svgFilter {
 
         <script src="{"/js/Leaflet.GeographClickLayer.js"|revision}"></script>
 
+
+{dynamic}{if $camera}
+	<script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js"></script>
         <script src="{"/js/Geograph.MediaDatabase.class.js"|revision}"></script>
+	<script src="{"/js/submission_utils.js"|revision}"></script>
+	<script src="{"/viewer/ExifRestorer.js"|revision}"></script>
 	<script src="{"/js/Leaflet.GeographCameraButton.js"|revision}"></script>
+
+    <script type="module">
+        import {literal}{ setupSettingsListener }{/literal} from '{"/app/js/utils.js"|revision|regex_replace:"/^.*org\.uk/":""}';
+
+        window.max_size = 8 * 1024 * 1024; //larger files will be downsized!
+        window.uploadMaxDimension = 65536; // Default to effectively unlimited (will be updated by the settings listener!)
+
+        setupSettingsListener();
+    </script>
+{/if}{/dynamic}
 
 <script>
      {if $os_api_key}
