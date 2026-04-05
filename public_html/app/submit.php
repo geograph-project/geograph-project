@@ -866,7 +866,7 @@ span.tag-pill button {
             </div>
             <span class="optional-label">(optional)</span>
         </div>
-	    <textarea name="comment" id="localDesc" placeholder="optional longer description" rows="5"></textarea>
+	    <textarea name="comment" id="localDesc" placeholder="optional longer description" rows="5" style="field-sizing: content; min-height: 80px;"></textarea>
 
         <div id="suggestion-pill-bar" class="hidden no-results"></div>
 
