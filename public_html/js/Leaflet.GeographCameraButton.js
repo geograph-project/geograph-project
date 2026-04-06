@@ -350,7 +350,7 @@ L.GeographCameraButton = L.Control.extend({
             .geograph-camera-container { display: flex; flex-direction: row; background: white; align-items: stretch; }
             .geograph-camera-container a {
                 display: flex !important; align-items: center; justify-content: center;
-                transition: all 0.2s; color: #444; text-decoration: none; gap:5px; border:0;
+                transition: all 0.2s; color: #444; text-decoration: none; gap:5px; border:0 !important;
             }
             .leaflet-camera-main-btn { width: 30px; height: 30px; }
             .camera-action-bar { display: flex; border-left: 1px solid #ccc; overflow: hidden; }
