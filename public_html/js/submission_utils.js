@@ -94,6 +94,7 @@ function resizeFileWorker(file, max_size, callback, max_dimension) {
 	message.innerText = "Reading image...";
 	document.body.after(message);
 
+   try {
 	const myWorker = new Worker("/js/resizeWorker.js?v=18");
 	myWorker.onmessage = function(event) {
 		if (event.data.error) {
@@ -118,6 +119,16 @@ function resizeFileWorker(file, max_size, callback, max_dimension) {
 		myWorker.postMessage({ dataUrl: e.target.result, maxSize: max_size, maxDimension: max_dimension});
         }
         reader.readAsDataURL(file);
+
+    } catch(err) {
+	console.error("Worker initialization failed (likely offline):", err);
+
+	//we dont have any progress messages
+	message.innerText = "Resizing Image (can be slow, please wait)";
+
+	//faill back and use local!
+	return resizeFile(file, max_size, callback, max_dimension);
+    }
 }
 
 ////////////////////////////////

@@ -328,12 +328,12 @@ L.GeographCameraButton = L.Control.extend({
                 // Re-sync history to show the 'green' (submitted) marker
                 if (typeof MediaDatabase !== 'undefined' && this.options.historyPoints) this._loadHistoryIntoMap();
             } else {
-                this._uploadBtn.textContent = "Retry?";
+                this._uploadBtn.textContent = "Upload Failed. Retry?";
                 //dont clear _state.latestFile
             }
         } catch (err) {
             console.error(err);
-            this._uploadBtn.textContent = "Error";
+            this._uploadBtn.textContent = "Error! Retry?";
         } finally {
             btnIcon.className = originalClass;
         }
