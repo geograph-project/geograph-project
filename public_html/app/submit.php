@@ -522,10 +522,30 @@ span.tag-pill button {
     padding:0;
 }
 
+#maparea .map-wrapper {
+    position:relative;
+}
+#maparea .map-edge-guard {
+    display:none;
+}
+
+
 @media all and (max-width: 450px) {
     #maparea #map {
 	margin:1px; /*undo auto, to allow the map to be left centered, to give more area on side to swipe the page */
     }
+
+    #maparea .map-edge-guard {
+	display:block;
+        position: absolute;
+        top:0;bottom:0;right:0;width:18px;margin-right:-3px;z-index:10000;
+        background:transparent;touch-action: pan-y;
+	transition: background 0.2s ease;
+    }
+    #maparea .map-edge-guard:active {
+	background: rgba(0, 0, 0, 0.08);
+    }
+
 }
 
 /* Switch to Row layout in Landscape */
@@ -759,7 +779,11 @@ span.tag-pill button {
 
 	<div id="maparea">
 
-        <div id="map"></div>
+	<div class="map-wrapper">
+	        <div id="map"></div>
+		<div class="map-edge-guard"></div>
+	</div>
+
 
         <div class="controls">
                 <span class=nowrap><label for=photographer_gridref class="gr active" style="color:#210b7b">Camera</label>:
