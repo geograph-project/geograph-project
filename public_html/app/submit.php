@@ -1214,7 +1214,9 @@ span.tag-pill button {
                 currentWidth = data.width;
                 currentHeight = data.height;
                 updateDimensionsDisplay();
-            }
+            } else {
+		currentWidth = null; //so it can be autoloaded from image!
+	    }
 
             //uploaded page will send grid_reference+photographer_gridref
             if (data.grid_reference)
@@ -1331,10 +1333,48 @@ console.log("Error", e);
         imgLarge.src = `/submit.php?preview=${upload_id}`;
         imgThumb.src = `/submit.php?preview=${upload_id}`;
 
+//////////////////////
+    const standardSrc = `/submit.php?preview=${upload_id}`;
+    const peekSrc = `/app/peek.jpg.php?preview=${upload_id}`;
+
+    // Set initial source
+    imgLarge.src = standardSrc;
+
+    // Define the "Show Detail" action
+    const showDetail = (e) => {
+        e.preventDefault(); // Prevent context menu on mobile
+        imgLarge.src = peekSrc;
+        imgLarge.style.objectFit = 'cover';
+    };
+
+    // Define the "Restore Original" action
+    const hideDetail = () => {
+        imgLarge.src = standardSrc;
+    };
+
+    // Desktop Events
+    imgLarge.onmousedown = showDetail;
+    imgLarge.onmouseup = hideDetail;
+    imgLarge.onmouseleave = hideDetail; // Restore if they drag the mouse off
+
+    // Mobile/Touch Events
+    imgLarge.ontouchstart = showDetail;
+    imgLarge.ontouchend = hideDetail;
+
+//////////////////////
+
         // Get dimensions from image load
         imgLarge.onload = function() {
+		if (imgLarge.src.includes('submit.php')) {
+			// Once the full preview loads, lock its rendered dimensions
+			imgLarge.style.width = imgLarge.offsetWidth + 'px';
+		        imgLarge.style.height = imgLarge.offsetHeight + 'px';
+		}
+
             // Note: browser might show actual display dimensions, but it's a fallback
             if (!currentWidth) {
+
+
                 currentWidth = this.naturalWidth;
                 currentHeight = this.naturalHeight;
                 updateDimensionsDisplay();
