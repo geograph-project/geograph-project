@@ -594,6 +594,7 @@ span.tag-pill button {
     background-color:pink;
     padding:6px;
     font-size:1.1em;
+    margin-bottom: 100vh;
 }
 .field-header .info-icon {
     position: relative; top:0 !important; left:10px;
@@ -1165,13 +1166,14 @@ span.tag-pill button {
 <script src="<? echo smarty_modifier_revision("/js/anyascii.js"); ?>"></script>
 
 <script type="module">
-        import { escapeHTML, escapeRegex, navigateTo, openModal, closeModal } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
+        import { escapeHTML, escapeRegex, navigateTo, openModal, closeModal, updateAppState } from '/app/js/utils.js?<? echo filemtime('js/utils.js'); ?>';
         //so the page can use it
         window.escapeHTML = escapeHTML;
         window.escapeRegex = escapeRegex;
         window.navigateTo = navigateTo;
 	window.openModal = openModal;
 	window.closeModal = closeModal;
+	window.updateAppState = updateAppState;
 </script>
 
 <script>
@@ -1337,6 +1339,11 @@ console.log("Error", e);
     const standardSrc = `/submit.php?preview=${upload_id}`;
     const peekSrc = `/app/peek.jpg.php?preview=${upload_id}`;
 
+    //need to reset from previous (particully after a rotate event!)
+    //but NOT reset currentWidth!
+	imgLarge.style.width = null;
+    imgLarge.style.height = null;
+
     // Set initial source
     imgLarge.src = standardSrc;
 
@@ -1365,16 +1372,17 @@ console.log("Error", e);
 
         // Get dimensions from image load
         imgLarge.onload = function() {
-		if (imgLarge.src.includes('submit.php')) {
-			// Once the full preview loads, lock its rendered dimensions
-			imgLarge.style.width = imgLarge.offsetWidth + 'px';
-		        imgLarge.style.height = imgLarge.offsetHeight + 'px';
-		}
+
+    		if (imgLarge.src.includes('submit.php')) {
+		    	// Once the full preview loads, lock its rendered dimensions
+                const rect = imgLarge.getBoundingClientRect();
+                // Lock the box size
+                imgLarge.style.width = rect.width + 'px';
+                imgLarge.style.height = rect.height + 'px';
+	    	}
 
             // Note: browser might show actual display dimensions, but it's a fallback
             if (!currentWidth) {
-
-
                 currentWidth = this.naturalWidth;
                 currentHeight = this.naturalHeight;
                 updateDimensionsDisplay();
@@ -1438,6 +1446,17 @@ console.log("Error", e);
             if (result.width && result.upload_id) {
                 imgLarge.style.opacity = 1;
                 updatePreview(result.upload_id);
+
+                //should be updating these too. but the main reason to scroll into view, snapp the page to top. Otherwise can move down the page!
+                document.getElementById('image-dimensions').scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+
+	            //And need to uplodate the App, so resume works!
+                updateAppState({upload_id: result.upload_id});
+
+                //no longer relevent
                 document.getElementById("orientation_message").style.display='none';
 
             } else if (result.lossy) {
