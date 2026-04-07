@@ -511,10 +511,9 @@ span.tag-pill button {
 #map {
     max-width: min( 350px , 100% );
     width: 350px;
-    margin:auto;
     aspect-ratio: 1 / 1;
+    max-height: 90svh;
     border:1px solid silver; border-radius:5px;
-    flex-shrink: 0;         /* Prevents the map from squishing */
 }
 
 #maparea .controls {
@@ -523,7 +522,9 @@ span.tag-pill button {
 }
 
 #maparea .map-wrapper {
+    margin:auto;
     position:relative;
+    max-width: min( 350px , calc( 98vw - 30px ) );
 }
 #maparea .map-edge-guard {
     display:none;
@@ -531,7 +532,7 @@ span.tag-pill button {
 
 
 @media all and (max-width: 450px) {
-    #maparea #map {
+    #maparea .map-wrapper {
 	margin:1px; /*undo auto, to allow the map to be left centered, to give more area on side to swipe the page */
     }
 
