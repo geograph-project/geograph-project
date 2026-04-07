@@ -13,30 +13,41 @@ if (!empty($CONF['readonly'])) {
 $USER->mustHavePerm('basic');
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a login request!
-	// Get the raw POST data
-	$input = file_get_contents('php://input');
-	$data = json_decode($input, true);
+   	$uploadmanager=new UploadManager;
+   	$response = [];
 
-	$uploadmanager=new UploadManager;
+    $contentType = trim($_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? '');
+    if (strcasecmp($contentType, 'application/json') === 0) {
 
-	$response = [];
-	if (isset($data['image'])) {
-	    $response['ok']  = $uploadmanager->processDataURL($data['image'], $data['name'] ?? null);
-        if ($response['ok']) {
-            $response['upload_id'] = $uploadmanager->upload_id;
-            if (!empty($uploadmanager->original_width)) {
-                //ideally want size of the largest, not the preview;
-                $response['width'] = $uploadmanager->original_width;
-                $response['height'] = $uploadmanager->original_height;
-            } else {
-                $response['width'] = $uploadmanager->upload_width;
-                $response['height'] = $uploadmanager->upload_height;
-            }
-		} else {
-			$response['error'] = $uploadmanager->errormsg;
-		}
+    	// Get the raw POST data
+    	$input = file_get_contents('php://input');
+    	$data = json_decode($input, true);
+
+    	if (isset($data['image'])) {
+    	    $response['ok'] = $uploadmanager->processDataURL($data['image'], $data['name'] ?? null);
+        }
+
+    } elseif (isset($_FILES['jpeg_exif'])) {
+        //name is read from the file directly
+        $response['ok'] = $uploadmanager->processUploadFile($_FILES['jpeg_exif']);
+    } else {
+        $uploadmanager->errormsg = "No file received";
+    }
+
+    if (!empty($response['ok'])) {
+        $response['upload_id'] = $uploadmanager->upload_id;
+        if (!empty($uploadmanager->original_width)) {
+            //ideally want size of the largest, not the preview;
+            $response['width'] = $uploadmanager->original_width;
+            $response['height'] = $uploadmanager->original_height;
+        } else {
+            $response['width'] = $uploadmanager->upload_width;
+            $response['height'] = $uploadmanager->upload_height;
+        }
+	} else {
+		$response['error'] = $uploadmanager->errormsg;
 	}
-	outputJSON($response);
+    outputJSON($response);
 	exit;
 }
 
