@@ -18,24 +18,30 @@ export function render() {
         <div class="view home-view">
             <h2 align=center>Welcome to Geograph</h2>
 
+<style>
+.demo-btn { flex-direction: column; gap:8px; }
+.demo-btn i { font-size:1.8em; }
+.home-view a { text-decoration: none; }
+</style>
+
             <div class="content-body">
-        		<button data-route="/app/help" class="demo-btn">Getting Started</button>
+        		<button data-route="/app/help" class="demo-btn"><i class="fa fa-book"></i> Getting Started</button>
 
-        		<button data-route="/app/capture" class="demo-btn">Take Photo / Save Location</button>
+        		<button data-route="/app/capture" class="demo-btn"><i class="fa fa-camera"></i> Take Photo</button>
 
-        		<button data-route="/app/upload" class="demo-btn">Upload Image(s)</button>
-		        <button data-route="/app/uploaded" id="submit-btn" class="demo-btn">Submit Image</button>
-        		<button data-route="/app/submit" id="resume-btn" class="demo-btn">Resume Submission</button>
+        		<button data-route="/app/upload" class="demo-btn"><i class="fa fa-cloud-upload"></i> Upload Image(s)</button>
+		        <button data-route="/app/uploaded" id="submit-btn" class="demo-btn"><i class="fa fa-pencil-square-o"></i> Submit Image</button>
+        		<button data-route="/app/submit" id="resume-btn" class="demo-btn"><i class="fa fa-forward"></i> Resume Submission</button>
 
-        		<button data-route="/app/map" class="demo-btn">View Map</button>
-		        <button data-route="/app/profile" class="demo-btn">Your Profile</button>
+        		<button data-route="/app/map" class="demo-btn"><i class="fa fa-map-o"></i> Interactive Map</button>
+		        <button data-route="/app/profile" class="demo-btn"><i class="fa fa-user-circle"></i> Your Profile</button>
 
 	            <button id="install-btn" class="demo-btn" style="display: none;">Add to Home Screen</button>
             </div>
 
     	    <p align=center><a href="/" target="_blank">Open Main Site</a><br><br>
 
-            <p align=center><a href=# data-route="/app/settings">Settings &gt;</a>
+            <p align=center><a href=# data-route="/app/settings"><i class="fa fa-cog"></i> Settings</a>
 
 	    	<br><br>
 	        <p align=center class="install-tip">Tip: Use 'Add to Home Screen' from the Chrome menu to install quick loading icon</p>

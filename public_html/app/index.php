@@ -84,6 +84,8 @@ function generate_import_map($dir, $basePath = '/app/js/') {
     <link rel="manifest" href="/app/manifest.json">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
 </head>
 <body>
     <header id="main-header">
@@ -150,7 +152,7 @@ function generate_import_map($dir, $basePath = '/app/js/') {
                 <li><a href="/discuss/" target="_blank">Open Discussion Forum</a></li>
                 <li><a href="https://forms.gle/T69BLFZyeQP9qfMKA" target="_blank">App Feedback</a></li>
 	        <li><a href="javascript:history.go(0)" style=color:silver>Reload App (during dev)</a></li>
-	        <li style=color:green id="versionNumber">V1.1<small>.<? echo date('mdH',$mtime); ?></small></li>
+	        <li style=color:green id="versionNumber">V1.2<small>.<? echo date('mdH',$mtime); ?></small></li>
             </ul>
         </nav>
     </div>
