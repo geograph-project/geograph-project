@@ -309,11 +309,23 @@ svg.svgFilter {
 
 	// If we are in 'locate' mode, we need to handle what happens if it fails
 	if (!mapOptions.center) {
-	    map.once('locationerror', function(e) {
-	        console.warn("Location access denied or failed. Reverting to default view.");
-		if (!map._loaded)
-		        map.setView([56.317, -2.769], 5); 
-	    });
+
+		// Add this guard immediately after creating the map object
+		// ... because map starts non-centerd, accidental dragging of the map breaks it due to uncaught exception, this guards against that!
+		map.on('mousedown dragstart', function(e) {
+		    if (!map.getCenter()) {
+		        // If no center is set, stop the event from bubbling
+		        // to the internal Leaflet handlers like _onUp
+		        L.DomEvent.stopPropagation(e);
+		        return false;
+		    }
+		});
+
+		map.once('locationerror', function(e) {
+			console.warn("Location access denied or failed. Reverting to default view.");
+			if (!map._loaded)
+				map.setView([56.317, -2.769], 5); 
+		});
 	}
 
 	addBaseLayer("OpenStreetMap"); //the default layer from Leaflet.base-layers.js, but will automatically use user prefernce too!
