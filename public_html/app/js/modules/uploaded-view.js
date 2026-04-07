@@ -82,8 +82,8 @@ export async function onMount() {
         const sorted = [...currentData].sort((a, b) => {
             if (val === 'uploaded-asc') return a.uploaded - b.uploaded;
             if (val === 'uploaded-desc') return b.uploaded - a.uploaded;
-            if (val === 'taken-asc') return a.image_taken - b.image_taken;
-            if (val === 'taken-desc') return b.image_taken - a.image_taken;
+            if (val === 'taken-asc') return (a.imagetaken || '0000').localeCompare(b.imagetaken || '0000');
+            if (val === 'taken-desc') return (b.imagetaken  || '0000').localeCompare(a.imagetaken || '0000');
             if (val === 'grid-asc') return (a.grid_reference || '').localeCompare(b.grid_reference || '');
             if (val === 'grid-desc') return (b.grid_reference || '').localeCompare(a.grid_reference || '');
             return 0;
