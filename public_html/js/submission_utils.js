@@ -356,7 +356,7 @@ async function sendToPHP(data, name, onProgress, exifData) {
                     const result = JSON.parse(xhr.responseText);
                     if (result.ok) {
                         if (name && typeof MediaDatabase !== 'undefined') {
-                        	const dbHistory = window.dbHistory || new MediaDatabase();
+                        	const dbHistory = window.dbHistory || (window.dbHistory = new MediaDatabase());
                         	//dbHistory.pruneHistory(MAX_FILES); for now no pruning
 
                             await dbHistory.updateMediaHistory(name, {

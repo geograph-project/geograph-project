@@ -1048,16 +1048,21 @@ async function triggerUpload(img) {
     try {
 	    //our processItem method, will automatically convert to dataUri (downsizing if needed), and extract exifData automatically
 
-            const item = await processItem(img); //expects a .file, which we happen to have!
+            const item = await processItem(img, true); //expects a .file, which we happen to have!
+		//note, will have added img.dataUri, which could be Blob!
 
 		//our updateStats just accepts the percent directly!
             const result = await sendToPHP(item.dataUri, img.file.name, updateStats, item.exifData);
+
+	    item.dataUri = null; //we now used it, so free the memory. This page doesnt use dataUri anyway
 
             if (result && result.success) {
                 img.uploadStatus = { match: 'exact', info: { gid: 1, transfer_id:result.upload_id, title: 'Just Uploaded' } };
                 await dbHistory.updateStore('images', img);
                 imagesFinished++;
                 updateStats();
+
+		//note we DONT clear, img.file, as might still be needed
 
                 /* we could setup a submit button, something like this...
                 document.getElementById('submitBtn').onclick = function() {

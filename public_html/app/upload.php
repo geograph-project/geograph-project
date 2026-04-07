@@ -435,6 +435,9 @@ async function renderUI() {
                 lastResult = result;
                 lastItem = item;
 
+		item.dataUri = null; //note the dataUri is used to render thumbnails, but as now uploaded, dont need it
+			//note, the image may still be rendered but as the <img> has the image, we dont need it in JS. Will never need to re-render
+
                 // Add the UploadID to buttons
                 if (fileQueueLength === 1) {
                     addIdtoBtn('btnSingle', result.upload_id, result.width, result.height, item.exifData, item.file.name);

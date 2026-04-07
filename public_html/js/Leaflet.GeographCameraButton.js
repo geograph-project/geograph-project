@@ -110,7 +110,7 @@ L.GeographCameraButton = L.Control.extend({
 
         this._historyLoading = true; // Lock it (may receive BOTH moveend, and viewreset?
 
-        const dbHistory = window.dbHistory || new MediaDatabase();
+        const dbHistory = window.dbHistory || (window.dbHistory = new MediaDatabase());
         const historyPoints = this.options.historyPoints;
 
         historyPoints.clearLayers();
@@ -222,7 +222,7 @@ L.GeographCameraButton = L.Control.extend({
 
        	// Save in long term storage (even if dont have historyPoints layer!)
 	    if (typeof MediaDatabase !== 'undefined' && newName) {
-	        const dbHistory = window.dbHistory || new MediaDatabase();
+	        const dbHistory = window.dbHistory || (window.dbHistory = new MediaDatabase());
     	    dbHistory.savePhotoTaken(newName, lat, lng);
         }
 

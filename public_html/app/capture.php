@@ -498,8 +498,6 @@ window.addEventListener('DOMContentLoaded', function() {
 //////////////////////////////////
 // Save Image Functions
 
-	let dbHistory;
-
         let latestFile = null;
     	const fileList = document.getElementById('fileList');
         const selectLabel = document.getElementById('select-label');
@@ -610,10 +608,9 @@ window.addEventListener('DOMContentLoaded', function() {
             link.download = newName;
             link.click();
 
-	    if (!dbHistory)
-		dbHistory = new MediaDatabase();
+	    window.dbHistory = window.dbHistory || new MediaDatabase();
 
-	    dbHistory.savePhotoTaken(newName, latestCoords.lat, latestCoords.lng);
+    	    window.dbHistory.savePhotoTaken(newName, latestCoords.lat, latestCoords.lng);
 
             // Add to list for visual confirmation
     		if (fileList) {
@@ -642,25 +639,30 @@ window.addEventListener('DOMContentLoaded', function() {
 
             //does resize - if needed, as well as fetching Exif data!
             //we COULD put the newly generated filename into file.name, and processItem would read it, but better to just use the saved lat/long directly
-            const item = await processItem({ file: latestFile });
+            const item = await processItem({ file: latestFile }, true);
 
-	    const exifData = { //create fake exif data (becuase we set the location), for storage in cache. (ie dont just send item.exifData)
-		hasGeo: Number.isFinite(latestCoords.lat) && Number.isFinite(latestCoords.lng),
+    	    const exifData = { //create fake exif data (becuase we set the location), for storage in cache. (ie dont just send item.exifData)
+	    	    hasGeo: Number.isFinite(latestCoords.lat) && Number.isFinite(latestCoords.lng),
                 lat: latestCoords.lat,
                 long: latestCoords.lng,
-		date: item.exifData?.date || fallbackExifDate,
+        		date: item.exifData?.date || fallbackExifDate,
                 orientation: item.exifData?.orientation
-	    };
+	        };
 
             const result = await sendToPHP(item.dataUri, newName, (percent) => {
                 // Update the button text to show progress
                 uploadBtn.textContent = `Uploading... ${percent}%`;
             }, exifData);
+
+		    item.dataUri = null; //maybe help garbage collect a bit sooner!
+
             if (result && result.success) {
                 // SUCCESS: Allow direct submission
 
+                latestFile = null; // Free the original File handle
+
                 document.getElementById('submitBtn').onclick = function() {
-		    //the submit process, expects the exif data unrolled
+        		    //the submit process, expects the exif data unrolled
                     navigateTo('/app/submit',{message: JSON.stringify({
                         transfer_id: result.upload_id,
                         width: result.width,
@@ -683,9 +685,9 @@ window.addEventListener('DOMContentLoaded', function() {
 
 async function getHistoryPoints() {
     historyPoints.clearLayers();
-    if (!dbHistory) dbHistory = new MediaDatabase();
+    window.dbHistory = window.dbHistory || new MediaDatabase();
 
-    const geoRecords = await dbHistory.getGeoHistory();
+    const geoRecords = await window.dbHistory.getGeoHistory();
     const colours = {
         'taken': 'blue',
         'uploaded': 'red',
