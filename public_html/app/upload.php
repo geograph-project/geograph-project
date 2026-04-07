@@ -304,13 +304,12 @@ if (!empty($CONF['submission_message'])) {
     fileInput.addEventListener('change', handleFiles);
 
     async function handleFiles(e) {
-        const files = Array.from(e.target.files);
+        let files = Array.from(e.target.files);
         if (!files.length) return;
 
         // Check for the limit (prevent overload!)
         if (files.length > 25) {
             alert("You selected " + files.length + " files. Only the first 25 will be processed.");
-            // 2. Slice to the allowed limit
             files = files.slice(0, 25);
         }
 
