@@ -649,7 +649,10 @@ basemap2.beforeAdd = function() {};
 				var padw = map._container.clientWidth/-7;
 				var padh = map._container.clientHeight/-7;
 
-				map.fitBounds(bounds, {animate:false, padding: [padw,padh]});
+				//seems to be some race condition
+				L.Util.requestAnimFrame(function() {
+					map.fitBounds(bounds, {animate:false, padding: [padw,padh]});
+				});
 			});
 
 		} else if(window.OSAPIKey) {
