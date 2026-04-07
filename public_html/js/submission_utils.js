@@ -106,6 +106,8 @@ function resizeFileWorker(file, max_size, callback, max_dimension) {
 			const { resizedDataUrl, width, height, quality, size } = event.data;
 			message.innerText = 'Image has been resized to ' + width + 'x' + height + ' and saved at ' + Math.floor(quality * 100) + '% quality setting, resulting in a new image of ' + size.toLocaleString() + ' bytes. (EXIF is maintained)';
 			callback(resizedDataUrl, size);
+
+			myWorker.terminate(); // Kill the thread immediately
 		}
 	};
 
@@ -191,20 +193,31 @@ function resizeImage(imageDataUrl, max_size, callback, max_dimension) {
 		alert('Image has been resized to '+width+'x'+height+' and saved at '+Math.floor(quality*100)+'% quality setting, resulting in a new image of '+resizedBlob.size.toLocaleString()+' bytes. (EXIF is maintained)');
 
 		callback(resizedDataUrl, resizedBlob.size);
+
+		img.src = ""; // Clear image memory
+		canvas.width = 0;
+		canvas.height = 0;
+		canvas = null;
 	};
 	img.src = imageDataUrl;
 }
 
+//non async version, for legacy use
 function dataURLtoBlob(dataURL) {
-	const parts = dataURL.split(';base64,');
-	const contentType = parts[0].split(':')[1];
-	const raw = window.atob(parts[1]);
-	const rawLength = raw.length;
-	const uInt8Array = new Uint8Array(rawLength);
-	for (let i = 0; i < rawLength; ++i) {
-		uInt8Array[i] = raw.charCodeAt(i);
-	}
-	return new Blob([uInt8Array], { type: contentType });
+       const parts = dataURL.split(';base64,');
+       const contentType = parts[0].split(':')[1];
+       const raw = window.atob(parts[1]);
+       const rawLength = raw.length;
+       const uInt8Array = new Uint8Array(rawLength);
+       for (let i = 0; i < rawLength; ++i) {
+               uInt8Array[i] = raw.charCodeAt(i);
+       }
+       return new Blob([uInt8Array], { type: contentType });
+}
+
+async function dataURLtoBlobAsync(dataUrl) {
+    const res = await fetch(dataUrl);
+    return await res.blob();
 }
 
 /////////////////////////////////
@@ -212,7 +225,7 @@ function dataURLtoBlob(dataURL) {
 // require exifr to be loaded, as well exifRestorer used by the above resize code!
 
 
-    async function processItem(item) {
+    async function processItem(item, supportBlob) {
         if (item.dataUri) //might of already been processed on previous run
 		return item;
 
@@ -278,12 +291,19 @@ function dataURLtoBlob(dataURL) {
 
         item.dataUri = await new Promise((resolve, reject) => {
                 if (needsResize && !item.isHeic) {
+                    // RESIZE: still returns a DataURL string via Worker
                     resizeFileWorker(item.file, window.max_size, (url) => {
-                        const finished = document.getElementById('messageDiv');
-                        if (finished) finished.remove();
+                        window.requestAnimationFrame(function() {
+                            const finished = document.getElementById('messageDiv');
+                            if (finished) finished.remove();
+                        });
                         resolve(url);
                     }, window.uploadMaxDimension);
+                } else if (supportBlob) {
+                    // We resolve the File object directly. (it's a Blob!)
+            	    resolve(item.file);
                 } else {
+                    // LEGACY FALLBACK: Convert to DataURL string
                     const reader = new FileReader();
                     reader.onload = (e) => resolve(e.target.result);
                     reader.onerror = (e) => reject(e); // Good to handle errors!
@@ -299,7 +319,22 @@ function dataURLtoBlob(dataURL) {
 * provide a onProgress callback, to receive a percentage uploaded
 * exifData is optional, not sent to server (should already be in the image bytes), but it can be saved locallly to help with plotting on map, for example
 */
-function sendToPHP(dataUri, name, onProgress, exifData) {
+async function sendToPHP(data, name, onProgress, exifData) {
+
+    //more effient to use FormData to send the file, rather than JSON
+    const formData = new FormData();
+
+    // Handle either Blob/File or DataURL string
+    if (data instanceof Blob) { //catches 'File' too!
+        formData.append('jpeg_exif', data, name);
+    } else if (typeof data === 'string' && data.startsWith('data:')) {
+        formData.append('jpeg_exif', await dataURLtoBlobAsync(data), name);
+    } else {
+        throw new Error("Invalid data format sent to upload");
+    }
+    if (name)
+        formData.append('name', name);
+
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
 
@@ -314,15 +349,22 @@ function sendToPHP(dataUri, name, onProgress, exifData) {
         }
 
         xhr.open('POST', '/app/upload.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
 
-        xhr.onload = () => {
+        xhr.onload = async () => {
             if (xhr.status >= 200 && xhr.status < 300) {
                 try {
                     const result = JSON.parse(xhr.responseText);
                     if (result.ok) {
-                        if (name)
-                            saveUploadToLocal(name, result.upload_id, exifData ?? null);
+                        if (name && typeof MediaDatabase !== 'undefined') {
+                        	const dbHistory = window.dbHistory || new MediaDatabase();
+                        	//dbHistory.pruneHistory(MAX_FILES); for now no pruning
+
+                            await dbHistory.updateMediaHistory(name, {
+                                status: 'uploaded',
+                                uploadId: result.upload_id,
+                                exifData: exifData ?? null
+                            });
+                        }
 
                         resolve({ 
                             success: true, 
@@ -342,71 +384,8 @@ function sendToPHP(dataUri, name, onProgress, exifData) {
         };
 
         xhr.onerror = () => reject(new Error("Network error occurred"));
-        
-        // Send the JSON payload
-        xhr.send(JSON.stringify({ image: dataUri, name }));
+
+        xhr.send(formData);
     });
 }
-
-
-    function toBase64(file) {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-        });
-    }
-
-/**
- * Helper function to manage the upload history
- */
-async function saveUploadToLocal(filename, uploadId, exifData) {
-    const STORAGE_KEY = 'upload_history';
-    const MAX_FILES = 100;
-
-    // Check if the Class is available
-    if (typeof MediaDatabase !== 'undefined') {
-        const dbHistory = new MediaDatabase();
-
-        // Migrate once (The method already checks if localStorage is empty,
-        // so it won't do anything after the first successful run).
-        await dbHistory.migrateFromLocalStorage(STORAGE_KEY);
-
-	//dbHistory.pruneHistory(MAX_FILES); for now no pruning
-
-        return await dbHistory.updateMediaHistory(filename, {
-            status: 'uploaded',
-            uploadId: uploadId,
-            exifData: exifData ?? null
-        });
-    }
-
-    // 1. Retrieve existing data or initialize empty array
-    let history = [];
-    try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        history = stored ? JSON.parse(stored) : [];
-    } catch (e) {
-        history = [];
-    }
-
-    // 2. Create the new record
-    const newRecord = {
-        filename: filename,
-        upload_id: uploadId,
-        timestamp: new Date().toISOString()
-    };
-
-    // 3. Add to the beginning of the list (newest first)
-    history.unshift(newRecord);
-
-    // 4. Cap at 100 records
-    if (history.length > MAX_FILES) {
-        history = history.slice(0, MAX_FILES);
-    }
-
-    // 5. Save back to localStorage
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-}
-
 

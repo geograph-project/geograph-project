@@ -685,6 +685,46 @@ if (filesize($file) > 4000000) {
 		return $ok;
 	}
 
+	//pass the _FILES[...] variable directly, mainly to encapsulate UPLOAD_ERR decoding!
+	function processUploadFile($file) {
+		if (!empty($file['name']))
+	                $this->name = basename(str_replace("\\",'/',$file['name'])); //fix windows paths in case we receive them
+
+	        switch($file['error']) {
+	                case 0: //UPLOAD_ERR_OK
+	                        if (empty($file['tmp_name']) || !file_exists($file['tmp_name']) || !filesize($file['tmp_name'])) {
+	                                $this->errormsg = 'Sorry, no file was received - please try again';
+					break;
+	                        }
+				return $this->processUpload($file['tmp_name'], false);
+
+	                case UPLOAD_ERR_INI_SIZE:
+	                case UPLOAD_ERR_FORM_SIZE:
+	                        $this->errormsg = 'Sorry, that file exceeds our maximum upload size of 8Mb - please resize the image and try again';
+	                        break;
+	                case UPLOAD_ERR_PARTIAL:
+	                        $this->errormsg = 'Your file was only partially uploaded - please try again';
+	                        break;
+	                case UPLOAD_ERR_NO_FILE:
+	                        $this->errormsg = 'No file was uploaded - please try again';
+	                        break;
+	                case UPLOAD_ERR_NO_TMP_DIR:
+	                        $this->errormsg = 'System Error: Folder missing - please let us know';
+	                        break;
+	                case UPLOAD_ERR_CANT_WRITE:
+	                        $this->errormsg = 'System Error: Can not write file - please let us know';
+	                        break;
+	                case UPLOAD_ERR_EXTENSION:
+	                        $this->errormsg = 'System Error: Upload Blocked - please let us know';
+	                        break;
+	                default:
+	                        $this->errormsg = 'We were unable to process your upload - please try again';
+	        }
+		// if get this far, its an error!
+		return false;
+	}
+
+	//pass the temp file directly, if passing a none uploaded file, need to pass true in second argument
 	function processUpload($upload_file,$all_non_upload = false)
 	{
 		$ok=false;

@@ -184,8 +184,12 @@ L.GeographCameraButton = L.Control.extend({
 
             btnIcon.className = originalClass;
 
-            if (typeof window.sendToPHP === 'function') //if have submission libary loaded, can enable upload
+            if (typeof window.sendToPHP === 'function') {//if have submission libary loaded, can enable upload
                 this._showActions();
+	    } else {
+                //if have no upload function, no point holding onto the file
+		this._state.latestFile = null; // Free the original File handle
+	    }
         });
     },
 
@@ -295,7 +299,7 @@ L.GeographCameraButton = L.Control.extend({
             btnIcon.className = 'fa fa-spinner fa-spin';
 
             // Provided by submission_utils
-            const item = await processItem({ file: latestFile });
+            const item = await processItem({ file: latestFile }, true); //we allow use of blob, as we are just going to send directly to sendToPHP anyway
 
             const lat = latestCoords.lat ?? latestCoords.latitude;
             const lng = latestCoords.lng ?? latestCoords.longitude;
@@ -312,13 +316,20 @@ L.GeographCameraButton = L.Control.extend({
                 this._uploadBtn.textContent = `${percent}%`;
             }, exifData);
 
+  	    item.dataUri = null; //maybe help garbage collect a bit sooner!
+
             if (result && result.success) {
                 this._notify("Upload Successful", "green");
                 this._hideActions();
+
+		this._state.latestFile = null; // Free the original File handle
+		this._state.latestName = null;
+
                 // Re-sync history to show the 'green' (submitted) marker
                 if (typeof MediaDatabase !== 'undefined' && this.options.historyPoints) this._loadHistoryIntoMap();
             } else {
                 this._uploadBtn.textContent = "Retry?";
+                //dont clear _state.latestFile
             }
         } catch (err) {
             console.error(err);
