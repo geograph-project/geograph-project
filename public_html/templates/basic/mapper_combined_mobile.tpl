@@ -215,6 +215,17 @@ svg.svgFilter {
 	<div id="gridref"></div>
 
 <script>{literal}
+
+function error_log(message, file, line) {
+   $.ajax({
+      url: '/stuff/record_error.php',
+      data: {message:message, file:file, line:line},
+      xhrFields: { withCredentials: true }
+   });
+}
+window.onerror = error_log;
+
+
 	function linkToMap(url) {
 		var center = map.getCenter();
 		var zoom = map.getZoom();
