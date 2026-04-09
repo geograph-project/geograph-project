@@ -90,8 +90,11 @@
 			}
 		});
 	} else {
+		//snap the marker back after dragging. Can temproally drag the marker out the way to 'read' the map :)
+
+		marker._original_latlng = point; //needed for the dragend
 		marker.on('dragend', function(e) {
-			marker.setLatLng(point);
+			marker.setLatLng(marker._original_latlng); //cant use point, as the location of the marker may get updated (cant just use _latlng, as gets updated during drag!
 		});
 	}
 	return marker;
@@ -284,6 +287,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 			//google.maps.event.trigger(currentelement,'drag');
 		} else {
 			currentelement.setLatLng(point);
+			currentelement._original_latlng = point; //needed for the dragend
 		}
 
 		if (that.name == 'photographer_gridref') {
@@ -419,6 +423,7 @@ function enlargeMap() {
 
 	var baseMaps = {};
 	var overlayMaps = {};
+        var locateControl = null;
 
 ///////////////////////////////////////////
 
@@ -507,7 +512,7 @@ function enlargeMap() {
 			map.addControl(geocoder = L.geographGeocoder());
 
 		if (L.control.locate)
-			L.control.locate({
+			locateControl = L.control.locate({
 				keepCurrentZoomLevel: [13,18],
 				locateOptions: {
 					maxZoom: 16,
