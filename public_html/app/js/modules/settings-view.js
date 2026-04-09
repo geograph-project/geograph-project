@@ -38,7 +38,7 @@ export function render() {
 
             <div class="settings-group">
                 <div class="setting-item">
-                    <label for="showBottomButtons">Show Navigation Buttons</label>
+                    <label for="showBottomButtons">Show Bottom Navigation Buttons</label>
                     <input type="checkbox" id="showBottomButtons">
                 </div>
                 <div class="setting-item">
