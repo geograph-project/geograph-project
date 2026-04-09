@@ -43,7 +43,7 @@
 
         <link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.Photo/Leaflet.Photo.css?v=2" />
 
-	<link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.css?v=2" />
+	<link rel="stylesheet" href="{"/js/Leaflet.GeographCoverage/Leaflet.GeographCoverage.css"|revision}" />
 
 	<link rel="stylesheet" href="{"/js/Leaflet.GeographClickLayer.css"|revision}" />
 
@@ -91,7 +91,7 @@
 
 	<script src="{"/mapper/geotools2.js"|revision}"></script>
 
-        <script src="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.js?v=6"></script>
+	<script src="{"/js/Leaflet.GeographCoverage/Leaflet.GeographCoverage.js"|revision}"></script>
 
         <script src="https://www.geograph.org/leaflet/Leaflet.GeographPhotos.js?v=4"></script>
 
@@ -284,8 +284,6 @@
 		{if $filter}
 			overlayMaps["(Personalize Coverage)"].addTo(map); //this sets options.user_id on all layers
 			clickOptions.user_id = {$stats.user_id}; //but clicklayer doesnt exist yet, so need to set options from start
-			if (map.getZoom() >= 13 && coverageClose && coverageClose.options)
-				setTimeout('coverageClose.Reset();',100); //TODO some race conditon, means not it doesnt get called automatically :(
 		{/if}
 
 		{literal}
@@ -418,6 +416,11 @@
 
 	if (layerswitcher)
 		layerswitcher.expand();	
+
+	//addOurControls may now have added "(Personalize Coverage)" to the map (as a user preference!), so need to make sure any layers added after are setup to!
+	if (overlayMaps["(Personalize Coverage)"] && map.hasLayer(overlayMaps["(Personalize Coverage)"])) {
+                clickOptions.user_id = overlayMaps["(Personalize Coverage)"].options.user_id;
+	}
 
 	map.addLayer(L.geographClickLayer(clickOptions));
 
