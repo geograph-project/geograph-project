@@ -157,7 +157,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             max-width: 100%; 
             max-height: 640px; 
             display: block; 
-            margin: 0 auto; 
+            margin: 0 auto;
+
+    -webkit-touch-callout: none; /* Prevents iOS context menu */
+    -webkit-user-select: none;   /* Prevents selection */
+    user-select: none;
+    touch-action: pan-y;         /* Allows vertical scrolling, but helps prevent horizontal 'back' gestures */
+
         }
         .controls { padding: 15px; }
         .controls button { line-height:1.0 }
@@ -597,6 +603,18 @@ span.tag-pill button {
     background-color:yellow;
 }
 
+/* Hide button by default (Desktop/Mouse) */
+#toggleBtn {
+  display: none;
+}
+
+/* Show only if the primary input is a touch screen */
+@media (pointer: coarse) {
+  #toggleBtn {
+    display: inline-block;
+  }
+}
+
 .easy-button-container button {
     padding:0;
 }
@@ -787,6 +805,15 @@ span.tag-pill button {
 
 
         <div class="controls">
+<button type=button
+    id="toggleBtn" 
+    onclick="toggleLock()" 
+    style="padding: 8px 12px; cursor: pointer; align-items: center; float:right"
+    title="Toggle Edit"
+  >
+    <span id="btnIcon">&#9000;</span>
+  </button>
+
                 <span class=nowrap><label for=photographer_gridref class="gr active" style="color:#210b7b">Camera</label>:
                         <input type="text" name="photographer_gridref" id="photographer_gridref" value="" size="12" maxlength="14"
                          pattern="^[A-Za-z]{1,2}\s*\d{1,5}\s*\d{1,5}$" title="Optional: 1-2 letters plus an even number of digits (e.g. TQ 123 456 or O 12 34)"
@@ -801,6 +828,46 @@ span.tag-pill button {
 
                 <div style=display:none><input type="checkbox" name="use6fig" value="1"/> <label for="use6fig">Only use 6 figures (<span class="nowrap"><a title="Explanation" href="https://www.geograph.org.uk/help/map_precision" target="_blank">Explanatioion</a><img style="padding-left:2px;" alt="New Window" title="opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span>)</label></div>
             <br>
+
+<script>
+function toggleLock() {
+  const input1 = document.getElementById('photographer_gridref');
+  const input2 = document.getElementById('grid_reference');
+  const icon = document.getElementById('btnIcon');
+
+  if (input1.hasAttribute('readonly')) {
+    // UNLOCK: Transition to Keyboard
+    input1.removeAttribute('readonly');
+    input2.removeAttribute('readonly');
+    input1.setAttribute('inputmode', 'text'); // Allow keyboard
+    input2.setAttribute('inputmode', 'text');
+    icon.innerHTML = '&#128274;'; // Lock entity (to signify button is to 'relock')
+
+    // Move cursor to end
+    if (input1.classList.contains('active')) {
+	const val = input1.value;
+	input1.focus();
+        input1.value = '';
+        input1.value = val;
+
+    } else if (input2.classList.contains('active')) {
+	const val = input2.value;
+	input2.focus();
+        input2.value = '';
+        input2.value = val;
+    }
+
+  } else {
+    // LOCK
+    input1.setAttribute('readonly', 'true');
+    input2.setAttribute('readonly', 'true');
+    input1.setAttribute('inputmode', 'none'); // Hide keyboard
+    input2.setAttribute('inputmode', 'none');
+    icon.innerHTML = '&#9000;'; // Keyboard entity (to signifcan can unlock)
+    input1.focus(); //still focus it to keep focus on the map (otherwise focus may jump to date/title box!)
+  }
+}
+</script>
 
             <label for="view_direction">View</label>:
             <select id="view_direction" name="view_direction">
@@ -1374,7 +1441,7 @@ console.log("Error", e);
 
     // Define the "Show Detail" action
     const showDetail = (e) => {
-        e.preventDefault(); // Prevent context menu on mobile
+    //    e.preventDefault(); // Prevent context menu on mobile (actully lets use touch-action instead, as preventDevault, also disables swipe/panning!)
         imgLarge.src = peekSrc;
         imgLarge.style.objectFit = 'cover';
     };
@@ -2241,6 +2308,9 @@ console.log("Error", e);
     var disableAutoUpdate = false;
     var leafletBaseKey = 'LeafletBase'; //at the moment, we dont know what grid it will be!
     var checkedonce = false;
+    var crosshair;
+    var disableTimer;
+    var isTouchingMap = false;
 
     var static_host = <? echo json_encode($CONF['STATIC_HOST']); ?>;
 	var OSAPIKey = <? echo json_encode($CONF['os_api_key'] ?? null); ?>;
@@ -2305,7 +2375,7 @@ map.on('mousedown dragstart', function(e) {
                 }
         }
 
-        L.geotagPhoto.crosshair({
+        crosshair = L.geotagPhoto.crosshair({
           //      crosshairHTML: '<img alt="Center of the map; crosshair location" title="Crosshair" src="https://unpkg.com/leaflet-geotag-photo@0.5.1/images/crosshair.svg" width="100px" />'
 
             crosshairHTML: `
@@ -2334,6 +2404,13 @@ map.on('mousedown dragstart', function(e) {
         map.on('dblclick',function(event) {
                 if (!map._loaded) //dragging the map before setup, fails!
                         return;
+
+                //if a element is focused, it will get blurred, so need to cancle the timer
+                if (disableTimer) clearTimeout(disableTimer);
+
+                //but also if map is "disabled", ignore the click
+                if (!map.dragging.enabled())
+                    return;
 
                 //first SWAP the active.
                 disableAutoUpdate = true;
@@ -2368,6 +2445,35 @@ map.on('mousedown dragstart', function(e) {
                 }
         });
 
+        //also need to prevent interactions with map from deactiving it!
+        const mapContainer = map.getContainer();
+        ['mousedown', 'touchstart'].forEach(type => {
+            mapContainer.addEventListener(type, (e) => {
+                isTouchingMap = true;
+                if (disableTimer) clearTimeout(disableTimer);
+
+                if (map._notifying) return;
+
+                const isLocked = mapContainer.classList.contains('map-locked');
+
+                // We check if the user hit a marker or control.
+                // If they hit the background tiles, show the hint.
+                const isInteractive = e.target.closest('.leaflet-interactive') ||
+                                     e.target.closest('.leaflet-control');
+
+                if (isLocked && !isInteractive) {
+                    map._notifying = true;
+                    map_notify('Select either Camera or Subject', 'rgb(0,0,0,0.3); backdrop-filter: blur(4px);');
+                    setTimeout(() => { map._notifying = false; }, 10000);
+                }
+
+            }, true); // <--- This 'true' is the magic capture flag
+        });
+        window.addEventListener('mouseup', () => {
+            // Small delay so the blur timer can finish its check first
+            setTimeout(() => { isTouchingMap = false; }, 300);
+        }, true);
+
        // setupMess(); //TODO!
 
 
@@ -2376,6 +2482,17 @@ map.on('mousedown dragstart', function(e) {
         }
 
     }
+
+    function map_notify(text, color) {
+        const msg = L.DomUtil.create('div', '', map.getContainer());
+        msg.style.cssText = `position:absolute; top:70px; left:50%; transform:translateX(-50%); background:${color}; color:white; padding:8px 15px; border-radius:4px; z-index:1000; font-family:sans-serif; font-size:13px; pointer-events:none; box-shadow:0 2px 5px rgba(0,0,0,0.3); transition:opacity 1s;`;
+        msg.innerHTML = text;
+        setTimeout(() => {
+            msg.style.opacity = '0';
+            setTimeout(() => msg.remove(), 1000);
+        }, 3000);
+    }
+
 
         function updateActiveMode() {
             const activeLabel = document.querySelector('label.gr.active');
@@ -2400,10 +2517,79 @@ map.on('mousedown dragstart', function(e) {
             labels.forEach(l => l.classList.remove('active'));
         };
 
+        // A central function to handle all state changes
+        function enableMap(active) {
+            const method = active ? 'enable' : 'disable';
+
+            // 1. Core Handlers
+            map.dragging[method]();
+            map.touchZoom[method]();
+            map.scrollWheelZoom[method]();
+            //not, we DONT enable doubleclickzoom here! (as have own handler!)
+            //note, deliberately NOT disabling zooming by the control/buttons, that is 'safe' as doesnt recenter the map
+
+            // 2. Locate Control
+            // If we are disabling, stop following immediately (unlikly but could of been using locate to set camera!)
+            if (!active && locateControl) {
+                //we dont just blindly call stopFollowing, as it will enable the location, if not already on
+                if (locateControl._active &&
+                   ((typeof locateControl._isFollowing === 'function' && locateControl._isFollowing()) || locateControl._following)) {
+                    locateControl.stopFollowing();
+                }
+            }
+
+            // 3. Visual & Performance Feedback
+            const mapContainer = map.getContainer();
+            if (!active) {
+                //mapContainer.style.touchAction = 'pan-y'; // Allow page scroll
+                mapContainer.classList.add('map-locked');
+                crosshair.removeFrom(map);
+            } else {
+                //mapContainer.style.touchAction = 'none'; // Map takes control
+                mapContainer.classList.remove('map-locked');
+                crosshair.addTo(map);
+            }
+            const notesBar = document.querySelector('.notes-bar');
+            if (notesBar) notesBar.classList.toggle('hidden', !active);
+        }
+
+        const localTitle = document.getElementById('localTitle');
+        if (localTitle) {
+            //this is tricky, they could have set positions by never actully giving focus either <input>, so we also need to catch them when they just moved onto the title
+            localTitle.addEventListener('focus', function() {
+                if (map.dragging.enabled()) {
+                    enableMap(false);
+                    clearActive();
+                }
+            });
+        }
+        //these are considered part of the map, and so SHOULDNT disable the map eithr!
+        document.querySelectorAll('#maparea select').forEach(select => {
+            select.addEventListener('focus', function() {
+                if (disableTimer) clearTimeout(disableTimer);
+                //if (!map.dragging.enabled()) {
+                //    enableMap(true); --actully shouldnt do that without knowing which one to enable! I guess could pick one
+                //}
+            });
+        });
+
+        // Check if primary input is touch (coarse)
+        const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
         // Input events
         inputs.forEach(input => {
+            if (isTouch) {
+                // Only restrict if it's a touch device.
+                // Setting these to prevent the keyboard poping up and moving things around. In theory they dont really need keybaord, so just gets in way.
+                // but we provide a dedicated unlock, so they can remove these if needed.
+                input.setAttribute('readonly', 'true');
+                input.setAttribute('inputmode', 'none');
+            }
+
             // Focus event
             input.addEventListener('focus', function() {
+                if (disableTimer) clearTimeout(disableTimer);
+
                 //special rule, as subject may be prefilled with a 4fig GR which would cause a disconcerting jump!
                 if (this.name == 'grid_reference' && this.value && this.value.match(/^[A-Z]{1,2}\s*\d{2}\s*\d{2}$/)
                     && document.getElementById('photographer_gridref').value.length > 8) {
@@ -2415,8 +2601,22 @@ map.on('mousedown dragstart', function(e) {
                     this.previousElementSibling.classList.add('active');
                 }
                 if (this.value) centerMap(this.value);
-                updateActiveMode();
+
+                updateActiveMode(); //actully updates the visual prompt
+                if (!map.dragging.enabled()) {
+                    enableMap(true);
+                }
             });
+            // Blur event
+    	    input.addEventListener('blur', function() {
+                //dont want to disable map, if the just SWITCHING to other mode
+                disableTimer = setTimeout(function() {
+                    if (!isTouchingMap) {
+                        enableMap(false);
+                        clearActive();
+                    }
+                }, 300);
+	        });
 
             // Change/Input events
             ['input', 'change', 'keyup', 'paste'].forEach(evt => {
@@ -2429,25 +2629,7 @@ map.on('mousedown dragstart', function(e) {
             });
         });
 
-        // Label click events
-        tab2.querySelectorAll('label').forEach(label => {
-            const attr = label.getAttribute('for');
-            if (attr) {
-                const targetInput = tab2.querySelector(`input[type=text][name="${attr}"]`);
-                if (targetInput) {
-                    label.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        clearActive();
-                        targetInput.classList.add('active');
-                        if (targetInput.previousElementSibling) {
-                            targetInput.previousElementSibling.classList.add('active');
-                        }
-                        if (targetInput.value) centerMap(targetInput.value);
-                        updateActiveMode();
-                    });
-                }
-            }
-        });
+        // Note we no longer add click handers for labels. The goal was to prevent the keyboard poping up. But we do that more reliably with readonly attribute now.
     });
 
     function centerMap(gridref) {
@@ -2908,42 +3090,90 @@ async function loadPlaceNames(eastings, northings, ri) {
 
   isFetching = true;
   loadedPos = { eastings, northings, ri };
-
   suggBar.innerHTML = 'Loading...';
 
-  try {
-    const script_name = (ri==2)?"ie_open_data.json.php":"os_open_names.json.php";
-    const response = await fetch(`/stuff/${script_name}?e=${eastings}&n=${northings}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  const done = {};
+
+  // Helper to create the pill buttons
+  const createPill = (name, title = '') => {
+    if (done[name])
+	return;
+    done[name] = true;
+    const pill = document.createElement('button');
+    pill.className = 'suggestion-pill';
+    pill.type = 'button';
+    pill.textContent = name;
+    pill.title = title;
+    if (title == 'building' || title == 'amenity' || title == 'shop') {
+        suggBar.prepend(pill);
+    } else {
+        suggBar.appendChild(pill);
     }
-    const data = await response.json();
+  };
 
-    suggBar.innerHTML = ''; // Clear loading
+  suggBar.innerHTML = '';
 
-    if (data?.rows?.length) {
-      for (const item of data.rows) {
-        for (const key of ['name1', 'name2', 'name', 'irish']) {
-          if (!item[key]) continue;
+  try {
+    // 1. Process Local Gazetteer Results
+    try {
+      const script_name = (ri == 2) ? "ie_open_data.json.php" : "os_open_names.json.php";
+      const localResp = await fetch(`/stuff/${script_name}?e=${eastings}&n=${northings}`);
+      if (!localResp.ok) {
+        throw new Error(`HTTP error! status: ${localResp.status}`);
+      }
+      const localData = await localResp.json();
 
-          const name = item[key];
-          const pill = document.createElement('button');
-          pill.className = 'suggestion-pill';
-          pill.type = 'button';
-          pill.textContent = name;
-          pill.title = item.local_type ?? item.town_type ?? '';
-
-          suggBar.appendChild(pill);
+      if (localData?.rows?.length) {
+        for (const item of localData.rows) {
+          for (const key of ['name1', 'name2', 'name', 'irish']) {
+            if (item[key]) createPill(item[key], item.local_type ?? item.town_type ?? '');
+          }
         }
       }
+    } catch (localErr) {
+      console.error("Local Fetch failed", localErr);
+    }
+
+    // 2. Fetch OSM Nominatim fallback/supplement
+    try {
+      let grid = (ri == 1) ? new GT_OSGB() : new GT_Irish();
+      grid.setGridCoordinates(eastings, northings);
+      let conv = grid.getWGS84(true);
+      if (!conv || conv.status != 'OK') //conversion could fail! (although unlikly)
+	throw new Error(`Unable to convert`);
+
+      const osmUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${conv.latitude}&lon=${conv.longitude}&zoom=18`;
+      const osmResp = await fetch(osmUrl, {
+        headers: { 'User-Agent': 'GeographApp/1.2 +https://www.geograph.org.uk/' }
+      });
+      if (!osmResp.ok) {
+        throw new Error(`HTTP error! status: ${osmResp.status}`);
+      }
+      const osmData = await osmResp.json();
+
+      //if (osmData.display_name) { --- actully want to look at parts
+      if (osmData.address) {
+          for (const key of ['amenity', 'shop', 'building', 'road', 'suburb', 'town', 'county']) {
+              if (osmData.address[key]) createPill(osmData.address[key], key);
+          }
+      }
+      if (osmData.name) //possible duplicates one of the address components, but we deduplicate anyway
+          createPill(osmData.name, 'OpenStreetMap');
+
+    } catch (osmErr) {
+      console.error("OSM Fetch failed", osmErr);
+    }
+
+    // UI state check
+    if (suggBar.children.length > 0) {
       suggBar.classList.remove('no-results');
     } else {
       suggBar.classList.add('no-results');
-//      suggBar.textContent = 'No nearby places found.';
     }
+
   } catch (err) {
     suggBar.classList.add('no-results');
-//    suggBar.textContent = 'Failed to load places.';
+    console.error(err);
   } finally {
     isFetching = false;
   }
