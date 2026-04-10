@@ -1,16 +1,25 @@
 {
   "name": "Geograph App",
   "short_name": "Geograph",
+  "id": "/app/",
   "start_url": "/app/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0000FF",
+  "description": "Take, upload, and submit photos to Geograph Britain and Ireland, review your recent submissions, view maps, and search for images.",
+  "categories": ["travel", "photo"],
   "icons": [
     {
       "src": "/apple-touch-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
+  ],
+  "shortcuts": [
+    {"name": "Capture Location", "url": "/app/capture"},
+    {"name": "Upload", "url": "/app/upload"},
+    {"name": "My Submissions", "url": "/app/profile"},
+    {"name": "Map", "url": "/app/map"}
   ]
 }
