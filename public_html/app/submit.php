@@ -130,6 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
     <style>
         :root {
             --primary: #007AFF;
+            --secondary: #e9ecef;
             --success: #28a745;
             --bg: #f8f9fa;
             --accent: #6c757d;
@@ -144,6 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
         .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; touch-action: manipulation; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
         .btn-primary { background: var(--primary); color: white; width: 100%; box-sizing: border-box; }
+        .btn-secondary { background: var(--secondary); color: #333333; width: 100%; box-sizing: border-box; }
 
 
         /* 1. The Main Header (Scrolls normally) */
@@ -474,6 +476,7 @@ span.tag-pill button {
 
 	dialog::backdrop {
 	    background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(3px)
 	}
 
 	dialog {
@@ -641,6 +644,147 @@ span.tag-pill button {
 
 .field-header .info-icon::after {
     left:30px; right:unset;
+}
+
+/* -- used nearby --------------------------------------- */
+
+/* Container and Backdrop */
+dialog#tag-selector-modal {
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    max-width: 500px;
+    width: 90vw;
+    max-height: 90vh;
+}
+
+/* Header & Footer Layout */
+dialog#tag-selector-modal .tag-modal-header,
+dialog#tag-selector-modal .tag-modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    white-space: nowrap;
+}
+
+dialog#tag-selector-modal .tag-modal-header {
+    padding: 12px 20px;
+    border-bottom: 1px solid #ddd;
+}
+dialog#tag-selector-modal .tag-modal-header button {
+    width:100px; color:red;
+}
+
+dialog#tag-selector-modal .tag-modal-footer {
+    border-top: 1px solid #ddd;
+    padding: 0px 8px;
+}
+
+/* Scrollable List Area */
+dialog#tag-selector-modal .tag-list-scroll {
+    overflow-y: auto;
+    max-height: 60vh;
+    background: #fff;
+}
+
+/* Individual Row Styling */
+dialog#tag-selector-modal .tag-item-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    font-weight: normal;
+}
+@media screen and (max-width: 450px) {
+    dialog#tag-selector-modal .tag-item-row {
+        padding: 5px 5px;
+    }
+}
+
+dialog#tag-selector-modal .tag-item-row:hover {
+    background-color: #f0f7ff;
+}
+
+/* Typography & Badges inside rows */
+dialog#tag-selector-modal .tag-dist {
+    font-family: monospace;
+    color: #666;
+    flex-shrink: 0;
+    margin-right:6px;
+}
+
+dialog#tag-selector-modal .tag-attr-type {
+    background: #eee;
+    border-radius: 8px;
+    margin-left:2px;
+    margin-right: 8px;
+    color: #555;
+    text-align: center;
+}
+
+dialog#tag-selector-modal .tag-label-text {
+    flex-grow: 1;
+    font-weight:600;
+}
+dialog#tag-selector-modal .tag-label-text span {
+    font-weight:normal; color:gray;
+}
+
+dialog#tag-selector-modal .tag-count {
+    text-align:right;
+    width:30px;
+    color:silver;
+}
+
+/* Checkbox/Radio spacing */
+dialog#tag-selector-modal input[type="checkbox"],
+dialog#tag-selector-modal input[type="radio"] {
+    margin-right: 12px;
+    transform: scale(1.1);
+    width:inherit;
+    margin-bottom:0;
+}
+
+/* The Floating Note */
+dialog#tag-selector-modal .tag-modal-floating-note {
+    position: absolute;
+    /* Positions it above the modal box */
+    bottom: calc(100% + 15px); 
+    left: 50%;
+    transform: translateX(-50%);
+    
+    /* Visual styling */
+    background: rgba(0, 0, 0, 0.85); /* Dark background */
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    width: 280px; /* Constrain width so it looks like a bubble */
+    text-align: center;
+    line-height: 1.4;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    pointer-events: none; /* So it doesn't block clicks to the backdrop */
+    z-index: 10;
+}
+
+/* Add a little 'tail' to the bubble (optional) */
+dialog#tag-selector-modal .tag-modal-floating-note::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -8px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+}
+
+/* Ensure the dialog itself doesn't 'clip' the floating note */
+dialog#tag-selector-modal {
+    overflow: visible; /* CRITICAL: allows content to hang outside the box */
 }
 
     </style>
@@ -1020,6 +1164,10 @@ function toggleLock() {
 
             </script>
         </div>
+
+<br><br>
+<button type=button class="btn btn-secondary" onclick="showNearbyTagsModalWrapper();">Tags Used Nearby</button>
+
 
         <div class="field-header">
     	    <label>Geographical Contexts</label>
@@ -1441,7 +1589,6 @@ console.log("Error", e);
 
     // Define the "Show Detail" action
     const showDetail = (e) => {
-    //    e.preventDefault(); // Prevent context menu on mobile (actully lets use touch-action instead, as preventDevault, also disables swipe/panning!)
         imgLarge.src = peekSrc;
         imgLarge.style.objectFit = 'cover';
     };
@@ -1459,6 +1606,7 @@ console.log("Error", e);
     // Mobile/Touch Events
     imgLarge.ontouchstart = showDetail;
     imgLarge.ontouchend = hideDetail;
+    imgLarge.oncontextmenu = (e) => e.preventDefault(); //turns out still need to surpress!
 
 //////////////////////
 
@@ -1466,11 +1614,12 @@ console.log("Error", e);
         imgLarge.onload = function() {
 
     		if (imgLarge.src.includes('submit.php')) {
-		    	// Once the full preview loads, lock its rendered dimensions
+		    	// Once the full preview loads, lock its rendered dimensions. Because of exif Rotation, can't just use naturalWidth!
                 const rect = imgLarge.getBoundingClientRect();
-                // Lock the box size
-                imgLarge.style.width = rect.width + 'px';
-                imgLarge.style.height = rect.height + 'px';
+                if (rect.width) { //during resume might not have a visible box.
+                    imgLarge.style.width = rect.width + 'px';
+                    imgLarge.style.height = rect.height + 'px';
+                }
 	    	}
 
             // Note: browser might show actual display dimensions, but it's a fallback
@@ -1726,14 +1875,19 @@ console.log("Error", e);
         //standardize brackets
         text = text.replace(/[\{\(\[<]+/g, "(").replace(/[\}\)\]>]+/g, ")");
 
-        //hive off the prefix
+        //special case, turns out some are missing the colon! (getCorrectedPrefix will find other typos!)
+        if (m = text.match(/^[Mm]ilestone(\s*id)?.?([A-Z]{2}[\s\._][A-Z].+)/))
+            text = "milestoneid:"+m[2];
+
+        //hive off the prefix (added back at the end)
         var prefix = null;
         if (text.indexOf(':') > -1) {
                 var bits = text.split(/\s*:+\s*/,2);
-                text = bits[1].replace(/:/g,' ');
 
-                //prefixes have particully restricted charactor set.
-                prefix = bits[0].toLowerCase().replace(/[^\w]+/," ").replace(/[ _]+/g, " ").replace(/(^\s+|\s+$)/g, "");
+                //prefixes have particully restricted charactor set. (also corrects known typos!)
+                prefix = getCorrectedPrefix(bits[0]);
+
+                text = bits[1].replace(/:/g,' ');
         }
 
         //special support for listin building rating
@@ -1804,6 +1958,63 @@ console.log("Error", e);
         searchInput.value = '';
         suggestions.innerHTML = '';
     }
+
+/**
+ * Corrects variations and typos of 'milestoneid'.
+ * @param {string} prefix - The input string to check.
+ * @returns {string} - The corrected string or the original input.
+ */
+function getCorrectedPrefix(rawInput) {
+
+    // prefixes have particully restricted charactor set
+    const prefix = rawInput.toLowerCase().replace(/[^\w]+/g, " ").replace(/[ _]+/g, " ").trim();
+
+    //this is focused on catching typos for milestone ids, have seen many!
+    const target = "milestoneid";
+
+    // 1. Handle the "Milestone Society" or "National ID" long-form cases
+    if (prefix.includes("milestone") && (prefix.includes("society") || prefix.includes("national"))) {
+        return target;
+    }
+
+    // 2. Clean up common prefixes like "add tag " or spaces (targeting like "milestone id", so not a space that removed normally)
+    const cleaned = prefix.replace(/^((add|tag)\s*)+/, "").replace(/\s+/g, "");
+
+    // 3. Exact match check after cleaning
+    if (cleaned === target) return target;
+
+    // 4. Fuzzy Match (Levenshtein Distance)
+    // We only want to correct it if it's very close (distance of 1 or 2)
+    if (getLevenshteinDistance(cleaned, target) <= 2)  return target;
+
+    // Return original if no confident match found
+    return prefix;
+}
+
+/**
+ * Calculates the edit distance between two strings.
+ */
+function getLevenshteinDistance(a, b) {
+    const matrix = [];
+
+    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+
+    for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+            if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1, // substitution
+                    matrix[i][j - 1] + 1,     // insertion
+                    matrix[i - 1][j] + 1      // deletion
+                );
+            }
+        }
+    }
+    return matrix[b.length][a.length];
+}
 
 // --------------------------------
 // Subjects
@@ -2031,7 +2242,8 @@ console.log("Error", e);
 
         select.addEventListener('input', e => {
             const selectedOptions = Array.from(select.options).filter(o => o.selected);
-            const selectedCount = selectedOptions.length;
+            const uniqueValues = new Set(selectedOptions.map(o => o.value));
+            const selectedCount = uniqueValues.size;
             if (selectedCount>6)
                  document.getElementById('context-count').textContent = `${selectedCount} is TOO MANY`;
             else
@@ -2297,7 +2509,210 @@ console.log("Error", e);
     	errorBox.textContent = message;
     }
 
+// --------------------------------
+// Used Nearby Modal
 
+
+function showNearbyTagsModalWrapper() {
+    const form = document.forms['theForm'];
+    if (!form) return;
+
+    const gridRef = form.elements['grid_reference'].value;
+    if (!gridRef) {
+        alert("Please enter a Grid Reference first.");
+        return;
+    }
+
+    const usedNames = [];
+    const usedIds = [];
+
+    // 1. Get selected Contexts from the <select multiple>
+    const contextSelect = document.getElementById('contexts');
+    if (contextSelect) {
+        Array.from(contextSelect.options).forEach(opt => {
+            if (opt.selected) usedNames.push(opt.value);
+        });
+    }
+
+    // 2. Get Tags from hidden inputs or checkboxes
+    // form.elements["tags[]"] can be a single element or a collection
+    const tagElements = form.elements["tags[]"];
+    if (tagElements) {
+        // Force to array to handle both single elements and NodeLists safely
+        const elementsArray = tagElements.length === undefined ? [tagElements] : Array.from(tagElements);
+        elementsArray.forEach(item => {
+            if (item.type === 'hidden') {
+                usedNames.push(item.value);
+            } else if (item.type === 'checkbox' && item.checked) {
+                usedNames.push(item.value);
+            } else if (item.type === 'select-one' && item.value) {
+                usedNames.push(item.value);
+            }
+        });
+    }
+
+    // 3. Get the current Subject value
+    const currentSubject = form.elements['subject'].value;
+
+    // 4. Fire the Modal
+    showNearbyTagsModal(gridRef, usedNames, usedIds, currentSubject);
+}
+
+
+async function showNearbyTagsModal(gridRef, usedNames = [], usedIds = [], currentSubject = null) {
+    try {
+        const response = await fetch(`/finder/used-nearby.json.php?gr=${gridRef}`);
+        const rawData = await response.json();
+
+        // 1. Flatten and Sort Data
+        // Distance keys might be strings ("1") or indices. We sort them numerically.
+        const sortedDistances = Object.entries(rawData).sort((a, b) => Number(a[0]) - Number(b[0]));
+        const attributeOrder = ['context', 'subject', 'tag']  //, 'snippet'];
+
+        const fragment = document.createDocumentFragment();
+        const seenIds = new Set();
+
+        // Create the dialog
+        const dialog = document.createElement('dialog');
+        dialog.id = 'tag-selector-modal';
+        dialog.innerHTML = `
+            <div class="tag-modal-floating-note">
+                Few may apply; pick only what fits.
+            </div>
+            <form method="dialog">
+                <div class="tag-modal-header">
+                    <strong>Nearby Tags</strong>
+                    <button type="submit" value="cancel">CLOSE</button>
+                </div>
+                <div class="tag-list-scroll"></div>
+                <div class="tag-modal-footer">
+                    <button class="btn btn-primary" type="button" id="confirm-selection">Apply Selection</button>
+                </div>
+            </form>
+        `;
+        const listContainer = dialog.querySelector('.tag-list-scroll');
+
+        // 2. Process and Render
+        sortedDistances.forEach(([dist, attributes]) => {
+            attributeOrder.forEach(attr => {
+                if (attributes[attr]) {
+                    attributes[attr].forEach(item => {
+                        // Deduplicate by the 'group' ID
+                        if (seenIds.has(item.group)) return;
+                        seenIds.add(item.group);
+
+                        const row = document.createElement('label');
+                        row.className = `tag-item-row attr-${attr}`;
+
+                        // Use radio for subject (to help UI logic), checkbox for others
+                        const inputType = (attr === 'subject') ? 'radio' : 'checkbox';
+                        const name = (attr === 'subject') ? 'used_subject' : `used_tags[${item.group}]`; //need a consisten name for radio
+
+                        // Check if this item should be pre-selected
+                        let isChecked = false;
+                        let prefix = '';
+                        if (attr === 'subject') {
+                            if (currentSubject && item.label.toLowerCase() === currentSubject.toLowerCase())
+                                isChecked = true;
+                            prefix = 'subject';
+                        } else {
+                            // Match others by ID or Name
+                            const matchId = usedIds.includes(item.group) || usedIds.includes(Number(item.group));
+                            const matchName = usedNames.some(n => n.toLowerCase() === item.label.toLowerCase());
+                            if (matchId || matchName) isChecked = true;
+                            if (attr === 'context') prefix = 'top';
+                        }
+
+                        let distStr = item.dist ? (item.dist / 1000).toFixed(1) : dist;
+                        row.innerHTML = `
+                            <input type="${inputType}" name="${name}" value="${item.group}" data-label="${item.label}" data-type="${attr}" ${isChecked ? 'checked' : ''}>
+                            <span class="tag-dist">${distStr}km</span>
+                            <!--span class="tag-attr-type">${attr.substr(0,1).toUpperCase()}</span-->
+                            <span class="tag-label-text">${prefix?`<span class=prefix>${prefix}:</span>`:''}${item.label}</span>
+                            <span class="tag-count">${item.count}</span>
+                        `;
+
+                        // Subject logic: Handle the "Already selected" confirmation
+                        if (attr === 'subject') {
+                            const input = row.querySelector('input');
+                            input.addEventListener('click', (e) => {
+                                if (currentSubject && currentSubject.toLowerCase() !== item.label.toLowerCase()) {
+                                    const confirmChange = confirm(`Already selected subject '${currentSubject}', are you sure you wish to change to '${item.label}'?`);
+                                    if (!confirmChange) {
+                                        e.preventDefault();
+                                        return;
+                                    }
+                                }
+                                currentSubject = item.label;
+                            });
+                        }
+
+                        listContainer.appendChild(row);
+                    });
+                }
+            });
+        });
+
+        document.body.appendChild(dialog);
+        dialog.showModal();
+
+        // Handle Completion
+        dialog.querySelector('#confirm-selection').addEventListener('click', () => {
+            dialog.querySelectorAll('input:checked').forEach(i => {
+                const type = i.dataset.type;
+                const label = i.dataset.label;
+                const id = i.value;
+
+                if (type === 'context') {
+                    const select = document.getElementById('contexts'); // Your <select multiple>
+                    if (select) {
+                        // Look for the option where the value matches the label text
+                        Array.from(select.options).forEach(opt => {
+                            if (opt.value === label) {
+                                opt.selected = true;
+                            }
+                        });
+                        // Trigger change event so other scripts know the select updated
+                        select.dispatchEvent(new Event('input')); //the app uses, input not change
+                    }
+                } else if (type === 'subject') {
+                    const subjectInput = document.getElementById('subject-input');
+                    if (subjectInput) {
+                        subjectInput.value = label;
+                        subjectInput.dispatchEvent(new Event('input'));
+                    }
+                } else if (type === 'tag') {
+                    // Check if addTag function exists globally
+                    if (typeof addTag === 'function') {
+                        addTag(label);
+                    }
+                } else if (type === 'snippet') {
+                    // Check if addSnippet function exists globally
+                    if (typeof addSnippet === 'function') {
+                        addSnippet(id, label);
+                    }
+                }
+            });
+
+            dialog.close();
+            dialog.remove(); // Clean up DOM
+        });
+
+        // Cleanup on native close (Escape key)
+        dialog.addEventListener('close', () => dialog.remove());
+
+        dialog.addEventListener('click', (event) => {
+            // If the click target is the dialog itself (the backdrop), close it.
+            // Clicks on the form or internal divs will have a different event.target.
+            if (event.target === dialog) {
+                dialog.close();
+            }
+        });
+
+    } catch (err) {
+        console.error("Failed to fetch tags", err);
+    }
+}
 
 // --------------------------------
 // Map - ported from mobile submit
