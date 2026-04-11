@@ -44,6 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$updates['model'] = $image['model'];
 		$updates['type'] = $image['type'];
 		$updates['caption'] = $image['caption'];
+		$updates['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+
+		if (isset($_GET['unique_number']))
+			$updates['user_agent'] = $_GET['unique_number']."/".$updates['user_agent'];
 
 		// | gridimage_id | filename | aesthetic | technical |
 		$db->Execute('REPLACE INTO gridimage_caption SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
@@ -97,11 +101,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         	$join .= "inner join gridimage_size using (gridimage_id)";
 	}
 
-	//todo, use $_GET['model'] !!!?!
-
-	$last_id = 0;
 	$model = $db->Quote($_GET['model']);
-	$last_id = $db->getOne("SELECT last_id FROM labeller_progress WHERE model = $model") ?? 0;
+
+if ($_GET['model'] == 'md3') {
+	//c should have all required cols! (even original_width, for 'large')
+	$sql = "select c.* from tmp_caption_md3 c
+                left join gridimage_caption using (gridimage_id)
+		where caption is null
+		limit $limit";
+	$last = 0;
+} else {
+	//$last_id = 0;
+	$last_id = $db->getOne("SELECT last_id FROM labeller_progress WHERE model = $model and direction = 'forward'") ?? 0;
+	$update_last_id = true;
 
 	$sql = "select gridimage_id,user_id,title $cols
 		from gridimage
@@ -110,6 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		where caption is null and moderation_status > 2 AND gridimage_id > $last_id
 		order by gridimage_id
 		limit $limit";
+}
 
 	$imagelist->_getImagesBySql($sql);
 
@@ -158,8 +171,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$data = array('prefix'=>$CONF['STATIC_HOST'],'sleep'=>$sleep,'rows'=>$imagelist->images);
 		outputJSON($data); //passed by ref
 
-		if ($last_id) {
-			$db->Execute("INSERT INTO labeller_progress (model, last_id) VALUES ($model, $last_id)
+		if (!empty($last_id) && !empty($update_last_id)) {
+			$db->Execute("INSERT INTO labeller_progress (model, last_id, direction) VALUES ($model, $last_id, 'forward')
 				ON DUPLICATE KEY UPDATE last_id = VALUES(last_id)");
 		}
 	} else {
