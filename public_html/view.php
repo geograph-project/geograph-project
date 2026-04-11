@@ -56,7 +56,6 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'BingPreview/1.0b
 	exit;
 }
 
-
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/mapmosaic.class.php');
@@ -85,13 +84,23 @@ if (!empty($_POST['style'])) {
 	init_session_or_cache(3600, 0); //cache publically, and privately
 }
 
-if (is_internet_archive()) {
+if (is_internet_archive() || !empty($_GET['a'])) {
         $CONF['template']='archive';
         $CONF['curtail_level'] = 0; //we dont want any messy proxy urls cached!
         $CONF['forums'] = false;
 }
 
-
+if (!empty($_GET['id']) && is_numeric($_GET['id'])) {
+	//we can start ther request early -- the smarty footer will use this!
+	if (empty($_GET['nokick']) && $CONF['template']!='charcoal' && $CONF['template']!='archive') {
+		//for now, only 'inlining' and prerendering for certain bots. Google in particular may not load all requests due to crawl budget.
+		if (preg_match('/Googlebot|GoogleOther|bingbot|Baiduspider/', @$_SERVER['HTTP_USER_AGENT'])) {
+			//for now we deliberately routing this via cloudflare, to use their cache!
+			$url = "https://www.geograph.org.uk/stuff/related.json.php?http=1&id=".intval($_GET['id']);
+			fetchurl_async($url, 'start', "Internal Request");
+		}
+	}
+}
 
 customGZipHandlerStart();
 

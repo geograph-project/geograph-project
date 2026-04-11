@@ -999,8 +999,7 @@ $str[] = "
 			if (preg_match('/Googlebot|GoogleOther|bingbot|Baiduspider/', @$_SERVER['HTTP_USER_AGENT'])) {
 				$url = "https://www.geograph.org.uk/stuff/related.json.php?http=1&id=".intval($m[1]);
 	                        //$content = get_internal_url($url); //this would bypass cloudflare (finds internal ingress IP!)
-			        ini_set("user_agent","Internal Request");
-				$content = file_get_contents($url);
+				list($status, $content) = fetchurl_async($url, 'fetch', "Internal Request");
 				$str[] = '<script>var related = '.$content.';</script>';
 
 			} elseif (true) {
@@ -1063,6 +1062,21 @@ $str[] = "
 	//if (!empty($_SERVER['HTTP_COOKIE']) && empty($_COOKIE['survey']) && !empty($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],'https://www.geograph.') === 0 ) {
 	//	$_GET['survey'] = 1;
 	//}
+
+if (!empty($_GET['pma'])) {
+
+	return <<<END
+<div id="pwa-prompt" style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #fbf9de; padding: 15px; border-top: 2px solid #e0e0e0; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 9999; display: flex; align-items: center; justify-content: space-between; font-family: sans-serif;">
+  <div style="flex: 1; margin-right: 15px; color: #333; font-size: 14px; line-height: 1.4; cursor:pointer" onclick="window.location.href='/app/'">
+    <strong>Geograph:</strong> Access our new <u>Mobile Web App</u> for a faster, optimized experience - no installation required.
+  </div>
+  <button onclick="document.getElementById('pwa-prompt').style.display='none';" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; flex-shrink: 0;">
+    Dismiss
+  </button>
+</div>
+END;
+
+} else
 
 	if ((!empty($_GET['appeal']) || !empty($_GET['ads']) || !empty($_GET['survey']))
 		&& empty($USER->is_login_form) //catch inline logins!

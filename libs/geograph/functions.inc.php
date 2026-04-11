@@ -1638,3 +1638,94 @@ function smarty_function_votestars($params) {
     }
     $last = $type;
 }
+
+
+
+function fetchurl_async(string $url, string $action = 'fetch', string $ua = 'GeographBot/1.0') {
+    static $mh = null;
+    static $handles = [];
+
+    if ($mh === null) $mh = curl_multi_init();
+
+    /* -- could route the request direct to the internal service, rather than routing externally (roundtrip via cloudflare!)
+    //1. Rewrite URL for internal non-SSL pods
+    $parsed = parse_url($url);
+    $host = $parsed['host'];
+    $isInternal = str_contains($host, 'geograph.org.uk');
+    $internalIp = $isInternal ? gethostbyname("geograph") : null;
+    // 1. Rewrite URL for internal non-SSL pods
+    if ($isInternal && $internalIp && $parsed['scheme'] === 'https') {
+        $url = str_replace('https://', 'http://', $url);
+    }
+    */
+
+    if ($action === 'start') {
+        // Don't start a second request if one is already in flight for this URL
+        if (isset($handles[$url])) return true;
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+
+        /* 2. Apply internal routing and headers
+        if ($isInternal && $internalIp) {
+            // Since we rewrote to http://, cURL is targeting port 80
+            curl_setopt($ch, CURLOPT_RESOLVE, ["{$host}:80:{$internalIp}"]);
+            if ($parsed['scheme'] === 'https') {
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    "X-Forwarded-For: internal",
+                    "X-Forwarded-Proto: https",
+                ]);
+            }
+        } */
+
+        curl_multi_add_handle($mh, $ch);
+
+        // "Kickstart" the request
+        $active = null;
+        curl_multi_exec($mh, $active);
+
+        $handles[$url] = $ch;
+        return true;
+    }
+
+    if ($action === 'fetch') {
+        // SCENARIO A: Request was already started asynchronously
+        if (isset($handles[$url])) {
+            $ch = $handles[$url];
+            $active = null;
+
+            do {
+                $mrc = curl_multi_exec($mh, $active);
+//                if ($active) curl_multi_select($mh, 0.1);
+		if ($active) curl_multi_select($mh, 0.001); // Only wait 1ms instead of 100ms
+
+            } while ($active && $mrc == CURLM_OK);
+
+            $content = curl_multi_getcontent($ch);
+            $status  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            curl_multi_remove_handle($mh, $ch);
+            curl_close($ch);
+            unset($handles[$url]);
+
+            return [$status, $content];
+        }
+
+        // SCENARIO B: No async request found, perform a standard sync request
+        // Using cURL here too for consistency in status codes/UA handling
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+
+        $content = curl_exec($ch);
+        $status  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        curl_close($ch);
+        return [$status, $content];
+    }
+}
