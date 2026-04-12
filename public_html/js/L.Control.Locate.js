@@ -573,6 +573,18 @@ You can find the project at: https://github.com/domoritz/leaflet-locatecontrol
          * Uses the event retrieved from onLocationFound from the map.
          */
         _drawMarker: function() {
+            if (!this._map) return;
+
+            // Cancel any pending draw request to prevent stacking
+            L.Util.cancelAnimFrame(this._drawRequestId);
+
+            this._drawRequestId = L.Util.requestAnimFrame(function() {
+                this._drawReal(); // Rename your separated logic to avoid confusion
+            }, this);
+        },
+
+        //the real draw function, just seperated so can call it in Animation Frame
+        _drawReal: function() {
             if (this._event.accuracy === undefined) {
                 this._event.accuracy = 0;
             }
@@ -752,7 +764,7 @@ You can find the project at: https://github.com/domoritz/leaflet-locatecontrol
          */
         _onDrag: function() {
             // only react to drags once we have a location
-            if (this._event && !this._ignoreEvent) {
+            if (this._event && !this._ignoreEvent && !this._userPanned) {
                 this._userPanned = true;
                 this._updateContainerStyle();
                 this._drawMarker();
@@ -764,7 +776,7 @@ You can find the project at: https://github.com/domoritz/leaflet-locatecontrol
          */
         _onZoom: function() {
             // only react to drags once we have a location
-            if (this._event && !this._ignoreEvent) {
+            if (this._event && !this._ignoreEvent && !this._userZoomed) {
                 this._userZoomed = true;
                 this._updateContainerStyle();
                 this._drawMarker();
