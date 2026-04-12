@@ -192,6 +192,7 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
+	font-size:1.7em; /* this only scales the font-awesome icons */
 }
 
 .nav-btn svg {
@@ -202,7 +203,7 @@ footer {
 
 .nav-left, .nav-right {
     display: flex;
-    gap: 10px;
+    gap: 16px;
 }
 
 #page-title {
