@@ -143,4 +143,5 @@ $REVISIONS['/js/gallery-popup.js']=84187528;
 $REVISIONS['/js/Geograph.MediaDatabase.class.js']=36556227;
 $REVISIONS['/app/js/modules/intro-view.js']=19686591;
 $REVISIONS['/js/Leaflet.GeographCoverage/Leaflet.GeographCoverage.css']=94536842;
+$REVISIONS['/js/L.Control.Locate.js']=19760747;
 ?>
