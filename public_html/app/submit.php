@@ -586,7 +586,7 @@ span.tag-pill button {
     font-family: sans-serif;
     color:gray;
     background-color:var(--bg);
-    border:1px solid silver;
+    border:2px solid silver;
 }
 #maparea label {
     display:unset;
@@ -594,7 +594,7 @@ span.tag-pill button {
 #maparea input.active {
         color:black;
         background-color:white;
-        border:1px solid black;
+        border:2px solid black;
 }
 #maparea input#photographer_gridref.active{
     border:2px solid #210b7b;
@@ -604,6 +604,11 @@ span.tag-pill button {
 }
 #maparea label.active {
     background-color:yellow;
+}
+#dist_message {
+    padding-left:10px;
+    min-height:22px;
+    color:brown;
 }
 
 /* Hide button by default (Desktop/Mouse) */
@@ -989,14 +994,14 @@ function toggleLock() {
 
     // Move cursor to end
     if (input1.classList.contains('active')) {
-	const val = input1.value;
-	input1.focus();
+	    const val = input1.value;
+	    input1.focus();
         input1.value = '';
         input1.value = val;
 
     } else if (input2.classList.contains('active')) {
-	const val = input2.value;
-	input2.focus();
+	    const val = input2.value;
+	    input2.focus();
         input2.value = '';
         input2.value = val;
     }
@@ -1008,7 +1013,11 @@ function toggleLock() {
     input1.setAttribute('inputmode', 'none'); // Hide keyboard
     input2.setAttribute('inputmode', 'none');
     icon.innerHTML = '&#9000;'; // Keyboard entity (to signifcan can unlock)
-    input1.focus(); //still focus it to keep focus on the map (otherwise focus may jump to date/title box!)
+    if (input1.classList.contains('active')) {
+        input1.focus(); //still focus it to keep focus on the map (otherwise focus may jump to date/title box!)
+    } else if (input2.classList.contains('active')) {
+        input2.focus();
+    }
   }
 }
 </script>
@@ -1034,7 +1043,7 @@ function toggleLock() {
                     <option value="337" style="color:gray">North-northwest  : 337 deg</option>
                     <option value="00">NORTH            : 0 deg</option>
              </select>
-            <div id="dist_message" style="padding-left:10px"></div>
+            <div id="dist_message"></div>
 
             <div class="notes-bar"><select id="notesList"></select> (Sets the <span id="activeMode">Camera</span>)</div>
 
@@ -2971,7 +2980,7 @@ map.on('mousedown dragstart', function(e) {
         const localTitle = document.getElementById('localTitle');
         if (localTitle) {
             //this is tricky, they could have set positions by never actully giving focus either <input>, so we also need to catch them when they just moved onto the title
-            localTitle.addEventListener('focus', function() {
+            localTitle.addEventListener('pointerdown', function() {
                 if (map.dragging.enabled()) {
                     enableMap(false);
                     clearActive();
@@ -3257,7 +3266,7 @@ function renderNotesList() {
 
     if (isSmall) {
     	localTitle.readOnly = true;
-	localTitle.classList.toggle('input-invalid', localTitle.value == ''); //the browser doesnt show real :invalid on readonly, so add fake one
+	    localTitle.classList.toggle('input-invalid', localTitle.value == ''); //the browser doesnt show real :invalid on readonly, so add fake one
 
         localDesc.readOnly = true;
 
@@ -3336,12 +3345,12 @@ function renderNotesList() {
     	    localTitle.value = titleInp.value;
     	    localDesc.value = descArea.value;
 
-	    //sync with local validation
-	    updateStickyTitle(titleInp.value);
-	    localTitle.classList.toggle('input-invalid', localTitle.value == ''); //the browser doesnt show real :invalid, so add fake one
+	        //sync with local validation
+	        updateStickyTitle(titleInp.value);
+	        localTitle.classList.toggle('input-invalid', localTitle.value == ''); //the browser doesnt show real :invalid, so add fake one
             //we also need to add remove this once edited!
-	    if (localTitle.value != '')
-		localTitle.setCustomValidity("");
+	        if (localTitle.value != '')
+		        localTitle.setCustomValidity("");
             updateFormProgress();
 
     	    remoteOverlay.style.display = 'none';
