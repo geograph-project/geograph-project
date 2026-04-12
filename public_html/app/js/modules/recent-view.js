@@ -1,12 +1,44 @@
-import { escapeHTML } from '/app/js/utils.js';
+import AppState from '/app/js/app-state.js';
+import { escapeHTML, navigateTo } from '/app/js/utils.js';
 
 export function render() {
     return `
+            <div class="controls">
+                <select id="sort-select">
+                    <option value="uploaded-desc">Uploaded (Newest)</option>
+                    <option value="uploaded-asc">Uploaded (Oldest)</option>
+                    <option value="taken-desc">Date Taken (Newest)</option>
+                    <option value="taken-asc">Date Taken (Oldest)</option>
+                    <option value="grid-asc">Grid Ref (A-Z)</option>
+                    <option value="grid-desc">Grid Ref (Z-A)</option>
+                    <option value="titie-asc">Title (A-Z)</option>
+                    <option value="title-desc">Title (Z-A)</option>
+                </select>
+
+                <label id="recent-label">
+                    <input type="radio" name="view-filter" value="recent" checked> Last 3 Days <span id="counter"></span>
+                </label>
+                <label style="margin-left: 15px;">
+                    <input type="radio" name="view-filter" value="all" id="all-checkbox"> Last <span id="counter2">100</span> Images
+                </label>
+            </div>
+
         <div class="view review-view">
             <div id="review-list" class="review-list">
                 <p>Loading submissions for review...</p>
             </div>
         </div>
+
+<style>
+.review-view button.gid {
+    padding:8px;
+    border-radius:6px;
+    background-color: var(--input-bg);
+    color: var(--content-text);
+    border:0;
+    user-select:none;
+}
+</style>
 
     <button class="btn btn-primary" disabled>Save Edits</button>
     (doesn't save yet!)
@@ -14,6 +46,116 @@ export function render() {
 	<p>Currently just submissions from last 3 days</p>
     `;
 }
+
+export async function onMount() {
+
+    loadSubmissions('recent')
+
+    // Handle Toggle Changes
+    document.querySelectorAll('input[name="view-filter"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            loadSubmissions(e.target.value);
+        });
+    });
+
+}
+
+///////////////////////////////////////////
+
+let currentData = [];
+
+async function loadSubmissions(filter) {
+    const listContainer = document.getElementById('review-list');
+
+    const sortSelect = document.getElementById('sort-select');
+    const url = filter === 'all'
+        ? '/app/submissions.json.php?thumbs=1&images=100'
+        : '/app/submissions.json.php?thumbs=1';
+
+    listContainer.innerHTML = '<p>Loading...</p>';
+    sortSelect.value = AppState.getPreference('profileSort', 'uploaded-desc');
+
+    try {
+        const response = await fetch(url);
+        currentData = await response.json();
+
+        //only show if something to sort!
+        sortSelect.classList.toggle('hidden', currentData.length<2);
+
+        if (currentData.length === 0) {
+            if (filter == 'recent') {
+                //well, if no results!
+                document.getElementById('recent-label').style.display='none';
+                document.getElementById('all-checkbox').checked = true;
+ 	         	loadSubmissions('all');
+                listContainer.innerHTML = '<p>Loading......</p>';
+            } else {
+                //the user has nothing!
+                document.getElementById('counter2').textContent = currentData.length;
+                listContainer.innerHTML = '<p>No submissions found.</p>';
+     	    }
+            return;
+        }
+
+        if (filter == 'recent')
+            document.getElementById('counter').textContent = `[${currentData.length}]`;
+  	    else //might as well make the count accurate, if there are less than 100
+		    document.getElementById('counter2').textContent = currentData.length;
+
+        // Render logic
+  	    const updateList = () => {
+            // 1. Sort based on select value
+            const val = sortSelect.value;
+
+            //AppState.setPreference('profileSort', val);
+
+            const sorted = [...currentData].sort((a, b) => {
+                if (val === 'uploaded-asc')  return a.gridimage_id - b.gridimage_id;
+                if (val === 'uploaded-desc') return b.gridimage_id - a.gridimage_id;
+                if (val === 'taken-asc')  return (a.imagetaken || '').localeCompare(b.imagetaken || '');
+                if (val === 'taken-desc') return (b.imagetaken || '').localeCompare(a.imagetaken || '');
+                if (val === 'grid-asc')  return (a.grid_reference || '').localeCompare(b.grid_reference || '');
+                if (val === 'grid-desc') return (b.grid_reference || '').localeCompare(a.grid_reference || '');
+                if (val === 'title-asc')  return (a.title || '').localeCompare(b.title || '');
+                if (val === 'title-desc') return (b.title || '').localeCompare(a.title || '');
+                return 0;
+            });
+
+            listContainer.innerHTML = sorted.map(item => `
+                <div class="review-item">
+                    <div class="review-main-row">
+                        <img src="${item.thumbnail}" alt="Thumbnail">
+                        <div class="review-fields">
+                            <input type="text" value="${escapeHTML(item.title)}" placeholder="Title">
+                            <textarea placeholder="No Description">${escapeHTML(item.comment || '')}</textarea>
+                            <!--button class="demo-btn" style="width: auto; padding: 5px 15px;">Save Changes</button-->
+                        </div>
+                    </div>
+                    <div class="meta-info">
+             	        <button type=button class=gid>[[[${item.gridimage_id}]]]</button>
+                    	<strong>${item.grid_reference}</strong></strong>
+    	                Taken: <strong>${formatTakenDate(item.imagetaken)}</strong>
+            	        Submitted: <strong>${formatRelativeTime(item.submitted)}</strong>
+    	            </div>
+                </div>
+            `).join('');
+
+            listContainer.querySelectorAll('button.gid').forEach(btn => {
+                btn.onclick = handleDoubleTapCopy;
+                btn.oncontextmenu = handleDoubleTapCopy; //to catch if if they kinda like trying to select it.
+            });
+        };
+
+        updateList(); // Initial render
+        sortSelect.onchange = updateList;
+
+    } catch (err) {
+console.log(err);
+        listContainer.innerHTML = '<p>Error loading review list.</p>';
+    }
+}
+
+////////////////////////////////////////////////////////
 
 function formatTakenDate(dateStr) {
     if (dateStr < '1000-01-01')
@@ -51,33 +193,91 @@ function formatRelativeTime(dateStr) {
     return "Just now";
 }
 
+const handleDoubleTapCopy = (event) => {
+  const btn = event.currentTarget;
+  const textToCopy = btn.textContent;
+  const FADE_TIMEOUT = 3000;
 
-export async function onMount() {
-    const listContainer = document.getElementById('review-list');
+  if (event.type === 'contextmenu') {
+    event.preventDefault();
+  }
 
-    try {
-        const response = await fetch('/app/submissions.json.php?thumbs=1');
-        const data = await response.json();
-
-        listContainer.innerHTML = data.map(item => `
-            <div class="review-item">
-                <div class="review-main-row">
-                    <img src="${item.thumbnail}" alt="Thumbnail">
-                    <div class="review-fields">
-                        <input type="text" value="${escapeHTML(item.title)}" placeholder="Title">
-                        <textarea placeholder="No Description">${escapeHTML(item.comment || '')}</textarea>
-                        <!--button class="demo-btn" style="width: auto; padding: 5px 15px;">Save Changes</button-->
-                    </div>
-                </div>
-                <div class="meta-info">
-         	        [[[${item.gridimage_id}]]]
-                	<strong>${item.grid_reference}</strong></strong>
-	                Taken: <strong>${formatTakenDate(item.imagetaken)}</strong>
-        	        Submitted: <strong>${formatRelativeTime(item.submitted)}</strong>
-	            </div>
-            </div>
-        `).join('');
-    } catch (err) {
-        listContainer.innerHTML = '<p>Error loading review list.</p>';
+  // Function to kill the pending prompt timer
+  const clearPendingPrompt = () => {
+    if (btn.dataset.timerId) {
+      clearTimeout(parseInt(btn.dataset.timerId));
+      delete btn.dataset.timerId;
     }
+  };
+
+  // Helper to remove existing prompts for this button
+  const removePrompt = () => {
+    if (btn.dataset.promptId) {
+      const oldPrompt = document.getElementById(btn.dataset.promptId);
+      if (oldPrompt) oldPrompt.remove();
+    }
+  };
+
+  if (btn.dataset.state === "primed") {
+    // Action: Copy to clipboard
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      clearPendingPrompt();
+      removePrompt();
+      showTooltip(btn, "Copied!", 1000);
+      btn.dataset.state = "idle";
+    });
+  } else {
+    // Action: Show "Tap again" prompt
+    btn.dataset.state = "primed";
+    const promptId = "prompt-" + Math.random().toString(36).substr(2, 9);
+    btn.dataset.promptId = promptId;
+
+    btn.dataset.timerId = setTimeout(() => {
+        showTooltip(btn, "Tap again to copy", FADE_TIMEOUT, promptId, () => {
+          btn.dataset.state = "idle";
+        });
+    }, 350);
+  }
+};
+
+// Helper function to create and position the message
+function showTooltip(anchorEl, message, duration, id = null, onClose = null) {
+  const tooltip = document.createElement("div");
+  if (id) tooltip.id = id;
+  
+  tooltip.textContent = message;
+  
+  // Basic Styling
+  Object.assign(tooltip.style, {
+    position: "absolute",
+    backgroundColor: "#333",
+    color: "#fff",
+    padding: "5px 10px",
+    borderRadius: "4px",
+    fontSize: "12px",
+    pointerEvents: "none",
+    zIndex: "1000",
+    transition: "opacity 0.3s ease",
+    whiteSpace: "nowrap"
+  });
+
+  document.body.appendChild(tooltip);
+
+  // Position logic (Centered above the button)
+  const rect = anchorEl.getBoundingClientRect();
+  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+  //tooltip.style.left = `${rect.left + scrollLeft + (rect.width / 2) - (tooltip.offsetWidth / 2)}px`;
+  tooltip.style.left = `${rect.left + scrollLeft}px`;
+  tooltip.style.top = `${rect.top + scrollTop - tooltip.offsetHeight - 12}px`;
+
+  // Fade out and remove
+  setTimeout(() => {
+    tooltip.style.opacity = "0";
+    setTimeout(() => {
+      tooltip.remove();
+      if (onClose) onClose();
+    }, 300);
+  }, duration);
 }
