@@ -591,23 +591,26 @@ input[type="search"] {
     flex-grow: 1;
 }
 
-.review-fields input, 
 .review-fields textarea {
     padding: 8px;
-    border: 1px solid #ccc;
     border-radius: 4px;
     font-family: Georgia;
     font-size:1em;
     border:0;
-}
-.review-fields input {
-    font-weight: 600;
-    font-size: 1.05em;
-}
-.review-fields textarea {
-    min-height: 60px;
+
     field-sizing: content; 
     max-height: 60svh;
+    flex-grow: 1;
+    width: 0;           /* Forces flexbox to ignore content width */
+    min-width: 100%;    /* Ensures it still fills the available space */
+}
+.review-fields textarea.title {
+    font-weight: 600;
+    font-size: 1.05em;
+    min-height: 1em;
+}
+.review-fields textarea.comment {
+    min-height: 3em;
     resize: vertical;
 }
 .meta-info {

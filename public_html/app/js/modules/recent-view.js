@@ -29,9 +29,13 @@ export function render() {
             </div>
         </div>
 
-	<button class="btn btn-primary" id="save-btn" disabled>Apply Changes Now</button>
+	<button class="btn btn-primary hidden" id="save-btn" disabled>Apply Changes Now</button>
+	<button class="btn btn-secondary hidden" id="clear-btn" disabled>Disgard All Changes</button>
     `;
 }
+
+
+const STORAGE_KEY = 'review_form_persistence';
 
 export async function onMount() {
     const listContainer = document.getElementById('review-list');
@@ -49,18 +53,132 @@ export async function onMount() {
 	listContainer.addEventListener('input', (event) => {
 	  const target = event.target;
 
+      // 1. Clean up pasted newlines (title is now a textarea to get wrapping!)
+      if (target.tagName === 'TEXTAREA' && target.classList.contains('title')) {
+        // Regex catches all newline variants
+        if (target.value.includes('\n') || target.value.includes('\r')) {
+          target.value = target.value.replace(/[\r\n]+/g, ' ');
+        }
+      }
+
 	  // Check if the element is one we care about
 	  if (target.tagName === 'TEXTAREA' || (target.tagName === 'INPUT' && target.type === 'text')) {
 	    // Toggle the 'changed' class based on value vs defaultValue
 	    target.classList.toggle('changed', target.value !== target.defaultValue);
-            if (target.value !== target.defaultValue) {
-		const btn = document.getElementById('save-btn');
-                btn.removeAttribute("disabled");
-		btn.classList.add("sticky-button");
-	    }
+        if (target.value !== target.defaultValue) {
+            showSaveButton();
+        }
 	  }
 	});
 
+    // also Prevent "Enter" key
+    listContainer.addEventListener('keydown', (e) => {
+      const target = e.target;
+      // Check if it's a textarea and has the 'title' class
+      if (target.tagName === 'TEXTAREA' && target.classList.contains('title')) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+
+          // Only move focus if it's a touch-based environment
+          // ... because of enterkeyhint=next, a enter on mobile should really be a next button.
+          if (window.matchMedia("(pointer: coarse)").matches) {
+            const formElements = Array.from(listContainer.querySelectorAll('input, textarea, select, button'));
+            const index = formElements.indexOf(target);
+            if (index > -1 && index < formElements.length - 1) {
+              formElements[index + 1].focus();
+            }
+          }
+        }
+      }
+    });
+
+    // The Save/Delete Logic
+    listContainer.addEventListener('focusout', (e) => {
+        const target = e.target;
+        if (target.tagName === 'TEXTAREA') {
+            const name = target.name;
+            const currentVal = target.value.trim();
+            const defaultVal = target.defaultValue.trim();
+
+            let savedData = getSavedData();
+
+            if (currentVal !== defaultVal) {
+                // Value changed: Save it
+                savedData[name] = currentVal;
+            } else {
+                // Value is back to default: Remove it to keep storage clean
+                delete savedData[name];
+            }
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(savedData));
+        }
+    });
+
+    document.getElementById('clear-btn').onclick = clearAllEdits;
+}
+
+// Helper to get all saved data
+function getSavedData() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+}
+
+
+function restoreSavedValues(container) {
+    const savedData = getSavedData();
+    const fields = container.querySelectorAll('textarea[name]');
+
+    fields.forEach(field => {
+        const savedValue = savedData[field.name];
+        if (savedValue !== undefined) {
+            field.value = savedValue;
+            if (field.defaultValue != savedValue) {
+                field.classList.add('changed');
+                showSaveButton();
+            }
+        }
+    });
+}
+
+function showSaveButton() {
+    const btn = document.getElementById('save-btn');
+    if (btn.disabled) {
+        btn.removeAttribute("disabled");
+        btn.classList.add("sticky-button");
+        btn.classList.remove("hidden");
+    }
+    const btn2 = document.getElementById('clear-btn');
+    if (btn2.disabled) {
+        btn2.removeAttribute("disabled");
+        btn2.classList.remove("hidden");
+    }
+}
+
+function clearAllEdits() {
+    // 1. Ask for confirmation (optional but recommended)
+    if (!confirm("Are you sure you want to discard all unsaved changes?")) return;
+
+    // 2. Wipe the persistence storage
+    localStorage.removeItem(STORAGE_KEY);
+
+    // 3. Revert all fields in the container
+    const container = document.getElementById('review-list');
+    const fields = container.querySelectorAll('textarea[name]');
+
+    fields.forEach(field => {
+        // Reset the value to what was originally in the HTML
+        field.value = field.defaultValue;
+
+        // Remove the visual "dirty" markers
+        field.classList.remove('changed');
+    });
+
+    // 4. Hide the Save button again
+    const saveBtn = document.getElementById('save-btn');
+    if (saveBtn) {
+        saveBtn.setAttribute("disabled", "true");
+        saveBtn.classList.add("hidden");
+        saveBtn.classList.remove("sticky-button");
+    }
 }
 
 ///////////////////////////////////////////
@@ -129,8 +247,8 @@ async function loadSubmissions(filter) {
                     <div class="review-main-row">
                         <img src="${item.thumbnail}" alt="${escapeHTML(item.title)}" loading="lazy">
                         <div class="review-fields">
-                            <input type="text" value="${escapeHTML(item.title)}" placeholder="Title">
-                            <textarea placeholder="No Description">${escapeHTML(item.comment || '')}</textarea>
+                            <textarea name="title[${item.gridimage_id}]" class="title" wrap="soft" enterkeyhint="next">${escapeHTML(item.title)}</textarea>
+                            <textarea name="comment[${item.gridimage_id}]" class="comment" placeholder="No Description" wrap="soft" enterkeyhint="enter">${escapeHTML(item.comment || '')}</textarea>
                             <!--button class="demo-btn" style="width: auto; padding: 5px 15px;">Save Changes</button-->
                         </div>
                     </div>
@@ -143,12 +261,13 @@ async function loadSubmissions(filter) {
                 </div>
             `).join('');
 
-	            listContainer.querySelectorAll('button.gid').forEach(btn => {
+	        listContainer.querySelectorAll('button.gid').forEach(btn => {
                 btn.onclick = handleDoubleTapCopy;
                 btn.oncontextmenu = handleDoubleTapCopy; //to catch if if they kinda like trying to select it.
             });
 
             listContainer.onpaste = resetBatch;
+            restoreSavedValues(listContainer);
         };
 
         updateList(); // Initial render
