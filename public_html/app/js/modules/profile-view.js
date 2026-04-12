@@ -146,12 +146,13 @@ async function loadSubmissions(filter = 'recent') {
                 document.getElementById('all-checkbox').checked = true;
  	         	loadSubmissions('all')
                 document.getElementById('edit-btn').style.display='none'; //currently only edits 'recent', not last 100 anyway
+                gridContainer.innerHTML = '<p>Loading.....</p>';
             } else {
                 //the user has nothing!
                 document.getElementById('counter2').textContent = currentData.length;
 		        document.getElementById('search-form').style.display='none';
+                gridContainer.innerHTML = '<p>No submissions found.</p>';
      	    }
-            gridContainer.innerHTML = '<p>No submissions found.</p>';
             return;
         }
 
