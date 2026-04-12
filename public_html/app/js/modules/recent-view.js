@@ -38,6 +38,9 @@ export function render() {
     border:0;
     user-select:none;
 }
+.review-view button.gid.copied {
+    background-color:green;
+}
 </style>
 
     <button class="btn btn-primary" disabled>Save Edits</button>
@@ -144,6 +147,8 @@ async function loadSubmissions(filter) {
                 btn.onclick = handleDoubleTapCopy;
                 btn.oncontextmenu = handleDoubleTapCopy; //to catch if if they kinda like trying to select it.
             });
+
+            listContainer.onpaste = resetBatch;
         };
 
         updateList(); // Initial render
@@ -193,6 +198,10 @@ function formatRelativeTime(dateStr) {
     return "Just now";
 }
 
+////////////////////////////////////////////////////////
+
+let idQueue = [];
+
 const handleDoubleTapCopy = (event) => {
   const btn = event.currentTarget;
   const textToCopy = btn.textContent;
@@ -220,12 +229,18 @@ const handleDoubleTapCopy = (event) => {
 
   if (btn.dataset.state === "primed") {
     // Action: Copy to clipboard
-    navigator.clipboard.writeText(textToCopy).then(() => {
+    idQueue.push(textToCopy);
+
+    const finalString = idQueue.join(' ');
+    navigator.clipboard.writeText(finalString).then(() => {
       clearPendingPrompt();
       removePrompt();
-      showTooltip(btn, "Copied!", 1000);
+
+      showTooltip(btn, idQueue.length==1?"Copied!":`Batch Copied (${idQueue.length} items)`, 1000);
       btn.dataset.state = "idle";
     });
+    btn.classList.add('copied'); // Highlight the button
+
   } else {
     // Action: Show "Tap again" prompt
     btn.dataset.state = "primed";
@@ -233,20 +248,30 @@ const handleDoubleTapCopy = (event) => {
     btn.dataset.promptId = promptId;
 
     btn.dataset.timerId = setTimeout(() => {
-        showTooltip(btn, "Tap again to copy", FADE_TIMEOUT, promptId, () => {
+        const tip = idQueue.length?`Tab again to add to list (${idQueue.length+1} items)`:"Tap again to copy"
+        showTooltip(btn, tip, FADE_TIMEOUT, promptId, () => {
           btn.dataset.state = "idle";
         });
     }, 350);
   }
 };
 
+const resetBatch = () => {
+  idQueue = [];
+  // Remove the visual highlight from ALL buttons
+  document.querySelectorAll('button.gid').forEach(btn => {
+    btn.classList.remove('copied');
+    btn.dataset.state = "idle";
+  });
+};
+
 // Helper function to create and position the message
 function showTooltip(anchorEl, message, duration, id = null, onClose = null) {
   const tooltip = document.createElement("div");
   if (id) tooltip.id = id;
-  
+
   tooltip.textContent = message;
-  
+
   // Basic Styling
   Object.assign(tooltip.style, {
     position: "absolute",
