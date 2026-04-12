@@ -29,28 +29,12 @@ export function render() {
             </div>
         </div>
 
-<style>
-.review-view button.gid {
-    padding:8px;
-    border-radius:6px;
-    background-color: var(--input-bg);
-    color: var(--content-text);
-    border:0;
-    user-select:none;
-}
-.review-view button.gid.copied {
-    background-color:green;
-}
-</style>
-
-    <button class="btn btn-primary" disabled>Save Edits</button>
-    (doesn't save yet!)
-
-	<p>Currently just submissions from last 3 days</p>
+	<button class="btn btn-primary" id="save-btn" disabled>Apply Changes Now</button>
     `;
 }
 
 export async function onMount() {
+    const listContainer = document.getElementById('review-list');
 
     loadSubmissions('recent')
 
@@ -60,6 +44,22 @@ export async function onMount() {
             loadSubmissions(e.target.value);
         });
     });
+
+	//attach once at on whole element
+	listContainer.addEventListener('input', (event) => {
+	  const target = event.target;
+
+	  // Check if the element is one we care about
+	  if (target.tagName === 'TEXTAREA' || (target.tagName === 'INPUT' && target.type === 'text')) {
+	    // Toggle the 'changed' class based on value vs defaultValue
+	    target.classList.toggle('changed', target.value !== target.defaultValue);
+            if (target.value !== target.defaultValue) {
+		const btn = document.getElementById('save-btn');
+                btn.removeAttribute("disabled");
+		btn.classList.add("sticky-button");
+	    }
+	  }
+	});
 
 }
 
@@ -127,7 +127,7 @@ async function loadSubmissions(filter) {
             listContainer.innerHTML = sorted.map(item => `
                 <div class="review-item">
                     <div class="review-main-row">
-                        <img src="${item.thumbnail}" alt="Thumbnail">
+                        <img src="${item.thumbnail}" alt="${escapeHTML(item.title)}" loading="lazy">
                         <div class="review-fields">
                             <input type="text" value="${escapeHTML(item.title)}" placeholder="Title">
                             <textarea placeholder="No Description">${escapeHTML(item.comment || '')}</textarea>
@@ -137,13 +137,13 @@ async function loadSubmissions(filter) {
                     <div class="meta-info">
              	        <button type=button class=gid>[[[${item.gridimage_id}]]]</button>
                     	<strong>${item.grid_reference}</strong></strong>
-    	                Taken: <strong>${formatTakenDate(item.imagetaken)}</strong>
-            	        Submitted: <strong>${formatRelativeTime(item.submitted)}</strong>
+    	                <span>Taken: <strong>${formatTakenDate(item.imagetaken)}</strong></span>
+            	        <span>Submitted: <strong>${formatRelativeTime(item.submitted)}</strong></span>
     	            </div>
                 </div>
             `).join('');
 
-            listContainer.querySelectorAll('button.gid').forEach(btn => {
+	            listContainer.querySelectorAll('button.gid').forEach(btn => {
                 btn.onclick = handleDoubleTapCopy;
                 btn.oncontextmenu = handleDoubleTapCopy; //to catch if if they kinda like trying to select it.
             });
@@ -158,6 +158,12 @@ async function loadSubmissions(filter) {
 console.log(err);
         listContainer.innerHTML = '<p>Error loading review list.</p>';
     }
+}
+
+
+function highlightChange(event) {
+	const input = event.currentTarget;
+	input.classList.toggle('changed', input.value != input.defaultValue);
 }
 
 ////////////////////////////////////////////////////////
