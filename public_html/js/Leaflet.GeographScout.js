@@ -172,7 +172,8 @@ L.GeographScout = L.LayerGroup.extend({
                 <h3>Geograph Scout Settings</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div>
-                        <strong>Features:</strong><br>
+                        <strong>Features:</strong>
+    	    	            <span style="white-space:nowrap">(${this._renderFilter('fewpoi', 'Few Photos')})</span><br>
                         ${this._renderCheck('2', 'Trigpoints')}
                         ${this._renderCheck('3', 'Summits')}
                         ${this._renderCheck('5,9', 'Places')}
@@ -182,29 +183,35 @@ L.GeographScout = L.LayerGroup.extend({
                         ${this._renderCheck('15', 'Nature Reserves')}
                         ${this._renderCheck('17', 'Greenspaces')}
                     </div>
-                    <div>
+                    <div style="line-height:1.6em">
+                        <strong>Hectads:</strong>
+                        ${this._renderFilter('emptyHectad', 'Personal', '#3498db')}<br>
+                        <br>
                         <strong>Grid Squares:</strong><br>
-		            <label style="color:#068d37"><input type="checkbox" id="gs-unphoto" ${this._filters.unphotographed ? 'checked':''}> Unphotographed</label>
-		            <label style="color:#7b7a7a"><input type="checkbox" id="gs-few-photo" ${this._filters.fewPhotos ? 'checked':''}> Few Photos</label>
-		            <label style="color:#9b59b6"><input type="checkbox" id="gs-no-recent" ${this._filters.noRecent ? 'checked':''}> No Recent</label><br>
-		            <label style="color:#3498db"><input type="checkbox" id="gs-personal" ${this._filters.personal ? 'checked':''}> Personal</label>
-		            <label style="color:#f39c12"><input type="checkbox" id="gs-update" ${this._filters.personalUpdate ? 'checked':''}> Personal Redo (>5yrs)</label>
-		            <label style="color:#e74c3c"><input type="checkbox" id="gs-done" ${this._filters.done ? 'checked':''}> Done</label>
+                        ${this._renderFilter('unphotographed', 'Unphotographed', '#068d37')}
+                        ${this._renderFilter('fewPhotos', 'Few Photos', '#9fb143')}
+                        ${this._renderFilter('noRecent', 'No Recent', '#9b59b6')}<br><br>
+                        ${this._renderFilter('personal', 'Personal', '#3498db')}
+                        ${this._renderFilter('personalUpdate', 'Personal Redo (>5yrs)', '#f39c12')}
+                        ${this._renderFilter('done', 'Done', '#e74c3c')}
                     </div>
                 </div>
-                <br><button type="submit" style="width:100%">Close & Update</button>
+
+                <p style="line-height:1.2; color:#666; margin-top:15px; font-style:italic;">
+                    <strong>Tip:</strong> Filters usually highlight missing coverage. 
+                    Use <b>Done</b> to flip the logic and see squares you have already completed.
+                </p>
+
+                <button type="submit" style="width:100%;font-weight:bold">Close & Update</button>
             </form>
         `;
 
         this._dialog.showModal();
         this._dialog.onclose = () => {
-            // Update state from UI
-            this._filters.unphotographed = document.getElementById('gs-unphoto').checked;
-            this._filters.fewPhotos = document.getElementById('gs-few-photo').checked;
-            this._filters.noRecent = document.getElementById('gs-no-recent').checked;
-            this._filters.personal = document.getElementById('gs-personal').checked;
-            this._filters.personalUpdate = document.getElementById('gs-update').checked;
-            this._filters.done = document.getElementById('gs-done').checked;
+            // Update general boolean filters
+            this._dialog.querySelectorAll('.gs-filter').forEach(el => {
+                this._filters[el.dataset.prop] = el.checked;
+            });
 
             // Map the category checkboxes
             const checked = Array.from(this._dialog.querySelectorAll('.filter:checked'));
@@ -221,6 +228,14 @@ L.GeographScout = L.LayerGroup.extend({
     _renderCheck: function(val, label) {
         const isChecked = val.split(',').some(v => this._filters.categories.includes(v));
         return `<label style="display:block"><input type="checkbox" class="filter" value="${val}" ${isChecked?'checked':''}> ${label}</label>`;
+    },
+
+    _renderFilter: function(prop, label, color = '') {
+        const isChecked = this._filters[prop] ? 'checked' : '';
+        // Calculate hex alpha: 0.8 -> 204 -> "cc" from this.options.opacity
+        const alpha = Math.round((this.options.opacity || 0.8) * 255 *0.5).toString(16).padStart(2, '0');
+        const style = color ? `style="background-color:${color}${alpha};padding:3px"` : '';
+        return `<label ${style}><input type="checkbox" class="gs-filter" data-prop="${prop}" ${isChecked}> ${label}</label>`;
     },
 
 ///////////////////////////////////////////////////////
@@ -330,7 +345,7 @@ L.GeographScout = L.LayerGroup.extend({
         return b.join(',');
     },
 
-    _getSquarePolygon: function(sq) {
+    _getSquarePolygon: function(sq, divisor = 1000) {
         let grid;
         //one API gives us lat/long (although may be better to jsut get from the GR anyway)
         //if (sq.lat) {
@@ -350,14 +365,14 @@ L.GeographScout = L.LayerGroup.extend({
            return [];
 
         // 2. Normalize to the bottom-left of the 1km square (e.g., 345678 -> 345000)
-        const e = Math.floor(grid.eastings / 1000) * 1000;
-        const n = Math.floor(grid.northings / 1000) * 1000;
+        const e = Math.floor(grid.eastings / divisor) * divisor;
+        const n = Math.floor(grid.northings / divisor) * divisor;
 
         const corners = [
             [e, n],             // SW
-            [e + 1000, n],      // SE
-            [e + 1000, n + 1000],// NE
-            [e, n + 1000]       // NW
+            [e + divisor, n],      // SE
+            [e + divisor, n + divisor],// NE
+            [e, n + divisor]       // NW
         ];
 
         const latLngs = corners.map(c => {
@@ -373,6 +388,7 @@ L.GeographScout = L.LayerGroup.extend({
 
     _renderSinglePOI: function(poi) {
         if (!this._filters.categories.includes(poi.t)) return;
+        if (!this._filters.fewpoi && poi.c>0) return; //otherwise just show zero!
         if (this._activeMarkers.has(poi.id)) return;
 
         const poiLatLng = L.latLng(poi.lt, poi.lg);
@@ -405,7 +421,7 @@ var icon = L.divIcon({
     _onFilterChange: function() {
         this._activeMarkers.forEach((marker, id) => {
             const poi = this._poiCache[id];
-            if (!this._filters.categories.includes(poi.t)) {
+            if ( (!this._filters.fewpoi && poi.c>0) || this._filters.categories.includes(poi.t)) {
                 this._poiLayer.removeLayer(marker);
                 this._activeMarkers.delete(id);
             }
@@ -424,11 +440,34 @@ var icon = L.divIcon({
     _renderSquares: function(squares) {
 
         this._squareLayer.clearLayers();
+        let hectads = {};
 
         squares.forEach(sq => {
             let color = null;
             let label = "";
             let dash = null;
+
+            // Priority 0: Empty Hectad!
+            if (this._filters.emptyHectad && sq.status.emptyHectad) {
+                let hectad = sq.gr.replace(/(\w+)(\d)\d(\d)\d/,'$1$2$3');
+                if (!hectads[hectad]) {
+                    hectads[hectad] = 1;
+
+                    color = "#3498db";
+                    label = "You haven't photographed this hectad";
+
+                    const latLngs = this._getSquarePolygon(sq, 10000); //hectad!
+                    L.polygon(latLngs, {
+                        color: color,
+                        weight: 1,
+                        opacity: this.options.opacity,
+                        fillOpacity: 0.3*this.options.opacity,
+                        dashArray: dash,
+                        interactive: true
+                    }).addTo(this._squareLayer).bindPopup(`Hectad: <big><b><a href="/gridref/${hectad}" target="_blank">${hectad}</a></b></big><br><br>${label}`);
+                }
+                return;
+            }
 
             // Priority 1: Globally Unphotographed
             if (this._filters.unphotographed && sq.status.nonGeograph) {
@@ -441,7 +480,7 @@ var icon = L.divIcon({
                 label = "Needs Recent Imagery";
             }
             else if (this._filters.fewPhotos && sq.status.fewPhotos) {
-                color = "#7b7a7a";
+                color = "#9fb143";
                 label = `Few Photos<br>(based on average ${sq.status.average.toFixed(1)})`;
             }
             // Priority 3: Personal Point (Never visited)
@@ -477,7 +516,7 @@ var icon = L.divIcon({
                     fillOpacity: 0.3*this.options.opacity,
                     dashArray: dash,
                     interactive: true
-                }).addTo(this._squareLayer).bindPopup(`Square: <a href="/gridref/${sq.gr}" target="_blank">${sq.gr}</a><br>${label}<br>Images: ${sq.c}`);
+                }).addTo(this._squareLayer).bindPopup(`Square: <big><b><a href="/gridref/${sq.gr}" target="_blank">${sq.gr}</a></b></big><br><br>${label}<br>Images: ${sq.c}`);
             }
         });
     },
@@ -540,6 +579,7 @@ var icon = L.divIcon({
                     nonRecent: isNonRecent,
                     personallyNeeded: isPersonallyNeeded,
                     needsUpdate: isNeedsUpdate,
+                    emptyHectad: userSquares.length==0,
                     visited: hasVisited,
                     average: avg
                 };
