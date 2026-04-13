@@ -519,6 +519,7 @@ function addOurControls(map) {
         	//if added a dots layer, would of removed the coverage too!
 	        if (excludedLayerNames.length) excludedLayerNames.push("Coverage - Standard");
 		if (urlParams.has('mine') || urlParams.has('user_id'))     excludedLayerNames.push("(Personalize Coverage)");
+		if (urlParams.has('user_id'))  excludedLayerNames.push("Recent Submissions"); //this is only available for self
 
 		// Get the saved object, or an empty object if nothing exists yet
 		var savedOverlays = JSON.parse(localStorage.getItem('LeafletOverlays') || '{}');
