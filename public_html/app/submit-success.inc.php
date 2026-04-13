@@ -10,8 +10,17 @@
         .idNum { font-size:2em; font-family: math, sans-serif; }
         .nowrap { white-space: nowrap; }
 
+        #resultsArea {
+            background: var(--card-bg);
+            padding: 12px 6px;
+            border-radius: 8px;
+            text-align: center;
+        }
         ul.stats-list {
-            font-weight:bold
+            margin-top:10px;
+            font-weight:bold;
+            line-height:2em;
+            list-style:none;
         }
     </style>
 </head>
@@ -68,15 +77,17 @@
         </label>
 
         <div id="resultsArea">
+            <div id="pointsHeader"></div>
             <ul id="pointsList" class="stats-list"></ul>
             <p id="loadingMsg" class="status-msg" style="display:none;">Fetching points...</p>
         </div>
     </div>
 
-.    <script>
+    <script>
         const statsToggle = document.getElementById('statsToggle');
         const toggleLabel = document.getElementById('toggleLabel');
         const resultsArea = document.getElementById('resultsArea');
+        const header = document.getElementById('pointsHeader');
         const pointsList = document.getElementById('pointsList');
         const loadingMsg = document.getElementById('loadingMsg');
 
@@ -94,9 +105,7 @@
         async function updateUI(isTicked) {
             // Update the label text based on state
             toggleLabel.textContent = isTicked ? 'Show these stats' : 'Show stats for this image';
-            pointsList.innerHTML = '';
             resultsArea.classList.toggle('hidden',!isTicked);
-
             if (isTicked) {
                 await fetchData();
             }
@@ -126,13 +135,13 @@
                 return;
             }
 
-            // Create and Insert the Header
-            const header = document.createElement('p');
-            header.id = 'pointsHeader';
-            header.style.marginTop = '10px';
-            header.innerHTML = `Provisional Point${pointsArray.length>1?'s':''} for this image:<br>(may change due to moderation)`;
-            pointsList.parentNode.insertBefore(header, pointsList);
+            if (pointsArray.length == 1) {
+                header.innerHTML = `Provisional <b>${pointsArray[0]}</b> for this image.<br>(may change due to moderation)`;
+                pointsList.innerHTML = "";
+                return;
+            }
 
+            header.innerHTML = `Provisional Point${pointsArray.length>1?'s':''} for this image:<br>(may change due to moderation)`;
             pointsList.innerHTML = pointsArray
                 .map(point => `<li>${point}</li>`)
                 .join('');
