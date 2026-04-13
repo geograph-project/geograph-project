@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             $smarty->clear_cache(null, "user$ab|{$USER->user_id}");
 
             $need_larger = false;
-            foreach($uploadmanager->tags as $tag) {
+            foreach($um->tags as $tag) {
                 if (preg_match('/^panorama:/',$tag)) //todo && $_POST['largestsize'][$key] == '640' ??
                      $need_larger = 1;
             }
