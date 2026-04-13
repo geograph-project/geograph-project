@@ -243,22 +243,24 @@ async function loadSubmissions(filter) {
             });
 
             listContainer.innerHTML = sorted.map(item => `
-                <div class="review-item">
+                <form method="post" action="/editimage.php?id=${item.gridimage_id}" target="_blank" class="review-item" onsubmit="this.style.opacity=0.5; this.elements['create'].textContent = 'Edit Page Opened';">
                     <div class="review-main-row">
                         <img src="${item.thumbnail}" alt="${escapeHTML(item.title)}" loading="lazy">
                         <div class="review-fields">
                             <textarea name="title[${item.gridimage_id}]" class="title" wrap="soft" enterkeyhint="next">${escapeHTML(item.title)}</textarea>
                             <textarea name="comment[${item.gridimage_id}]" class="comment" placeholder="No Description" wrap="soft" enterkeyhint="enter">${escapeHTML(item.comment || '')}</textarea>
-                            <!--button class="demo-btn" style="width: auto; padding: 5px 15px;">Save Changes</button-->
                         </div>
                     </div>
                     <div class="meta-info">
              	        <button type=button class=gid>[[[${item.gridimage_id}]]]</button>
-                    	<strong>${item.grid_reference}</strong></strong>
+                    	<strong>${item.grid_reference}</strong>
     	                <span>Taken: <strong>${formatTakenDate(item.imagetaken)}</strong></span>
             	        <span>Submitted: <strong>${formatRelativeTime(item.submitted)}</strong></span>
     	            </div>
-                </div>
+
+                    <button class="btn btn-primary hidden" type="button" style="width: auto; padding: 5px 15px;">Save Changes</button>
+                    <button class="btn btn-secondary" type="submit" name="create" value=1 style="width: auto; padding: 5px 15px;">Open Edit Page</button>
+                </form>
             `).join('');
 
 	        listContainer.querySelectorAll('button.gid').forEach(btn => {
@@ -365,6 +367,9 @@ const handleDoubleTapCopy = (event) => {
       btn.dataset.state = "idle";
     });
     btn.classList.add('copied'); // Highlight the button
+
+  } else if (idQueue.includes(textToCopy)) {
+    showTooltip(btn, "Image ID already copied", 2500);
 
   } else {
     // Action: Show "Tap again" prompt

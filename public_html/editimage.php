@@ -309,6 +309,12 @@ if (isset($_REQUEST['id']))
 			$image->lockThisImage($USER->user_id);
 		}
 
+		//unroll values from submissions.php
+		if (!empty($_POST['title']) && is_array($_POST['title']) && isset($_POST['title'][$image->gridimage_id]))
+			$_POST['title'] = $_POST['title'][$image->gridimage_id];
+		if (!empty($_POST['comment']) && is_array($_POST['comment']) && isset($_POST['comment'][$image->gridimage_id]))
+			$_POST['comment'] = $_POST['comment'][$image->gridimage_id];
+
 		//save changes?
 		if (isset($_POST['title']) && isset($_POST['apply']))
 		{

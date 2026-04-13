@@ -580,7 +580,7 @@ input[type="search"] {
 
 .review-item img {
     width: 120px;
-    height: 90px;
+    height: 120px;
     object-fit: cover;
     border-radius: 4px;
 }
@@ -610,7 +610,7 @@ input[type="search"] {
     min-height: 1em;
 }
 .review-fields textarea.comment {
-    min-height: 3em;
+    min-height: 5em;
     resize: vertical;
 }
 .meta-info {
