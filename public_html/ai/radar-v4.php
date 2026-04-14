@@ -19,7 +19,7 @@ $USER->mustHavePerm('basic');
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.67.0/dist/L.Control.Locate.min.css">
-    <!--link rel="stylesheet" href="<? echo smarty_modifier_revision("/js/Leaflet.GeographClickLayer.css"); ?>"-->
+    <link rel="stylesheet" href="<? echo smarty_modifier_revision("/js/Leaflet.GeographClickLayer.css"); ?>">
     <link rel="stylesheet" href="<? echo smarty_modifier_revision("/js/Leaflet.GeographCoverage/Leaflet.GeographCoverage.css"); ?>?v=2">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
@@ -32,7 +32,7 @@ $USER->mustHavePerm('basic');
     <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
     <script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographGeocoder.js"); ?>"></script>
     <script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographRecentUploads.js"); ?>"></script>
-    <!--script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographClickLayer.js"); ?>"></script-->
+    <script src="<?php echo smarty_modifier_revision("/js/Leaflet.GeographClickLayer.js"); ?>"></script>
 
     <script src="/js/Leaflet.GeographScout.js?<? echo filemtime(__DIR__.'/../js/Leaflet.GeographScout.js'); ?>"></script>
 
@@ -134,16 +134,20 @@ map.on('mousedown dragstart', function(e) {
                         }}).addTo(map).start();
 		}
 
-                //actully no. Requires juery!
-//                if (L.GeographClickLayer)
-  //                  clickLayer = L.geographClickLayer().addTo(map);
+                if (L.GeographClickLayer) {
+			var clickOptions = {};
+			clickOptions.user_id = <? echo intval($USER->user_id); ?>;
+			clickOptions.touch = window.matchMedia("(pointer: coarse)").matches; //doesnt yet have it's own auto-detect!
 
+                    clickLayer = L.geographClickLayer(clickOptions).addTo(map);
+		}
 
 /////////////////////////////////////////////
 
 		// 1. Initialize the plugin
 		geographScout = L.geographScout({
 		    user_id: <? echo intval($USER->user_id); ?>,
+                    always_personal: true, //not used yet, but will tell the personalized toggle, that it can't remove the user_id!
 		    apiUrl: '/api-scout.php'
 		});
 
@@ -154,7 +158,7 @@ map.on('mousedown dragstart', function(e) {
 		if (L.geographCoverage) {
 
 		        //overlayMaps['Geograph Coverage'] = L.geographCoverage({scoutLayer: geographScout});
-			//actully lets test adding as part of layer group! (how will be used in coverage-v4
+			//actully lets test adding as part of layer group! (how will be used in coverage-v4)
 
 		        var coverageClose = L.geographCoverage({scoutLayer: geographScout});
 
@@ -163,7 +167,7 @@ map.on('mousedown dragstart', function(e) {
 
 			overlayMaps["Coverage - Standard"] = L.layerGroup([coverageClose, coverageCoarse]);
 
-			// Scout turned ON - turn off the tillayer, (but KEEP coverageClose!)
+			// Scout turned ON - turn off the tilelayer, (but KEEP coverageClose!)
 			overlayMaps["Geograph Scout"].on('add', function() {
 			    setTimeout(function () {
 			        // Surgically remove tiles from the other group so they disappear from map

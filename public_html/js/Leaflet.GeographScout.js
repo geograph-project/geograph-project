@@ -437,6 +437,40 @@ var icon = L.divIcon({
         this._renderSquares(Object.values(this._localSquareCache));
     },
 
+    _customPopupRender: function(layer) {
+        // Access the data stored in the polygon options
+        const { hectad, square, label, images } = layer.options;
+
+        // Create the base container
+        const container = document.createElement('div');
+        if (hectad) {
+            container.innerHTML = `Hectad: <big><b><a href="/gridref/${hectad}" target="_blank">${hectad}</a></b></big><br><br>${label}<br>`;
+        } else {
+            container.innerHTML = `Square: <big><b><a href="/gridref/${square}" target="_blank">${square}</a></b></big><br><br>${label}<br>Images: ${images}<br>`;
+        }
+
+        const map = layer._map;
+        if (window.clickLayer && map.hasLayer(window.clickLayer)) {
+            const btn = document.createElement('button');
+            btn.innerText = 'View Your Nearby Images';
+            btn.style.marginTop = '10px';
+            btn.onclick = () => {
+                // Retrieve the coordinates where the popup is currently anchored
+                const latlng = layer.getPopup().getLatLng();
+
+                // Construct a mock Leaflet event to satisfy clickEvent(e)
+                window.clickLayer.clickEvent({
+                    latlng: latlng,
+                    originalEvent: {}
+                });
+                layer.closePopup();
+            };
+            container.appendChild(btn);
+        }
+
+        return container;
+    },
+
     _renderSquares: function(squares) {
 
         this._squareLayer.clearLayers();
@@ -463,8 +497,9 @@ var icon = L.divIcon({
                         opacity: this.options.opacity,
                         fillOpacity: 0.3*this.options.opacity,
                         dashArray: dash,
-                        interactive: true
-                    }).addTo(this._squareLayer).bindPopup(`Hectad: <big><b><a href="/gridref/${hectad}" target="_blank">${hectad}</a></b></big><br><br>${label}`);
+                        interactive: true,
+                        hectad: hectad, label: label
+                    }).addTo(this._squareLayer).bindPopup(this._customPopupRender);
                 }
                 return;
             }
@@ -479,6 +514,7 @@ var icon = L.divIcon({
                 color = "#9b59b6";
                 label = "Needs Recent Imagery";
             }
+            // Added another
             else if (this._filters.fewPhotos && sq.status.fewPhotos) {
                 color = "#9fb143";
                 label = `Few Photos<br>(based on average ${sq.status.average.toFixed(1)})`;
@@ -494,6 +530,7 @@ var icon = L.divIcon({
                 label = "You haven't visited in 5+ years";
                 dash = "5, 5";
             }
+            // Finally just leaves done!
             else if (this._filters.done && sq.status.visited) {
                 color = "#e74c3c";
                 label = "Visited Square";
@@ -508,15 +545,16 @@ var icon = L.divIcon({
                 //];
                 //L.rectangle(bounds, {
 
-                const latLngs = this._getSquarePolygon(sq);
+                const latLngs = this._getSquarePolygon(sq); //accurate render of a square!
     		    L.polygon(latLngs, {
                     color: color,
                     weight: 1,
                     opacity: this.options.opacity,
                     fillOpacity: 0.3*this.options.opacity,
                     dashArray: dash,
-                    interactive: true
-                }).addTo(this._squareLayer).bindPopup(`Square: <big><b><a href="/gridref/${sq.gr}" target="_blank">${sq.gr}</a></b></big><br><br>${label}<br>Images: ${sq.c}`);
+                    interactive: true,
+                    square: sq.gr, label: label, images: sq.c
+                }).addTo(this._squareLayer).bindPopup(this._customPopupRender);
             }
         });
     },
