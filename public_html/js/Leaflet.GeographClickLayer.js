@@ -24,546 +24,458 @@
 * note also sets a mouse move event, and the grid-ref is reused from that!
 *
 * Prerequisites:
-*   jQuery (around 1.8)
 *   geotools2
+*   ES6+ (using modern web APIs)
 */
 
+/**
+ * Leaflet.GeographClickLayer.js (Modernized)
+ * Removed jQuery dependency, using native ES6+
+ */
+
 L.GeographClickLayer = L.FeatureGroup.extend({
-	options: {
-		touch: false, //is a touch device - affects what map events use!
-		endpoint: "https://api.geograph.org.uk/api-facetql.php",
-		apiKey: 'geograph_demo', //get your own key: https://www.geograph.org.uk/admin/apikey.php
-		domain: "https://www.geograph.org.uk", //may be overwritten!
-		bi_bounds: L.latLngBounds([49.863788, -13.688451], [60.860395, 1.795260]),
-		ci_bounds: L.latLngBounds([49.150211,-2.702359], [49.731385,  -2.005734]),
-		de_bounds: L.latLngBounds([47.170071,5.766899], [55.138900, 15.120222]),
-		query: '',  //optional text query to filter results
-		user_id: null, // numberic Geograph User-ID to filter images
-		limit: 10, //please dont raise this beyond 20 or so.
-		data: {} //general array can pass to the API to filter
-	},
+    options: {
+        touch: false,
+        endpoint: "https://api.geograph.org.uk/api-facetql.php",
+        apiKey: 'geograph_demo',
+        domain: "https://www.geograph.org.uk",
+        bi_bounds: L.latLngBounds([49.863788, -13.688451], [60.860395, 1.795260]),
+        ci_bounds: L.latLngBounds([49.150211, -2.702359], [49.731385, -2.005734]),
+        de_bounds: L.latLngBounds([47.170071, 5.766899], [55.138900, 15.120222]),
+        query: '',
+        user_id: null,
+        limit: 10,
+        data: {}
+    },
 
-///////////////////////////////////////////////////
+    initialize: function (options) {
+        L.setOptions(this, options);
+        L.FeatureGroup.prototype.initialize.call(this);
+    },
 
-	initialize: function (options) {
-		L.setOptions(this, options);
-		L.FeatureGroup.prototype.initialize.call(this);
-	},
+    onAdd: function (map) {
+        const events = this.options.touch 
+            ? { move: 'click', click: 'contextmenu' } 
+            : { move: 'mousemove', click: 'click' };
 
-///////////////////////////////////////////////////
+        map.on(events.click, this.clickEvent, this);
+        map.on(events.move, this.moveEvent, this);
+        map.on('baselayerchange', this.baseEvent, this);
+        map.on('overlayadd', this.overlayEvent, this);
 
-		onAdd: function (map) {
-			if (this.options.touch) {
-				map.on('contextmenu', this.clickEvent, this);
-				map.on('click', this.moveEvent, this);
-			} else {
-				map.on('click', this.clickEvent, this);
-				map.on('mousemove', this.moveEvent, this);
-			}
-			map.on('baselayerchange', this.baseEvent, this);
-			map.on('overlayadd', this.overlayEvent, this);
-			this._map = map;
-			this.appendToDOM();
-			//todo loop though all layers, and grab the maxZoom for this._baseZoom of BASE layers
+        this._map = map;
+        this.appendToDOM();
 
-			//this is a bodge, as our maps use baseMaps variable, leaflet doesnt seem to keep a nice reference of baselayer,
-			// its a contrivance by the layer Control. there is also no reliable way to get the layercontrol itself (to use its _layers list!)
-			// can keep watch via baselayerchange, but need to get the inital value too!
-			if (window.baseMaps && typeof window.baseMaps == 'object') {
-				for (var i in window.baseMaps) {
-					if (i && map.hasLayer(window.baseMaps[i])) {
-						var layer = window.baseMaps[i];
-						if (layer.options && layer.options.maxZoom) {
-							this._baseZoom = layer.options.maxZoom;
-						}
-					}
-				}
-			}
-		},
+        // Check for baseMaps in global scope (legacy support)
+        if (window.baseMaps && typeof window.baseMaps === 'object') {
+            for (let i in window.baseMaps) {
+                if (map.hasLayer(window.baseMaps[i])) {
+                    let layer = window.baseMaps[i];
+                    if (layer.options?.maxZoom) {
+                        this._baseZoom = layer.options.maxZoom;
+                    }
+                }
+            }
+        }
+    },
 
-		onRemove: function (map) {
-			if (this.options.touch) {
-				map.off('contextmenu', this.clickEvent, this);
-				map.off('click', this.moveEvent, this);
-			} else {
-				map.off('click', this.clickEvent, this);
-				map.off('mousemove', this.moveEvent, this);
-			}
-			map.off('baselayerchange', this.baseEvent, this);
-			map.off('overlayadd', this.overlayEvent, this);
-			this._map = null;
-		},
+    onRemove: function (map) {
+        const events = this.options.touch 
+            ? { move: 'click', click: 'contextmenu' } 
+            : { move: 'mousemove', click: 'click' };
 
-///////////////////////////////////////////////////
+        map.off(events.click, this.clickEvent, this);
+        map.off(events.move, this.moveEvent, this);
+        map.off('baselayerchange', this.baseEvent, this);
+        map.off('overlayadd', this.overlayEvent, this);
+        this._map = null;
+    },
 
-	clickEvent: function(e) {
-		if (this.options.touch)
-			this.moveEvent(e); //need this to update the update the GridRef, not needed on Desktop as mousemove events are firing!
-		if (this._grid && this._grid.status && this._grid.status == 'OK') {
-			var ll = this._gr.replace(/ /g,'');
-		} else {
-			var ll = e.latlng.lat.toFixed(6)+","+e.latlng.lng.toFixed(6);
-		}
+    clickEvent: function (e) {
+        if (this.options.touch) this.moveEvent(e);
+        
+        let ll = (this._grid?.status === 'OK') 
+            ? this._gr.replace(/ /g, '') 
+            : `${e.latlng.lat.toFixed(6)},${e.latlng.lng.toFixed(6)}`;
 
-		var p1 = this._map.containerPointToLatLng([window.innerWidth/2, window.innerHeight/2]);
-		var p2 = this._map.containerPointToLatLng([(window.innerWidth/2) + 40, (window.innerHeight/2) + 40]);
-		var dist = p1.distanceTo(p2).toFixed(0);
+        const p1 = this._map.containerPointToLatLng([window.innerWidth / 2, window.innerHeight / 2]);
+        const p2 = this._map.containerPointToLatLng([(window.innerWidth / 2) + 40, (window.innerHeight / 2) + 40]);
+        const dist = p1.distanceTo(p2).toFixed(0);
 
-		//window.open("http://www.geograph.org.uk/browser/#!/loc="+ll+"/dist="+dist+"/display=plus/sort=spread",'browserthumbs');
+        this.currentLat = e.latlng.lat.toFixed(6);
+        this.currentLng = e.latlng.lng.toFixed(6);
+        this.currentRadius = dist;
+        this.displayThumbs();
+    },
 
-		this.currentLat = e.latlng.lat.toFixed(6);
-		this.currentLng = e.latlng.lng.toFixed(6);
-		this.currentRadius = dist;
-		this.displayThumbs();
-	},
+    moveEvent: function (e) {
+        if (typeof GT_WGS84 === 'undefined') return; // Ensure geotools2 is loaded
+        const wgs84 = new GT_WGS84();
+        wgs84.setDegrees(e.latlng.lat, e.latlng.lng);
 
-///////////////////////////////////////////////////
+        if (wgs84.isIreland() && wgs84.isIreland2()) {
+            this._grid = wgs84.getIrish(true);
+        } else if (e.latlng.lat > 49.8 && wgs84.isGreatBritain()) {
+            this._grid = wgs84.getOSGB();
+        } else {
+            this._grid = null;
+        }
 
-	moveEvent: function(e) {
-		var wgs84=new GT_WGS84();
-		wgs84.setDegrees(e.latlng.lat,e.latlng.lng);
+        if (this._grid?.status === 'OK') {
+            const z = this._map.getZoom();
+            const precision = z > 15 ? 5 : z > 12 ? 4 : z > 9 ? 3 : 2;
+            this._gr = this._grid.getGridRef(precision);
+            const el = document.getElementById('gridref');
+            if (el && this._gr.indexOf('undefined') == -1) el.innerText = this._gr; //(there some unknown myriads within isGreatBritain check!)
+        }
+    },
 
-		if (wgs84.isIreland() && wgs84.isIreland2()) //isIsland is a quick BBOX test, so do that first!
-			this._grid=wgs84.getIrish(true);
-		else if (e.latlng.lat > 49.8 && wgs84.isGreatBritain()) // the isGB test is not accurate enough!
-			this._grid=wgs84.getOSGB();
-		else
-			this._grid = null;
+    baseEvent: function (e) {
+        this._baseZoom = e.layer?.options?.maxZoom || null;
+    },
 
-		if (this._grid && this._grid.status && this._grid.status == 'OK') {
-			var z = this._map.getZoom();
-			if (z > 15) precision = 5;
-			else if (z > 12) precision = 4;
-			else if (z > 9) precision = 3;
-			else precision = 2;
+    overlayEvent: function (e) {
+        if (e.name?.startsWith('Photo')) {
+            const target = e.name.includes('Viewpoint') ? 'Viewpoint' : 'Subject';
+            const select = document.getElementById('clicklayer_select');
+            if (select && !select.value.includes(target)) {
+                select.value = target;
+            }
+        }
+    },
 
-			this._gr = this._grid.getGridRef(precision);
-			if (document.getElementById('gridref'))
-				document.getElementById('gridref').innerText = this._gr;
-		};
-	},
+    hoverOn: function (value) {
+        [this._marker, this._marker2, this._line].forEach(l => l?.removeFrom(this._map));
 
-///////////////////////////////////////////////////
+        const bounds = L.latLngBounds();
+        if (value.wgs84_lat > 0.6) {
+            const lat = this.rad2deg(value.wgs84_lat);
+            const lng = this.rad2deg(value.wgs84_long);
+            this._marker = L.circleMarker([lat, lng], { color: 'red' }).addTo(this._map);
+            bounds.extend([lat, lng]);
+        }
+        if (value.vlat > 0.6) {
+            const lat = this.rad2deg(value.vlat);
+            const lng = this.rad2deg(value.vlong);
+            this._marker2 = L.circleMarker([lat, lng], { color: 'purple' }).addTo(this._map);
+            bounds.extend([lat, lng]);
+        }
+        if (this._marker && this._marker2) {
+            this._line = L.polyline([this._marker.getLatLng(), this._marker2.getLatLng()], { color: 'red' }).addTo(this._map);
+        }
 
-	baseEvent: function(e) {
-		if (e && e.layer && e.layer.options && e.layer.options.maxZoom) {
-			this._baseZoom = e.layer.options.maxZoom;
-		} else {
-			this._baseZoom = null;
-		}
-	},
-  
-  overlayEvent: function(e) {
-    if (e && e.name && e.name.indexOf('Photo') == 0) {
-      if (e.name.indexOf('Viewpoint') > -1)
-        target = 'Viewpoint';
-      else
-        target = 'Subject'; //this way works even for the thumbnail
-      var selected = $('#clicklayer_select').val();
-      if (selected.indexOf(target) == -1)
-        $('#clicklayer_select').val(target);
-    }
-  },
+        const testBounds = this._map.getBounds().pad(-0.2);
+        this._returnwhenoff = false;
 
-///////////////////////////////////////////////////
+        if (testBounds.contains(bounds)) {
+            if (bounds.getNorthWest().distanceTo(bounds.getSouthEast()) > 20) {
+                let possibleZoom = this._map.getBoundsZoom(bounds);
+                if (this._baseZoom && possibleZoom > this._baseZoom) possibleZoom = this._baseZoom;
+                if (Math.abs(this._map.getZoom() - possibleZoom) > 4) {
+                    this._map.setZoomAround(bounds.getCenter(), possibleZoom - 2);
+                    this._returnwhenoff = true;
+                }
+            }
+            return;
+        }
 
-	hoverOn: function(value) { //value is the whole sphinx row!
-		if (this._marker)
-			this._marker.removeFrom(this._map);
-		if (this._marker2)
-			this._marker2.removeFrom(this._map);
-		if (this._line)
-			this._line.removeFrom(this._map);
+        if (bounds.getNorthWest().distanceTo(bounds.getSouthEast()) > 20) {
+            let possibleZoom = this._map.getBoundsZoom(bounds);
+            if (Math.abs(this._map.getZoom() - possibleZoom) <= 2) {
+                this._map.panInsideBounds(bounds.pad(0.1));
+            } else {
+                const maxZ = this._baseZoom ? { maxZoom: this._baseZoom } : {};
+                this._map.fitBounds(bounds, maxZ);
+                this._returnwhenoff = true;
+            }
+        } else {
+            this._map.panInsideBounds(bounds.pad(0.1));
+        }
+    },
 
-		var bounds = L.latLngBounds();
-		if (value.wgs84_lat && value.wgs84_lat > 0.6) {
-			var lat = this.rad2deg(value.wgs84_lat);
-			var lng = this.rad2deg(value.wgs84_long);
-			this._marker = L.circleMarker([lat,lng],{color:'red'}).addTo(this._map);
-			bounds.extend([lat,lng]);
-		}
-		if (value.vlat && value.vlat > 0.6) {
-			var lat = this.rad2deg(value.vlat);
-			var lng = this.rad2deg(value.vlong);
-			this._marker2 = L.circleMarker([lat,lng], {color:'purple'}).addTo(this._map);
-			bounds.extend([lat,lng]);
-		}
-		if (value.wgs84_lat && value.vlat && value.wgs84_lat > 0.6 && value.vlat > 0.6)
-			this._line = L.polyline([this._marker.getLatLng(),this._marker2.getLatLng()], {color: 'red'}).addTo(this._map);
+    hoverOff: function () {
+        [this._marker, this._marker2, this._line].forEach(l => l?.removeFrom(this._map));
+        if (this._mapBounds && this._returnwhenoff) {
+            this._map.flyToBounds(this._mapBounds, { duration: 0.5 });
+        }
+    },
 
-		var testBounds = this._map.getBounds().pad(-0.2);
+    displayThumbs: async function () {
+        const lat = this.currentLat;
+        const lng = this.currentLng;
+        const radius = this.currentRadius;
 
-		this._returnwhenoff = false; //so only return when involve a big jump!
-		if (testBounds.contains(bounds)) {
-			//todo, might still want to check if worth zooming in. with setZoomAround
-			if (bounds.getNorthWest().distanceTo(bounds.getSouthEast()) > 20) {
-				var possibleZoom = this._map.getBoundsZoom(bounds);
-				if (this._baseZoom && possibleZoom > this._baseZoom)
-					possibleZoom = this._baseZoom;
+        if (this._circle) this._circle.removeFrom(this._map);
+        this._circle = L.circle([lat, lng], { radius: radius, opacity: 0.2 }).addTo(this._map);
 
-				if (Math.abs(this._map.getZoom() - possibleZoom) > 4) {
-					this._map.setZoomAround(bounds.getCenter(),possibleZoom-2);
-					this._returnwhenoff = true;
-				}
-			}
-			return;
-		}
+        // Map UI adjustments
+        const container = this._map._container;
+        window.scrollTo({ top: container.offsetTop, behavior: 'smooth' });
+        container.classList.add('click_smallmap');
+        this._map.invalidateSize();
 
-		if (bounds.getNorthWest().distanceTo(bounds.getSouthEast()) > 20) {
+        this._mapBounds = this._map.getBounds();
+        document.querySelectorAll('.leaflet-control-container .leaflet-top').forEach(el => el.style.display = 'none');
 
-			var possibleZoom = this._map.getBoundsZoom(bounds);
-			if (Math.abs(this._map.getZoom() - possibleZoom) <= 2) {
-				//if close, just try panning, to minimis jumping around
-				this._map.panInsideBounds(bounds.pad(0.1));
-			} else {
-				//todo, could perhaps note, when target bounds are in view (its just really just zoom!)
-					// and instead use setZoomAround to avoid recentering
+        // Prepare Data
+        let queryParams = {
+            select: "id,title,grid_reference,realname,hash,natgrlen,wgs84_lat,wgs84_long",
+            match: this.options.query + (this.options.user_id ? ` @user user${this.options.user_id}` : ''),
+            order: "sequence ASC",
+            option: 'ranker=none',
+            limit: this.options.limit,
+            ...this.options.data
+        };
 
-				//also dont zoom beyond the maxZoom of the baselayer
-				if (this._baseZoom) {
-					this._map.fitBounds(bounds, {maxZoom: this._baseZoom});
-				} else
-					this._map.fitBounds(bounds);
-				this._returnwhenoff = true;
-			}
+        const selectEl = document.getElementById('clicklayer_select');
+        let selected = selectEl.value;
+        const ll = L.latLng(lat, lng);
 
-		} else {
-			//if points are same or only a single point, then just make sure in view at current zoom
+        // Region Bounds Logic
+        if (this.options.bi_bounds.contains(ll)) {
+	    if (this._gr.indexOf('undefined') != -1) { // maybe be something like "undefined-4038"
+		this._showNoResults();
+		return;
+            }
 
-			this._map.panInsideBounds(bounds.pad(0.1));
-		}
-	},
+            if (!this.options.domain.includes('org.uk')) this.options.domain = "https://www.geograph.org.uk";
+            queryParams.select += ',vgrlen,vlat,vlong';
+            selectEl.disabled = false;
+        } else if (this.options.de_bounds.contains(ll)) {
+            this.options.domain = "https://geo-en.hlipp.de";
+            queryParams.gg = 1;
+            //queryParams.select += ',vgrlen,vlat,vlong'; //doesnt currently work!
+            selected = 'Subject';
+            selectEl.value = 'Subject';
+            selectEl.disabled = true;
+        } else if (this.options.ci_bounds.contains(ll)) {
+            this.options.domain = "http://www.geograph.org.gg";
+            queryParams.is = 1;
+            queryParams.select += ',vgrlen,vlat,vlong';
+            selectEl.disabled = false;
+        } else {
+            this._showNoResults();
+            return;
+        }
 
-	hoverOff: function() {
-		if (this._marker)
-			this._marker.removeFrom(this._map);
-		if (this._marker2)
-			this._marker2.removeFrom(this._map);
-		if (this._line)
-			this._line.removeFrom(this._map);
-		if (this._mapBounds && this._returnwhenoff)
-			//this._map.fitBounds(this._mapBounds); //fitbounds tends to introduce some 'creap' as may zoom so whole bounds is visible
-			this._map.flyToBounds(this._mapBounds,{duration:0.5});
-	},
+	let geo1 = 'geodist'; //alas this columnname can change!
+        let geo1len = 'natgrlen';
 
-///////////////////////////////////////////////////
+        // Apply filters
+        if (selected.startsWith('Subject')) {
+            queryParams.geo = `${lat},${lng},${radius}`;
+            queryParams.geo_prefix = "wgs84_";
+            queryParams.d = 1;
+            if (selected.includes('+Viewpoint')) queryParams.geo2 = `${lat},${lng},${radius},v`;
+            if (selected.includes('not Viewpoint')) queryParams.geo2 = `${lat},${lng},-${radius},v`;
+        } else if (selected.startsWith('Viewpoint')) {
+            queryParams.geo = `${lat},${lng},${radius}`;
+            queryParams.geo_prefix = "v";
+            geo1len = 'vgrlen';
 
-	displayThumbs: function() {
-		var lat = this.currentLat;
-		var lng = this.currentLng;
-		var radius = this.currentRadius;
+            if (selected.includes('not Subject')) queryParams.geo2 = `${lat},${lng},-${radius},wgs84_`;
+        }
+        if (queryParams.geo2)
+            geo1 = 'geo1';
 
-		if (this._circle)
-			this._circle.removeFrom(this._map);
-		this._circle = L.circle([lat, lng], {radius: radius,opacity:0.2}).addTo(this._map);
+        const gridref = (this._grid?.status === 'OK') ? this._gr : `${lat},${lng}`;
+        const size = (window.innerWidth > 800 && window.innerHeight > 700) ? 'med' : 'small';
+        
+        const thumbsContainer = document.getElementById('clicklayer_thumbs');
+        thumbsContainer.className = `clicklayer_thumbs gridded ${size}`;
+        
+        document.getElementById('clicklayer_lightback').style.display = 'block';
 
-		var offset = $(this._map._container).offset();
-		$('html, body').scrollTop(offset.top);
-		$(this._map._container).addClass('click_smallmap');
-		this._map.invalidateSize();
+//if ($('#clicklayer_thumbs:hidden').length) //if not hidden (ie a redraw), then this is ugly as current results disapper
 
-		this._mapBounds = this._map.getBounds();
-		$('.leaflet-control-container .leaflet-top').hide(); //hides top controls, but not attribution!
+        thumbsContainer.innerHTML = '<div style="height:260px">Loading thumbnails.... please wait.</div>';
 
-		if (typeof this.options.data !== 'object')
-			this.options.data = {};
+        try {
+            const url = new URL(this.options.endpoint);
+            Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            this._renderResults(data, gridref, radius, size, geo1, geo1len);
+        } catch (err) {
+            thumbsContainer.innerHTML = 'Error loading images.';
+            console.error(err);
+        }
+    },
 
-		var data = L.extend(this.options.data, {
-			select: "id,title,grid_reference,realname,hash,natgrlen,wgs84_lat,wgs84_long",
-			match: this.options.query+(this.options.user_id?' @user user'+this.options.user_id:''),
-			order: "sequence ASC",
-			option: 'ranker=none',
-			limit: this.options.limit
-		});
+    _renderResults: function(data, gridref, radius, size, geo1, geo1len) {
+        document.getElementById('clicklayer_lightfront').style.display = 'block';
+        const cleanGridRef = encodeURIComponent(gridref.replace(/ /g, ''));
+        const lines = [];
+        const dom = this.options.domain;
 
-		var selected = $('#clicklayer_select').val();
-		var geo1 = 'geodist'; //alas this columnname can change!
-		var geo1len = 'natgrlen';
+        if (dom.includes('.org.uk')) {
+            lines.push(`<b><a target="_blank" href="${dom}/near/${cleanGridRef}">More Images</a></b>`);
+            if (dom === "https://www.geograph.org.uk") {
+                lines.push(`<a target="_blank" href="${dom}/browser/#!/loc=${cleanGridRef}/dist=${radius}/sort=spread">Image Browser</a>`);
+            }
+            lines.push(`<a target="_blank" href="${dom}/gridref/${cleanGridRef}">Grid Square Page</a>`);
+        } else {
+            lines.push(`<b><a target="_blank" href="${dom}/search.php?go=1&location=${cleanGridRef}">More Images</a></b>`);
+        }
 
-		delete data.geo;  //because data is reused, need to remove optionally added
-		delete data.geo_prefix;
-		delete data.geo2;
-		delete data.gg;
-		delete data.is;
+        const statsHtml = (data.meta?.total_found && data.rows)
+            ? `${data.rows.length} of <b>${data.meta.total_found}</b> images within <b>${(radius/1000).toFixed(2)}km</b>.`
+            : '';
 
-		var ll = L.latLng(lat,lng);
-		/////////////////////////
-		if (this.options.bi_bounds.contains(ll)) {
-			if (this.options.domain.indexOf('org.uk') == -1)
-				this.options.domain = "https://www.geograph.org.uk";
-			data.select = data.select + ',vgrlen,vlat,vlong';
-			$('#clicklayer_select').prop('disabled',false);
+        document.getElementById('clicklayer_links').innerHTML = `${statsHtml}<br><br>${gridref}<br><br>${lines.join('<br>')}`;
 
-		/////////////////////////
-		} else if (this.options.de_bounds.contains(ll)) {
-			this.options.domain = "https://geo-en.hlipp.de";
-			data.gg=1;
-			selected='Subject'; //tofix
-			$('#clicklayer_select').val(selected).prop('disabled',true);
+        const thumbsContainer = document.getElementById('clicklayer_thumbs');
+        const georiverLink = document.getElementById('clicklayer_georiver');
+        thumbsContainer.innerHTML = '';
+        georiverLink.innerHTML = '';
 
-		/////////////////////////
-		} else if (this.options.ci_bounds.contains(ll)) {
-			this.options.domain = "http://www.geograph.org.gg";
-			data.is=1;
-			data.select = data.select + ',vgrlen,vlat,vlong';
-			$('#clicklayer_select').prop('disabled',false);
+        if (data.rows) {
+	    thumbsContainer.classList.add('gridded');
 
-		/////////////////////////
-		} else {
-				$('body').append('<div id=clicklayer_noresults>Only works with specific countries.</div>');
 
-				setTimeout(function() {
-					$("#clicklayer_noresults").fadeOut('slow', function(){
-					  $(this).remove();
-					});
-				}, 2500);
-
-				return;
-		}
-		/////////////////////////
-
-		if (selected.indexOf('Subject') == 0) {
-			data.geo = lat+","+lng+","+radius;
-			data.geo_prefix="wgs84_"; //the vv index will default to viewcolumns!
-			data.d =1; //adds optimiation to geo filter to use bbox.
-			if (selected.indexOf('+Viewpoint')>-1)
-				data.geo2 = lat+","+lng+","+radius+",v";
-			if (selected.indexOf('not Viewpoint')>-1)
-				data.geo2 = lat+","+lng+",-"+radius+",v";
-		}
-		if (selected.indexOf('Viewpoint') == 0) {
-			data.geo = lat+","+lng+","+radius;
-			data.geo_prefix="v";
-			geo1len = 'vgrlen';
-			if (selected.indexOf('not Subject')>-1)
-				data.geo2 = lat+","+lng+",-"+radius+",wgs84_";
-		}
-		if (data.geo2)
-			geo1 = 'geo1';
-
-		/////////////////////////
-
-		if (this._grid && this._grid.status && this._grid.status == 'OK') {
-			var gridref = this._gr;
-		} else {
-			var gridref = lat+','+lng;
-		}
-
-		var size = 'small';
-		if (window.innerWidth>800 && window.innerHeight > 700) {
-			size = 'med';
-			$('#clicklayer_thumbs').addClass('med');
-			$('#clicklayer_thumbs').removeClass('small');
-		} else {
-			$('#clicklayer_thumbs').addClass('small');
-			$('#clicklayer_thumbs').removeClass('med');
-		}
-
-		/////////////////////////
-
-		$('#clicklayer_lightback').fadeIn('fast');
-
-		if ($('#clicklayer_thumbs:hidden').length) //if not hidden (ie a redraw), then this is ugly as current results disapper
-			$('#clicklayer_thumbs').html('<div style="height:260px">Loading thumbnails.... please wait.</div>');
-
-		var that = this;
-		$.getJSON(
-			this.options.endpoint,
-			data,
-			function(data) {
-				$('#clicklayer_lightfront').show();
-
-				gridref = encodeURIComponent(gridref.replace(/ /g,''));
-
-				var lines = [];
-				if (that.options.domain.indexOf('.org.uk') > -1) {
-					lines.push('<b><a target=newinw href="'+that.options.domain+'/near/'+gridref+'">More Images</a></b>');
-					if (that.options.domain == "https://www.geograph.org.uk")
-						lines.push('<a target=newinw href="'+that.options.domain+'/browser/#!/loc='+gridref+'/dist='+radius+'/sort=spread">Image Browser</a>');
-					if (data.meta && data.meta.total_found && data.rows)
-						lines.push('<a target=newinw href="'+that.options.domain+'/gridref/'+gridref+'?centi=X">CentiSquare</a>');
-					lines.push('<a target=newinw href="'+that.options.domain+'/gridref/'+gridref+'">Grid Square Page</a>');
-				} else {
-					lines.push('<b><a target=newinw href="'+that.options.domain+'/search.php?go=1&location='+gridref+'">More Images</a></b>');
-				}
-
-				if (data.meta && data.meta.total_found && data.rows) {
-					$('#clicklayer_links').html(data.rows.length+
-						' of '+data.meta.total_found+' images within '+(radius/1000).toFixed(2)+'km. <br><br>'+
-						gridref+'<br><br>'+
-						lines.join('<br>')+'</div>');
-				} else {
-					$('#clicklayer_links').html(gridref+'<br><br>'+
-						lines.join('<br>')+'</div>');
-				}
-
-				if (data && data.rows) {
-
-					$('#clicklayer_thumbs').empty();
-
-					if (that.options.touch && !that._marker) {
+					if (this.options.touch && !this._marker) {
 						//bit wierd, but if they've used a marker before, probably dont need be told again about it!
-						$('#thumbs').html("Tap a thumbnail to see on map above, <nobr>long-press</nobr> to open Geograph Photo Page.<hr>");
-					}
-					var ids = [];
-					$.each(data.rows,function(index,value) {
-						value.thumbnail = that.getGeographUrl(value.id, value.hash, size);
-						var dist = '';
-						if (value[geo1len]>4) {
-						  dist = 'Dist: '+(value[geo1]/1000).toFixed(1)+'km';
-						}
-						if (that.options.touch) {
-							value.html = '<div class="thumb'+size+'" id="image'+value.id+'">'+dist+'<br><img src="'+value.thumbnail+'"/></div>';
-						} else {
-							value.html = '<div class="thumb'+size+'" id="image'+value.id+'">'+dist+'<br><a target=newinw href="'+that.options.domain+'/photo/'+value.id+'" title="'+value.grid_reference+' : '+value.title+' by '+value.realname+'"><img src="'+value.thumbnail+'"/></a></div>';
-						}
-
-						$('#clicklayer_thumbs').append(value.html);
-
-						if (that.options.touch) {
-							$("#image"+value.id+" img").on('click',function(e) {
-								that.hoverOn(value);
-							}).on('contextmenu',function() {
-								window.open(that.options.domain+'/photo/'+value.id,'newwin');
-							});
-						} else {
-							$("#image"+value.id+" a img").on('mouseover',function(e) {
-								that.hoverOn(value);
-							}).on('mouseout',function() {
-								that.hoverOff();
-							});
-						}
-						ids.push(value.id);
-					});
-
-					if (ids.length>1) {
-						var url = that.options.domain+'/search.php?markedImages='+ids.join(',')+'&do=1&displayclass=black';
-						$('#clicklayer_thumbs').append('<a href="'+url+'" target="_blank" style="margin:40px">View these Images as GeoRiver</a>');
+						const message = document.getElementById('clicklayer_message');
+						message.style.padding = "4px";
+						message.innerHTML = "Tap a thumbnail to see on map above, <nobr>long-press</nobr> to open Geograph Photo Page.";
 					}
 
-				} else {
-					$('#clicklayer_thumbs').html('No results within '+(radius/1000).toFixed(2)+'km of '+gridref+' (the area of the blue circle on the map). Zoom out for a circle covering a bigger area. <br>Tip: can try turning on the [Photo Subjects] and/or [Photo Viewpoints] layer to see the positions of photos, alternatively the [Photo Thumbnails] plots many thumbnails direct on the map (the Photo Subjects layer works well together with Photo Thumbnails layer)');
-				}
-			}
-		);
-	},
+            const ids = [];
+            data.rows.forEach(row => {
+                const thumbUrl = this.getGeographUrl(row.id, row.hash, size);
+                const div = document.createElement('div');
+                div.className = `thumb${size}`;
+                div.id = `image${row.id}`;
 
-///////////////////////////////////////////////////
-
-	rad2deg: function(angle) {
-		// Converts the radian number to the equivalent number in degrees
-		//
-		// version: 1109.2015
-		// discuss at: http://phpjs.org/functions/rad2deg
-		// +   original by: Enrique Gonzalez
-		// +      improved by: Brett Zamir (http://brett-zamir.me)
-		// *	     example 1: rad2deg(3.141592653589793);
-		// *     returns 1: 180
-		return angle * 57.29577951308232; // angle / Math.PI * 180
-	},
-
-///////////////////////////////////////////////////
-
-	getGeographUrl: function(gridimage_id, hash, size) {
-
-		yz=this.zeroFill(Math.floor(gridimage_id/1000000),2);
-		ab=this.zeroFill(Math.floor((gridimage_id%1000000)/10000),2);
-		cd=this.zeroFill(Math.floor((gridimage_id%10000)/100),2);
-		abcdef=this.zeroFill(gridimage_id,6);
-
-		if (yz == '00') {
-			fullpath="/photos/"+ab+"/"+cd+"/"+abcdef+"_"+hash;
-		} else {
-			fullpath="/geophotos/"+yz+"/"+ab+"/"+cd+"/"+abcdef+"_"+hash;
+		if (row[geo1len]>4) {
+                      div.innerHTML = 'Dist: '+(row[geo1]/1000).toFixed(1)+'km<br>';
 		}
-		if (this.options.domain.indexOf('.org.uk') > -1) {
-			switch(size) {
-				case 'full': return "https://s0.geograph.org.uk"+fullpath+".jpg"; break;
-				case 'med': return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_213x160.jpg"; break;
-				case 'small':
-				default: return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_120x120.jpg";
-			}
-		} else {
-			switch(size) {
-				case 'full': return this.options.domain+fullpath+".jpg"; break;
-				case 'med': return this.options.domain+fullpath+"_213x160.jpg"; break;
-				case 'small':
-				default: return this.options.domain+fullpath+"_120x120.jpg";
-			}
-		}
-	},
 
-///////////////////////////////////////////////////
+                const img = document.createElement('img');
+                img.src = thumbUrl;
 
-	zeroFill: function(number, width) {
-		width -= number.toString().length;
-		if (width > 0) {
-			return new Array(width + (/\./.test(number)?2:1)).join('0') + number;
-		}
-		return number + "";
-	},
+                if (this.options.touch) {
+                    div.appendChild(img);
+                    img.addEventListener('click', () => this.hoverOn(row));
+                    img.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        window.open(`${dom}/photo/${row.id}`, '_blank');
+                    });
+                } else {
+                    const anchor = document.createElement('a');
+                    anchor.href = `${dom}/photo/${row.id}`;
+                    anchor.target = "_blank";
+                    anchor.appendChild(img);
+		    anchor.title = row.grid_reference+' : '+row.title+' by '+row.realname;
+                    div.appendChild(anchor);
+                    img.addEventListener('mouseover', () => this.hoverOn(row));
+                    img.addEventListener('mouseout', () => this.hoverOff());
+                }
+                thumbsContainer.appendChild(div);
+                ids.push(row.id);
+            });
 
-///////////////////////////////////////////////////
+            if (ids.length > 1) {
+                const riverUrl = `${dom}/search.php?markedImages=${ids.join(',')}&do=1&displayclass=black`;
+                georiverLink.innerHTML = `<a href="${riverUrl}" target="_blank" style="margin:40px">View these ${ids.length} Images as GeoRiver</a>`;
+            }
+        } else {
+		thumbsContainer.classList.remove('gridded');
+ 		thumbsContainer.innerHTML = `No results within ${(radius/1000).toFixed(2)}km of ${gridref} (the area of the blue circle on the map). Zoom out for a circle covering a bigger area. <br>Tip: can try turning on the [Photo Subjects] and/or [Photo Viewpoints] layer to see the positions of photos, alternatively the [Photo Thumbnails] plots many thumbnails direct on the map (the Photo Subjects layer works well together with Photo Thumbnails layer)`;
+        }
+    },
 
-	closeLight: function() {
-		$('#clicklayer_lightfront').hide();
-		$('#clicklayer_lightback').fadeOut('fast');
-		this.hoverOff();
-		if (this._circle) {
-			this._circle.removeFrom(this._map);
-			this._circle = null;
-		}
-		$(this._map._container).removeClass('click_smallmap');
-		this._map.invalidateSize();
+    _showNoResults: function() {
+        const div = document.createElement('div');
+        div.id = 'clicklayer_noresults';
+        div.innerText = 'Only works with specific countries.';
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 2500);
+    },
 
-		$('.leaflet-control-container .leaflet-top').show(); //hides top controls, but not attribution!
+    rad2deg: function (angle) {
+        return angle * 57.29577951308232;
+    },
 
-		return false;
-	},
+    getGeographUrl: function (gridimage_id, hash, size) {
+        const yz = this.zeroFill(Math.floor(gridimage_id / 1000000), 2);
+        const ab = this.zeroFill(Math.floor((gridimage_id % 1000000) / 10000), 2);
+        const cd = this.zeroFill(Math.floor((gridimage_id % 10000) / 100), 2);
+        const abcdef = this.zeroFill(gridimage_id, 6);
 
-///////////////////////////////////////////////////
+        const fullpath = (yz === '00') 
+            ? `/photos/${ab}/${cd}/${abcdef}_${hash}` 
+            : `/geophotos/${yz}/${ab}/${cd}/${abcdef}_${hash}`;
 
-	appendToDOM: function() {
-		if ($('body #clicklayer_lightback').length == 0) {
-			$('body').append('<div id="clicklayer_lightback" style="display:none;"></div>'+
-				'<div id="clicklayer_lightfront" style="display:none;">'+
-					'<div id="clicklayer_close"><a href=#>Close</a></div>'+
-					'Filter: <select id="clicklayer_select">'+
-						'<option>Subject</option>'+
-						'<option>Viewpoint</option>'+
-						'<option>Subject+Viewpoint</option>'+
-						'<option>Subject, not Viewpoint</option>'+
-						'<option>Viewpoint, not Subject</option>'+
-					'</select><br>'+
-					'<div id="clicklayer_links"></div>'+
-					'<div id="clicklayer_thumbs" class="clicklayer_thumbs gridded"></div>'+
-				'</div>');
+        if (this.options.domain.includes('.org.uk')) {
+            const server = size === 'full' ? 's0' : `s${gridimage_id % 4}`;
+            const suffix = size === 'full' ? '' : size === 'med' ? '_213x160' : '_120x120';
+            return `https://${server}.geograph.org.uk${fullpath}${suffix}.jpg`;
+        } else {
+            const suffix = size === 'full' ? '' : size === 'med' ? '_213x160' : '_120x120';
+            return `${this.options.domain}${fullpath}${suffix}.jpg`;
+        }
+    },
 
-			var that = this; //function closure
-			$('#clicklayer_lightback, #clicklayer_close').click(function() {
-				that.closeLight();
-			});
-			$('#clicklayer_select').change(function() {
-				that.displayThumbs();
-			});
-			$('#clicklayer_lightback').on('wheel',function(e) {
-				e.preventDefault();
-				if (!that._map)
-					return;
-				if (event.deltaY < 0)
-					that._map.zoomIn();
-				else
-					that._map.zoomOut();
-			});
-		}
-	}
+    zeroFill: function (number, width) {
+        width -= number.toString().length;
+        if (width > 0) return new Array(width + (/\./.test(number) ? 2 : 1)).join('0') + number;
+        return number + "";
+    },
 
-///////////////////////////////////////////////////
+    closeLight: function () {
+        document.getElementById('clicklayer_lightfront').style.display = 'none';
+        document.getElementById('clicklayer_lightback').style.display = 'none';
+        this.hoverOff();
+        if (this._circle) {
+            this._circle.removeFrom(this._map);
+            this._circle = null;
+        }
+        this._map._container.classList.remove('click_smallmap');
+        this._map.invalidateSize();
+        document.querySelectorAll('.leaflet-control-container .leaflet-top').forEach(el => el.style.display = 'block');
+        return false;
+    },
 
+    appendToDOM: function () {
+        if (!document.getElementById('clicklayer_lightback')) {
+            const html = `
+                <div id="clicklayer_lightback" style="display:none;"></div>
+                <div id="clicklayer_lightfront" style="display:none;">
+                    <div id="clicklayer_close"><a href="#">Close</a></div>
+                    Filter: <select id="clicklayer_select">
+                        <option>Subject</option>
+                        <option>Viewpoint</option>
+                        <option>Subject+Viewpoint</option>
+                        <option>Subject, not Viewpoint</option>
+                        <option>Viewpoint, not Subject</option>
+                    </select><br>
+                    <div id="clicklayer_links"></div>
+		    <div id="clicklayer_message"></div>
+                    <div id="clicklayer_thumbs" class="clicklayer_thumbs"></div>
+		    <div id="clicklayer_georiver"></div>
+                </div>`;
+            document.body.insertAdjacentHTML('beforeend', html);
+
+            document.getElementById('clicklayer_lightback').addEventListener('click', () => this.closeLight());
+            document.getElementById('clicklayer_close').addEventListener('click', (e) => {
+                e.preventDefault();
+                this.closeLight();
+            });
+            document.getElementById('clicklayer_select').addEventListener('change', () => this.displayThumbs());
+            
+            document.getElementById('clicklayer_lightback').addEventListener('wheel', (e) => {
+                e.preventDefault();
+                if (!this._map) return;
+                if (e.deltaY < 0) this._map.zoomIn();
+                else this._map.zoomOut();
+            });
+        }
+    }
 });
 
 L.geographClickLayer = function (options) {
-	return new L.GeographClickLayer(options);
+    return new L.GeographClickLayer(options);
 };
-
-
