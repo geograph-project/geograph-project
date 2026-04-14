@@ -24,7 +24,7 @@ baseMaps["OSM Terrain"] = L.tileLayer(terrainUrl, {minZoom: 5, maxZoom: 21, attr
 */
 
 	var topoUrl = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
-	var topoAttribution = 'Data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Legend</a>]';
+	var topoAttribution = 'Data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Contributors, <a href="https://viewfinderpanoramas.org">SRTM</a> | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Legend</a>]';
 baseMaps["OpenTopoMap"] = L.tileLayer(topoUrl, {minZoom: 1, maxZoom: 17, detectRetina: false, attribution: topoAttribution});
 
 if (L.tileLayer.bing) {
@@ -228,7 +228,7 @@ if (window.OSAPIKey) {
 
 	////////////////////////////////////////////////
 
-	var nlsAttrib = "\u003ca href=\"http://maps.nls.uk/projects/subscription-api/\"\u003eNational Library of Scotland\u003c/a\u003e";
+	var nlsAttrib = "\u003ca href=\"https://maps.nls.uk/projects/api/\"\u003eNational Library of Scotland\u003c/a\u003e";
 
 	//get your own key at https://cloud.maptiler.com/tiles/
 baseMaps['Historic OS - GB 1920s'] = L.tileLayer('https://api.maptiler.com/tiles/uk-osgb1919/{z}/{x}/{y}.jpg?key=RJOABq94aMWBy2AuidnK',
@@ -273,7 +273,7 @@ var overlayMaps = {};
 	  bounds: bounds
         });
 
-        var wmsLayer2 = L.tileLayer.wms('http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms?', {
+        var wmsLayer2 = L.tileLayer.wms('https://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms?', {
           layers: 'BGS_EN_Bedrock_and_Superficial_Geology', transparent: true, format: 'image/png', opacity: 0.7, maxZoom: 12, 
            attribution: "Contains British Geological Survey materials &copy; UKRI 2019",
 	  bounds: bounds
@@ -364,12 +364,14 @@ overlayMaps["Photo Viewpoints"] = L.tileLayer2(layerUrl, {j:j, user_id: 0, minZo
 
 		//this a function, so can be called recurisvely by LayerGroups!
 		function setUserID(user_id,layer) {
+			if (layer.options?.always_personal) //the layer CANT be de-personalized
+				return; //probably a noop, but might ask well skip
 			if (layer && typeof layer.eachLayer == 'function' && typeof layer.options.user_id == 'undefined') { //the layergroups are also used for actual layers, so exlude one with a user_id option, so can set them DIRECTLY below
 				layer.eachLayer(function(l) {
 					setUserID(user_id,l);
 				});
 			} else {
-				if (layer && layer.options && typeof layer.options.user_id != "undefined") { // (use typeof becase it can be zero!) 
+				if (layer && layer.options && typeof layer.options.user_id != "undefined") { // (use typeof becase it can be zero!)
 					layer.options.user_id = user_id;
 					if (layer._url) {
 						layer.setUrl(layer._url.replace(/(&user_id=\d+|$)/,'&user_id='+user_id));
@@ -380,12 +382,14 @@ overlayMaps["Photo Viewpoints"] = L.tileLayer2(layerUrl, {j:j, user_id: 0, minZo
 			}
 		}
 		function removeUserID(layer) {
+			if (layer.options?.always_personal) //the layer CANT be de-personalized
+				return;
 			if (layer && typeof layer.eachLayer == 'function' && typeof layer.options.user_id == 'undefined') {
 				layer.eachLayer(function(l) {
 					removeUserID(l);
 				});
 			} else {
-				if (layer && layer.options && typeof layer.options.user_id != "undefined") { // (use typeof becase it can be zero!) 
+				if (layer && layer.options && typeof layer.options.user_id != "undefined") { // (use typeof becase it can be zero!)
 					//dont set user_id here, to avoid setting it on ourselves
                                         if (layer._url && layer._url.match(/user_id=/)) {
 						//doesnt really matter if dont change options.user_id here
