@@ -31,9 +31,10 @@ $db = GeographDatabaseConnection(false);
 $conv = new Conversions;
 $reference_index = 1;
 
+$smarty->assign('responsive', true);
 $smarty->display('_std_begin.tpl');
 
-$links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz5.php' => 'Isle of Man', '/finder/places.php'=>'Search', '/mapper/combined.php'=>'Map');
+$links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz5.php' => 'Isle of Man',  'viewgaz8.php' => 'Channel Islands', 'https://geo-en.hlipp.de/search.php' => 'Germany');
 
 print '<div class="tabHolder" style="max-width:940px">Places in: ';
 foreach ($links as $link => $name) {
@@ -61,6 +62,7 @@ print '</div>';
 	$name = implode(", ",$name);
 	print '<div class="interestBox">';
 	print "<h2>Places in $name</h2>";
+	$smarty->display('_location-search.tpl');
 	print '</div>';
 
 	if (!empty($_GET['alpha'])) {

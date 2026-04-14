@@ -31,9 +31,10 @@ $db = GeographDatabaseConnection(false);
 $conv = new Conversions;
 $reference_index = 2;
 
+$smarty->assign('responsive', true);
 $smarty->display('_std_begin.tpl');
 
-$links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz5.php' => 'Isle of Man', '/finder/places.php'=>'Search', '/mapper/combined.php'=>'Map');
+$links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz5.php' => 'Isle of Man',  'viewgaz8.php' => 'Channel Islands', 'https://geo-en.hlipp.de/search.php' => 'Germany');
 
 print '<div class="tabHolder" style="max-width:940px">Places in: ';
 foreach ($links as $link => $name) {
@@ -56,7 +57,7 @@ $column = 'name'; //as display_name
 function display_swithcer() {
 	global $column;
 	if (empty($_GET['name']))
-		$_GET['name'] = 'english';
+		$_GET['name'] = 'enie';
 
 	if ($_GET['name'] == 'irish') {
 		$column = "if(irish='',name,irish)";
@@ -201,6 +202,8 @@ if (!empty($_GET['alpha'])) {
 			$name = htmlentities2(utf8_to_latin1($row['display_name']));
 		}
 
+$name = str_replace(' / ','<span style=color:silver> / </span><span style=color:brown>',$name)."</span>";
+
 		if (preg_match('/(\d+)/',$row['town_class'],$m) && $m[1] <= 3) {
 			print "<li><b><a href=\"$url\">$name</a></b>";
 		} else
@@ -233,6 +236,7 @@ if (!empty($_GET['alpha'])) {
 
 	print '<div class="interestBox">';
 	print "<h2>Populated Place Directory for Ireland</h2>";
+	$smarty->display('_location-search.tpl');
 	print '</div>';
 
 	print "<p>First click a County, note the name in brackets the Island name (where we have identified non-mainland places)</p>";
