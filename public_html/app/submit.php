@@ -1116,6 +1116,20 @@ function toggleLock() {
 
         <div id="suggestion-pill-bar" class="hidden no-results"></div>
 
+
+        <div class="field-header">
+            <label>Shared Descriptions</label> <span class="optional-label">(optional)</span>
+            <select class="recent-select" id="recent-snippets" onchange="useRecentSnippet(this)">
+                <option value="">Recently Used</option>
+            </select>
+        </div>
+	    <div class="tag-input-container">
+            <div id="active-snippets"></div>
+            <input type="search" id="snippet-search" placeholder="Type to search descriptions...">
+            <div id="snippet-suggestions" class="dropdown"></div>
+        </div>
+
+
         <label for="imagetaken">Date Taken</label>
         <div>
             <input type="date" id="imagetaken" name="imagetaken" required>
@@ -1183,7 +1197,7 @@ function toggleLock() {
 	    <select name="contexts[]" id="contexts" multiple size=10 required></select>
 
         <div class="field-header">
-            <label for="subject-input">Primary Subject</label>
+            <label for="subject-input">Primary Subject</label> <span class="optional-label">(optional)</span>
             <select class="recent-select" id="recent-subjects" onchange="useRecentSubject(this)">
                 <option value="">Recently Used</option>
             </select>
@@ -1196,7 +1210,7 @@ function toggleLock() {
         </div>
 
         <div class="field-header">
-            <label>Free-form Tags</label>
+            <label>Free-form Tags</label> <span class="optional-label">(optional)</span>
             <select class="recent-select" id="recent-tags" onchange="useRecentTag(this)">
                 <option value="">Recently Used</option>
             </select>
@@ -1427,6 +1441,7 @@ function toggleLock() {
 <script src="<? echo smarty_modifier_revision("/app/js/contexts.libs.js"); ?>"></script>
 <script src="<? echo smarty_modifier_revision("/app/js/subjects.libs.js"); ?>"></script>
 <script src="<? echo smarty_modifier_revision("/app/js/tags.libs.js"); ?>"></script>
+<script src="<? echo smarty_modifier_revision("/app/js/snippets.libs.js"); ?>"></script>
 <script src="<? echo smarty_modifier_revision("/app/js/recents.libs.js"); ?>"></script>
 
 <script>
