@@ -1,7 +1,7 @@
 
     const subjectInput = document.getElementById('subject-input');
     const subjectList  = document.getElementById('subject-list');
-    const suggestionsS = document.getElementById('suggestionsSubjects');
+    const subjectSugg = document.getElementById('subject-suggestions');
 
     async function loadSubjects() {
         try {
@@ -26,14 +26,14 @@
 
     subjectInput.addEventListener('input', () => {
         if (subjectList.options.length==0) {
-            suggestionsS.innerHTML = '<div class="suggestion-item">No Suggestions Available</div>';
+            subjectSugg.innerHTML = '<div class="suggestion-item">No Suggestions Available</div>';
             return;
         }
 
         const query = subjectInput.value.trim().toLowerCase();
 
         if (query.length < 1) {
-            suggestionsS.innerHTML = '';
+            subjectSugg.innerHTML = '';
             return;
         }
 
@@ -57,7 +57,7 @@
             const query_safe = escapeHTML(cleanTag(query));
 
             // Only show the "Add" pill if the query isn't empty
-            suggestionsS.innerHTML = `
+            subjectSugg.innerHTML = `
                 <div class="suggestion-item error-text">No matching subjects found</div>
                 <div class="suggestion-item add-new-tag" onclick="addTag('${query_safe}')">
                     <span class="plus-icon">+</span> Add [<strong>${query_safe}</strong>] as a Tag
@@ -69,7 +69,7 @@
         // Optimized: If we have exactly one perfect match, clear the suggestions
         if (matches.length === 1 && matches[0].score === 3) {
             subjectInput.setCustomValidity("");
-            suggestionsS.innerHTML = '';
+            subjectSugg.innerHTML = '';
             return;
         }
 
@@ -95,7 +95,7 @@
         }
 
         // 3. Render
-        suggestionsS.innerHTML = matches.map(m => {
+        subjectSugg.innerHTML = matches.map(m => {
                     const regex = new RegExp(`(${query})`, "gi");
                     // 2. Replace the match with a bold version
                     // $1 keeps the original casing from the database (e.g., "Road" stays "Road")
@@ -106,7 +106,7 @@
     });
 
     // 4. Click handling: Update the input and clear dropdown
-    suggestionsS.addEventListener('click', (e) => {
+    subjectSugg.addEventListener('click', (e) => {
         const item = e.target.closest('.suggestion-item');
         if (item) {
             if (item.classList.contains('add-new-tag')) { //has it own click hanlder to add the actual tag
@@ -117,13 +117,13 @@
                 document.getElementById('subject-id').value = item.dataset.id;
             }
             subjectInput.setCustomValidity("");
-            suggestionsS.innerHTML = '';
+            subjectSugg.innerHTML = '';
         }
     });
 
     subjectInput.addEventListener('focus', (e) => {
         if (subjectList.options.length==0) {
-            suggestionsS.innerHTML = '<div class="suggestion-item">No Suggestions Available</div>';
+            subjectSugg.innerHTML = '<div class="suggestion-item">No Suggestions Available</div>';
             return;
         }
         const query = subjectInput.value.trim().toLowerCase();
@@ -140,7 +140,7 @@
             .sort((a, b) => b.count - a.count) // Higher score first
             .slice(0, 25);
 
-            suggestionsS.innerHTML = matches.map(m => {
+            subjectSugg.innerHTML = matches.map(m => {
                 return `<div class="suggestion-item" data-id="${m.id}">${escapeHTML(m.val).toTitleCase()}</div>`
             }).join('');
         } else {

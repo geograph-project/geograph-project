@@ -1190,7 +1190,7 @@ function toggleLock() {
         </div>
 	    <div class="tag-input-container">
             <input type="search" name="subject" id="subject-input" placeholder="Search subjects...">
-            <div id="suggestionsSubjects" class="dropdown"></div>
+            <div id="subject-suggestions" class="dropdown"></div>
             <datalist id="subject-list"></datalist>
             <input type="hidden" name="subject_id" id="subject-id">
         </div>
@@ -1204,7 +1204,7 @@ function toggleLock() {
 	    <div class="tag-input-container">
             <div id="active-tags"></div>
             <input type="search" id="tag-search" placeholder="Type to add tags...">
-            <div id="suggestions" class="dropdown"></div>
+            <div id="tag-suggestions" class="dropdown"></div>
         </div>
 
         <div class="field-header">

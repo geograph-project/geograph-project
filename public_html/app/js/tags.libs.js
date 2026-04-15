@@ -1,6 +1,6 @@
 
     const searchInput = document.getElementById('tag-search');
-    const suggestions = document.getElementById('suggestions');
+    const suggestions = document.getElementById('tag-suggestions');
     const activeTagsContainer = document.getElementById('active-tags');
     let selectedTags = new Set(); // Use a Set to prevent duplicates
 

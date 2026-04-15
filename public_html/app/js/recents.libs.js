@@ -33,13 +33,13 @@
         input.value = select.value;
         select.options[select.selectedIndex].style.color = 'silver';
         select.value = ""; // Reset dropdown
-        suggestionsS.innerHTML = ''; //just in case had search open!
+        document.getElementById('subject-suggestions').innerHTML = ''; //just in case had search open!
     }
 
     // When a Recent Tag is picked
     function useRecentTag(select) {
         if (!select.value) return;
-        addTag(select.value); //automatically clears
+        addTag(select.value); //automatically clears suggestions
         select.options[select.selectedIndex].style.color = 'silver';
         select.value = ""; // Reset dropdown
     }
