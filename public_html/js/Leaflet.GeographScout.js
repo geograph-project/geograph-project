@@ -133,6 +133,10 @@ L.GeographScout = L.LayerGroup.extend({
             onAdd: (map) => {
                 const btn = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
 
+                // Prevent clicks from reaching the map
+                L.DomEvent.disableClickPropagation(btn);
+                L.DomEvent.disableScrollPropagation(btn);
+
 		// Radar SVG Icon
                 const radarIcon = `
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:4px;">
