@@ -2,7 +2,7 @@
     --primary-bg: #000066;
     --text-color: #ffffff;
     --bar-size: 50px;
-    --icon-size: 24px;
+    --icon-size: 32px;
     --app-bg: #f0f0f0;
     --content-text: #333333;
     --card-bg: #ffffff;
@@ -192,7 +192,7 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-	font-size:1.7em; /* this only scales the font-awesome icons */
+	font-size:1.5em; /* this only scales the font-awesome icons */
 }
 
 .nav-btn svg {
@@ -553,6 +553,21 @@ input[type="search"] {
     gap: 15px;
 }
 
+@media screen and (max-width: 300px) {
+    .review-main-row {
+        flex-direction: column;
+        align-items: center;
+    }
+    .review-item .review-main-row img {
+        width:auto;
+        height:auto;
+        min-height:130px; /* to help with lazy loading */
+    }
+    .review-fields {
+        align-self: stretch;
+    }
+}
+
 @media screen and (max-width: 500px) {
 	#app-container {
 		padding:20px 2px;
@@ -563,7 +578,7 @@ input[type="search"] {
 	.review-item {
 		padding:10px 0;
 		gap:4px;
-        }
+    }
 	.review-main-row {
 		gap:3px;
 	}
@@ -575,6 +590,14 @@ input[type="search"] {
 	.submissions-grid {
 		padding:20px 2px;
 	}
+}
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    #app-container {
+        padding:20px 2px;
+    }
+    .review-list {
+        padding:0;
+    }
 }
 
 
@@ -597,6 +620,9 @@ input[type="search"] {
     font-family: Georgia;
     font-size:1em;
     border:0;
+
+    background-color: var(--input-bg);
+    color: var(--content-text);
 
     field-sizing: content; 
     max-height: 60svh;
@@ -640,14 +666,22 @@ input[type="search"] {
 .review-view .changed {
 	background-color:pink;
 }
+.review-view .saved {
+	background-color:lightgreen;
+}
+body.dark-mode .review-view .changed {
+    background-color:#730000;
+}
+body.dark-mode .review-view .saved {
+    background-color:#005500;
+}
+
 .sticky-button {
 	position:sticky;
 	display:block;
 	bottom:-10px;
 	left:0;
 }
-
-
 
 
 .view {

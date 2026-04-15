@@ -145,6 +145,7 @@ function generate_import_map($dir, $basePath = '/app/js/') {
             <ul>
                 <li><a href="/" target="_blank">Open Main Site</a></li>
                 <li><a href="/app/settings" data-route="/app/settings">Settings</a></li>
+                <li><a href="/app/recent" data-route="/app/recent">Recent Submissions</a></li>
                 <li><a href="/app/help" data-route="/app/help">App Help</a></li>
                 <li><a href="/app/contact" data-route="/app/contact">Contact Us</a></li>
                 <li><a href="/app/contact" data-route="/app/contact" data-param="concern">Report a Concern</a></li>
@@ -152,7 +153,7 @@ function generate_import_map($dir, $basePath = '/app/js/') {
                 <li><a href="/discuss/" target="_blank">Open Discussion Forum</a></li>
                 <li><a href="https://forms.gle/T69BLFZyeQP9qfMKA" target="_blank">App Feedback</a></li>
 	        <li><a href="javascript:history.go(0)" style=color:silver>Reload App (during dev)</a></li>
-	        <li style=color:green id="versionNumber">V1.3<small>.<? echo date('mdH',$mtime); ?></small></li>
+	        <li style=color:green id="versionNumber">V1.4<small>.<? echo date('mdH',$mtime); ?></small></li>
             </ul>
         </nav>
     </div>

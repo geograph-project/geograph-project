@@ -29,18 +29,27 @@ export function render() {
             </div>
         </div>
 
-	<button class="btn btn-primary hidden" id="save-btn" disabled>Apply Changes Now</button>
-	<button class="btn btn-secondary hidden" id="clear-btn" disabled>Disgard All Changes</button>
+	<button class="btn btn-primary hidden" id="saveAll-btn" disabled>Apply Changes Now</button>
+	<button class="btn btn-secondary hidden" id="clearAll-btn" disabled>Disgard All Changes</button>
     `;
 }
 
 
 const STORAGE_KEY = 'review_form_persistence';
 
-export async function onMount() {
+export async function onMount(options) {
     const listContainer = document.getElementById('review-list');
 
-    loadSubmissions('recent')
+    let link_id = null; //set to image_id to scroll the page
+    if (options?.message) {
+        try {
+            const data = JSON.parse(options.message);
+            link_id = data.id;
+        } catch (e) {
+            console.error("Failed to parse message JSON:", e);
+        }
+    }
+    loadSubmissions(options?.filter || 'recent', link_id);
 
     // Handle Toggle Changes
     document.querySelectorAll('input[name="view-filter"]').forEach(radio => {
@@ -66,10 +75,30 @@ export async function onMount() {
 	    // Toggle the 'changed' class based on value vs defaultValue
 	    target.classList.toggle('changed', target.value !== target.defaultValue);
         if (target.value !== target.defaultValue) {
-            showSaveButton();
+            target.classList.remove('saved');
+            showSaveButton(target.form);
         }
 	  }
 	});
+
+    listContainer.addEventListener('focusin', (event) => {
+	  const target = event.target;
+      if (target.tagName === 'TEXTAREA' && window.innerWidth > 300) {
+        const img = target.closest('.review-main-row').querySelector('img');
+        img.style.position = 'absolute';
+        img.style.top = '-126px';
+        img.style.left = '10px';
+      }
+    });
+    listContainer.addEventListener('focusout', (event) => {
+ 	  const target = event.target;
+      if (target.tagName === 'TEXTAREA' && window.innerWidth > 300) {
+        const img = target.closest('.review-main-row').querySelector('img');
+        img.style.position = null;
+        img.style.top = null;
+        img.style.left = null;
+      }
+    });
 
     // also Prevent "Enter" key
     listContainer.addEventListener('keydown', (e) => {
@@ -114,7 +143,8 @@ export async function onMount() {
         }
     });
 
-    document.getElementById('clear-btn').onclick = clearAllEdits;
+    //document.getElementById('saveAll-btn').onclick (not sure if going to do save all yet!)
+    document.getElementById('clearAll-btn').onclick = clearAllEdits;
 }
 
 // Helper to get all saved data
@@ -133,23 +163,29 @@ function restoreSavedValues(container) {
             field.value = savedValue;
             if (field.defaultValue != savedValue) {
                 field.classList.add('changed');
-                showSaveButton();
+                showSaveButton(field.form);
             }
         }
     });
 }
 
-function showSaveButton() {
-    const btn = document.getElementById('save-btn');
-    if (btn.disabled) {
-        btn.removeAttribute("disabled");
-        btn.classList.add("sticky-button");
-        btn.classList.remove("hidden");
+function showSaveButton(container) {
+    const btnSingle = container.querySelector('.save-btn');
+    if (btnSingle.disabled) {
+        btnSingle.removeAttribute("disabled");
+        btnSingle.classList.remove("hidden");
     }
-    const btn2 = document.getElementById('clear-btn');
-    if (btn2.disabled) {
-        btn2.removeAttribute("disabled");
-        btn2.classList.remove("hidden");
+    /*
+    const btnAll = document.getElementById('saveAll-btn');
+    if (btnAll.disabled) {
+        btnAll.removeAttribute("disabled");
+        btnAll.classList.add("sticky-button");
+        btnAll.classList.remove("hidden");
+    }*/
+    const btnClear = document.getElementById('clearAll-btn');
+    if (btnClear.disabled) {
+        btnClear.removeAttribute("disabled");
+        btnClear.classList.remove("hidden");
     }
 }
 
@@ -172,12 +208,17 @@ function clearAllEdits() {
         field.classList.remove('changed');
     });
 
+
     // 4. Hide the Save button again
-    const saveBtn = document.getElementById('save-btn');
-    if (saveBtn) {
-        saveBtn.setAttribute("disabled", "true");
-        saveBtn.classList.add("hidden");
-        saveBtn.classList.remove("sticky-button");
+    document.querySelector('.save-btn').forEach(btnSingle => {
+        btnSingle.setAttribute("disabled", "true");
+        btnSingle.classList.add("hidden");
+    });
+    const btnAll = document.getElementById('saveAll-btn');
+    if (btnAll) {
+        btnAll.setAttribute("disabled", "true");
+        btnAll.classList.add("hidden");
+        btnAlln.classList.remove("sticky-button");
     }
 }
 
@@ -185,7 +226,7 @@ function clearAllEdits() {
 
 let currentData = [];
 
-async function loadSubmissions(filter) {
+async function loadSubmissions(filter, edit_id = null) {
     const listContainer = document.getElementById('review-list');
 
     const sortSelect = document.getElementById('sort-select');
@@ -208,7 +249,7 @@ async function loadSubmissions(filter) {
                 //well, if no results!
                 document.getElementById('recent-label').style.display='none';
                 document.getElementById('all-checkbox').checked = true;
- 	         	loadSubmissions('all');
+ 	         	loadSubmissions('all', edit_id);
                 listContainer.innerHTML = '<p>Loading......</p>';
             } else {
                 //the user has nothing!
@@ -243,8 +284,9 @@ async function loadSubmissions(filter) {
             });
 
             listContainer.innerHTML = sorted.map(item => `
-                <form method="post" action="/editimage.php?id=${item.gridimage_id}" target="_blank" class="review-item" onsubmit="this.style.opacity=0.5; this.elements['create'].textContent = 'Edit Page Opened';">
-                    <div class="review-main-row">
+                <form method="post" action="/editimage.php?id=${item.gridimage_id}" target="_blank" class="review-item" data-gridimage_id="${item.gridimage_id}"
+                     onsubmit="this.style.opacity=0.5; this.elements['create'].textContent = 'Edit Page Opened';">
+                    <div class="review-main-row" style="position:relative">
                         <img src="${item.thumbnail}" alt="${escapeHTML(item.title)}" loading="lazy">
                         <div class="review-fields">
                             <textarea name="title[${item.gridimage_id}]" class="title" wrap="soft" enterkeyhint="next">${escapeHTML(item.title)}</textarea>
@@ -258,7 +300,7 @@ async function loadSubmissions(filter) {
             	        <span>Submitted: <strong>${formatRelativeTime(item.submitted)}</strong></span>
     	            </div>
 
-                    <button class="btn btn-primary hidden" type="button" style="width: auto; padding: 5px 15px;">Save Changes</button>
+                    <button class="btn btn-primary save-btn hidden" disabled type="button" style="width: auto; padding: 5px 15px;">Save Changes</button>
                     <button class="btn btn-secondary" type="submit" name="create" value=1 style="width: auto; padding: 5px 15px;">Open Edit Page</button>
                 </form>
             `).join('');
@@ -266,6 +308,11 @@ async function loadSubmissions(filter) {
 	        listContainer.querySelectorAll('button.gid').forEach(btn => {
                 btn.onclick = handleDoubleTapCopy;
                 btn.oncontextmenu = handleDoubleTapCopy; //to catch if if they kinda like trying to select it.
+            });
+	        listContainer.querySelectorAll('button.save-btn').forEach(btn => {
+                btn.onclick = () => {
+                    submitForm(btn.form);
+                }
             });
 
             listContainer.onpaste = resetBatch;
@@ -275,16 +322,38 @@ async function loadSubmissions(filter) {
         updateList(); // Initial render
         sortSelect.onchange = updateList;
 
+        if (edit_id)
+            scrollToForm(edit_id);
+
     } catch (err) {
-console.log(err);
         listContainer.innerHTML = '<p>Error loading review list.</p>';
     }
 }
 
+function scrollToForm(gridImageId) {
+  // Find the element with the matching data attribute
+  const selector = `form[data-gridimage_id="${gridImageId}"]`;
+  const element = document.querySelector(selector);
 
-function highlightChange(event) {
-	const input = event.currentTarget;
-	input.classList.toggle('changed', input.value != input.defaultValue);
+  if (element) {
+    element.scrollIntoView({
+      behavior: 'smooth', // Smooth scrolling animation
+      block: 'center',    // Vertically center the element
+      inline: 'nearest'   // Minimal horizontal movement
+    });
+
+    // Apply the highlight
+    element.style.backgroundColor = 'lightgreen';
+    element.style.transition = 'background-color 0.5s ease'; // Optional: makes the fade-out smooth
+
+    setTimeout(() => {
+        element.style.backgroundColor = ''; // Reverts to original CSS
+    }, 5000);
+
+
+  } else {
+    console.warn(`Form with gridimage_id "${gridImageId}" not found.`);
+  }
 }
 
 ////////////////////////////////////////////////////////
@@ -435,4 +504,65 @@ function showTooltip(anchorEl, message, duration, id = null, onClose = null) {
       if (onClose) onClose();
     }, 300);
   }, duration);
+}
+
+
+////////////////////////////////
+
+async function submitForm(form) {
+    const formData = new FormData(form);
+    const url = "/app/editimage.json.php";
+    const saveBtn = form.querySelector('.save-btn');
+
+    try {
+        saveBtn.disabled = true; //prevent double clicks!
+
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData
+        });
+        if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        //this is ok, as long as we know only submitting ONE image at a time!
+        const firstEntry = Object.values(result)[0];
+
+        if (firstEntry && firstEntry.status === 'closed') { //it should be immidately commiting!
+            let savedData = getSavedData();
+
+            Array.from(form.elements).forEach(input => {
+                if (input.classList.contains('changed')) {
+                    // Update classes: remove 'changed', add 'saved'
+                    input.classList.remove('changed');
+                    input.classList.add('saved');
+
+                    input.defaultValue = input.value; //it now saved. so need to track if changed again!
+
+                    // Value is back to default: Remove it to keep storage clean
+                    delete savedData[input.name];
+                }
+            });
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(savedData));
+
+            // Handle the save button
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.classList.add('hidden');
+                saveBtn.textContent = "Apply Changes"; //just in case became an error
+            }
+        } else {
+            saveBtn.disabled = false;
+
+            saveBtn.textContent = `${firstEntry.error || firstEntry.status || "Unknown Error"}, Try Again`;
+        }
+
+    } catch (error) {
+        console.error("Save Error:", error);
+        saveBtn.disabled = false;
+        saveBtn.textContent = `Unknown Error, Try Again`;
+    }
 }

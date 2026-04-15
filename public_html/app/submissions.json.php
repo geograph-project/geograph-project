@@ -52,7 +52,7 @@ if (!empty($_GET['since'])) {
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 //needs to use gridimage/gridsquare because may be pending images. but join in gridimage_search, as may already be moderated, which case have the lat/long ready to use!
-$sql = "select gridimage_id,g.submitted,gs.grid_reference,g.title,nateastings,natnorthings,natgrlen,gs.reference_index,wgs84_lat,wgs84_long,g.imagetaken, g.user_id, g.moderation_status, gs.x, gs.y, tags
+$sql = "select gridimage_id,g.submitted,gs.grid_reference,g.title,g.comment,nateastings,natnorthings,natgrlen,gs.reference_index,wgs84_lat,wgs84_long,g.imagetaken, g.user_id, g.moderation_status, gs.x, gs.y, tags
 	from gridimage g
 		inner join gridsquare gs using (gridsquare_id)
 		left join gridimage_search gi using (gridimage_id)
@@ -79,8 +79,10 @@ if ($count = $recordSet->RecordCount()) {
                 $r =& $recordSet->fields;
 
 		$r['title'] = latin1_to_utf8($r['title']);
-		if (!empty($_GET['thumbs'])) {
+		if (!empty($r['comment']))
+			$r['comment'] = latin1_to_utf8($r['comment']);
 
+		if (!empty($_GET['thumbs'])) {
 	                $image = new GridImage;
         	        $image->fastInit($r);
 	                $r['thumbnail'] = $image->getThumbnail(213,160,true);

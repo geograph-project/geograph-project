@@ -7,7 +7,7 @@ export function render() {
 
     	    <div id="statsCard" class="stats-grid"></div>
 
-            <button id="edit-btn" class="btn btn-secondary hidden" data-route="/app/recent">Edit Recent Submissions</button>
+            <button id="edit-btn" class="btn btn-secondary" data-route="/app/recent">Edit Recent Submissions</button>
 
     		<form id="search-form" class="search-container">
 	    	    <input type="search" name="q" placeholder="Search your submissions..." enterkeyhint="search">
@@ -44,7 +44,8 @@ export function render() {
                     <img id="modal-img" src="" alt="Draft Preview">
                     <div class="modal-controls">
             			<a href="#" id="full-page-link" target="_blank" class="btn">View Photo Page</a>
-            			<a href="#" id="edit-page-link" target="_blank" class="btn">Open Edit Page</a>
+            			<a href="#" id="edit-page-link" target="_blank" class="btn hidden">Open Edit Page</a>
+                        <button class="btn" id="edit-image-link" data-route="/app/recent" data-message="{}">Quick Edit Image</button>
                         <button id="close-modal" class="btn btn-secondary">Close</button>
                     </div>
                 </div>
@@ -92,11 +93,10 @@ export function render() {
 }
 
 .stat-tile {
-    background: val(--card-bg);
-    padding: 15px 10px;
-    border-radius: 8px;
+    background: var(--card-bg);
+    padding: 12px 6px;
+    border-radius: 20px;
     text-align: center;
-    border: 1px solid var(--card-faded);
 }
 
 .stat-value {
@@ -108,8 +108,6 @@ export function render() {
 
 .stat-label {
     color: var(--content-text);
-    font-size:0.75em;
-    --text-transform: uppercase;
 }
 
 p#timestamp {
@@ -145,12 +143,12 @@ async function loadSubmissions(filter = 'recent') {
                 document.getElementById('recent-label').style.display='none';
                 document.getElementById('all-checkbox').checked = true;
  	         	loadSubmissions('all')
-                document.getElementById('edit-btn').style.display='none'; //currently only edits 'recent', not last 100 anyway
                 gridContainer.innerHTML = '<p>Loading.....</p>';
             } else {
                 //the user has nothing!
                 document.getElementById('counter2').textContent = currentData.length;
 		        document.getElementById('search-form').style.display='none';
+                document.getElementById('edit-btn').style.display='none';
                 gridContainer.innerHTML = '<p>No submissions found.</p>';
      	    }
             return;
@@ -299,12 +297,14 @@ export async function onMount() {
     const modalImg = document.getElementById('modal-img');
     const fullPageLink = document.getElementById('full-page-link');
     const editPageLink = document.getElementById('edit-page-link');
+    const editImageLink = document.getElementById('edit-image-link');
 
         // Delegate click events to the grid
         gridContainer.addEventListener('click', (e) => {
             const tile = e.target.closest('.submission-tile');
             if (!tile) return;
 
+            const filter = document.querySelector('input[name="view-filter"]:checked')?.value;
             const largeUrl = tile.dataset.large;
             const id = tile.dataset.id;
 
@@ -313,6 +313,7 @@ export async function onMount() {
             modalImg.src = largeUrl;
             fullPageLink.href = `/photo/${id}`;
             editPageLink.href = `/editimage.php?id=${id}`;
+            editImageLink.dataset.message = JSON.stringify({id, filter});
 
             modal.showModal(); // Opens as a top-layer backdrop
         });
