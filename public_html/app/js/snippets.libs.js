@@ -25,11 +25,11 @@
                 const results = await response.json();
 
                 if (results.length === 0) {
-                    const query_safe = escapeHTML(cleanTag(query));
+                    const query_safe = escapeHTML(cleanTag(query)); //this is creating a tag!
 
                     suggestionsSnippets.innerHTML = `
                         <div class="suggestion-item error-text">No matching descriptions found</div>
-                        <div class="suggestion-item add-new-tag" onclick="addTag('${query_safe}')">
+                        <div class="suggestion-item add-new-tag" data-tag="${query_safe}">
                             <span class="plus-icon">+</span> Add [<strong>${query_safe}</strong>] as a Tag
                        </div>
                     `;
@@ -58,14 +58,16 @@
             suggestionsSnippets.innerHTML = html;
         }, 250);
     });
+
     // Handle clicking a suggestion
     suggestionsSnippets.addEventListener('click', (e) => {
         if (e.target.classList.contains('suggestion-item')) {
-            if (e.target.classList.contains('add-new-tag')) { //has it own click hanlder to add the actual tag
-                snippetInput.value = ''; //its been added as tag instead!
-            } else {
+            if (e.target.dataset.tag) {
+		addTag(e.target.dataset.tag);
+            } else if (e.target.dataset.snippet_id) {
                 addSnippet(e.target.dataset.snippet_id, e.target.dataset.title);
             }
+            snippetInput.value = ''; //its been added as tag instead!
         }
     });
 

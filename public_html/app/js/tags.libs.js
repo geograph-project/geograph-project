@@ -27,10 +27,11 @@
                 // Normalize results for comparison
                 normalizedResults = results.map(t => t.toLowerCase());
 
+                // 1. Create a Case-Insensitive Regex of the user's query
+                const safeQuery = escapeRegex(query);
+                const regex = new RegExp(`(${safeQuery})`, "gi");
+
                 html = results.map(tag => {
-                    // 1. Create a Case-Insensitive Regex of the user's query
-                    const safeQuery = escapeRegex(query);
-                    const regex = new RegExp(`(${safeQuery})`, "gi");
                     // 2. Replace the match with a bold version
                     // $1 keeps the original casing from the database (e.g., "Road" stays "Road")
                     const highlighted = escapeHTML(tag).toTitleCase().replace(regex, "<strong>$1</strong>");
@@ -72,11 +73,11 @@
     });
     // Handle clicking a suggestion
     suggestions.addEventListener('click', (e) => {
-        if (e.target.classList.contains('suggestion-item')) {
+        if (e.target.classList.contains('suggestion-item') && !e.target.classList.contains('error-text')) {
             // If it's the "Add New" pill, grab the custom data attribute
             const tag = e.target.classList.contains('add-new-tag')
                 ? e.target.dataset.tag
-                : e.target.innerText;
+                : e.target.innerText; //to ignore bolding!
             addTag(tag);
         }
     });

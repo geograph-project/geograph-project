@@ -82,6 +82,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
     if (!empty($_POST['contexts'])) {
         $um->setContexts($_POST['contexts']);
     }
+    if (!empty($_POST['snippets'])) {
+        if (is_array($_POST['snippets'])) {
+            $um->setSnippets($_POST['snippets']);
+        }
+    }
 
     if ($_POST['pattrib'] == 'other') {
         $um->setCredit(stripslashes(utf8_decode($_POST['pattrib_name'])));
@@ -345,14 +350,14 @@ input:invalid, select:invalid, #contexts:invalid, .input-invalid {
     font-weight: normal;
 }
 
-/* subject/tag autocomplete */
+/* subject/tag/SD autocomplete */
 
-#subject-input, #tag-search {
-    margin-bottom:0;
-}
 .tag-input-container {
     background-color:white;
     border-radius:6px;
+}
+.tag-input-container input {
+    margin-bottom:0;
 }
 
 /* suggestion-item's are the items below subject/tag input */
@@ -393,7 +398,7 @@ input:invalid, select:invalid, #contexts:invalid, .input-invalid {
     font-weight: bold;
 }
 
-div#active-tags {
+div.active-tags {
 	line-height:35px;
 }
 
@@ -401,18 +406,18 @@ div#active-tags {
 span.tag-pill {
     padding: 6px 12px;
     margin: 4px;
-	white-space: nowrap;
+    white-space: nowrap;
     font-weight: 500;
-
-    border-radius: 15px;   /* Rounded pill look */
-    border: 1px solid #aaa;
-    background: #fff;
+    border-radius: 15px;
+    background: #d4e5bd;
 }
 span.tag-pill button {
-	border:none;
+    border:none;
     color:red;
-	margin-left: 6px; /* Give the 'X' some space */
-	padding:0;
+    margin-left: 6px;
+    padding:0;
+    background-color:transparent;
+    font-size:1.1em; /* for better vertical centering */
 }
 
 /* Compact Flag Container */
@@ -1128,7 +1133,7 @@ function toggleLock() {
             </select>
         </div>
 	    <div class="tag-input-container">
-            <div id="active-snippets"></div>
+            <div id="active-snippets" class="active-tags"></div>
             <input type="search" id="snippet-search" placeholder="Type to search descriptions...">
             <div id="snippet-suggestions" class="dropdown"></div>
         </div>
@@ -1220,7 +1225,7 @@ function toggleLock() {
             </select>
         </div>
 	    <div class="tag-input-container">
-            <div id="active-tags"></div>
+            <div id="active-tags" class="active-tags"></div>
             <input type="search" id="tag-search" placeholder="Type to add tags...">
             <div id="tag-suggestions" class="dropdown"></div>
         </div>
@@ -1585,6 +1590,7 @@ console.log("Error", e);
         theForm.elements['contexts[]'].value = '';
         theForm.elements['subject'].value = ''; //reset recent?
         document.getElementById("active-tags").innerHTML = '';
+        document.getElementById("active-snippets").innerHTML = '';
 
 //        theForm.elements[''].value = '';
         //todo, other elements to reset too! including special flags!
@@ -1873,7 +1879,7 @@ console.log("Error", e);
             saveRecent('submit.tags', Array.from(selectedTags));
         }
 
-        //selectedSnippets is a now  an Object to contain titles
+        //selectedSnippets is a now an Object to contain titles
         const snippetsToSave = Object.entries(selectedSnippets).map(([id, title]) => { return `${id}:::${title}`; });
         if (snippetsToSave.length > 0) {
             saveRecent('submit.snippets', snippetsToSave);
@@ -2921,7 +2927,7 @@ function updateFormProgress() {
         const isSearch = el.type === 'search' && el.id === 'subject-input'; //only the Subject one, NOT tags
         const isCheckbox = el.type === 'checkbox';
         const isMultiSelect = el.type === 'select-multiple';
-        const isTrackedHidden = el.type === 'hidden' && el.name === 'tags[]'; //only dynamic tags
+        const isTrackedHidden = el.type === 'hidden' && (el.name === 'tags[]' || el.name === 'snippets[]'); //only dynamic tags
 
         // 2. Determine "Value" based on type
         if (isTextish || isSearch || isTrackedHidden) {

@@ -59,9 +59,9 @@
             // Only show the "Add" pill if the query isn't empty
             subjectSugg.innerHTML = `
                 <div class="suggestion-item error-text">No matching subjects found</div>
-                <div class="suggestion-item add-new-tag" onclick="addTag('${query_safe}')">
+                <div class="suggestion-item add-new-tag" data-tag="${query_safe}">
                     <span class="plus-icon">+</span> Add [<strong>${query_safe}</strong>] as a Tag
-               </div>
+                </div>
             `;
             return;
         }
@@ -94,14 +94,14 @@
             }
         }
 
+	const safeQuery = escapeRegex(query);
+	const regex = new RegExp(`(${safeQuery})`, "gi");
+
         // 3. Render
         subjectSugg.innerHTML = matches.map(m => {
-                    const regex = new RegExp(`(${query})`, "gi");
                     // 2. Replace the match with a bold version
-                    // $1 keeps the original casing from the database (e.g., "Road" stays "Road")
                     const highlighted = escapeHTML(m.val).toTitleCase().replace(regex, "<strong>$1</strong>");
-                    return `<div class="suggestion-item">${highlighted}</div>`;
-            return `<div class="suggestion-item" data-id="${m.id}">${highlighted}</div>`
+                    return `<div class="suggestion-item" data-id="${m.id}">${highlighted}</div>`;
         }).join('');
     });
 
@@ -109,10 +109,12 @@
     subjectSugg.addEventListener('click', (e) => {
         const item = e.target.closest('.suggestion-item');
         if (item) {
-            if (item.classList.contains('add-new-tag')) { //has it own click hanlder to add the actual tag
+            if (item.dataset.tag) {
+		addTag(item.dataset.tag);
                 subjectInput.value = ''; //its been added as tag instead!
                 subjectInput.placeholder = 'Type to search subjects...';
-            } else {
+
+            } else if (item.dataset.id) { //useful to avoid error messages, even dont use id!
                 subjectInput.value = item.textContent;
                 document.getElementById('subject-id').value = item.dataset.id;
             }
