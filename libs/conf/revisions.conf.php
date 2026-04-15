@@ -149,4 +149,5 @@ $REVISIONS['/app/js/subjects.libs.js']=71430863;
 $REVISIONS['/app/js/recents.libs.js']=71430863;
 $REVISIONS['/app/js/contexts.libs.js']=87448789;
 $REVISIONS['/app/js/used-nearby.libs.js']=87448789;
+$REVISIONS['/app/js/snippets.libs.js']=72798606;
 ?>
