@@ -456,16 +456,23 @@ span.tag-pill button {
 /* more general forms */
 
     button {
-        padding: 8px 16px; border: 1px solid #007bff; background: #fff;
-        color: #007bff; border-radius: 4px; cursor: pointer; font-weight: bold; touch-action: manipulation;
+        padding: 8px 16px; border: 0; background: #d8def9;
+        color: #007bff; border-radius: 14px; cursor: pointer; font-weight: bold; touch-action: manipulation;
     }
     button:active { background: #007bff; color: #fff; }
+
+    button.help-link {
+        background-color:#e4ffe4;
+        text-decoration:none;
+        border:0;
+        color:black;
+    }
 
 	fieldset {
 		margin-top:20px;
 		border-radius:8px;
 	    background-color:#f5f5f0; padding:3px;
-        border: 1px solid #eee;
+        border: 0;
 	}
 	fieldset legend {
 		padding:5px;
@@ -591,7 +598,7 @@ span.tag-pill button {
     font-family: sans-serif;
     color:gray;
     background-color:var(--bg);
-    border:2px solid silver;
+    border:1px solid silver;
 }
 #maparea label {
     display:unset;
@@ -599,13 +606,13 @@ span.tag-pill button {
 #maparea input.active {
         color:black;
         background-color:white;
-        border:2px solid black;
+        border:1px solid black;
 }
-#maparea input#photographer_gridref.active{
-    border:2px solid #210b7b;
+#maparea input#photographer_gridref.active {
+    border:1px solid #210b7b;
 }
-#maparea input#grid_reference.active{
-    border:2px solid #5300ff;
+#maparea input#grid_reference.active {
+    border:1px solid #5300ff;
 }
 #maparea label.active {
     background-color:yellow;
@@ -950,8 +957,7 @@ dialog#tag-selector-modal {
 	<input type=hidden name="filename" id="filename" value="">
 
     <div style="text-align:center">
-        <button type="button" onclick="openModal('map-modal')"
-        style="background:none; border:none; color:green; text-decoration:underline;">How to use this map &#9432;</button>
+        <button type="button" onclick="openModal('map-modal')" class="help-link">How to use this map &#9432;</button>
     </div>
 
 	<div id="maparea">
@@ -1138,8 +1144,7 @@ function toggleLock() {
             <div id="snippet-suggestions" class="dropdown"></div>
         </div>
 
-	  <button type="button" onclick="openModal('tag-modal')"
-                style="background:none; border:none; color:green; text-decoration:underline;">What do all these fields mean? &#9432;</button>
+	  <button type="button" onclick="openModal('tag-modal')" class="help-link">What do all these fields mean? &#9432;</button>
 
 
 <dialog id="tag-modal" onclick="closeModal('tag-modal')">
@@ -1314,8 +1319,7 @@ function toggleLock() {
                 <div class=nowrap id="showvfov" style="display:none">(vfov: <input type=number step=0.01 name=vfov id=vfov placeholder=120 style=width:70px;text-align:right>degrees wide)</div>
                 <div class=nowrap id="showhfov">(hfov: <input type=number step=0.01 name=hfov id=hfov placeholder=90 style=width:70px;text-align:right>degrees high)</div>
 
-        		<button type="button" onclick="openModal('pano-modal')"
-                style="background:none; border:none; color:green; text-decoration:underline;">How to Submit Panoramas &#9432;</button>
+        		<button type="button" onclick="openModal('pano-modal')" class="help-link">How to Submit Panoramas &#9432;</button>
 
            </div>
            <script>
@@ -1428,9 +1432,8 @@ function toggleLock() {
 				<span class="nowrap"> (Opens in new tab)</span></p>
 
 		    <p>Because we are an open project we want to ensure our content is licensed as openly as possible and so we ask that all images are released under the Creative Commons 
-            licence, including accompanying metadata. <button type="button"
-                onclick="openModal('license-modal');"
-                style="background:none; border:none; color:green; text-decoration:underline;">Read More &#9432;</button> </p>
+            licence, including accompanying metadata. <button type="button" class="help-link"
+                onclick="openModal('license-modal');">Read More &#9432;</button> </p>
 
             <dialog id="license-modal" onclick="closeModal('license-modal')">
                 <h3>Open Licensing Explained</h3>
@@ -1449,7 +1452,7 @@ function toggleLock() {
                     This includes the <strong>metadata</strong> (location, title/description, tags, date and shared descriptions), which allows researchers and the public to 
                     discover and reuse contributions effectively.</p>
 
-                <p>You are releasing this image at <span id="final-dimensions">[d x d]</span> specifically, the larger size (if any) wont be released.
+                <p>You are releasing this image at <span id="final-dimensions">[d x d]</span>.
 
 	            <p><a href="/help/freedom" target="_blank">Open Geograph Freedom Manifesto</a> <span class="nowrap">(Opens in new tab)</span></p>
 
@@ -1757,8 +1760,7 @@ console.log("Error", e);
 
         const finalDimsEl = document.getElementById('final-dimensions');
         if (finalDimsEl) {
-            finalDimsEl.textContent = finalDimText + (window.uploadMaxDimension >= 65536 ? ' (Full Resolution)' : '');
-            //todo, the " the larger size (if any) wont be released" should be dynamic too!
+            finalDimsEl.textContent = finalDimText + (window.uploadMaxDimension >= 65536 ? ' (at Full Resolution)' : ' specifically, any larger sizes wont be released');
         }
     }
 
