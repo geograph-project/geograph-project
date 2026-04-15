@@ -189,7 +189,7 @@ class UploadManager
 	}
 
 	/**
-	* set tags
+	* set tags (as an ARRAY)
 	*/
 	function setTags($tags,$prefix='')
 	{
@@ -197,8 +197,17 @@ class UploadManager
 		$this->tagsPrefix=$prefix;
 	}
 
+
 	/**
-	* set tags
+	* set snippets (as an ARRAY)
+	*/
+	function setSnippets($snippets)
+	{
+		$this->snippets=$snippets;
+	}
+
+	/**
+	* set subject tag
 	*/
 	function setSubject($subject)
 	{
@@ -206,7 +215,7 @@ class UploadManager
 	}
 
 	/**
-	* set tags
+	* set context tags
 	*/
 	function setContexts($contexts)
 	{
@@ -1199,6 +1208,8 @@ $this->db->raiseErrorFn = 'adodb_throw';
 
 	split_timer('upload'); //starts the timer
 
+		////////////////////////////////////////
+
 		$storedoriginal = false;
 		if ($ok = $image->storeImage($src,$this->use_new_upload)) {
 
@@ -1221,22 +1232,37 @@ $this->db->raiseErrorFn = 'adodb_throw';
 				$this->cleanUp();
 		}
 
+		////////////////////////////////////////
 		//fire an event
+
 		require_once('geograph/event.class.php');
 		new Event(EVENT_NEWPHOTO, $gridimage_id.','.$USER->user_id.','.$storedoriginal);
 
 	split_timer('upload'); //starts the timer
 
+		////////////////////////////////////////
 		//assign the snippets now we know the real id.
-		$gid = crc32($this->upload_id)+4294967296;
-		$gid += $USER->user_id * 4294967296;
-		$gid = sprintf('%0.0f',$gid);
 
-		$this->db->Execute($sql = "UPDATE gridimage_snippet SET gridimage_id = $gridimage_id WHERE gridimage_id = ".$gid);
+		require_once('geograph/snippets.class.php');
+		$snippets = new Snippets;
+		$snippets->_setDB($this->db);
+		$snippets->promoteUploadSnippets($gridimage_id,$this->upload_id,$USER->user_id);
 
+		//make sure any snippets we have are added too
+		if (!empty($this->snippets)) {
+			$snippets->addSnippets($this->snippets);
+
+			$snippets->commit($gridimage_id,true);
+		}
+
+	split_timer('upload','update_snippet',"$gridimage_id"); //logs the wall time
+
+		////////////////////////////////////////
 		//assign the tags now we know the real id.
+
 		require_once('geograph/tags.class.php');
 		$tags = new Tags;
+		$tags->_setDB($this->db);
 		$tags->promoteUploadTags($gridimage_id,$this->upload_id,$USER->user_id);
 
 		//make sure any tags we have are added too
@@ -1253,6 +1279,10 @@ $this->db->raiseErrorFn = 'adodb_throw';
 			$tags->commit($gridimage_id,true);
 		}
 
+	split_timer('upload','update_tag',"$gridimage_id"); //logs the wall time
+
+		////////////////////////////////////////
+
 		$this->gridimage_id = $gridimage_id;
 
 		if (!empty($method)) {
@@ -1266,7 +1296,7 @@ $this->db->raiseErrorFn = 'adodb_throw';
 			}
 		}
 
-	split_timer('upload','update_snippet',"$gridimage_id"); //logs the wall time
+	split_timer('upload','update_method',"$gridimage_id"); //logs the wall time
 
 	}
 
