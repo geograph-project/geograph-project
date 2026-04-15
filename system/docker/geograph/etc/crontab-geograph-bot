@@ -36,3 +36,5 @@
 ##we now have a combined 'embeddings-set', it just uses score for tracking progress!
 #*/10   *       * * *    /usr/bin/php /var/www/geograph/scripts/ai-clip-rotate-ids.php --model=score --table=tmp_label_score --dest_table=gridimage_score --start=0 --minimum=10000 --execute
 
+5	16	* * *   /usr/bin/php /var/www/geograph/scripts/announce-stellar.php --execute=1
+
