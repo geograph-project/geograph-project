@@ -2,7 +2,7 @@
     const snippetInput = document.getElementById('snippet-search');
     const suggestionsSnippets = document.getElementById('snippet-suggestions');
     const activeSnippetContainer = document.getElementById('active-snippets');
-    let selectedSnippets = new Set(); // Use a Set to prevent duplicates
+    let selectedSnippets = {}; // Use a Object to store titles
 
 //    let debounceTimer = null;
     snippetInput.addEventListener('input', async (e) => {
@@ -22,19 +22,31 @@
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                const results = await response.json(); // Expected: ["tag1", "tag2"]
+                const results = await response.json();
 
-                // Normalize results for comparison
-                normalizedResults = results.map(t => t.toLowerCase());
+                if (results.length === 0) {
+                    const query_safe = escapeHTML(cleanTag(query));
 
-                html = results.map(tag => {
-                    // 1. Create a Case-Insensitive Regex of the user's query
-                    const safeQuery = escapeRegex(query);
-                    const regex = new RegExp(`(${safeQuery})`, "gi");
-                    // 2. Replace the match with a bold version
-                    // $1 keeps the original casing from the database (e.g., "Road" stays "Road")
-                    const highlighted = escapeHTML(tag).replace(regex, "<strong>$1</strong>");
-                    return `<div class="suggestion-item">${highlighted}</div>`;
+                    suggestionsSnippets.innerHTML = `
+                        <div class="suggestion-item error-text">No matching descriptions found</div>
+                        <div class="suggestion-item add-new-tag" onclick="addTag('${query_safe}')">
+                            <span class="plus-icon">+</span> Add [<strong>${query_safe}</strong>] as a Tag
+                       </div>
+                    `;
+                    return;
+                }
+
+                const safeQuery = escapeRegex(query);
+                const regex = new RegExp(`(${safeQuery})`, "gi");
+
+                html = results.map(row => {
+                    const highlighted = escapeHTML(row.title).replace(regex, "<strong>$1</strong>");
+
+                    const previewBtn = `<a href="/snippet/${row.snippet_id}" target="_blank" class="preview-link" title="Preview" style="text-decoration:none; margin-left:5px;">&#x1f441;</a>`;
+
+                    const credit = (row.user_id == window.user_id)?'':`by ${escapeHTML(row.realname)}`;
+
+                    return `<div class="suggestion-item" data-snippet_id="${row.snippet_id}" data-title="${escapeHTML(row.title)}">${highlighted} ${previewBtn} ${credit}</div>`;
                 }).join('');
 
             } catch (error) {
@@ -43,37 +55,17 @@
                 html = `<div class="suggestion-item error-text"><em>Suggestions unavailable</em></div>`;
             }
 
-            //still runs even if fails!
-            if (query.length > 2 && !normalizedResults.includes(query.toLowerCase())) {
-        		// Auto-split, on semicolons
-                if (query.includes(';')) {
-                    // 1. Split and clean each tag
-                    const tagArray = query.split(/\s*;\s*/).map(t => t.trim()).filter(t => t.length > 0);
-                    const cleanedTags = tagArray.map(t => cleanTag(t)).filter(t => t.length > 0);
-                    if (cleanedTags.length > 0) { //could end up zero!
-
-                        // 2. Create the data-tag string for bulk processing
-                        const query_safe = escapeHTML(cleanedTags.join(';'));
-
-                        // 3. Generate the visual display
-                        const displayList = cleanedTags.map(t => `[${escapeHTML(t)}]`).join(' ');
-
-                        html += `<div class="suggestion-item add-new-tag" data-tag="${query_safe}">+ Add all: ${displayList}</div>`;
-                    }
-
-		        } else {
-                    const query_safe = escapeHTML(cleanTag(query));
-                    html += `<div class="suggestion-item add-new-tag" data-tag="${query_safe}">+ Add [${query_safe}]</div>`;
-                }
-            }
-
             suggestionsSnippets.innerHTML = html;
         }, 250);
     });
     // Handle clicking a suggestion
     suggestionsSnippets.addEventListener('click', (e) => {
         if (e.target.classList.contains('suggestion-item')) {
-            addSnippet(e.target.dataset.snippet_id, e.target.dataset.title);
+            if (e.target.classList.contains('add-new-tag')) { //has it own click hanlder to add the actual tag
+                snippetInput.value = ''; //its been added as tag instead!
+            } else {
+                addSnippet(e.target.dataset.snippet_id, e.target.dataset.title);
+            }
         }
     });
 
@@ -99,8 +91,8 @@
 
     function addSnippet(snippet_id, title) {
 
-        if (!selectedSnippets.has(snippet_id)) {
-            selectedSnippets.add(snippet_id);
+        if (!selectedSnippets[snippet_id]) {
+            selectedSnippets[snippet_id] = title;
 
             const span = document.createElement('span');
             span.className = 'tag-pill';
@@ -115,7 +107,7 @@
 
             // 3. Attach the remove logic directly to this specific button
             btn.onclick = function() {
-                selectedSnippets.delete(snippet_id); // Remove from our Set
+                delete selectedSnippets[snippet_id]; // Remove from our Set
                 span.remove();            // Remove the whole pill from DOM
             };
 
@@ -127,7 +119,7 @@
 
             span.appendChild(btn);
             span.appendChild(input);
-            activeTagsContainer.appendChild(span);
+            activeSnippetContainer.appendChild(span);
         }
         snippetInput.value = '';
         suggestionsSnippets.innerHTML = '';

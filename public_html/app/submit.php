@@ -882,6 +882,10 @@ dialog#tag-selector-modal {
 
     </style>
 
+    <script>
+        window.user_id = <? echo intval($USER->user_id); ?>;
+    </script>
+
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
     <link rel="stylesheet" type="text/css" href="<?php echo smarty_modifier_revision("/js/mappingLeaflet.css"); ?>" />
     <link rel="stylesheet" href="<?php echo smarty_modifier_revision("/js/leaflet-search-master/src/leaflet-search.css"); ?>" />
@@ -1550,7 +1554,7 @@ console.log("Error", e);
 
             renderRecent('submit.subjects', 'recent-subjects');
             renderRecent('submit.tags', 'recent-tags');
-            //renderRecent('submit.snippets', 'recent-snippets');
+            renderRecent('submit.snippets', 'recent-snippets');
 
             updateLicenceDiv();
             renderNotesList();
@@ -1859,7 +1863,7 @@ console.log("Error", e);
         ////////////////////
         //success, so final cleanup..
 
-        //context are required anyway! (so should always be present
+        //context are required anyway! (so should always be present)
         saveRecent('submit.contexts', selected);
 
         if (input.value) saveRecent('submit.subjects', [input.value]);
@@ -1867,6 +1871,12 @@ console.log("Error", e);
         // (selectedTags is the Set you used in your addTag logic)
         if (selectedTags.size > 0) {
             saveRecent('submit.tags', Array.from(selectedTags));
+        }
+
+        //selectedSnippets is a now  an Object to contain titles
+        const snippetsToSave = Object.entries(selectedSnippets).map(([id, title]) => { return `${id}:::${title}`; });
+        if (snippetsToSave.length > 0) {
+            saveRecent('submit.snippets', snippetsToSave);
         }
 
         //save this for next time!

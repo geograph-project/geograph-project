@@ -20,8 +20,14 @@
         dropdown.innerHTML = '<option value="">Recently Used</option>';
         items.forEach(item => {
             const opt = document.createElement('option');
-            opt.value = item;
-            opt.textContent = item;
+	    if (item.indexOf(':::') == -1) {
+	            opt.value = item;
+        	    opt.textContent = item;
+	    } else {
+		const bits = item.split(':::');
+	        opt.value = bits[0];
+        	opt.textContent = bits[1];
+	    }
             dropdown.appendChild(opt);
         });
     }
@@ -40,6 +46,14 @@
     function useRecentTag(select) {
         if (!select.value) return;
         addTag(select.value); //automatically clears suggestions
+        select.options[select.selectedIndex].style.color = 'silver';
+        select.value = ""; // Reset dropdown
+    }
+
+    // When a Recent Snippet is picked
+    function useRecentSnippet(select) {
+        if (!select.value) return;
+        addSnippet(select.value, select.options[select.selectedIndex].textContent); //automatically clears suggestions
         select.options[select.selectedIndex].style.color = 'silver';
         select.value = ""; // Reset dropdown
     }
