@@ -144,10 +144,10 @@ $REVISIONS['/js/Geograph.MediaDatabase.class.js']=36556227;
 $REVISIONS['/app/js/modules/intro-view.js']=19686591;
 $REVISIONS['/js/Leaflet.GeographCoverage/Leaflet.GeographCoverage.css']=94536842;
 $REVISIONS['/js/L.Control.Locate.js']=19760747;
-$REVISIONS['/app/js/tags.libs.js']=71430863;
-$REVISIONS['/app/js/subjects.libs.js']=71430863;
-$REVISIONS['/app/js/recents.libs.js']=71430863;
+$REVISIONS['/app/js/tags.libs.js']=70590247;
+$REVISIONS['/app/js/subjects.libs.js']=70590247;
+$REVISIONS['/app/js/recents.libs.js']=70590247;
 $REVISIONS['/app/js/contexts.libs.js']=87448789;
 $REVISIONS['/app/js/used-nearby.libs.js']=87448789;
-$REVISIONS['/app/js/snippets.libs.js']=72798606;
+$REVISIONS['/app/js/snippets.libs.js']=70590247;
 ?>
