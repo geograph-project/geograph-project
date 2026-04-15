@@ -40,6 +40,9 @@
         select.options[select.selectedIndex].style.color = 'silver';
         select.value = ""; // Reset dropdown
         document.getElementById('subject-suggestions').innerHTML = ''; //just in case had search open!
+
+	if (typeof updateFormProgress == 'function')
+	    updateFormProgress();
     }
 
     // When a Recent Tag is picked
@@ -48,6 +51,9 @@
         addTag(select.value); //automatically clears suggestions
         select.options[select.selectedIndex].style.color = 'silver';
         select.value = ""; // Reset dropdown
+
+	if (typeof updateFormProgress == 'function')
+	    updateFormProgress();
     }
 
     // When a Recent Snippet is picked
@@ -56,6 +62,9 @@
         addSnippet(select.value, select.options[select.selectedIndex].textContent); //automatically clears suggestions
         select.options[select.selectedIndex].style.color = 'silver';
         select.value = ""; // Reset dropdown
+
+	if (typeof updateFormProgress == 'function')
+	    updateFormProgress();
     }
 
     //these with the existing format used by old submission

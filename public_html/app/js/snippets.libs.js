@@ -122,6 +122,9 @@
             span.appendChild(btn);
             span.appendChild(input);
             activeSnippetContainer.appendChild(span);
+
+            if (typeof updateFormProgress == 'function')
+                updateFormProgress();
         }
         snippetInput.value = '';
         suggestionsSnippets.innerHTML = '';

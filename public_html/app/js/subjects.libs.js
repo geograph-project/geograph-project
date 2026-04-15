@@ -117,6 +117,9 @@
             } else if (item.dataset.id) { //useful to avoid error messages, even dont use id!
                 subjectInput.value = item.textContent;
                 document.getElementById('subject-id').value = item.dataset.id;
+
+		if (typeof updateFormProgress == 'function')
+		    updateFormProgress();
             }
             subjectInput.setCustomValidity("");
             subjectSugg.innerHTML = '';

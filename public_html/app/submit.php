@@ -951,7 +951,7 @@ dialog#tag-selector-modal {
 
     <div style="text-align:center">
         <button type="button" onclick="openModal('map-modal')"
-        style="background:none; border:none; color:blue; text-decoration:underline;">How to use this map &gt;</button>
+        style="background:none; border:none; color:green; text-decoration:underline;">How to use this map &#9432;</button>
     </div>
 
 	<div id="maparea">
@@ -1138,6 +1138,64 @@ function toggleLock() {
             <div id="snippet-suggestions" class="dropdown"></div>
         </div>
 
+	  <button type="button" onclick="openModal('tag-modal')"
+                style="background:none; border:none; color:green; text-decoration:underline;">What do all these fields mean? &#9432;</button>
+
+
+<dialog id="tag-modal" onclick="closeModal('tag-modal')">
+    <div style="max-height: 80vh; overflow-y: auto; padding: 10px;">
+	    <section>
+	        <h2>Title</h2>
+	        <p>Short title for the image. Aim to be descriptive; you don't need lots of details. This is a good place to mention the name of the place if it is relevant to the image.</p>
+	    </section>
+
+	    <section>
+	        <h2>Description</h2>
+	        <p>Optionally, you can provide more details. Go into as much detail as you want here; for example, you can provide more information about the place, link to other images, and/or provide links to other websites with more info.</p>
+	    </section>
+
+	    <section>
+	        <h2>Shared Descriptions</h2>
+	        <p>Contributors can write descriptions that can be attached to multiple images. You might find someone has already written such a description for the place or subject you photographed. You are welcome to attach SDs created by others to your image.</p>
+
+    		<p>Note: at this time, it's not possible to create (or edit) SDs via the App. Use the main website to create a SD.</p>
+	    </section>
+
+	    <section>
+	        <h2>Date Taken</h2>
+	        <p>We do ask for the date the photo was taken if at all possible. If you really don't know, or can only provide the approximate year/month, then that is fine too.</p>
+	    </section>
+
+	    <blockquote style="background-color:#d4e5bd;">
+	        <strong>Tip:</strong> Use <strong>'View Nearby Tags'</strong> to see tags and shared descriptions used nearby. These are simply images that happen to be in the vicinity, so while many suggestions won't be correct, you might find some interesting ones you can use.
+	    </blockquote>
+
+	    <section>
+	        <h2>Geographical Context</h2>
+	        <p>Select a few relevant tags from the list that describe the general environment where the image was taken and what it depicts. You aren't expected to be perfectly accurate here; just pick the ones that feel relevant.</p>
+	    </section>
+
+	    <section>
+	        <h2>Subject</h2>
+	        <p>We provide a list of tags intended to denote the <strong>primary</strong> subject of the photo (as opposed to everything the image covers). Use the dedicated Subject search to find a possible tag for the main subject.</p>
+	    </section>
+
+	    <section>
+	        <h2>Tags</h2>
+	        <p>Here you can provide as much detail as you can for the image. This is entirely optional, but it may make your image much more findable.</p>
+	    </section>
+
+        <section>
+            <h2>Special Flags</h2>
+            <p>We ask that images taken by drone be specifically marked. Additionally, if the image is a wide-angle panorama, you can flag it as such. This enables a special viewer on the photo page, allowing users to pan and zoom into high-resolution images. We allow panoramas up to 12MB in size with unlimited resolution.</p>
+        </section>
+
+        <br><br>
+        <button type="button" onclick="closeModal('pano-modal')">Close</button>
+    </div>
+</dialog>
+
+
 
         <label for="imagetaken">Date Taken</label>
         <div>
@@ -1197,7 +1255,7 @@ function toggleLock() {
         </div>
 
         <br><br>
-        <button type=button class="btn btn-secondary" onclick="showNearbyTagsModalWrapper();">Tags Used Nearby</button>
+        <button type=button class="btn btn-secondary" onclick="showNearbyTagsModalWrapper();" style="background-color:#d4e5bd;">Tags Used Nearby</button>
 
         <div class="field-header">
     	    <label>Geographical Contexts</label>
@@ -1257,7 +1315,7 @@ function toggleLock() {
                 <div class=nowrap id="showhfov">(hfov: <input type=number step=0.01 name=hfov id=hfov placeholder=90 style=width:70px;text-align:right>degrees high)</div>
 
         		<button type="button" onclick="openModal('pano-modal')"
-                style="background:none; border:none; color:blue; text-decoration:underline;">How to Submit Panoramas &gt;</button>
+                style="background:none; border:none; color:green; text-decoration:underline;">How to Submit Panoramas &#9432;</button>
 
            </div>
            <script>
@@ -1372,7 +1430,7 @@ function toggleLock() {
 		    <p>Because we are an open project we want to ensure our content is licensed as openly as possible and so we ask that all images are released under the Creative Commons 
             licence, including accompanying metadata. <button type="button"
                 onclick="openModal('license-modal');"
-                style="background:none; border:none; color:blue; text-decoration:underline;">Read More &gt;</button> </p>
+                style="background:none; border:none; color:green; text-decoration:underline;">Read More &#9432;</button> </p>
 
             <dialog id="license-modal" onclick="closeModal('license-modal')">
                 <h3>Open Licensing Explained</h3>

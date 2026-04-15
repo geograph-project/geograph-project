@@ -193,6 +193,9 @@
             span.appendChild(btn);
             span.appendChild(input);
             activeTagsContainer.appendChild(span);
+
+	    if (typeof updateFormProgress == 'function')
+                updateFormProgress();
         }
         searchInput.value = '';
         suggestions.innerHTML = '';
