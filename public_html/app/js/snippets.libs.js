@@ -37,7 +37,7 @@
                 }
 
                 const safeQuery = escapeRegex(query);
-                const regex = new RegExp(`(${safeQuery})`, "gi");
+                const regex = new RegExp(`(${safeQuery})(?!(?:[^&;]+;))`, "gi");
 
                 html = results.map(row => {
                     const highlighted = escapeHTML(row.title).replace(regex, "<strong>$1</strong>");

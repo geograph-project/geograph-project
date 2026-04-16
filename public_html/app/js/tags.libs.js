@@ -29,7 +29,7 @@
 
                 // 1. Create a Case-Insensitive Regex of the user's query
                 const safeQuery = escapeRegex(query);
-                const regex = new RegExp(`(${safeQuery})`, "gi");
+                const regex = new RegExp(`(${safeQuery})(?!(?:[^&;]+;))`, "gi");
 
                 html = results.map(tag => {
                     // 2. Replace the match with a bold version

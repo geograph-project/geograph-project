@@ -95,7 +95,7 @@
         }
 
 	const safeQuery = escapeRegex(query);
-	const regex = new RegExp(`(${safeQuery})`, "gi");
+	const regex = new RegExp(`(${safeQuery})(?!(?:[^&;]+;))`, "gi");
 
         // 3. Render
         subjectSugg.innerHTML = matches.map(m => {
