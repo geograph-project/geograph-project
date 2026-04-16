@@ -123,9 +123,24 @@ print '</div>';
 //	if ($more) {
 	        print "<br><hr>";
 	        print "If dont see the place looking for, can view list of smaller places, but need the<br> first letter of the name: ";
+
+		$alphaCounts = $db->getAssoc("SELECT UPPER(SUBSTRING(def_nam, 1, 1)) as alpha, COUNT(*) 
+                             FROM os_gaz 
+                             WHERE full_county = 'Isle of Man' 
+                             GROUP BY alpha");
+
 		$url = "?".implode('&amp',$extra);
-        	foreach(range('A','Z') as $alpha)
-	                print " &nbsp; <a href=\"$url&amp;alpha=$alpha\">$alpha</a>";
+        	foreach(range('A','Z') as $alpha) {
+			if (isset($alphaCounts[$alpha])) {
+			        $count = $alphaCounts[$alpha];
+			        // Display as a link with a title attribute for the count
+			        print " <a href=\"$url&amp;alpha=$alpha\" title=\"$count places starting with $alpha\">$alpha</a> ";
+			    } else {
+			        // Display as dimmed text for letters with no entries
+			        print " <span style=\"color: #ccc;\" title=\"No places starting with $alpha\">$alpha</span> ";
+			    }
+		}
+
 //	}
 
 ##################################################

@@ -31,6 +31,7 @@ $db = GeographDatabaseConnection(false);
 $conv = new Conversions;
 $reference_index = 1;
 
+$smarty->assign('responsive', true);
 $smarty->display('_std_begin.tpl');
 
 $links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz6.php' => 'Isle of Man',
@@ -53,6 +54,11 @@ print '</div>';
 	$name = array();
 
 	$name[] = "Channel Islands";
+
+	if (!empty($_GET['country'])) {
+		$name[] = htmlentities($_GET['country']);
+		$where[] = "country = ".$db->Quote($_GET['country']);
+	}
 
 	if (!empty($_GET['alpha'])) {
 		$name[] = htmlentities($_GET['alpha']);
@@ -124,11 +130,42 @@ print '</div>';
 	print "</div>";
 
 //	if ($more) {
-	        print "<br><hr>";
-	        print "If dont see the place looking for, can view list of smaller places, but need the<br> first letter of the name: ";
-		$url = "?".implode('&amp',$extra);
-        	foreach(range('A','Z') as $alpha)
-	                print " &nbsp; <a href=\"$url&amp;alpha=$alpha\">$alpha</a>";
+		$raw = $db->getAll("SELECT country, UPPER(SUBSTRING(name, 1, 1)) as alpha, COUNT(*) as places 
+		                    FROM planet_ci 
+		                    WHERE `class` != 'boundary' 
+		                    GROUP BY country, alpha 
+		                    ORDER BY country DESC, alpha ASC");
+
+		$data = [];
+		foreach ($raw as $row) {
+		    // We only want to store actual letters A-Z for the navigation row
+		    if (preg_match('/^[A-Z]$/i', $row['alpha'])) {
+		        $data[$row['country']][strtoupper($row['alpha'])] = $row['places'];
+		    }
+		}
+
+		print "<br><hr>";
+		print "Browse Channel Island places by first letter:";
+
+		foreach ($data as $country => $alphas) {
+		    print "<div style='margin-top: 10px;'>";
+		    print "<strong>" . htmlspecialchars($country) . ":</strong><br>";
+		    
+		    foreach (range('A', 'Z') as $char) {
+		        if (isset($alphas[$char])) {
+		            $count = $alphas[$char];
+		            // Added class='alpha-nav' for the CSS we discussed earlier
+		            $url = "?country=" . urlencode($country) . "&amp;alpha=$char";
+		            $title = number_format($count) . " places in $country starting with $char";
+		            
+		            print " &nbsp; <a href=\"$url\" title=\"$title\">$char</a>";
+		        } else {
+		            print " &nbsp; <span style=\"color: #ccc;\" title=\"No places\">$char</span>";
+		        }
+		    }
+		    print "</div>";
+		}
+
 //	}
 
 ##################################################

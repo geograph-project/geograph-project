@@ -91,9 +91,14 @@ if (!empty($_GET['alpha'])) {
 	$where[] = "(name LIKE ".$db->Quote($_GET['alpha']."%")." OR irish LIKE ".$db->Quote($_GET['alpha']."%").")";
 	$name = htmlentities($_GET['alpha']);
 
+	if (!empty($_GET['country'])) {
+	        $where[] = "country = ".$db->Quote($_GET['country']);
+	}
+
 	print '<div class="interestBox">';
 	print "<h2>Places beginning with $name</h2>";
-	display_swithcer();
+	if (@$_GET['country'] != 'Northern Ireland')
+		display_swithcer();
 	print '</div>';
 
 	$where = implode(" AND ",$where);
@@ -124,6 +129,9 @@ if (!empty($_GET['alpha'])) {
 		} else {
 			$name = htmlentities2(utf8_to_latin1($row['display_name']));
 		}
+
+$name = str_replace(' / ','<span style=color:silver> / </span><span style=color:brown>',$name)."</span>";
+
 
 		if (preg_match('/(\d+)/',$row['town_class'],$m) && $m[1] <= 3) {
 			print "<li><b><a href=\"$url\">$name</a></b>";
@@ -287,8 +295,42 @@ $name = str_replace(' / ','<span style=color:silver> / </span><span style=color:
 
 	print "<br><hr>";
 	print "If don't know the county, try the first letter of the name: ";
-	foreach(range('A','Z') as $alpha)
-		print " &nbsp; <a href=\"?alpha=$alpha\">$alpha</a>";
+
+	// 1. Fetch the data
+	$raw = $db->getAll("SELECT country, UPPER(SUBSTRING(name, 1, 1)) as alpha, COUNT(*) as places 
+	                    FROM ie_open_places 
+	                    GROUP BY country, alpha 
+	                    ORDER BY country DESC, alpha ASC");
+
+	// 2. Pivot the data: $data['Ireland']['A'] = 96
+	$data = [];
+	foreach ($raw as $row) {
+	    $data[$row['country']][$row['alpha']] = $row['places'];
+	}
+
+	print "<br><hr>";
+	print "If you don't know the county, try the first letter of the name:";
+
+	// 3. Render a row for each country
+	foreach ($data as $country => $alphas) {
+	    print "<div style='margin-top: 10px;'>";
+	    print "<strong>" . htmlspecialchars($country) . ":</strong><br>";
+	    
+	    // Create the A-Z strip for this specific country
+	    foreach (range('A', 'Z') as $char) {
+	        if (isset($alphas[$char])) {
+	            $count = $alphas[$char];
+	            $url = "?country=" . urlencode($country) . "&amp;alpha=$char";
+	            $title = htmlspecialchars("$count places in $country starting with $char");
+	            
+	            print " &nbsp; <a href=\"$url\" title=\"$title\">$char</a>";
+	        } else {
+	            // Faded letter for no results
+	            print " &nbsp; <span style=\"color: #ccc;\" title=\"No places in $country starting with $char\">$char</span>";
+	        }
+	    }
+	    print "</div>";
+	}
 
 }
 
