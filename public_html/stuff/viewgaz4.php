@@ -177,8 +177,8 @@ if (!empty($_GET['alpha']) || !empty($_GET['region']) || !empty($_GET['county'])
 
 	//this joins in sphinx_placenames, but must do it via os_spatial_index (which has precomputed placename_id column!!!)
 	// NOTE. we DONT ue os_spatial_index.images column, while technically more recent, it might not be as accurate! (has no formal update system yet!!)
-		$where = preg_replace('/\b(name1|local_type|full_county)\b/','o.$1',$where);
-		$column = preg_replace('/\b(name1|local_type|full_county)\b/','o.$1',$column);
+		$where = preg_replace('/\b(name1|local_type|full_county|region)\b/','o.$1',$where);
+		$column = preg_replace('/\b(name1|local_type|full_county|region)\b/','o.$1',$column);
 	$data = $db->getAll("select o.country,o.full_county as county, o.name1, $column as display_name, o.images, o.local_type,
 		 o.geometry_x as e, o.geometry_y as n, o.local_type in ('City','Town','Village') as b, Place
 		 from os_open_places o left join os_spatial_index using (id) left join sphinx_placenames using (placename_id)
