@@ -52,7 +52,7 @@ export function render() {
             </dialog>
 
   	        <br>
-         	<p>Only shows a submissions (including Pending) from last 3 days, view <a href="/profile.php" target="_blank">Full site Profile</a> for more.
+         	<p>View <a href="/profile.php" target="_blank">Full site Profile</a> for more.
 
 	        <p id="timestamp"></p>
         </div>

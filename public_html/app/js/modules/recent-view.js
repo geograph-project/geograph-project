@@ -294,7 +294,7 @@ async function loadSubmissions(filter, edit_id = null) {
                         </div>
                     </div>
                     <div class="meta-info">
-             	        <button type=button class=gid>[[[${item.gridimage_id}]]]</button>
+             	        <button type=button class=gid>[[${item.gridimage_id}]]</button>
                     	<strong>${item.grid_reference}</strong>
     	                <span>Taken: <strong>${formatTakenDate(item.imagetaken)}</strong></span>
             	        <span>Submitted: <strong>${formatRelativeTime(item.submitted)}</strong></span>
