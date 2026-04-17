@@ -26,6 +26,12 @@ require_once('geograph/global.inc.php');
 //we should be allowing caching of this! - probably could be longer!
 customExpiresHeader(600,true);
 
+if (!empty($_SERVER['HTTP_ORIGIN'])
+	&& preg_match('/^https?:\/\/(m|www|schools)\.geograph\.(org\.uk|ie)\.?$/',$_SERVER['HTTP_ORIGIN'])) { //can be spoofed, but SOME protection!
+
+	header('Access-Control-Allow-Origin: *'); //although now this allows everyone to access it!
+}
+
 $results = array();
 
 if (!empty($_GET['q'])) {
@@ -107,7 +113,11 @@ if (!empty($_GET['q'])) {
 			$results['total_found'] = count($postcodes);
 			$results['query_info'] = '';
 			$results['copyright'] = "Contains Ordnance Survey data (c) Crown copyright and database right 2012";
+
+			outputJSON($results);
+			exit;
 		}
+
 	} elseif (preg_match("/^(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)$/",$q,$ll)) {
                 require_once('geograph/conversions.class.php');
                 $conv = new Conversions;
@@ -126,6 +136,9 @@ if (!empty($_GET['q'])) {
 			$results['total_found'] = count($results['items']);
         	        $results['query_info'] = '';
 			$results['copyright'] = '';
+
+			outputJSON($results);
+			exit;
 		}
 
 	} elseif (preg_match("/^\s*([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\s*$/",$q,$gr)) {
@@ -143,7 +156,11 @@ if (!empty($_GET['q'])) {
 			$results['total_found'] = count($results['items']);
         	        $results['query_info'] = '';
 			$results['copyright'] = '';
+
+			outputJSON($results);
+			exit;
 		}
+
 	} elseif (!empty($_GET['legacy'])) {
 		 $gaz = new Gazetteer();
 
@@ -161,7 +178,8 @@ if (!empty($_GET['q'])) {
 		$results['query_info'] = '';
 		$results['copyright'] = "Great Britain results (c) Crown copyright Ordnance Survey. All Rights Reserved. 100045616";
 
-		$ADODB_FETCH_MODE = $prev_fetch_mode;
+		outputJSON($results);
+		exit;
 
         } elseif (!empty($_GET['vector'])) {
 
@@ -215,10 +233,13 @@ if (!empty($_GET['q'])) {
 
 				//$results['query_info'] = $sphinx->query_info;
 				$results['copyright'] = "Great Britain results (c) Crown copyright Ordnance Survey. All Rights Reserved. 100045616";
+
+				outputJSON($results);
+				exit;
 			}
 
 		##########################
-	}
+        }
 
 	if (empty($results)) {
 		$fuzzy = !empty($_GET['f']);
@@ -233,16 +254,45 @@ if (!empty($_GET['q'])) {
                 if (!empty($_GET['more']))
                         $sphinx->pageSize = $pgsize = 150;
 
-
 		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
-
-
 
 		$offset = (($pg -1)* $sphinx->pageSize)+1;
 
 		if ($offset < (1000-$pgsize) ) {
 			$sphinx->processQuery();
+
+			##########################
+
+			if (!empty($_GET['new']) && $_GET['new'] == 2) {  //0=loc_placenames, 1=os_gaz, 2=os_open_names
+				//we can simplify, as the sphinx index has all the columns as attributes, so use sphinxql also avoiding needing a second DB connection
+
+				$sph = GeographSphinxConnection('sphinxql',true);
+
+				//4fig GR at start is automaitcally expanded by sphinxwrapper!
+				$sphinx->q = str_replace('@grid_reference','@gridref', $sphinx->q);
+
+				$q = $sph->Quote($sphinx->q);
+
+				//Note, this does NOT try to maininain the historic field names, just uses the ones direct from the index!
+
+				$sql = "SELECT * FROM spatial_index WHERE MATCH($q)";
+				$sql .= sprintf(" LIMIT %d,%d", ($pg -1)*$pgsize, $pgsize);
+				$sql .= " OPTION ranker=sph04"; //should promote prefix matches slightly
+
+				$results = array();
+				$results['items'] = $sph->getAll($sql); //should already be utf8!
+				$meta = $sph->getAssoc("SHOW META");
+
+				$results['total_found'] = $meta['total_found'] ?? '';
+				$results['query_info'] = count($results['items'])." of {$meta['total_found']} found in {$meta['time']} seconds";
+				$results['copyright'] = "GB Contains OS data Crown Copyright [and database right] 2021. NI, Open-Gov Licence. RoI, CC-by-SA 4.0";
+
+				outputJSON($results);
+				exit;
+			}
+
+			##########################
 
 			$sphinx->sort = "score ASC, @relevance DESC, @id DESC";
 
@@ -302,10 +352,5 @@ if (!empty($_GET['q'])) {
 	$results = "No query!";
 }
 
-if (!empty($_SERVER['HTTP_ORIGIN'])
-	&& preg_match('/^https?:\/\/(m|www|schools)\.geograph\.(org\.uk|ie)\.?$/',$_SERVER['HTTP_ORIGIN'])) { //can be spoofed, but SOME protection!
-
-	header('Access-Control-Allow-Origin: *'); //although now this allows everyone to access it!
-}
-
 outputJSON($results);
+

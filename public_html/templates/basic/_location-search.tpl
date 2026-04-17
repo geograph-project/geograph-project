@@ -19,7 +19,7 @@
 </form>
 
 <script type="module">
-    import { handleGeolocation, setupPlaceAutocomplete, openPlaceSearch } from '/js/location-selector.module.js';
+    import { handleGeolocation, setupPlaceAutocomplete, openPlaceSearch } from '/js/location-selector.module.js?v=2';
 
     const loc = document.getElementById('loc');
 

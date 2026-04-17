@@ -415,9 +415,8 @@ let searchTimer;
 /**
  * @param {string} query - The search string (Place name or Grid Ref).
  * @param {boolean} isReverse - If true, treats query as a Grid Ref for reverse geocoding.
- * @param {boolean} useOpenNames - Toggle between OS Open Names and Places API.
  */
-function searchGazetteer(query, isReverse = false, useOpenNames = false) {
+function searchGazetteer(query, isReverse = false) {
     if (!query || query.length < 3) {
         markerGroup.clearLayers();
         // Clear attribution when search is cleared
@@ -430,9 +429,9 @@ function searchGazetteer(query, isReverse = false, useOpenNames = false) {
 
     // 1. Setup Base URL
     let urlParams = "";
-    let baseUrl = useOpenNames
-        ? "/stuff/os_open_names.json.php?v=2"
-        : "/finder/places.json.php?new=1"; //the new param, means is OS 50k data, rather than GNS, no longer technically new!
+    let baseUrl = isReverse
+        ? "/stuff/os_open_names.json.php?v=2" //as we search osOPenNames via spatial index now, only use this for reverse now!
+        : "/finder/places.json.php?new=2"; //the new=2 param, use os_open_names!
 
     // 2. Handle Explicit Reverse Geocoding
     if (isReverse) {
@@ -505,11 +504,32 @@ function searchGazetteer(query, isReverse = false, useOpenNames = false) {
 
             // 3. Process Items
             data.items.forEach((item,index) => {
-                // Convert Grid Ref to LatLng using your library
+                // Convert Grid Ref to LatLng
 		let wgs84;
+
+		//places.json.php?new=1
 		if (item.gr) {
 	                const centeredGR = item.gr.replace(/^(\w{1,2})(\d{2})(\d{2})$/, '$1$25$35');
         	        wgs84 = GT_WGS84.parseGridRef(centeredGR);
+
+		//places.json.php?new=2
+		} else if (item.gridref) { //gives us 4fig GR, but has geometry_x as well!
+
+			let grid = (item.gridref.length ==6) ? new GT_OSGB() : new GT_Irish()
+			grid.setGridCoordinates(parseInt(item.geometry_x,10), parseInt(item.geometry_y,10));
+			wgs84 = grid.getWGS84();
+
+			//mutate to the same format!
+			if (item.name1 && item.name2)
+				item.name = `${item.name1} (${item.name2})`;
+			else
+				item.name = item.name1 || item.name2;
+			item.gr = item.gridref; //or could create a 6fig one??
+			item.localities = `${item.county}, ${item.country}`; //todo, fix duplicates (eg IoM)
+			if (item.type)
+				item.localities += ` (${item.type})`;
+
+		//os_open_names.json.php
 		} else if(item.geometry_x) {
 			const grid = new GT_OSGB();
 			grid.setGridCoordinates(parseInt(item.geometry_x,10), parseInt(item.geometry_y,10));
@@ -519,6 +539,8 @@ function searchGazetteer(query, isReverse = false, useOpenNames = false) {
 			item.name = item.name1 || item.name2;
 			item.gr = grid.getGridRef(2).replace(/ /g,'');
 			item.localities = item.local_type; //not right, but we dont get the county etc
+
+		//ie_open_data.json.php
 		} else if(item.e) {
 			const grid = new GT_Irish();
 			grid.setGridCoordinates(parseInt(item.e,10), parseInt(item.n,10));
@@ -602,7 +624,7 @@ function searchGazetteer(query, isReverse = false, useOpenNames = false) {
             });
 
             // 4. Auto-bound the map to the markers
-            if (markerGroup.getLayers().length > 0) {
+            if (markerGroup.getLayers().length > 0 && !isReverse) {
                 if (map._loaded) {
                     //later use aimation as search
                    map.flyToBounds(markerGroup.getBounds(), { padding: [40, 40], maxZoom: 15, duration:1 });

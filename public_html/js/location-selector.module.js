@@ -89,7 +89,7 @@ export function setupPlaceAutocomplete(element_id, options = {}) {
         }
 
         try {
-            const response = await fetch(`/finder/places.json.php?q=${encodeURIComponent(term)}&new=1`);
+            const response = await fetch(`/finder/places.json.php?q=${encodeURIComponent(term)}&new=2`);
             const data = await response.json();
 
             if (maplink) {
@@ -99,10 +99,10 @@ export function setupPlaceAutocomplete(element_id, options = {}) {
             if (data?.items) {
                 data.items.forEach(item => {
                     html += renderItem({
-                        label: item.name,
-                        value: `${item.gr} ${item.name}`,
-                        gr: item.gr,
-                        title: item.localities
+                        label: item.name1+(item.name2?` (${item.name2})`:''),
+                        value: item.name1.includes(item.gridref)?item.name1:`${item.gridref} ${item.name1}`,
+                        gr: item.gridref, //todo would be to create 6fig GR rather than using the 4fig one provided
+                        title: ((item.county == item.country)?item.country:`${item.county}, ${item.country}`)+(item.type?` (${item.type})`:'')
                     }, term);
                 });
             }
