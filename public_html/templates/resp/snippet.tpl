@@ -24,7 +24,7 @@
 
 
 {if $comment}
-<div style="margin:auto; padding:5px; margin-top:5px; margin-bottom:5px; text-align:center; max-width:80vw">{$comment}</div>
+<div style="margin:auto; padding:5px; margin-top:5px; margin-bottom:5px; text-align:center; max-width:min(80vw,60em)">{$comment}</div>
 
 
 {/if}
