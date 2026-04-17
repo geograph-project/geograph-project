@@ -114,8 +114,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
                 if (preg_match('/^panorama:/',$tag)) //todo && $_POST['largestsize'][$key] == '640' ??
                      $need_larger = 1;
             }
-
-            //todo set $need_larger -- if has pano rag?!
             include __DIR__."/submit-success.inc.php";
 
         } else {
@@ -1653,8 +1651,6 @@ console.log("Error", e);
         document.getElementById("active-tags").innerHTML = '';
         document.getElementById("active-snippets").innerHTML = '';
 
-//        theForm.elements[''].value = '';
-        //todo, other elements to reset too! including special flags!
         document.getElementById("c-drone").checked = false;
         document.getElementById("c-pano").checked = false;
         document.getElementById("panoselect").value=''; document.getElementById("panoselect").required = false;
@@ -2196,9 +2192,6 @@ map.on('mousedown dragstart', function(e) {
             // Small delay so the blur timer can finish its check first
             setTimeout(() => { isTouchingMap = false; }, 300);
         }, true);
-
-       // setupMess(); //TODO!
-
 
         if (typeof setupQuota === 'function') {
             setupQuota(map, baseMaps['Modern OS - GB']);

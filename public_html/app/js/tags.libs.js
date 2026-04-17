@@ -7,10 +7,10 @@
     let debounceTimer = null;
     searchInput.addEventListener('input', async (e) => {
         const query = e.target.value;
-        if (query.length < 1) { suggestions.innerHTML = ''; return; }
 
-        //do need debounce
         if (debounceTimer) clearTimeout(debounceTimer);
+
+        if (query.length < 1) { suggestions.innerHTML = ''; return; }
 
         debounceTimer = setTimeout(async function() {
             let html = '';

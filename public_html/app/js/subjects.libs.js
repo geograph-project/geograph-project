@@ -59,9 +59,10 @@
             // Only show the "Add" pill if the query isn't empty
             subjectSugg.innerHTML = `
                 <div class="suggestion-item error-text">No matching subjects found</div>
+		${(query_safe.length > 2 && query_safe !== 'blank') ? `
                 <div class="suggestion-item add-new-tag" data-tag="${query_safe}">
                     <span class="plus-icon">+</span> Add [<strong>${query_safe}</strong>] as a Tag
-                </div>
+                </div>`:''}
             `;
             return;
         }

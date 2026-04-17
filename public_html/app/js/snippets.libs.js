@@ -7,17 +7,16 @@
 //    let debounceTimer = null;
     snippetInput.addEventListener('input', async (e) => {
         const query = e.target.value;
-        if (query.length < 1) { suggestionsSnippets.innerHTML = ''; return; }
 
-        //do need debounce
         if (debounceTimer) clearTimeout(debounceTimer);
+
+        if (query.length < 1) { suggestionsSnippets.innerHTML = ''; return; }
 
         debounceTimer = setTimeout(async function() {
             let html = '';
             let normalizedResults = [];
 
             try {
-        		//todo, take only the LAST component, if entered text includes a ;
                 const response = await fetch(`/snippets.json.php?term=${encodeURIComponent(query)}&mode=ranked`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -29,9 +28,10 @@
 
                     suggestionsSnippets.innerHTML = `
                         <div class="suggestion-item error-text">No matching descriptions found</div>
+			${(query_safe.length > 2 && query_safe !== 'blank') ? `
                         <div class="suggestion-item add-new-tag" data-tag="${query_safe}">
                             <span class="plus-icon">+</span> Add [<strong>${query_safe}</strong>] as a Tag
-                       </div>
+                        </div>`:''}
                     `;
                     return;
                 }
