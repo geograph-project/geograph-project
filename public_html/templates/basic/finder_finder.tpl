@@ -15,18 +15,31 @@
     min-height: 800px;
 }
 .finder-form {
-    background-color: #ddd;
-    padding: 6px;
 }
 .form-column {
     float: left;
     width: 300px;
-    padding-top: 4px;
+    margin:3px;
+    background-color: #eee;
+    border-radius:8px;
+    padding: 8px;
 }
 .form-clear {
     clear: both;
     padding-top:6px;
     --text-align: center;
+}
+
+.filter-pill {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 20px; /* Makes it a pill */
+    padding: 4px 12px;
+    font-size: 0.85em;
+    cursor: pointer;
+}
+.filter-pill:hover {
+    background: #e0e0e0;
 }
 
 .finder-form label:has(input:checked) {
@@ -36,10 +49,62 @@
 .display-options {
     text-align: right;
 }
-.results-count {
-    float:left;
-    --padding: 4px;
+
+/* 1. The Parent Wrapper */
+.search-controls {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;       /* Allows wrapping on small screens */
+    align-items: stretch;  /* Keeps everything the same height */
+    gap: 15px;             /* Adds space between count and tabs */
+    justify-content: space-between; /* Pushes count left and tabs right */
 }
+
+/* 2. The Results Count */
+.results-count {
+    display: flex;
+    align-items: center;   /* Vertically centers the "Showing X..." text */
+    flex: 1 0 200px;       /* Grows to fill space, but won't shrink below 200px */
+    gap: 0.3ch;
+}
+
+/* 3. The Tabs Container */
+.display-options {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 4px;              /* Clean way to space tabs instead of margins */
+}
+
+.search-controls .tabHolder a, .display-options .tabHolder span {
+    white-space:normal;
+}
+
+/* 4. The Individual Tabs (Your existing classes) */
+.display-options .tab, .display-options .tabSelected {
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .display-options {
+        justify-content: flex-start; /* Align to the left on mobile */
+    }
+    .display-options .tab-label {
+        display:none; /* hide the word 'display:' which takes up too much space */
+    }
+
+    .tab, .tabSelected {
+        flex: 1 1 40%; /* Let each tab take up roughly half the width */
+        font-size: 0.9em; /* Slightly smaller text saves a lot of horizontal room */
+        padding: 8px 4px; /* Vertical padding is fine, keep horizontal slim */
+    }
+}
+
+
+
 .results-box {
     border: 5px solid #ddd;
 	border-radius:10px;
@@ -62,7 +127,7 @@
 .display-large {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(213px, 1fr));
-    gap: 2px;
+    gap: 18px;
 }
 .display-large div {
     text-align: center;
@@ -97,7 +162,11 @@
 }
 .display-details .details-item-thumb {
     width: 213px;
+    max-width:50vw;
     text-align: center;
+}
+.display-details .details-item-thumb img{
+    max-width:50vw;
 }
 .display-details .details-item-info {
     text-align: left;
@@ -180,31 +249,43 @@
 	}
 	.finder-form input[type=search] {
 		max-width:100%;
+        border-radius:6px;
+        padding:4px;
+        border:1px solid gray;
 	}
+    .finder-form input[type=number] {
+        border-radius:6px;
+        padding:4px;
+        border:0;
+    }
+    .finder-form input[type=date] {
+        border-radius:6px;
+        padding:4px;
+        border:0;
+    }
+
 	.finder-form select {
 		max-width:100%;
-
+        padding:4px;
 	}
 	.finder-form .form-column {
 		float:none;
 		width:inherit;
-		padding-bottom:2px;
-		border-bottom:1px solid silver;
-		margin-bottom:2px;
+		margin-bottom:5px;
 	}
 	#correction-prompt {
 		padding:0 4px;
 	}
 
-.scroll-container {
-  /* This is the container for your tabs */
-  width: 100%;
-  white-space: nowrap;
-  overflow-x: auto;
-  position: relative; /* Essential for positioning the pseudo-elements */
-touch-action:inherit;
-  margin-top:-2px;
-}
+    .scroll-container {
+      /* This is the container for your tabs */
+      width: 100%;
+      white-space: nowrap;
+      overflow-x: auto;
+      position: relative; /* Essential for positioning the pseudo-elements */
+      touch-action:inherit;
+      margin-top:-2px;
+    }
 
 
 }
@@ -235,7 +316,7 @@ touch-action:inherit;
 		<div class="form-column">
 			And/or <b>Near</b>:   &nbsp; (<a href="#" onclick="getLocation(performSearch);return false;">My Location</a>)
 			<input type=search id="loc" name="loc" size="36" placeholder="Enter location"><br>
-			<label for="distance">Within Distance:</label> <input type="number" id="distance" name="distance" value="2000" style="width:80px;text-align:right" step=100 min=100 max="100000">m
+			<label for="distance">Within Distance:</label> <input type="number" id="distance" name="distance" value="2000" style="width:60px;text-align:right" step=100 min=100 max="100000">m
 
 			<div id="location-disambiguation"></div>
 		</div>
@@ -272,27 +353,29 @@ touch-action:inherit;
 		</div>
 
 		<div class="form-clear">
-			<button type="submit" style="font-weight:bold;font-size:1.1em">Update</button> &nbsp; &nbsp; &nbsp; &nbsp;
-			<button type="button" id="add-date-filter">Add Date Filter</button>
-			<button type="button" id="add-contributor-filter">Add Contributor Filter</button>
-			<button type="button" id="add-tags-filter">Add Tag Filter</button>
-			<button type="button" id="add-resolution-filter">Add Resolution Filter</button>
+			<button type="submit" style="font-weight:bold;font-size:1.1em">Update</button>
+			<button type="button" class="filter-pill" id="add-date-filter">+ Date</button>
+			<button type="button" class="filter-pill" id="add-contributor-filter">+ Contributor</button>
+			<button type="button" class="filter-pill" id="add-tags-filter">+ Tag</button>
+			<button type="button" class="filter-pill" id="add-resolution-filter">+ Resolution </button>
 		</div>
 		<input type="hidden" id="display-mode" name="display" value="small">
 	</form>
 	<div id="correction-prompt"></div>
 	<br>
 {literal}
-	<div id="results-count" class="results-count"></div>
-	<div id="display-tabs" class="tabHolder display-options">
-		Display:
-		<a href="#" class="tab tabSelected nowrap" data-display="small">Small Thumbs</a>
-		<a href="#" class="tab nowrap" data-display="large">Large Thumbs</a>
-		<a href="#" class="tab nowrap" data-display="details">Details</a>
-		<a href="#" class="tab nowrap" data-display="river" title="our own format that displays a large image with details">GeoRiver</a>
-		<a href="#" class="tab nowrap" data-display="map">Map</a>
-		<a class="nowrap keywords-only full-version" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">more...</a>
-	</div>
+    <div class="search-controls">
+        <div id="results-count" class="results-count"></div>
+        <div id="display-tabs" class="tabHolder display-options">
+        	<span class="tab-label">Display:</span>
+        	<a href="#" class="tab tabSelected" data-display="small">Small Thumbs</a>
+        	<a href="#" class="tab" data-display="large">Large Thumbs</a>
+        	<a href="#" class="tab" data-display="details">Details</a>
+        	<a href="#" class="tab" data-display="river" title="our own format that displays a large image with details">Geo<wbr>River</a>
+        	    <a href="#" class="tab" data-display="map">Map</a>
+        	<a class="nowrap keywords-only full-version" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">more...</a>
+        </div>
+    </div>
 	<div id="results" class="results-box">
 		<p>Just click Update above to see recent images.</p>
 
