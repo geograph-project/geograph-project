@@ -103,7 +103,21 @@
     }
 }
 
+.btn-primary {
+    font-weight: bold;
+    font-size: 1.1em;
 
+}
+@media (any-pointer: coarse) {
+    .btn-primary {
+        background-color: #007AFF;
+        color: white;
+        min-width: 100px;
+        border-radius: 10px;
+        border: 0;
+        padding: 5px;
+    }
+}
 
 .results-box {
     border: 5px solid #ddd;
@@ -353,7 +367,7 @@
 		</div>
 
 		<div class="form-clear">
-			<button type="submit" style="font-weight:bold;font-size:1.1em">Update</button>
+			<button type="submit" class="btn-primary">Update</button>
 			<button type="button" class="filter-pill" id="add-date-filter">+ Date</button>
 			<button type="button" class="filter-pill" id="add-contributor-filter">+ Contributor</button>
 			<button type="button" class="filter-pill" id="add-tags-filter">+ Tag</button>
