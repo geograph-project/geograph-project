@@ -169,6 +169,29 @@ function space_date(datestr) {
     return datestr;
 }
 
+function formatTakenDate(dateStr) {
+    if (dateStr < '1000-01-01')
+        return 'unknown';
+
+    const date = new Date(dateStr);
+    const now = new Date();
+
+    // Format: Wed 4th Jan
+    const options = { weekday: 'short', day: 'numeric', month: 'short' };
+    let formatted = date.toLocaleDateString('en-GB', options);
+
+    // Add ordinal suffix (st, nd, rd, th)
+    const day = date.getDate();
+    const suffix = (day % 10 === 1 && day !== 11) ? 'st' : (day % 10 === 2 && day !== 12) ? 'nd' : (day % 10 === 3 && day !== 13) ? 'rd' : 'th';
+    formatted = formatted.replace(day, `${day}<sup>${suffix}</sup>`);
+
+    // Show year if not current year
+    if (date.getFullYear() !== now.getFullYear()) {
+        formatted += ` ${date.getFullYear()}`;
+    }
+    return formatted;
+}
+
 function escapeHtml(unsafe) {
     if (unsafe === null || unsafe === undefined) {
         return '';
