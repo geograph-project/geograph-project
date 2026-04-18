@@ -88,6 +88,8 @@ export function setupPlaceAutocomplete(element_id, options = {}) {
             return;
         }
 
+	//todo, debounce!
+
         try {
             const response = await fetch(`/finder/places.json.php?q=${encodeURIComponent(term)}&new=2`);
             const data = await response.json();
@@ -97,7 +99,7 @@ export function setupPlaceAutocomplete(element_id, options = {}) {
             }
 
             if (data?.items) {
-                data.items.forEach(item => {
+                sortGazetter(data.items, term).forEach(item => {
                     html += renderItem({
                         label: item.name1+(item.name2?` (${item.name2})`:''),
                         value: item.name1.includes(item.gridref)?item.name1:`${item.gridref} ${item.name1}`,
@@ -251,3 +253,42 @@ export function openPlaceSearch(query, callback) {
 </script>
 
 */
+
+//spectivially the new=2 / spatial_index data
+function sortGazetter(results, query) {
+    const q = query.toLowerCase();
+
+    // 1. Define Type Priorities
+    const getTypePriority = (type) => {
+        const t = (type || "").toLowerCase();
+        if (t === 'town' || t === 'city' || t === 'town_1' || t === 'town_2') return 1;
+        if (t === 'suburban area' || t === 'district' || t === 'town_10') return 100;
+        return 10;
+    };
+
+    // 2. Determine Match Rank on both names!
+    const getMatchRank = (n1, n2) => {
+	const name1 = (n1 || "").toLowerCase();
+        const name2 = (n2 || "").toLowerCase();
+        if (name1 === q || name2 === q) return 1;
+        if (name1.startsWith(q) || name2.startsWith(q)) return 2;
+        if (name1.includes(q) || name2.includes(q)) return 3;
+        return 4;
+    };
+
+    return results.sort((a, b) => {
+        // Compare Match Ranks (Exact > Starts With > Contains)
+	// specifically avoiding the gridref on name1 (doesnt exist on name2)
+        const rankA = getMatchRank(a.name1.split('/')[0], a.name2);
+        const rankB = getMatchRank(b.name1.split('/')[0], b.name2);
+        if (rankA !== rankB) { return rankA - rankB; }
+
+        // If ranks match, compare Type Priorities
+        const typeA = getTypePriority(a.type);
+        const typeB = getTypePriority(b.type);
+        if (typeA !== typeB) { return typeA - typeB; }
+
+        // Final tie-breaker: Alphabetical
+        return a.name1.localeCompare(b.name1);
+    });
+}
