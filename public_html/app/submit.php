@@ -323,6 +323,9 @@ input:invalid, select:invalid, #contexts:invalid, .input-invalid {
 .suggestion-pill:active {
      background: #e0e0e0;
 }
+.long-distance {
+	text-decoration: line-through;
+}
 
 .hidden { display: none }
 
@@ -372,6 +375,8 @@ input:invalid, select:invalid, #contexts:invalid, .input-invalid {
     background: #fff;
     background-color: #f5f5f0;
     transition: background 0.2s;
+    overflow:hidden;
+    text-overflow: ellipsis;
 }
 .suggestion-item:hover {
     background: #e0e0e0;
@@ -1798,7 +1803,7 @@ console.log("Error", e);
                 document.getElementById("orientation_message").style.display='none';
 
             } else if (result.lossy) {
-                if (confirm("This image cannot be rotated losslessly. Quality loss may occur. Continue?")) {
+                if (confirm("This image cannot be rotated losslessly. A small amount of quality loss may occur at the edges. Continue?")) {
                     rotateImage(degrees, 1); // Retry with force=1
                 } else {
                     imgLarge.style.opacity = 1;

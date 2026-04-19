@@ -6,18 +6,40 @@
 
 //    let debounceTimer = null;
     snippetInput.addEventListener('input', async (e) => {
-        const query = e.target.value;
+        let query = e.target.value;
 
         if (debounceTimer) clearTimeout(debounceTimer);
 
-        if (query.length < 1) { suggestionsSnippets.innerHTML = ''; return; }
+    	let extra = '';
+    	if (query == '.') {
+    		//this is just intended as messy protottype!
+    		snippetInput.value = '';
+    		extra = "&idf=2"; //new suggestions system
+    		var title = document.getElementById('localTitle').value;
+    		var description = document.getElementById('localDesc').value;
+    		query = `${title} ${description}`.replace(/\s+/g, ' ').trim();
+
+        } else if (query.length < 1) { suggestionsSnippets.innerHTML = ''; return; }
 
         debounceTimer = setTimeout(async function() {
             let html = '';
             let normalizedResults = [];
 
+            let conv;
+    	    if (document.getElementById('grid_reference')) {
+                const gridRef = document.getElementById('grid_reference').value;
+                const match = gridRef.match(/([A-Z]{1,2})\s*(\d{2,})/i);
+                if (match && match[2].length >= 4) {
+                    let grid = (match[1].length === 2) ? new GT_OSGB() : new GT_Irish();
+                    grid.parseGridRef(match[1]+match[2]);
+                    conv = grid.getWGS84(true);
+                 //         if (!conv || conv.status != 'OK') //conversion could fail! (although unlikly)
+                   //                 throw new Error(`Unable to convert`);
+                }
+            }
+
             try {
-                const response = await fetch(`/snippets.json.php?term=${encodeURIComponent(query)}&mode=ranked`);
+                const response = await fetch(`/snippets.json.php?term=${encodeURIComponent(query)}&mode=ranked${extra}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -28,7 +50,7 @@
 
                     suggestionsSnippets.innerHTML = `
                         <div class="suggestion-item error-text">No matching descriptions found</div>
-			${(query_safe.length > 2 && query_safe !== 'blank') ? `
+            			${(query_safe.length > 2 && query_safe !== 'blank') ? `
                         <div class="suggestion-item add-new-tag" data-tag="${query_safe}">
                             <span class="plus-icon">+</span> Add [<strong>${query_safe}</strong>] as a Tag
                         </div>`:''}
@@ -38,15 +60,31 @@
 
                 const safeQuery = escapeRegex(query);
                 const regex = new RegExp(`(${safeQuery})(?!(?:[^&;]+;))`, "gi");
-
                 html = results.map(row => {
+                    var className = '';
+
+if (extra && conv && conv.status == 'OK') {
+        const itemLatRad = parseFloat(row.wgs84_lat);
+        const itemLonRad = parseFloat(row.wgs84_long);
+        if (itemLatRad !== 0 && itemLonRad !== 0) {
+            // Convert API radians to degrees
+            const itemLat = radToDeg(itemLatRad);
+            const itemLon = radToDeg(itemLonRad);
+            // Calculate distance from user
+            const dist = getDistanceKM(conv.latitude, conv.longitude, itemLat, itemLon);
+
+            if (dist > 20)
+                className = "long-distance";
+        }
+}
+
                     const highlighted = escapeHTML(row.title).replace(regex, "<strong>$1</strong>");
 
-                    const previewBtn = `<a href="/snippet/${row.snippet_id}" target="_blank" class="preview-link" title="Preview" style="text-decoration:none; margin-left:5px;">&#x1f441;</a>`;
+                    const previewBtn = `<a href="/snippet/${row.snippet_id || row.id}" target="_blank" class="preview-link" title="Preview" style="text-decoration:none; margin-left:5px;">&#x1f441;</a>`;
 
-                    const credit = (row.user_id == window.user_id)?'':`by ${escapeHTML(row.realname)}`;
+                    const credit = (row.user_id == window.user_id || !row.realname)?'':`by ${escapeHTML(row.realname)}`;
 
-                    return `<div class="suggestion-item" data-snippet_id="${row.snippet_id}" data-title="${escapeHTML(row.title)}">${highlighted} ${previewBtn} ${credit}</div>`;
+                    return `<div class="suggestion-item ${className}" data-snippet_id="${row.snippet_id || row.id}" data-title="${escapeHTML(row.title)}">${highlighted} ${previewBtn} ${credit}</div>`;
                 }).join('');
 
             } catch (error) {
@@ -130,3 +168,19 @@
         suggestionsSnippets.innerHTML = '';
     }
 
+// Radians to Degrees
+function radToDeg(rad) {
+    return rad * (180 / Math.PI);
+}
+
+// Haversine Formula to calculate distance in KM
+function getDistanceKM(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}

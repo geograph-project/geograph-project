@@ -21,6 +21,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (!empty($_GET['term'])) {
+	$_REQUEST['q'] = $_GET['q'] = $_GET['term'];
+}
+
+if (!empty($_GET['idf']) && !empty($_GET['q'])) {
+        require("./snippets-idf.json.php");
+        exit;
+}
+
 require_once('geograph/global.inc.php');
 
 if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && !empty($_SESSION['last_grid_reference'])) { //appears have been uploading recently!
