@@ -62,6 +62,8 @@ if (!empty($row)) {
 		$data[] = "TPoint";
 	if (!$info['personal'])
 		$data[] = "Personal Point";
+	if (strrev($_GET['id']) === $_GET['id'])
+		$data[] = "Palindrome!";
 
 } else {
 	$data['error'] = "unable to load image";

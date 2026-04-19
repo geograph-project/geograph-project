@@ -192,7 +192,10 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-	font-size:1.5em; /* this only scales the font-awesome icons */
+    font-size:1.5em; /* this only scales the font-awesome icons */
+}
+.nav-btn span.icon-container {
+    height: var(--icon-size);
 }
 
 .nav-btn svg {

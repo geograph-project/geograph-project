@@ -517,6 +517,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             latestFile = e.target.files[0];
+            selectLabel.textContent = "Getting Location...";
 
             //making sure to save at time of capture (or as as close as possible!) (its technically when they click OK)
        		const now = new Date();
@@ -532,10 +533,10 @@ window.addEventListener('DOMContentLoaded', function() {
 
                 downloadBtn.style.display = 'block';
                 downloadBtn.textContent = `Download ${timePart} Again`;
-                downloadBtn.click();
+                downloadBtn.click(); //triggers the actual download
 
                 uploadBtn.style.display = 'block';
-		uploadBtn.textContent = `Upload ${timePart} Now (${window.uploadMaxDimension < 65535 ? `@${window.uploadMaxDimension}px` : 'Full size'})`;
+		        uploadBtn.textContent = `Upload ${timePart} Now (${window.uploadMaxDimension < 65535 ? `@${window.uploadMaxDimension}px` : 'Full size'})`;
 
                 uploadBtn.disabled = false; //incase it was previuslly disabled
 

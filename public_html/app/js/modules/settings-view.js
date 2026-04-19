@@ -47,6 +47,16 @@ export function render() {
                 </div>
             </div>
 
+            <div class="settings-group">
+                Beta Settings
+                <div class="setting-item">
+                    <label for="advancedFileChooser">Advanced File Chooser</label>
+                    <input type="checkbox" id="advancedFileChooser">
+                </div>
+            </div>
+
+
+
             NOTE: These settings affect this device/browser only, not synced between devices.
         </form>
     `;

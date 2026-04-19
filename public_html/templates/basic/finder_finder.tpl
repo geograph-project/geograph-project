@@ -140,12 +140,19 @@
 
 .display-large {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(213px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(213px, calc(50% - 9px)), 1fr));
     gap: 18px;
+    background-color: #eeeeee38;
 }
 .display-large div {
     text-align: center;
     min-height: 160px;
+    background-color: white;
+    border-radius:10px;
+}
+.display-large div img {
+    max-width:100%;
+    border-radius:5px;
 }
 .display-large div a:first-child {
     display: block;
@@ -184,6 +191,7 @@
 }
 .display-details .details-item-info {
     text-align: left;
+	line-height:1.3em;
 }
 
 /* ----------------------- */
@@ -202,6 +210,19 @@
     text-align: left;
     font-size:1.2em;
     line-height:1.5em;
+}
+
+
+.display-river .river-item-info span, .display-details .details-item-info span {
+    color:gray;
+}
+.display-river .river-item-info sup, .display-details .details-item-info sup {
+    color:gray;
+    font-size:0.6em;
+}
+.display-river .river-item-info tt, .display-details .details-item-info tt {
+    font-size: 1rem;
+    font-size-adjust: 0.66;
 }
 
 /* ----------------------- */
@@ -277,6 +298,11 @@
         padding:4px;
         border:0;
     }
+    .display-details .details-item-info tt {
+        font-size: 1rem;
+        font-size-adjust: 0.5;
+    }
+
 
 	.finder-form select {
 		max-width:100%;
@@ -692,9 +718,9 @@ function renderFinderResults(url, divId, countDivId) {
                                 <div class="river-item-info">
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
                                     by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
-				    Taken: ${space_date(row.takenday)}<br>
-                                    Grid Reference: ${row.grid_reference}<br>
-                                    ${row.geodist ? `<br>Distance: ${(row.geodist / 1000).toFixed(1)} km` : ''}
+				    <span>Taken:</span> ${formatTakenDate(space_date(row.takenday))}<br>
+                                    <span>Grid Reference:</span> <tt>${row.grid_reference}</tt><br>
+                                    ${row.geodist ? `<br><span>Distance:</span> ${(row.geodist / 1000).toFixed(1)} km` : ''}
                                 </div>`;
                             newDiv.innerHTML = htmlContent;
                             break;
@@ -710,9 +736,9 @@ function renderFinderResults(url, divId, countDivId) {
                                 <div class="details-item-info">
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
                                     by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
-				    Taken: ${space_date(row.takenday)}<br>
-                                    Grid Reference: ${row.grid_reference}<br>
-                                    ${row.geodist ? `<br>Distance: ${(row.geodist / 1000).toFixed(1)} km` : ''}
+				    <span>Taken:</span> ${formatTakenDate(space_date(row.takenday))}<br>
+                                    <span>Grid Ref:</span> <tt>${row.grid_reference}</tt><br>
+                                    ${row.geodist ? `<br><span>Distance</span>: ${(row.geodist / 1000).toFixed(1)} km` : ''}
                                 </div>`;
                             newDiv.innerHTML = htmlContent;
                             break;
@@ -1414,7 +1440,6 @@ function lookForLocationMatches(loc,originalElement) {
     };
     document.body.appendChild(script);
 }
-
 
     /**
      * Creates and returns a Leaflet rectangle centered on a point with a given radius.

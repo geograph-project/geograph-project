@@ -231,13 +231,26 @@ if (!empty($CONF['submission_message'])) {
 		function setAcceptValue(that) {
 			//seems most robust by setAttribute
 			document.getElementById("file-input").setAttribute("accept", that.value);
+            localStorage.setItem('selectedCtype', that.id);
 		}
+        window.addEventListener('load', () => {
+            const savedId = localStorage.getItem('selectedCtype');
+            if (savedId) {
+                const radioToRestore = document.getElementById(savedId);
+                if (radioToRestore) {
+                    // Check the radio button
+                    radioToRestore.checked = true;
+                    // Trigger the logic to update the file-input attribute
+                    setAcceptValue(radioToRestore);
+                }
+            }
+        });
 	</script>
 
 	<p>If location data is missing, try the File Selector method. While navigating to your images this way can be a bit more involved, it's often more reliable for reading GPS data.
-	 If you aren't having issues, feel free to stick with the simpler Image Selector.</p>
+	 If you aren't having such issues, feel free to stick with the simpler Image Selector.</p>
 
-	<div>
+	<div class="hidden" id="advancedLink">
 		Or can try our: 
 		<button type=button onclick="navigateTo('/app/chooser')">Enhanced Image Browser (Beta)</button>
 	</div>
@@ -283,6 +296,31 @@ if (!empty($CONF['submission_message'])) {
         window.openModal = openModal;
         window.closeModal = closeModal;
         setupSettingsListener();
+
+    window.addEventListener('message', (event) => {
+        if (event.origin !== window.location.origin) return;
+        try {
+            const data = JSON.parse(event.data);
+            if (data.settings && data.settings.advancedFileChooser) {
+
+                const showLink = () => {
+                    const link = document.getElementById('advancedLink');
+                    if (link) link.classList.remove('hidden');
+                };
+
+                // If the document is already loaded, run it now.
+                // Otherwise, wait for the load event.
+                if (document.readyState === 'complete') {
+                    showLink();
+                } else {
+                    window.addEventListener('load', showLink);
+                }
+            }
+        } catch (e) {
+                //just catching if fail to decode JSON
+        }
+    });
+
     </script>
 
 <script>
