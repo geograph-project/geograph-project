@@ -10,7 +10,7 @@ The app uses a **Hybrid Shell Architecture**. It combines a modern single-page a
 - **Client-Side Routing**: A custom JavaScript router (`js/router.js`) manages navigation without full page reloads.
 - **Views**:
     - **Native Modules**: Modern views built as JavaScript modules (`js/modules/*.js`) that render directly into the shell.
-    - **Iframe Views**: Legacy PHP pages (e.g., `upload.php`, `capture.php`) or existing site tools (e.g., Mapper, Finder) embedded within the shell.
+    - **Iframe Views**: Self contained PHP pages (e.g., `upload.php`, `capture.php`) or existing site tools (e.g., Mapper, Finder) embedded within the shell.
 
 ## Directory Structure
 
