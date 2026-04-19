@@ -170,25 +170,44 @@ function space_date(datestr) {
 }
 
 function formatTakenDate(dateStr) {
-    if (dateStr < '1000-01-01')
-        return 'unknown';
+    if (!dateStr || dateStr < '1000-01-01') return 'unknown';
 
-    const date = new Date(dateStr);
+    const parts = dateStr.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+
     const now = new Date();
+    const currentYear = now.getFullYear();
 
-    // Format: Wed 4th Jan
-    const options = { weekday: 'short', day: 'numeric', month: 'short' };
-    let formatted = date.toLocaleDateString('en-GB', options);
-
-    // Add ordinal suffix (st, nd, rd, th)
-    const day = date.getDate();
-    const suffix = (day % 10 === 1 && day !== 11) ? 'st' : (day % 10 === 2 && day !== 12) ? 'nd' : (day % 10 === 3 && day !== 13) ? 'rd' : 'th';
-    formatted = formatted.replace(day, `${day}<sup>${suffix}</sup>`);
-
-    // Show year if not current year
-    if (date.getFullYear() !== now.getFullYear()) {
-        formatted += ` ${date.getFullYear()}`;
+    // 1. Case: Only Year (e.g., 1961-00-00)
+    if (month === 0) {
+        return `${year}`;
     }
+
+    // 2. Case: Year and Month (e.g., 1992-12-00)
+    // We use a dummy date (day 1) just to get the month name via Intl
+    const tempDate = new Date(year, month - 1, 1);
+    const monthName = tempDate.toLocaleDateString('en-GB', { month: 'short' });
+
+    if (day === 0) {
+        return year === currentYear ? monthName : `${monthName} ${year}`;
+    }
+
+    // 3. Case: Full Date (e.g., 1992-12-15)
+    const fullDate = new Date(year, month - 1, day);
+    const weekday = fullDate.toLocaleDateString('en-GB', { weekday: 'short' });
+
+    const suffix = (day % 10 === 1 && day !== 11) ? 'st' #
+                 : (day % 10 === 2 && day !== 12) ? 'nd'
+                 : (day % 10 === 3 && day !== 13) ? 'rd' : 'th';
+
+    let formatted = `${weekday} ${day}<sup>${suffix}</sup> ${monthName}`;
+
+    if (year !== currentYear) {
+        formatted += ` ${year}`;
+    }
+
     return formatted;
 }
 
