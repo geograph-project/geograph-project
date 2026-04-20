@@ -8,7 +8,7 @@
          *
          * @param {string} query An optional keyword query string.
          */
-        function geograph_api_demo(query) {
+        function geograph_api_demo(query, geo = false) {
             const base = "https://www.geograph.org.uk/api-facetql.php";
             const data = {
                 long: 1,
@@ -20,10 +20,61 @@
             if (query) {
                 data['match'] = getTextQuery(query); //converts a 'user query' (eg containing tags) into sphinx format!
             }
+            if (geo) {
+		data['geo'] = geo; //format = "latitude,longitude,distance" (radius in meters)
+	    }
 
             const url = base + '?' + objectToUrlParams(data);
             renderAPIResults(url, 'results', 'results-count');
         }
+
+//////////////////////////////////////////////////////////
+
+	/**
+	 * Fetches images from Geograph API and flattens the Sphinx-style response
+	 */
+	async function getGeographImages(lat, lng, dist = 300, options = {}) {
+
+	    const baseUrl = "https://api.geograph.org.uk/api-facet.php";
+	    try {
+		const response = await fetch(`${baseUrl}?${new URLSearchParams({
+		    geo: `${lat},${lng},${dist}`,
+		    select: 'id,user_id,realname,grid_reference,title,hash,takenday,width,height',
+		    limit: 20,
+		    sort: '@geodist asc',
+		    ...options // This allows the caller to override 'limit' or 'sort' (or add other options)
+		})}`);
+	        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+	        const data = await response.json();
+
+	        if (!data.matches || Object.keys(data.matches).length === 0) {
+	            return [];
+	        }
+
+	        // Sphinx returns matches as an object keyed by ID
+	        // We map Object.values to get a clean array
+	        return Object.values(data.matches).map(match => {
+	            const row = match.attrs;
+	            return {
+	                id: row.id,
+	                url: `https://www.geograph.org.uk/photo/${row.id}`,
+	                title: row.title,
+	                realname: row.realname,
+	                profile_url: `https://www.geograph.org.uk/profile/${row.user_id}`,
+	                taken: formatTakenDate(space_date(row.takenday)),
+	                image: getGeographUrl(row.id, row.hash, 'full'),
+	                thumbnail: getGeographUrl(row.id, row.hash, 'med'),
+	                size: [row.width, row.height],
+	                distance: row['@geodist'] // Included since you are sorting by distance
+	            };
+	        });
+
+	    } catch (error) {
+	        console.error("Geograph API Fetch Error:", error);
+	        return [];
+	    }
+	}
 
 //////////////////////////////////////////////////////////
 
@@ -198,7 +249,7 @@ function formatTakenDate(dateStr) {
     const fullDate = new Date(year, month - 1, day);
     const weekday = fullDate.toLocaleDateString('en-GB', { weekday: 'short' });
 
-    const suffix = (day % 10 === 1 && day !== 11) ? 'st' #
+    const suffix = (day % 10 === 1 && day !== 11) ? 'st'
                  : (day % 10 === 2 && day !== 12) ? 'nd'
                  : (day % 10 === 3 && day !== 13) ? 'rd' : 'th';
 
