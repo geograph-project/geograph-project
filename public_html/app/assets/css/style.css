@@ -552,10 +552,12 @@ input[type="search"] {
 }
 
 .review-main-row {
+    position:relative;
     display: flex; /* Image and fields stay in a row */
     gap: 15px;
 }
 
+/* on small screen, show vertical */
 @media screen and (max-width: 300px) {
     .review-main-row {
         flex-direction: column;
@@ -571,6 +573,23 @@ input[type="search"] {
     }
 }
 
+/* On mid size, move image out of the way to get full width editing */ 
+@media screen and (min-width: 300px) and (max-width: 500px) {
+    .review-item:has(textarea:focus) img {
+	position:absolute; /* take it out of the flex container */
+	top: -122px;
+	left: 0;
+	border-top:5px solid gray; /* var(--card-bg); */
+
+	object-fit:contain;
+	object-position: left top;
+	background-color: #eeeeee99;
+	backdrop-filter: blur(1px);
+	width:100%;
+    }
+}
+
+/* on smaller screens, reduce padding */
 @media screen and (max-width: 500px) {
 	#app-container {
 		padding:20px 2px;
@@ -610,6 +629,7 @@ input[type="search"] {
     object-fit: cover;
     border-radius: 4px;
 }
+
 .review-fields {
     display: flex;
     flex-direction: column;
@@ -686,6 +706,37 @@ body.dark-mode .review-view .saved {
 	left:0;
 }
 
+#queue-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #333;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  z-index: 9999;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  font-family: sans-serif;
+}
+
+#clear-queue-btn {
+  background: #ff4757;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+#clear-queue-btn:hover {
+  background: #ff6b81;
+}
+
+/* General View styles */
 
 .view {
     max-width: 60em; margin: 0 auto;

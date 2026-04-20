@@ -23,11 +23,19 @@ export function render() {
                 </label>
             </div>
 
+
         <div class="view review-view">
+           	<form action="javascript:void()">
+           		<input type="search" id="searchBox" placeholder="Enter keywords to quickly search..." style="width:100%; border-radius:10px; border:1px solid gray" enterkeyhint="search">
+           	</form>
+
             <div id="review-list" class="review-list">
                 <p>Loading submissions for review...</p>
             </div>
+
+            <div id="no-results" class="hidden">No Result Found</div>
         </div>
+
 
 	<button class="btn btn-primary hidden" id="saveAll-btn" disabled>Apply Changes Now</button>
 	<button class="btn btn-secondary hidden" id="clearAll-btn" disabled>Disgard All Changes</button>
@@ -80,25 +88,6 @@ export async function onMount(options) {
         }
 	  }
 	});
-
-    listContainer.addEventListener('focusin', (event) => {
-	  const target = event.target;
-      if (target.tagName === 'TEXTAREA' && window.innerWidth > 300) {
-        const img = target.closest('.review-main-row').querySelector('img');
-        img.style.position = 'absolute';
-        img.style.top = '-126px';
-        img.style.left = '10px';
-      }
-    });
-    listContainer.addEventListener('focusout', (event) => {
- 	  const target = event.target;
-      if (target.tagName === 'TEXTAREA' && window.innerWidth > 300) {
-        const img = target.closest('.review-main-row').querySelector('img');
-        img.style.position = null;
-        img.style.top = null;
-        img.style.left = null;
-      }
-    });
 
     // also Prevent "Enter" key
     listContainer.addEventListener('keydown', (e) => {
@@ -297,7 +286,7 @@ async function loadSubmissions(filter, edit_id = null) {
              	        <button type=button class=gid>[[${item.gridimage_id}]]</button>
                     	<strong>${item.grid_reference}</strong>
     	                <span>Taken: <strong>${formatTakenDate(item.imagetaken)}</strong></span>
-            	        <span>Submitted: <strong>${formatRelativeTime(item.submitted)}</strong></span>
+            	        <span style="color:gray">Submitted: <strong>${formatRelativeTime(item.submitted)}</strong></span>
     	            </div>
 
                     <button class="btn btn-primary save-btn hidden" disabled type="button" style="width: auto; padding: 5px 15px;">Save Changes</button>
@@ -321,6 +310,26 @@ async function loadSubmissions(filter, edit_id = null) {
 
         updateList(); // Initial render
         sortSelect.onchange = updateList;
+
+        document.getElementById('searchBox').oninput = function(e) {
+            const query = e.target.value.toLowerCase();
+            // Assuming each image "row" or "card" has a class 'image-item'
+            const items = document.querySelectorAll('form.review-item');
+            let found = 0;
+            items.forEach(item => {
+                // Search within the specific fields you care about
+                const title = item.querySelector('textarea.title').value.toLowerCase();
+                const desc = item.querySelector('textarea.comment').value.toLowerCase();
+
+                if (title.includes(query) || desc.includes(query)) {
+                    item.style.display = ""; // Show
+                    found++;
+                } else {
+                    item.style.display = "none"; // Hide
+                }
+            });
+            document.getElementById('no-results').classList.toggle('hidden', found);
+        }
 
         if (edit_id)
             scrollToForm(edit_id);
@@ -426,6 +435,7 @@ const handleDoubleTapCopy = (event) => {
   if (btn.dataset.state === "primed") {
     // Action: Copy to clipboard
     idQueue.push(textToCopy);
+    updateQueueBar(idQueue.length);
 
     const finalString = idQueue.join(' ');
     navigator.clipboard.writeText(finalString).then(() => {
@@ -462,6 +472,7 @@ const resetBatch = () => {
     btn.classList.remove('copied');
     btn.dataset.state = "idle";
   });
+  updateQueueBar(0);
 };
 
 // Helper function to create and position the message
@@ -506,6 +517,37 @@ function showTooltip(anchorEl, message, duration, id = null, onClose = null) {
   }, duration);
 }
 
+
+function updateQueueBar(count) {
+  let bar = document.getElementById('queue-bar');
+
+  // Remove bar if queue is empty
+  if (count === 0) {
+    if (bar) bar.remove();
+    return;
+  }
+
+  // Create bar if it doesn't exist
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'queue-bar';
+    bar.innerHTML = `
+      <span id="queue-text"></span>
+      <button id="clear-queue-btn">Clear</button>
+    `;
+    document.body.prepend(bar);
+
+    // Add listener for the clear button
+    bar.querySelector('#clear-queue-btn').onclick = () => {
+      resetBatch();
+      //updateQueueBar(0); called altomathically
+    };
+  }
+
+  // Update the text content
+  const text = count === 1 ? "1 Image in list" : `${count} Images in list`;
+  bar.querySelector('#queue-text').innerText = text;
+}
 
 ////////////////////////////////
 
