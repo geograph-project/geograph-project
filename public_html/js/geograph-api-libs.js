@@ -1,3 +1,12 @@
+/**
+ * [Geograph API Function Collection]
+ * * To the extent possible under law, Geograph Project has waived all copyright
+ * and related or neighboring rights to this functions wihtin this file
+ * via the CC0 1.0 Universal Public Domain Dedication.
+ * * http://creativecommons.org/publicdomain/zero/1.0/
+ */
+
+//////////////////////////////////////////////////////////
 
 //forming the URL is left to caller, but this is a barebones demo...
 //this is only a very basic demo of the a simple keywords query
@@ -213,6 +222,14 @@ function zeroFill(number, width) {
         return number + "";
 }
 
+function retryCross(that) {
+    //this function allows retry of tags with crossorigin. Note the query string doesnt do anything on the server, its just to bust the local browser cache (that might have the non-cors image cached)
+    if (that.src.indexOf('crossorigin') == -1 && that.hasAttribute('crossorigin')) {
+        that.src = that.src + '?crossorigin';
+        if (that.hasAttribute('srcset'))
+            that.srcset = that.srcset.replace(/\.jpg/g,'.jpg?crossorigin');
+    }
+}
 
 function space_date(datestr) {
     if (datestr && datestr.length == 8)
@@ -485,3 +502,36 @@ function toDays(dateString) {
   return result;
 }
 
+function headingString(deg, dirs = ['north', 'east', 'south', 'west']) {
+    // Normalize degrees and calculate 16-point segment
+    let rounded = Math.round(deg / 22.5) % 16;
+    
+    // JavaScript modulo can return negative, so fix it
+    if (rounded < 0) rounded += 16;
+
+    let s = "";
+
+    if ((rounded % 4) === 0) {
+        // Direct Cardinal: N, E, S, W
+        s = dirs[rounded / 4];
+    } else {
+        // Ordinal (NE, SE, etc)
+        const primaryIdx = 2 * Math.floor(((Math.floor(rounded / 4) + 1) % 4) / 2);
+        const secondaryIdx = 1 + 2 * Math.floor(rounded / 8);
+        
+        s = dirs[primaryIdx] + dirs[secondaryIdx];
+
+        // Secondary-Intercardinal (NNE, ENE, etc)
+        if (rounded % 2 === 1) {
+            // Replicates the 'round($rounded/4) % 4' logic
+            const tertiaryIdx = Math.round(rounded / 4) % 4;
+            s = dirs[tertiaryIdx] + s;
+        }
+    }
+    return s;
+}
+
+// Shortcut version to match your PHP function
+function headingStringShort(deg) {
+    return headingString(deg, ['N', 'E', 'S', 'W']).replace(/-/g, '');
+}

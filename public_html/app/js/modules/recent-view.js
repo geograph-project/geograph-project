@@ -25,8 +25,8 @@ export function render() {
 
 
         <div class="view review-view">
-           	<form action="javascript:void()">
-           		<input type="search" id="searchBox" placeholder="Enter keywords to quickly search..." style="width:100%; border-radius:10px; border:1px solid gray" enterkeyhint="search">
+           	<form action="javascript:void()" class="search-container">
+           		<input type="search" id="searchBox" placeholder="Search recent submissions..." enterkeyhint="search">
            	</form>
 
             <div id="review-list" class="review-list">

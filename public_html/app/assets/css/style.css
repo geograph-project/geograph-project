@@ -575,11 +575,12 @@ input[type="search"] {
 
 /* On mid size, move image out of the way to get full width editing */ 
 @media screen and (min-width: 300px) and (max-width: 500px) {
+
     .review-item:has(textarea:focus) img {
 	position:absolute; /* take it out of the flex container */
 	top: -122px;
 	left: 0;
-	border-top:5px solid gray; /* var(--card-bg); */
+	border-top:5px solid silver; /* var(--card-bg); */
 
 	object-fit:contain;
 	object-position: left top;
@@ -643,6 +644,7 @@ input[type="search"] {
     font-family: Georgia;
     font-size:1em;
     border:0;
+    border-bottom:1px solid silver;
 
     background-color: var(--input-bg);
     color: var(--content-text);
@@ -740,6 +742,32 @@ body.dark-mode .review-view .saved {
 
 .view {
     max-width: 60em; margin: 0 auto;
+}
+
+.search-container {
+    display: flex;
+    gap: 8px; /* Space between input and button */
+    width: 100%;
+}
+
+.search-container input {
+    flex: 1; /* Makes the input grow to fill available space */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+       color: var(--content-text);
+       background-color: var(--input-bg);
+}
+.search-container input::placeholder {
+       color: var(--input-placeholder);
+}
+
+.search-container button {
+    padding: 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: var(--primary);
+    cursor: pointer;
 }
 
 .faq-view {

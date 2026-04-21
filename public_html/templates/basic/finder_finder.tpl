@@ -29,6 +29,14 @@
     padding-top:6px;
     --text-align: center;
 }
+.finder-form select {
+    padding:4px;
+}
+.finder-form button {
+    border-radius: 10px;
+    border: 1px solid silver;
+    padding:4px;
+}
 
 .filter-pill {
     background: #f0f0f0;
@@ -221,8 +229,7 @@
     font-size:0.6em;
 }
 .display-river .river-item-info tt, .display-details .details-item-info tt {
-    font-size: 1rem;
-    font-size-adjust: 0.66;
+    font-size: 1.3em;
 }
 
 /* ----------------------- */
@@ -286,27 +293,28 @@
 		max-width:100%;
         border-radius:6px;
         padding:4px;
-        border:1px solid gray;
+        border:0;
+        border-bottom:1px solid gray;
 	}
     .finder-form input[type=number] {
         border-radius:6px;
         padding:4px;
         border:0;
+        border-bottom:1px solid gray;
     }
     .finder-form input[type=date] {
         border-radius:6px;
         padding:4px;
         border:0;
+        border-bottom:1px solid gray;
     }
-    .display-details .details-item-info tt {
-        font-size: 1rem;
-        font-size-adjust: 0.5;
-    }
-
 
 	.finder-form select {
 		max-width:100%;
+        border-radius:6px;
         padding:4px;
+        border:0;
+        border-bottom:1px solid gray;
 	}
 	.finder-form .form-column {
 		float:none;
@@ -367,7 +375,7 @@
 			<label for="date_end"><b>End Date</b>:</label>
 			<input type="date" id="date_end" name="date_end" min="1800-01-01">
 			<button type="button" id="clear-dates-btn">Clear Dates</button><br>
-			Quick: <button type="button" onclick="return setDateRange('-5 year','');">Last 5</button> or 
+			Quick Set: <button type="button" onclick="return setDateRange('-5 year','');">Last 5</button> or 
 			<button type="button" onclick="return setDateRange('','-20 year');">Older than 20</button> years
 		</div>
 		<div id="contributor-filter-box" class="form-column hidden">
@@ -389,7 +397,7 @@
 				<option value="800">800</option>
 				<option value="1024">1024</option>
 				<option value="3000">3000</option>
-			</select>
+			</select>px
 		</div>
 
 		<div class="form-clear">
@@ -504,7 +512,7 @@ function restoreInitialHelp() {
 
 document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('standalone') === 'true') {
+    if (window.self !== window.top) {
         document.querySelectorAll('.full-version').forEach(function(element) {
             //doing both, to try to make sure stays hidden, eg some code maniputates classes, otehrs change the style directly
             element.style.display = 'none';
@@ -717,10 +725,11 @@ function renderFinderResults(url, divId, countDivId) {
                                 </div>
                                 <div class="river-item-info">
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
-                                    by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
+                                    <span>by</span> <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
 				    <span>Taken:</span> ${formatTakenDate(space_date(row.takenday))}<br>
                                     <span>Grid Reference:</span> <tt>${row.grid_reference}</tt><br>
                                     ${row.geodist ? `<br><span>Distance:</span> ${(row.geodist / 1000).toFixed(1)} km` : ''}
+                                    ${row.direction && row.direction!='Unknown'?` <span>Direction:</span> ${headingStringShort(row.direction)}`:''}
                                 </div>`;
                             newDiv.innerHTML = htmlContent;
                             break;
@@ -735,10 +744,11 @@ function renderFinderResults(url, divId, countDivId) {
                                 </div>
                                 <div class="details-item-info">
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
-                                    by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
+                                    <span>by</span> <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
 				    <span>Taken:</span> ${formatTakenDate(space_date(row.takenday))}<br>
                                     <span>Grid Ref:</span> <tt>${row.grid_reference}</tt><br>
                                     ${row.geodist ? `<br><span>Distance</span>: ${(row.geodist / 1000).toFixed(1)} km` : ''}
+                                    ${row.direction && row.direction!='Unknown'?` <span>Direction:</span> ${headingStringShort(row.direction)}`:''}
                                 </div>`;
                             newDiv.innerHTML = htmlContent;
                             break;
@@ -850,7 +860,7 @@ function searchAndRender() {
     let base = "https://www.geograph.org.uk/api-facetql.php";
     const data = {
         long: 1,
-        select: "id,user_id,realname,grid_reference,title,hash,takenday,width,height",
+        select: "id,user_id,realname,grid_reference,title,hash,takenday,width,height,direction",
         limit: currentLimit,
 	utf: 1
     };
@@ -1008,7 +1018,7 @@ function searchAndRender() {
                 }
                 mapAPIResults(base+'?'+$.param(data), layerGroup, true, 'results-count'); //pass the layergroup, so markers are added to the group!
 
-            if (type == 'keywords')
+            if (type == 'keywords' && window.self === window.top)
 		    correction_prompt.textContent = 'This is only a basic map. Use the [Browser Map] link above (or expand button on map) to explore the results in more detail.';
 
 	return;

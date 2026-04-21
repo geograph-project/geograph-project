@@ -54,6 +54,8 @@ export function render() {
         border-radius:10px;
 	background-color:var(--input-bg);
 	color:var(--content-text);
+	border:0;
+	border-bottom:1px solid gray;
     }
 
     .location-input {

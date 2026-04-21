@@ -59,32 +59,6 @@ export function render() {
 
 <style>
 
-.search-container {
-    display: flex;
-    gap: 8px; /* Space between input and button */
-    width: 100%;
-}
-
-.search-container input {
-    flex: 1; /* Makes the input grow to fill available space */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-	color: var(--content-text);
-	background-color: var(--input-bg);
-}
-.search-container input::placeholder {
-	color: var(--input-placeholder);
-}
-
-.search-container button {
-    padding: 0 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: var(--primary);
-    cursor: pointer;
-}
-
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
