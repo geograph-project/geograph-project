@@ -996,10 +996,15 @@ $str[] = "
                 	$str[] = '<script src="'.smarty_modifier_revision("/js/links.js").'" defer="defer"></script>';
 
 		if (preg_match('/photo\/(\d+)/',$_SERVER["REQUEST_URI"],$m) && $GLOBALS['image']->isValid()) { //so dont display on 404/rejected (in case still cached on CDN!)
-			if (preg_match('/Googlebot|GoogleOther|bingbot|Baiduspider/', @$_SERVER['HTTP_USER_AGENT'])) {
-				$url = "https://www.geograph.org.uk/stuff/related.json.php?http=1&id=".intval($m[1]);
-	                        //$content = get_internal_url($url); //this would bypass cloudflare (finds internal ingress IP!)
-				list($status, $content) = fetchurl_async($url, 'fetch', "Internal Request");
+			if (preg_match('/Googlebot|GoogleOther|bingbot|Baiduspider|InspectionTool/', @$_SERVER['HTTP_USER_AGENT'])) {
+				if ($m[1]%11 == 3) {
+					//lets test this
+					$content = json_encode(fakeRelated($m[1]));
+				} else {
+					$url = "https://www.geograph.org.uk/stuff/related.json.php?http=1&id=".intval($m[1]);
+		                        //$content = get_internal_url($url); //this would bypass cloudflare (finds internal ingress IP!)
+					list($status, $content) = fetchurl_async($url, 'fetch', "Internal Request");
+				}
 				$str[] = '<script>var related = '.$content.';</script>';
 
 			} elseif (true) {
@@ -1008,7 +1013,7 @@ $str[] = "
 			} else {
 				$cached = $memcache->name_get('reljs',$m[1]);
 				//bots that known to use 'rendering'
-				if (preg_match('/Googlebot|GoogleOther|Bingbot|Baiduspider/', @$_SERVER['HTTP_USER_AGENT']) || $cached) { //if created, might as well use it!
+				if (preg_match('/Googlebot|GoogleOther|Bingbot|Baiduspider|InspectionTool/', @$_SERVER['HTTP_USER_AGENT']) || $cached) { //if created, might as well use it!
 					if ($cached) {
 						//as we know it already in cached, might as well read directly, avoiding a self API call!
 						global $filesystem;
@@ -1120,6 +1125,61 @@ END;
         else
                 return '';
 }
+
+function fakeRelated($gridimage_id) {
+	global $CONF;
+
+	static $db;
+	if (empty($db) && !empty($GLOBALS['db']))
+		$db = $GLOBALS['db'];
+	if (empty($db) && !empty($GLOBALS['image']) && !empty($GLOBALS['image']->db))
+		$db = $GLOBALS['image']->db;
+	if (empty($db))
+		$db = GeographDatabaseConnection(true);
+
+	$data = array();
+
+	/* for now, DONT bother with these, as same square, not needed!
+        SUBSTRING(gi.grid_reference,1,LENGTH(gi.grid_reference)-4) AS myriad,
+        CONCAT(SUBSTRING(gi.grid_reference,1,LENGTH(gi.grid_reference)-3),SUBSTRING(gi.grid_reference,LENGTH(gi.grid_reference)-1,1)) AS hectad,
+	*/
+	$data['row'] = $db->getRow("SELECT grid_reference, sequence,user_id,
+         year(imagetaken) AS takenyear,REPLACE(SUBSTRING(imagetaken,1,7),'-','') AS takenmonth,REPLACE(imagetaken,'-','') AS takenday
+         FROM gridimage_search gi WHERE gridimage_id = ".intval($gridimage_id));
+
+	if (empty($data['row']))
+		return [];
+
+	$data['row']['user_id'] = intval($data['row']['user_id']);
+	$data['match'] = '';
+
+	//select: 'id,title,myriad,hectad,grid_reference,takenyear,takenmonth,takenday,hash,realname,user_id,place,county,country,hash,scenti,width,height',
+
+	//NEED id,scenti,title,realname,width,height
+	//BEST to have takenday,takenmonth,takenyear,grid_reference,hectad,myraid,user_id,place
+
+	$cols = "gridimage_id as id, grid_reference, realname,user_id, width,height,
+         year(imagetaken) AS takenyear,REPLACE(SUBSTRING(imagetaken,1,7),'-','') AS takenmonth,REPLACE(imagetaken,'-','') AS takenday";
+
+	$gr = $data['row']['grid_reference'];
+	$s = $data['row']['sequence'];
+	$data['rows'] = $db->getAll("
+	    (SELECT $cols FROM gridimage_search gi INNER JOIN gridimage_size USING (gridimage_id) WHERE grid_reference = '$gr' AND sequence < $s ORDER BY sequence DESC LIMIT 5)
+	    UNION ALL
+	    (SELECT $cols FROM gridimage_search gi INNER JOIN gridimage_size USING (gridimage_id) WHERE grid_reference = '$gr' AND sequence > $s ORDER BY sequence ASC LIMIT 5)");
+	if (!empty($data['rows']))
+		foreach($data['rows'] as $idx => &$row) {
+			$row['id'] = intval($row['id']); //make the json ligher??)
+			$row['width'] = intval($row['width']);
+			$row['height'] = intval($row['height']);
+			$row['user_id'] = intval($row['user_id']);
+			$row['hash'] = substr(md5($row['id'].$row['user_id'].$CONF['photo_hashing_secret']), 0, 8);
+			$row['scenti'] = $idx; //just so different!
+			$row['place'] = $idx;
+		}
+	return $data;
+}
+
 
 /**
 * Smarty derivation for Geograph
