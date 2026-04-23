@@ -73,7 +73,7 @@ $count = $db->getOne("SELECT count(*) from curated_headword where description = 
 
 if ($count) {
 	print "<h4>Sourcing Defintions</h4>";
-	print "<p>We recently found the 'Y Termiadur Addysg' dictionary; funded by the Welsh Government as the dictionary of standardised terminology for schools and further education http://www.termiaduraddysg.org/";
+	print "<p>We recently found the 'Y Termiadur Addysg' dictionary; funded by the Welsh Government as the dictionary of standardised terminology for schools and further education http://www.termiaduraddysg.cymru/";
 	print "<p>As such makes a good starting point of terms that may illistrate well with Geograph images</p>";
 	print "<p>To try to help the actual curation (as it contains so many terms) we are going though and trimming the unsuitable terms. At the same time collecting brief defintions, to help make sure curators select the suitable images. ";
 	print "If interested, click: <b><a href=\"headwords.php\">$count terms still unchecked</a></b>";
