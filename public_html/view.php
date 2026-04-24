@@ -51,8 +51,18 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'BingPreview/1.0b
 	//keep urls nice and clean - esp. for search engines!
 	header("HTTP/1.0 301 Moved Permanently");
 	header("Status: 301 Moved Permanently");
-	header("Location: ".$CONF['canonical_domain'][1]."/photo/".intval($_GET['id']));
-	print "<a href=\"".$CONF['canonical_domain'][1]."/photo/".intval($_GET['id'])."\">View image page</a>";
+
+	$image=new GridImage;
+	$image->loadFromId(intval($_GET['id']), true); //will only get moderated images!
+	if ($image->gridimage_id) {
+		header("Location: /photo/".intval($_GET['id']));
+		print "<a href=\"/photo/".intval($_GET['id'])."\">View image page</a>";
+	} else {
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
+		//real users shouldnt see this, iot probably only bots, making up urls.
+		print "404 Not Found - <a href=/>Visit Homepage</a>";
+	}
 	exit;
 }
 
@@ -75,7 +85,7 @@ if (!empty($_POST['style'])) {
 		$_SESSION['setstyle'] = 1;
 		header("HTTP/1.0 301 Moved Permanently");
 		header("Status: 301 Moved Permanently");
-		header("Location: ".$CONF['canonical_domain'][1]."/photo/".intval($_GET['id']));
+		header("Location: /photo/".intval($_GET['id']));
 		exit;
 	}
 	header("Location: /");
@@ -92,9 +102,9 @@ if (is_internet_archive() || !empty($_GET['a'])) {
 
 if (!empty($_GET['id']) && is_numeric($_GET['id'])) {
 	//we can start ther request early -- the smarty footer will use this!
-	if (empty($_GET['nokick']) && $CONF['template']!='charcoal' && $CONF['template']!='archive') {
+	if (empty($_GET['nokick']) && $CONF['template']!='charcoal' && $CONF['template']!='archive' && ($_GET['id']%11 != 3)) {
 		//for now, only 'inlining' and prerendering for certain bots. Google in particular may not load all requests due to crawl budget.
-		if (preg_match('/Googlebot|GoogleOther|bingbot|Baiduspider/', @$_SERVER['HTTP_USER_AGENT'])) {
+		if (preg_match('/Googlebot|GoogleOther|bingbot|Baiduspider|InspectionTool/', @$_SERVER['HTTP_USER_AGENT'])) {
 			//for now we deliberately routing this via cloudflare, to use their cache!
 			$url = "https://www.geograph.org.uk/stuff/related.json.php?http=1&id=".intval($_GET['id']);
 			fetchurl_async($url, 'start', "Internal Request");
@@ -164,6 +174,7 @@ if ($image->isValid())
 //do we have a valid image? - check again, because a rejected image may become invalid!
 if ($image->isValid())
 {
+	//this redirects bots on .ie to .org.uk
 	if ($image->grid_square->reference_index == 1
 		&& $_SERVER['HTTP_HOST'] == 'www.geograph.ie' &&
 			((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
@@ -176,9 +187,25 @@ if ($image->isValid())
 		$smarty->assign("ireland_prompt",1);
 	}
 
-	pageMustBeHTTPS(); //in here so doesnt affect preview - and after all other redirects
 
-	if ($image->grid_square) {
+	if ($image->same_serial > 1) {
+		if (empty($db))
+			$db = $image->db;
+
+                if ($serial = $db->getOne("SELECT serial FROM duplication_stat WHERE gridimage_id = {$image->gridimage_id}")) {
+                        //todo, add canonical for bots! even they redirected to .ie, they still take as relative to .org.uk!
+                        $image->photoset_canonical =
+				$CONF['canonical_domain'][$image->grid_square->reference_index].
+				"/photoset/{$image->grid_reference}/".urlencode($serial); //todo, use getDirectLink?
+			//note this will probably be overwritten by assignToSmarty, but set it incase. (it will check ->photoset_canonical
+			$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$image->photoset_canonical}\"/>");
+		}
+	} else { //no point bothering with redirect if non-canonical!
+
+		pageMustBeHTTPS(); //in here so doesnt affect preview - and after all other redirects
+	}
+
+	if ($image->grid_square && appearsToBePerson()) {
 		$image->grid_square->rememberInSession();
 	}
 
@@ -198,11 +225,6 @@ if ($image->isValid())
 		//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 		customCacheControl($mtime,$hash,($USER->user_id == 0));
 	}
-
-	if ($image->title == 'The War Memorial at Winchcombe') {
-		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"http://{$_SERVER['HTTP_HOST']}/of/title:".urlencode($image->title)."\"/>");
-	}
-
 
 	if (!empty($_SESSION['currentSearch']) && ($idx = array_search($image->gridimage_id,$_SESSION['currentSearch']['r'])) !== FALSE) {
 		$s = $_SESSION['currentSearch']; //keep a copy to avoid adding next/prev to the session value
@@ -317,12 +339,16 @@ if ($image->isValid())
 		if ($CONF['template']!='archive' && empty($q) && !empty($db)) {
 
 			if ($same = $db->getOne("SELECT images from gridimage_duplicate where grid_reference = '{$image->grid_reference}' and title = ".$db->Quote($image->title))) {
-				//todo, should check duplication_stat as well, if part of that, then link directly there.
-				// but ONLY if same_serial = gridimage_duplicate.images (because may be multiple serials, better to link to list.php, as list all contributors?)
-				if ($serial = $db->getOne("SELECT serial FROM duplication_stat WHERE gridimage_id = {$image->gridimage_id} AND same_serial = $same")) {
-					$url = "/photoset/{$image->grid_reference}/".urlencode($serial); //todo, use getDirectLink?
+				if (!empty($image->photoset_canonical) && !appearsToBePerson()) { //for bots explicitly use the canonical reference! (to avoid redirects)
+					$url = $image->photoset_canonical;
 				} else {
-					$url = "/stuff/list.php?title=".urlencode($image->title)."&amp;gridref={$image->grid_reference}";
+					//check duplication_stat as well, if part of that, then link directly there.
+					// but ONLY if same_serial = gridimage_duplicate.images (because may be multiple serials, better to link to list.php, as list all contributors?)
+					if ($serial = $db->getOne("SELECT serial FROM duplication_stat WHERE gridimage_id = {$image->gridimage_id} AND same_serial = $same")) {
+						$url = "/photoset/{$image->grid_reference}/".urlencode($serial); //todo, use getDirectLink?
+					} else {
+						$url = "/stuff/list.php?title=".urlencode($image->title)."&amp;gridref={$image->grid_reference}";
+					}
 				}
 				$smarty->assign('prompt', "This is 1 of <a href=\"$url\">$same images, with title ".htmlentities($image->title)."</a> in this square");
 

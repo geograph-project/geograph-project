@@ -168,7 +168,7 @@ for ($sitemap=$start; $sitemap<=$sitemaps; $sitemap++)
 		"from gridimage_search as i ".
 		"left join duplication_stat using (gridimage_id) ".
 		"where ".implode(" and ",$where)." ".
-		"and serial IS NULL ".
+		"and serial IS NULL ".  //now indexed in the photoset
 		"order by i.gridimage_id ".
 		"limit $urls_per_sitemap");
 

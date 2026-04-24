@@ -557,8 +557,14 @@ split_timer('gridimage'); //starts the timer
 
 		$extra_meta = array();
 
-		if ($this->gridimage_id > 6000000 && ($serial = $this->db->getOne("SELECT serial FROM duplication_stat WHERE same_serial > 1 AND gridimage_id = ".intval($this->gridimage_id)))) {
-			$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$this->grid_square->reference_index]}/photoset/{$this->grid_square->grid_reference}/{$serial}\" />";
+		//now set by view.php
+		if (!empty($this->photoset_canonical)) {
+			$extra_meta[] = "<link rel=\"canonical\" href=\"{$this->photoset_canonical}\" />";
+
+		//this was an early experiment as a kinda photoset!
+		} elseif ($this->title == 'The War Memorial at Winchcombe') {
+			$extra_meta[] = "<link rel=\"canonical\" href=\"https://www.geograph.org.uk/of/title:".urlencode($image->title)."\"/>";
+
 		} else {
 			$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$this->grid_square->reference_index]}/photo/{$this->gridimage_id}\" />";
 		}

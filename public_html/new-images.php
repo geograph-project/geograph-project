@@ -78,38 +78,44 @@ $baselink = $rss->link;
                         //most recent sent!
                         $sql = "SELECT $cols FROM gridimage_search gi
                                 INNER JOIN newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
-                        WHERE reference_index = $ri $filter
+				LEFT JOIN duplication_stat d ON (d.gridimage_id = gi.gridimage_id)
+                        WHERE reference_index = $ri $filter AND d.serial IS NULL
                         ORDER BY gi.gridimage_id DESC LIMIT 100";
                 } elseif ($_GET['v'] == 4) {
                         //mid level sent!
                         $sql = "SELECT $cols FROM gridimage_search gi
                                 INNER JOIN newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
-                        WHERE reference_index = $ri $filter
+				LEFT JOIN duplication_stat d ON (d.gridimage_id = gi.gridimage_id)
+                        WHERE reference_index = $ri $filter AND d.serial IS NULL
                         ORDER BY gi.gridimage_id DESC LIMIT 500,100";
                 } elseif ($_GET['v'] == 2) {
                         //oldest sent!
                         $sql = "SELECT $cols FROM gridimage_search gi
                                 INNER JOIN newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
-                        WHERE reference_index = $ri $filter
+				LEFT JOIN duplication_stat d ON (d.gridimage_id = gi.gridimage_id)
+                        WHERE reference_index = $ri $filter AND d.serial IS NULL
                         ORDER BY gi.gridimage_id ASC LIMIT 100";
                 } elseif ($_GET['v'] == 3) {
                         //newest before setup!
                         $id = $db->getOne("SELECT MIN(gridimage_id) FROM newimages");
                         $sql = "SELECT $cols FROM gridimage_search gi
-                        WHERE reference_index = $ri $filter AND gi.gridimage_id < $id
+				LEFT JOIN duplication_stat d ON (d.gridimage_id = gi.gridimage_id)
+                        WHERE reference_index = $ri $filter AND gi.gridimage_id < $id AND d.serial IS NULL
                         ORDER BY gi.gridimage_id DESC LIMIT 100";
                 } elseif ($_GET['v'] == 5) {
                         //just list updated (but excluding recent submissions)
                         $sql = "SELECT $cols FROM gridimage_search gi
-                        WHERE reference_index = $ri $filter and submitted < date_sub(now(),interval 2 day)
+				LEFT JOIN duplication_stat d ON (d.gridimage_id = gi.gridimage_id)
+                        WHERE reference_index = $ri $filter and submitted < date_sub(now(),interval 2 day) AND d.serial IS NULL
                         ORDER BY upd_timestamp DESC LIMIT 100";
 		}
         } elseif ($_GET['g'] == 1) {
 		//show images from newly created clusters (in theory more unique images!)
 		$sql = "SELECT $cols FROM gridimage_search gi
 			INNER JOIN gridimage_group_stat gs ON (gi.gridimage_id = gs.gridimage_id)
+			LEFT JOIN duplication_stat d ON (d.gridimage_id = gi.gridimage_id)
 			LEFT JOIN newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
-		WHERE reference_index = $ri $filter AND ni.gridimage_id IS NULL
+		WHERE reference_index = $ri $filter AND ni.gridimage_id IS NULL AND d.serial IS NULL
 		ORDER BY gs.created DESC LIMIT 100";
         } else {
                 //constantly refreshing list!
@@ -117,13 +123,9 @@ $baselink = $rss->link;
 			LEFT JOIN duplication_stat USING (gridimage_id)
                         LEFT JOIN newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
 			LEFT JOIN vote_log ON (id = gi.gridimage_id and vote < 3)
-                WHERE reference_index = $ri $filter AND ni.gridimage_id IS NULL AND vote is NULL AND serial IS NULL
+	        WHERE reference_index = $ri $filter AND ni.gridimage_id IS NULL AND vote is NULL AND serial IS NULL
                 ORDER BY gi.gridimage_id DESC LIMIT 100";
         }
-
-if (!empty($_GET['dd']))
-	die($sql);
-
 
 	$images->_getImagesBySql($sql);
 
