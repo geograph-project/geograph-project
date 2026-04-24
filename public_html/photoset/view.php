@@ -76,7 +76,17 @@ if (!empty($_GET['id'])) {
 		if ($stat['same_title'] > $stat['same_serial']) {
 			$smarty->assign("same_title", $stat['same_title']);
 		}
+	} else {
+		//the photoset may be gone, but perhaps there are still images?
+
+		$title = $db->getOne("SELECT title FROM duplication_archive WHERE grid_reference = ".$db->Quote($_GET['gridref'])." AND serial = ".$db->Quote($_GET['serial']));
+		if (!empty($title)) {
+			$url = "/stuff/list.php?title=".urlencode($title)."&gridref=".urlencode($_GET['gridref']);
+			header("Location: $url");
+			exit;
+		}
 	}
+
 	$cacheid = "label".filemtime(__FILE__)."-".md5($_GET['serial'].$_GET['gridref']);
 	$smarty->assign("gridref", $_GET['gridref']);
 

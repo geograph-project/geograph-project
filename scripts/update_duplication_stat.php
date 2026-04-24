@@ -59,6 +59,7 @@ print "$sql;\n";
 
 $values = array();
 $done = array();
+$min_id = 999999999;
 foreach ($squares as $square => $gridsquare_id) {
 	if (empty($gridsquare_id))
 		die("unknown id for $square\n");
@@ -108,9 +109,10 @@ foreach ($squares as $square => $gridsquare_id) {
 		}
 		//print "Prefix Count: {$updates['same_title_prefix']}\n";
 
-		if ($updates['same_serial'] > 1)
+		if ($updates['same_serial'] > 1) {
 			$updates['serial']=$dbprimary->Quote($row['serial']);
-		else
+			if ($gridimage_id < $min_id) $min_id = $gridimage_id;
+		} else
 			$updates['serial']='NULL';
 
 		//todo, this does not do escaping. only ok for numeric updates! (and 'NULL'!)
@@ -185,4 +187,12 @@ if (!empty($values)) {
 		if ($param['debug'])
         		print "# ".$dbprimary->Affected_Rows()." squares affected (on last loop only)\n";
 	}
+}
+
+if ($min_id) {
+	//this might be a big far ranging, but better than nothing
+
+	$dbprimary->Execute("insert ignore into duplication_archive (grid_reference,serial,title)
+	 select grid_reference,serial,title from gridimage_search inner join duplication_stat using (gridimage_id)
+	 where gridimage_id >=$min_id and serial is not null group by grid_reference,serial order by null");
 }
