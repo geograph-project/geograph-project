@@ -13,6 +13,8 @@ Disallow: /mapprint.php
 Disallow: /mapfixer.php
 Disallow: /admin/
 Disallow: /search.php
+Disallow: /near/Grid+Reference
+Disallow: /near/Postcode
 Disallow: /full-text.php
 Disallow: /finder/
 Disallow: /chwilio/?q=
@@ -90,6 +92,8 @@ Disallow: /mapfixer.php
 Disallow: /admin/
 Disallow: /search.php?
 Disallow: /full-text.php?
+Disallow: /near/Grid+Reference
+Disallow: /near/Postcode
 Disallow: /finder/
 Disallow: /chwilio/?q=
 Disallow: /explore/wordnet.php
