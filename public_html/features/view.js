@@ -112,6 +112,9 @@ function refreshData(skip_group) {
 	if (uniqueSerial)
 		 data = data + '&serial='+uniqueSerial; //really just done to bust the cache!
 
+	if (feature_type_updated)
+		 data = data + '&updated'+encodeURIComponent(feature_type_updated); //also bust cache
+
 	/////////////////////////////////////////
 
 	if (data != lastGroupData && typeof skip_group !== "boolean") {
