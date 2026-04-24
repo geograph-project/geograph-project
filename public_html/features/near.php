@@ -330,7 +330,7 @@ div#thumbs div.thumb {
 		            "select": {name: "Select for "+name, icon: "add"},
 		            "quit": {name: "Select and Close", icon: "quit"},
 		            "edit": {name: "View Photo Page", icon: "edit"},
-		            "delete": {name: "Delete", icon: "cut"},
+		            "delete": {name: "Hide", icon: "cut"},
 		        }
 		    });
 		}
