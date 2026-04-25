@@ -1158,7 +1158,7 @@ function fakeRelated($gridimage_id) {
 	//NEED id,scenti,title,realname,width,height
 	//BEST to have takenday,takenmonth,takenyear,grid_reference,hectad,myraid,user_id,place
 
-	$cols = "gridimage_id as id, grid_reference, realname,user_id, width,height,
+	$cols = "gridimage_id as id, title,grid_reference, realname,user_id, width,height,
          year(imagetaken) AS takenyear,REPLACE(SUBSTRING(imagetaken,1,7),'-','') AS takenmonth,REPLACE(imagetaken,'-','') AS takenday";
 
 	$gr = $data['row']['grid_reference'];
@@ -1169,10 +1169,15 @@ function fakeRelated($gridimage_id) {
 	    (SELECT $cols FROM gridimage_search gi INNER JOIN gridimage_size USING (gridimage_id) WHERE grid_reference = '$gr' AND sequence > $s ORDER BY sequence ASC LIMIT 5)");
 	if (!empty($data['rows']))
 		foreach($data['rows'] as $idx => &$row) {
-			$row['id'] = intval($row['id']); //make the json ligher??)
+			$row['id'] = intval($row['id']); //make the json lighter
+			$row['title'] = latin1_to_utf8($row['title']); //even though the page will still be latin1, json should be utf8
+			$row['realname'] = utf8_encode($row['realname']);
 			$row['width'] = intval($row['width']);
 			$row['height'] = intval($row['height']);
 			$row['user_id'] = intval($row['user_id']);
+			$row['takenyear'] = intval($row['takenyear']);
+			$row['takenmonth'] = intval($row['takenmonth']);
+			$row['takenday'] = intval($row['takenday']);
 			$row['hash'] = substr(md5($row['id'].$row['user_id'].$CONF['photo_hashing_secret']), 0, 8);
 			$row['scenti'] = $idx; //just so different!
 			$row['place'] = $idx;
