@@ -54,8 +54,8 @@ echo '</div>';
 
 
 $extras = array(
-	0 => 'Town Core',
-	1 => 'Town + Wider Countryside',
+	0 => 'Central',
+	1 => 'Including Surrounds',
 	2 => 'Just Countryside',
 );
 
@@ -75,23 +75,30 @@ echo '</div>';
 
 $sql = array();
 $sql['wheres'] = array();
-$sql['columns'] = explode(',','gridimage_id,user_id,realname,title,place,gi.grid_reference,spatial_scale,temporal_state,primary_subject,reference_index,ai.ai_result');
+$sql['columns'] = explode(',','gridimage_id,user_id,realname,title,imagetaken,p.place,gi.grid_reference,spatial_scale,temporal_state,reference_index,ai.ai_result');
 $sql['tables'] = array('gridimage_search gi');
 
 $sql['tables'][] = "inner join images_place_joined p using (gridimage_id)"; //to get "place"
 
 //$sql['tables'][] = "inner join gridimage_spc1 l using (gridimage_id)";
 //$sql['wheres'][] = "l.model = 'spc1'";
+
+//this view is used to get the updated name from spc2 model
 $sql['tables'][] = "inner join gridimage_spc1_view l using (gridimage_id)"; //automatically filters to spc1, but joins in spc2 too!
 
-$sql['tables'][] = "left join spc_geographic_anchor c using (place,geographic_anchor)";
-$sql['columns'][] = "COALESCE(c.canonical_anchor,l.geographic_anchor) AS geographic_anchor";
+//this works to canonicalize the duplicate anchors
+$sql['tables'][] = "left join spc_geographic_anchor ca using (place,geographic_anchor)";
+$sql['columns'][] = "COALESCE(ca.canonical_anchor,l.geographic_anchor) AS geographic_anchor";
+
+//this works to canonicalize the duplicate subjects
+$sql['tables'][] = "left join spc_primary_subject cs using (place,primary_subject)";
+$sql['columns'][] = "COALESCE(cs.canonical_subject,l.primary_subject) AS primary_subject";
 
 
 //$sql['tables'][] = "left join types_dataset_1 ai using (gridimage_id)";
 $sql['tables'][] = "left join gridimage_type_forspc ai using (gridimage_id)";
 
-$sql['wheres'][] = "place = ".$db->Quote($town);
+$sql['wheres'][] = "p.place = ".$db->Quote($town);
 
 if (!empty($_GET['subject']))
 	$sql['wheres'][] = "primary_subject = ".$db->Quote($_GET['subject']);
@@ -106,17 +113,35 @@ if (!empty($_GET['scale'])) {
 }
 
 if (!empty($_GET['expand'])) {
-	if ($_GET['expand'] === '2')
-		$sql['wheres'][] = "geographic_anchor like 'near %'";
-	$sql['limit'] = 1500;
+	if ($_GET['expand'] === '2') {
+		//this is JUST srround!
+//		$sql['wheres'][] = "geographic_anchor like 'near %'";
+
+		//finally this adds in the clasification
+		$sql['tables'][] = "left join spc_classification cls on (cls.place = p.place and cls.geographic_anchor = COALESCE(ca.canonical_anchor,l.geographic_anchor))";
+		$sql['wheres'][] = "cls.classification IN ('Other Area','Other POI', 'Settlement', 'Nearby')";
+
+
+	} else {
+		//this is BOTH! ... so no filtering!
+	}
+	$sql['limit'] = 2500;
 	$percell = 4;
 } else {
-	$sql['wheres'][] = "geographic_anchor NOT like 'near %'";
-	$sql['limit'] = 1000; //250;
+	//just show the town
+
+//	$sql['wheres'][] = "geographic_anchor NOT like 'near %'"; -- the problem with this it filters out otehr nearbys, not JUST the 'Near Main Town'
+	//... hence use classification=Nearby below, but, also can use to exclude seperate settlements, and out of town points!
+
+	//finally this adds in the clasification
+	$sql['tables'][] = "left join spc_classification cls on (cls.place = p.place and cls.geographic_anchor = COALESCE(ca.canonical_anchor,l.geographic_anchor))";
+	$sql['wheres'][] = "cls.classification NOT IN ('Other Area','Other POI', 'Settlement', 'Nearby')";
+
+	$sql['limit'] = 2000; //250;
 	$percell = 3;
 }
 
-//print sqlBitsToSelect($sql);
+//print htmlentities(sqlBitsToSelect($sql));exit;
 
 $data = $db->getAll(sqlBitsToSelect($sql));
 
@@ -147,23 +172,39 @@ if (!empty($_GET['scale']) && $_GET['scale'] == 'Corridor') {
 	    return strcmp($a['sort_key'], $b['sort_key']);
 	});
 
-	foreach ($subjects as $subject => $info) {
-		print "<h3>".htmlentities($subject)."</h3>";
-                foreach ($info['rows'] as $i => $row) {
-                    // Logic from your snippet
-                    $image = new GridImage();
-                    $image->fastInit($row);
+?>
+<style>
+.main-gallery-container { column-width: 300px; column-gap: 40px; padding: 20px; }
+.subject-group { display: inline-block; width: 100%; margin-bottom: 20px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; break-inside: avoid; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; }
+.gallery-wrapper { display: flex; flex-wrap: wrap; gap: 4px; padding:6px; }
+.subject-group h3 { margin: 0; font-size: 1.1em; background-color: #e0e0e0; padding:10px; }
+</style>
+<?
 
-                    $titleAttr = $image->grid_reference . ' : ' . htmlentities($image->title) . ' by ' . htmlentities($image->realname);
-                    $href = $CONF['canonical_domain'][$image->reference_index] . '/photo/' . $image->gridimage_id;
+echo '<div class="main-gallery-container">'; // Wrap the entire loop
+foreach ($subjects as $subject => $info) {
+    echo '<section class="subject-group">';
+    echo "<h3>" . htmlentities($subject) . "</h3>";
+    echo '<div class="gallery-wrapper">'; // New wrapper div
+    
+    foreach ($info['rows'] as $i => $row) {
+        $image = new GridImage();
+        $image->fastInit($row);
 
-                    echo '<div style="display:inline-block; margin: 2px;">';
-                    echo '<a title="' . $titleAttr . '" href="' . $href . '">';
-                    echo $image->getThumbnail($thumbw, $thumbh, false, true);
-                    echo '</a>';
-                    echo '</div>';
-                }
-	}
+        $titleAttr = $image->grid_reference . ' : ' . htmlentities($image->title) . ' by ' . htmlentities($image->realname);
+        $href = $CONF['canonical_domain'][$image->reference_index] . '/photo/' . $image->gridimage_id;
+
+        echo '<div class="gallery-item">';
+        echo '<a title="' . $titleAttr . '" href="' . $href . '">';
+        echo $image->getThumbnail($thumbw, $thumbh, false, true);
+        echo '</a>';
+        echo '</div>';
+    }
+    
+    echo '</div>'; // End gallery-wrapper
+    echo '</section>';
+}
+echo '</div>';
 
 	$smarty->display('_std_end.tpl');
 	exit;
@@ -172,9 +213,9 @@ if (!empty($_GET['scale']) && $_GET['scale'] == 'Corridor') {
 ##################################################################
 
 $friendly = [
-    'Settlement'   => 'Town & Village',
-    'Structure'    => 'Built & Notable',
-    'Corridor'     => 'Path & Waterway',
+    'Settlement'   => 'Street Scenes',
+    'Structure'    => 'Buildings and Structures',
+    'Corridor'     => 'Paths and Waterways',
     'Landscape'    => 'Countryside & Views',
     'Site Feature' => 'Local Feature',
     'Detail'       => 'Object Close-up',
@@ -191,15 +232,22 @@ if ($_GET['expand'] ?? 0 === '2')
 	$primaryAnchor = "Near $primaryAnchor";
 
 
+##################################################################
+
 // 2. Pivot the data into a 3D structure: [Anchor][Scale][State][]
 $pivoted = [];
 $allStates = ['Typical']; // Ensure 'Typical' is always tracked for the first column
 $subjects = array();
 
+$datecrit = date('Y-m-d', time()-86400*365*30);
+
 foreach ($data as $row) {
     $anchor = trim(explode('/',$row['geographic_anchor'])[0]);
     $scale  = $row['spatial_scale'];
     $state  = $row['temporal_state'];
+
+	if ($state == 'Typical' && $row['imagetaken'] > '1000-01-01' && $row['imagetaken'] < $datecrit)
+		$state = 'Historical';
 
     @$subjects[$row['primary_subject']]++;
 
@@ -214,6 +262,8 @@ foreach ($data as $row) {
 
     $pivoted[$anchor][$scale][$state][] = $row;
 }
+
+##################################################################
 
 // 3. Custom sort for Geographic Anchors
 uksort($pivoted, function($a, $b) use ($primaryAnchor) {
@@ -249,7 +299,6 @@ uksort($pivoted, function($a, $b) use ($primaryAnchor) {
 ##################################################################
 
 //todo, if GET[subject] will be filtered, so could do a seperate sql qyert to get subjects?
-
 
 if (count($subjects) > 1) {
 	print "<form>";
