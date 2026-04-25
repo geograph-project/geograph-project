@@ -997,7 +997,7 @@ $str[] = "
 
 		if (preg_match('/photo\/(\d+)/',$_SERVER["REQUEST_URI"],$m) && $GLOBALS['image']->isValid()) { //so dont display on 404/rejected (in case still cached on CDN!)
 			if (preg_match('/Googlebot|GoogleOther|bingbot|Baiduspider|InspectionTool/', @$_SERVER['HTTP_USER_AGENT'])) {
-				if ($m[1]%11 == 3) {
+				if ($m[1]%11 <= 3) {
 					//lets test this
 					$content = json_encode(fakeRelated($m[1]));
 				} else {
