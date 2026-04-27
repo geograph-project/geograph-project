@@ -79,7 +79,11 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 {else}
         <h1 class="pageheading">{$title|escape:'html'}</h1>
 {/if}
+{if $licence != 'none' && $approved > 0}
 <div class="published">Published: {$publish_date|date_format:"%e %B %Y"}</div>
+{else}
+<div class="published">Updated: {$update_date|date_format:"%e %B %Y"}</div>
+{/if}
 
 {if $pagesString}
 	<div style="margin-top:0px;font-size:0.8em;">
