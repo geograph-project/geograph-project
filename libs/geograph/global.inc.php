@@ -1177,7 +1177,7 @@ function fakeRelated($gridimage_id) {
 			$row['user_id'] = intval($row['user_id']);
 			$row['takenyear'] = intval($row['takenyear']);
 			$row['takenmonth'] = intval($row['takenmonth']);
-			$row['takenday'] = intval($row['takenday']);
+			//$row['takenday'] = intval($row['takenday']); -- JS expects a string!
 			$row['hash'] = substr(md5($row['id'].$row['user_id'].$CONF['photo_hashing_secret']), 0, 8);
 			$row['scenti'] = $idx; //just so different!
 			$row['place'] = $idx;

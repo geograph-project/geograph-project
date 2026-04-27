@@ -307,7 +307,8 @@ function zeroFill(number, width) {
 	return number + "";
 }
 function space_date(datestr) {
-	return datestr.substring(0,4)+'-'+datestr.substring(4,6)+'-'+datestr.substring(6,8);
+	var dateAsStr = datestr.toString(); // Convert to real string regardless of initial type
+	return dateAsStr.substring(0,4)+'-'+dateAsStr.substring(4,6)+'-'+dateAsStr.substring(6,8);
 }
 
 /**
