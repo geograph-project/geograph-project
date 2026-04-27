@@ -173,7 +173,7 @@ $hashesUrl .= "?t=".$token->getToken();
         /* Gallery Layout */
         #gallery-root { padding: 10px; }
         .day-section { margin-bottom: 20px; }
-        .day-header { font-size: 14px; font-weight: 600; margin: 0 0 10px 5px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .day-header { font-size: 14px; font-weight: 600; margin: 0 0 10px 5px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select:none; }
         .day-header:hover { color: #fff; }
         
         .thumb-strip { display: flex; gap: 4px; overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
