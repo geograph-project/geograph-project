@@ -65,6 +65,13 @@ $sources = array(
     'md3'     => 'Moondream3 generated tags (VLM Preview)',
 );
 
+
+$available_types['2geo'] = "Anchor";
+$available_types['2spat'] = "Scale";
+$available_types['2tem'] = "When";
+$datecrit = date('Y-m-d', time()-86400*365*30);
+
+
 echo '<div class="place-switcher">';
 foreach ($available_types as $t_key => $t_label) {
     $active = ($t_key === $type) ? 'class="active"' : '';
@@ -184,9 +191,58 @@ if (preg_match('/^Pre (\d+)/',$tag,$m)) {
     $tag = ''; //can't filter below by it. So remove the filter.
 }
 
+
 ##################################################################
 
-if ($type == 'clip') {
+if ($type == '2geo' || $type == '2spat' || $type == '2tem') {
+/*
+	print "cols = $cols<hr>";
+	print "join_tables = $join_tables<hr>";
+	print "spatial_where = $spatial_where<hr>";
+	print "town = $town<hr>";
+	exit;
+*/
+
+	switch($type) {
+		case '2geo': $col = 'geographic_anchor'; break;
+		case '2spat': $col = 'spatial_scale';
+			//we actully add in the AI 'types' classifcaton!
+			$join_tables .= " left join gridimage_type_forspc ai using (gridimage_id)";
+			$col = "if(ai_result LIKE 'Inside%', 'Inside',
+				if((ai_result LIKE 'Aerial%' OR ai_result LIKE 'From Drone%'), 'From Above',
+				$col))";
+			 break;
+		case '2tem': $col = 'temporal_state';
+			//temporal_state is only 5 catagories.
+			$primaryAnchor = explode('/',$town)[0];
+			$finalAnchor = "Near $primaryAnchor";
+			//todo, would be to EXCLUDE Sattlement, Other POI etc!?
+			$primaryAnchor = $db->Quote($primaryAnchor);
+			$finalAnchor = $db->Quote($finalAnchor);
+			$col = "CASE geographic_anchor
+				WHEN $primaryAnchor THEN CONCAT(temporal_state, ' Central')
+				WHEN $finalAnchor THEN CONCAT(temporal_state, ' Surrounds')
+				ELSE CONCAT(temporal_state, ' General')
+			END";
+			break;
+	}
+	//NOTE this IGNORES the canonialication via spc_geographic_anchor, and/or classification via spc_classifcation!!
+
+	//spatial_where does filtering to right down via gb_images_town
+    $sql = "SELECT $cols, $col as labels
+            FROM gridimage_spc1_view l
+	    $join_tables WHERE $spatial_where";
+
+    if (!empty($tag)) {
+        // Use LIKE to find images that contain this specific tag in the labels list
+        $sql .= " AND $col = " . $db->Quote($tag);
+    }
+    $sql .= " LIMIT 2000";
+
+
+##################################################################
+
+} elseif ($type == 'clip') {
 
     //	clipthelandscape.labels contains the labels, the  clipthelandscape model predictied, which mimik our 'top' tags
     // types_dataset_1 contains the manual moderation in .types (ie just an easy way to find them
@@ -392,6 +448,13 @@ else {
                 @$grouped[$t][] = $image;
             if ($image->km_ref == $image->grid_reference) @$stat[$t]++;
         }
+	if (strpos($type,'2') === 0) {
+		//these have their own concept!
+		if ($type == '2tem' && strpos($t,'Typical') === 0 && $image->imagetaken > '1000-01-01' && $image->imagetaken < $datecrit) {
+			$t = 'Historical';
+			 @$grouped[$t][] = $image;
+		}
+	} else
         if ($image->imagetaken > "1000" && $image->imagetaken < "2000") {
 		$t = ($image->imagetaken < "1970")?"Pre 1970":"Pre 2000";
 	        @$grouped[$t][] = $image;
@@ -477,7 +540,12 @@ $images = array_slice($images, 0, 5);
 		print " image-compact\" style=\"flex:0 0 content;border-left:1px solid silver;padding-left:3px;max-width:100%";
 	}
 	echo '">';
-        echo '<h3>' . htmlentities($t) . ' <small>' . (isset($stat[$t]) ? sprintf('%d+%d', $stat[$t], count($images)-$stat[$t]) : "+".count($images)) . '</small></h3>';
+	if (count($images) > 4) {
+	        echo '<h3>' . htmlentities($t) . ' <small>' . (isset($stat[$t]) ? sprintf('%d+%d', $stat[$t], count($images)-$stat[$t]) : "+".count($images)) . '</small></h3>';
+	} else {
+		//if few thumbs, dont have much space to show text!
+	        echo '<h3 style="white-space:normal;font-size:1em;padding-left:6px">' . htmlentities($t) . '</h3>';
+	}
 
         foreach (array_slice($images, 0, 20) as $image) {
             $image->_setDB($db);
