@@ -1,0 +1,52 @@
+
+
+
+CREATE TABLE snippet_centroids (primary key (snippet_id, reference_index)) AS
+SELECT 
+	snippet_id,
+	reference_index,
+    COUNT(images) as images,
+    FLOOR(AVG(nateastings)) as ae,
+    FLOOR(AVG(natnorthings)) as an,
+    FLOOR(SQRT(VAR_POP(nateastings) + VAR_POP(natnorthings))) AS spread
+FROM gridimage_search gi 
+INNER JOIN gridimage USING (gridimage_id)  
+INNER JOIN gridimage_snippet USING (gridimage_id)
+WHERE nateastings > 0  
+GROUP BY snippet_id, reference_index;
+
+
+
+--- once ALREADY compputed - and saved - spread (and ae/an) above can then do... 
+-- (need to first compute spread, can't use in the same aggration that calcuaes ite?) 
+
+CREATE TEMPORARY TABLE tmp_centroids (primary key (snippet_id, reference_index)) AS
+SELECT 
+        snippet_id,
+        reference_index,
+
+    floor(sqrt(max(
+	pow(cast(nateastings as signed)-ae,2)
+	+pow(cast(natnorthings as signed)-an,2)
+    ))) as max_dist,
+
+    COUNT(DISTINCT 
+        FLOOR(nateastings / (NULLIF(spread, 0) / 10)), 
+        FLOOR(natnorthings / (NULLIF(spread, 0) / 10))
+    ) AS occupancy
+
+FROM gridimage_search gi
+INNER JOIN gridimage USING (gridimage_id)
+INNER JOIN gridimage_snippet USING (gridimage_id)
+INNER JOIN snippet_centroids USING (snippet_id, reference_index)
+WHERE nateastings > 0
+GROUP BY snippet_id, reference_index;
+
+alter table snippet_centroids
+ add max_dist mediumint default null,
+ add occupancy mediumint default null;
+
+UPDATE snippet_centroids s
+INNER JOIN tmp_centroids tmp USING (snippet_id, reference_index)
+SET s.max_dist = tmp.max_dist, s.occupancy =tmp.occupancy;
+
