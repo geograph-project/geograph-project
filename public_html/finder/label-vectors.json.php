@@ -9,9 +9,11 @@ header('Content-Type: application/json');
 //header('Access-Control-Allow-Origin: *');
 customExpiresHeader(3600*24*7);
 
+$allowedModels = ['pe', 'clip', 'mpnet'];
+
 // Input parameters
 $labels_str = isset($_GET['labels']) ? trim($_GET['labels']) : '';
-$model = $_GET['model'] ?? 'clip';
+$model = in_array($_GET['model'] ?? '', $allowedModels) ? $_GET['model'] : 'clip';
 $vector_base64 = $_GET['vector'] ?? null;
 $image_id = isset($_GET['image_id']) ? intval($_GET['image_id']) : null;
 $text_label = $_GET['text_label'] ?? null;
@@ -20,7 +22,7 @@ $src = isset($_GET['src']) ? trim($_GET['src']) : '';
 $return_vector = isset($_GET['return_vector']) ? filter_var($_GET['return_vector'], FILTER_VALIDATE_BOOLEAN) : false;
 
 #########################################################################
-// Handle original functionality for 'labels' parameter
+// MODE 1 - Generates embeddings for labels to enable client-side semantic similarity search
 
 if (!empty($labels_str)) {
     $labels = array_map('trim', explode(',', $labels_str));
@@ -31,7 +33,14 @@ if (!empty($labels_str)) {
         exit;
     }
 
-	//todo, use getLabelVectors() which is 'optimized' to use the cache better
+    //use getLabelVectors() which is 'optimized' to use the cache better
+    $response = getLabelVectors($labels, $model);
+    //but still returns the raw vector, which we need to encode for json
+    foreach ($response as &$vector)
+	if (!empty($vector))
+	     $vector = base64_encode(pack('g*', ...$vector));
+    echo json_encode($response);
+    exit;
 
     $response = [];
     foreach ($labels as $label) {
@@ -48,7 +57,8 @@ if (!empty($labels_str)) {
 }
 
 #########################################################################
-# get the raw vector
+// MODE 2 - Look for 'similar' labels based on query (from the label_embedding RT index!)
+// ... note this was really just a test, may not be actively used, and does NOT support models other than 'clip'
 
 $query_vector = null;
 
