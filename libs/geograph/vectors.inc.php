@@ -11,6 +11,16 @@ require_once("3rdparty/s3vectors.inc.php"); //defines queryS3Vectors
 function getTextEmbeddingFromQuery(string $query, $model = 'clip'): array
 {
 	require_once("3rdparty/vector.class.php"); //provides EmbeddingVector - needed for vector math
+	global $CONF, $memcache;
+
+	//if a complex query going to be best to use memcache (single 'part' can use normal DB cache!)
+	if (preg_match('/(id:\d.+id:\d)|(\w *\[?id:\d)|(.+ - .+)/',$query) && $memcache) {
+		$mkey = md5(trim($query));
+		$binary = $memcache->name_get('v'.$model,$mkey);
+	        if (!empty($binary)) {
+			return array_values(unpack('g*', $binary));
+	        }
+	}
 
     $parts = explode(' - ', $query, 2);
     $positivePart = trim($parts[0]);
@@ -37,7 +47,11 @@ function getTextEmbeddingFromQuery(string $query, $model = 'clip'): array
 
 	if (!empty($finalVector)) {
 		//return raw float array!
-		return $finalVector->getNormalizedVector();
+		$vector = $finalVector->getNormalizedVector();
+		if (!empty($mkey)) {
+			$memcache->name_set('v'.$model,$mkey,pack('g*', ...$vector),$memcache->compress,$memcache->period_med);
+		}
+		return $vector;
 	}
 
     return $finalVector;
@@ -73,7 +87,7 @@ function getTextEmbeddingFromQuery(string $query, $model = 'clip'): array
             // Remove all 'id:...' parts from the string to get the remaining text
             $textPart = trim(preg_replace('/\[*id:(\d+)\]*/', '', $part));
             if (!empty($textPart)) {
-                $textVector = new EmbeddingVector(getTextEmbedding($textPart, $model));
+                $textVector = new EmbeddingVector(getTextEmbeddingWrapper($textPart, $model, true));
                 if ($vector === null) {
                     $vector = $textVector;
                 } else {
@@ -83,7 +97,7 @@ function getTextEmbeddingFromQuery(string $query, $model = 'clip'): array
         } else {
             // No image IDs found, process the entire part as text
             if (!empty($part)) {
-                $vector = new EmbeddingVector(getTextEmbedding($part, $model));
+                $vector = new EmbeddingVector(getTextEmbeddingWrapper($part, $model, true));
             }
         }
         return $vector;
@@ -93,13 +107,14 @@ function getTextEmbeddingFromQuery(string $query, $model = 'clip'): array
 // NOTE only supports clip (PE in different table, mpnet differente dimesnion), and intended for use with known labels as uses a Cache
 function getTextEmbeddingWrapper($label, $model = 'clip', $save = false) { //save defaults to false for legacy reasons
  	global $db;
-	if (empty($db))
-		$db = GeographDatabaseConnection(false);
 
         if (preg_match('/^\[*id:(\d+)\]*$/',$label,$m) || preg_match('/\/photo\/(\d+)$/',$label,$m)) {
                 //todo, in concept we COULD do both, and use vector->add() ?
                 return getImageEmbeddingById(intval($m[1]), 'image', $model);
         }
+
+	if (empty($db))
+		$db = GeographDatabaseConnection(false);
         $quoted = $db->Quote($label);
         $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted AND model = '$model'");
 

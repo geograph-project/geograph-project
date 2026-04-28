@@ -338,6 +338,10 @@
 
 }
 
+.ui-menu {
+    z-index:10000 !important;
+}
+
 </style>
 
 <div class="finder-container">
@@ -355,7 +359,7 @@
 	</div>
 	<form id="finder-form" method="get" class="finder-form">
 		<div class="form-column drop-container">
-			<b>Search For</b>: <input type=search name=q size="36" placeholder="Enter Search Query"> <br>
+			<b>Search For</b>: <input type=search name=q size="36" maxlength="128" placeholder="Enter Search Query"> <br>
 			<label title="This traditional search finds images based on the words you enter, using their descriptions and other metadata.">
 				<input type=radio name=type value="keywords" checked>Keywords</label> /
 			<label title="This AI-powered search finds images that are visually similar to what you're looking for, instead of text descriptions. The system works best with general visual concepts, like 'gothic cathedral' or 'castle at sunset', rather than specific names or landmarks.">

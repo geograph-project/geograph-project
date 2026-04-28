@@ -31,9 +31,11 @@ if (!empty($labels_str)) {
         exit;
     }
 
+	//todo, use getLabelVectors() which is 'optimized' to use the cache better
+
     $response = [];
     foreach ($labels as $label) {
-        $vector = getTextEmbeddingWrapper($label, $model);
+        $vector = getTextEmbeddingWrapper($label, $model, true); //cache!
         if (!empty($vector)) {
             $binary_vector = pack('g*', ...$vector);
             $response[$label] = base64_encode($binary_vector);
