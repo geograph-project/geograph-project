@@ -21,6 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+$_GET['live'] = 1;
+
 require_once('geograph/global.inc.php');
 init_session();
 
@@ -28,6 +30,9 @@ $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');
+
+////////////////////////////////////////////////////
+// List reports
 
 if (!empty($_GET['review'])) {
 	$USER->mustHavePerm("director");
@@ -49,6 +54,8 @@ if (!empty($_GET['review'])) {
 
 if (!empty($_POST['url'])) {
 
+////////////////////////////////////////////////////
+//submit a report
 	if (!empty($_POST['submit'])) {
 
 			//can go ahead and add it
@@ -72,7 +79,11 @@ mail_wrapper($CONF['developer_email'] ?? $CONF['contact_email'], "[Geograph] New
 "URL: {$_POST['url']}\n\nPattern: {$_POST['pattern']}\n\n",
 "From: Geograph Website <noreply@geograph.org.uk>");
 
-	} else {
+
+////////////////////////////////////////////////////
+// query a URL
+
+	} elseif (!empty($_POST['url'])) {
 
 		$url = parse_url($_POST['url']);
 		if (!preg_match('/^(\w+[\w.-]+\w+)\.?$/',$url['host']))
@@ -81,7 +92,8 @@ mail_wrapper($CONF['developer_email'] ?? $CONF['contact_email'], "[Geograph] New
 		if (preg_match('/^www.(.+)/',$url['host'],$m))
 			$results[] = count_urls("*{$m[1]}/*");
 
-		$results[] = count_urls("*{$url['host']}/*");
+		$results[] = count_urls ("*{$url['host']}/*");
+		$results[] = count_urls2("*{$url['host']}/*");
 
 		if (strlen(@$url['path']) > 1) { //always initial slahs?
 			$bits = explode('/',$url['path']);
@@ -99,11 +111,10 @@ mail_wrapper($CONF['developer_email'] ?? $CONF['contact_email'], "[Geograph] New
 
 		} //eithout a path, dont need to compuse one without query string, as the top level domain one will do that!
 
-		$results[] = count_urls($_POST['url']);
+		$results[] = count_urls ($_POST['url']);
+		$results[] = count_urls2($_POST['url']);
 
 		$data = array('found'=>$results);
-		$data['sql'] = $sql;
-		$data['db'] = $CONF['db_db'];
 		outputJSON($data);
 		exit;
 	}
@@ -114,6 +125,15 @@ function count_urls($pattern) {
 	$pattern2 = str_replace('*','%',$pattern); //LIKE uses % as wilecard
 	return $db->getRow($sql = "SELECT ".$db->Quote($pattern)." AS pattern, count(distinct url) as links,count(distinct gridimage_id) as images FROM gridimage_link WHERE url LIKE ".$db->Quote($pattern2)." AND parent_link_id =0 and next_check < '2400-01-01'");
 }
+
+function count_urls2($pattern) {
+	global $db, $sql;
+	$pattern2 = str_replace('*','%',$pattern); //LIKE uses % as wilecard
+	return $db->getRow($sql = "SELECT ".$db->Quote($pattern)." AS pattern, count(distinct website) as links,count(distinct user_id) as profiles FROM user WHERE website LIKE ".$db->Quote($pattern2));
+}
+
+////////////////////////////////////////////////////
+//display a form
 
 $smarty->display('_std_begin.tpl');
 
@@ -143,6 +163,12 @@ function validate(fullurl) {
 						$('#select').append($('<input type=radio name=pattern>').val(row.pattern));
 						$('#select').append($('<label>').text(row.pattern));
 						$('#select').append($('<span style=color:gray>').text(" : "+row.links+" links, on "+row.images+" images"));
+						$('#select').append('<br>');
+						found++;
+					} else if (row && row.profiles && row.profiles > 0) {
+						$('#select').append($('<input type=radio name=pattern>').val(row.pattern));
+						$('#select').append($('<label>').text(row.pattern));
+						$('#select').append($('<span style=color:gray>').text(" : "+row.links+" links, on "+row.profiles+" profiles"));
 						$('#select').append('<br>');
 						found++;
 					}
