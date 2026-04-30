@@ -661,6 +661,16 @@ if (!$show_low && preg_match('/(\d+\.?\d*)% Match/',$image->grid_reference, $m))
        		}
 	}
 
+	//maybe should be a function on gridiamge!
+	function getThumbnailLink($image, $thumbw = 213, $thumbh = 160) {
+		global $CONF;
+		$domain = '';
+		if (!empty($image->reference_index))
+			$domain = $CONF['canonical_domain'][$image->reference_index];
+		print '<a title="'.$image->grid_reference.' : '.htmlentities($image->title).' by '.htmlentities($image->realname).' - click to view full size image"';
+		print ' href="'.$domain.'/photo/'.$image->gridimage_id.'">'.$image->getThumbnail($thumbw,$thumbh,false,true,'loading=lazy src').'</a>';
+	}
+
 	//again not really a full production feature, but intended as a useful too to visualize results
 	//assumes that images hage wgs84_lat/long loaded (cant convert from e/n etc yet)
 	function outputMap($dots = true, $thumbs = false, $line = false) {
