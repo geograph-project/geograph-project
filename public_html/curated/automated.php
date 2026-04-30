@@ -105,231 +105,11 @@ if (!empty($_GET['label'])) {
 //render curation
 
 	?>
-<style>
-.curation-header {
-    max-width: 900px;
-    margin: 0 auto 20px auto;
-    font-family: sans-serif;
-}
-
-.instruction-card {
-    background: #fdfdfd;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 10px;
-}
-
-.instruction-grid {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 15px;
-}
-
-.instruction-item {
-    flex: 1;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 0.95rem;
-}
-
-.instruction-item .icon {
-    font-size: 1.5rem;
-}
-
-.instruction-footer {
-    border-top: 1px dashed #ccc;
-    padding-top: 12px;
-    font-size: 0.9rem;
-    color: #555;
-}
-
-.btn-danger {
-    background: #e74c3c;
-    color: white;
-    border: none;
-    padding: 5px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background 0.2s;
-}
-
-.btn-danger:hover {
-    background: #c0392b;
-}
-
-cite {
-    font-style: normal;
-	padding:10px;
-	border-radius:10px;
-	background-color:#3498db;
-}
-
-p.count {
-	color:gray;
-	text-align:center;
-}
-
-        .thumb-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, 213px);
-            gap: 10px; justify-content: center;
-        }
-
-.thumb-card {
-   position: relative; /* Labels will now position relative to this */
-
-    width: 213px;
-    background: #ddd;
-    border-radius: 6px;
-    overflow: hidden;
-    --box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Ensure image fills top area */
-.thumb-card img {
-    display: block;
-    width: 100%;
-    height: 160px;
-    object-fit: contain;
-}
-
-/* 2. Common styles for both labels */
-.size-label, .year-label {
-    position: absolute;
-    top: 0px;              /* Distance from the top edge */
-    padding: 2px 8px;
-    font-family:'Comic Sans MS',Georgia,Verdana,Arial,serif;
-    font-size: 11px;
-    --font-weight: bold;
-    color: white;
-    pointer-events: none;  /* Allows clicks to pass through to the image/link */
-    z-index: 10;           /* Ensures they sit above the image */
-    backdrop-filter: blur(2px);     /* Modern "glass" effect */
-}
-
-/* 3. Top Left Positioning */
-.size-label {
-    left: 0px;
-    opacity:0.3;
-    border-bottom-right-radius:4px;
-    background: rgba(0, 0, 0, 0.6); /* Dark semi-transparent background */
-}
-
-/* 4. Top Right Positioning */
-.year-label {
-    right: 0px;
-    opacity:0.6;
-    border-bottom-left-radius:4px;
-    background: rgba(0, 0, 255, 0.5);
-}
-
-/* The Rating Bar */
-.rating-bar {
-    display: flex;
-    --padding: 8px;
-    gap: 4px;
-    background: #eee;
-}
-
-/* Hide the actual radio circles */
-.rating-bar input[type="radio"] {
-    display: none;
-}
-
-/* Style the labels as buttons */
-.rating-bar label {
-    flex: 1;
-    padding: 6px 0;
-    cursor: pointer;
-    text-align: center;
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 6px;
-    background: white;
-    color: #666;
-    transition: all 0.2s;
-}
-
-/* Checked States */
-.thumb-grid input[value="bad"]:checked + label { background: #ff4d4d; color: white; }
-.thumb-grid input[value="ok"]:checked + label { background: #ddd; color: green; }
-.thumb-grid input[value="good"]:checked + label { background: #2ecc71; color: white; }
-
-/* Card Feedback */
-.thumb-card:has(input[value="bad"]:checked) { 
-    opacity: 0.3; 
-    filter: grayscale(0.5); 
-}
-.thumb-card:has(input[value="good"]:checked) { 
-    outline: 3px solid #2ecc71; 
-    --transform: translateY(-4px);
-    box-shadow: 0 8px 15px rgba(46, 204, 113, 0.2);
-}
-
-
-.bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    
-    /* Layout */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px 0;
-    
-    /* Visuals */
-    background: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
-    backdrop-filter: blur(10px);          /* Frosted glass effect */
-    border-top: 1px solid #ddd;
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
-    z-index: 1000;                        /* Keep it above the grid */
-}
-
-.bottom-bar button {
-    background: #2ecc71;
-    color: white;
-    border: none;
-    padding: 12px 40px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: transform 0.1s, background 0.2s;
-    box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
-}
-
-.bottom-bar button:hover {
-    background: #27ae60;
-    transform: translateY(-2px);
-}
-
-.bottom-bar button:active {
-    transform: translateY(0);
-}
-body {
-    padding-bottom: 100px;
-}
-h3 span {
-	padding:10px;
-	display:block;
-	color:gray;
-	font-weight:normal;
-	border-radius:10px;
-	background-color:#d0d8f9;
-	text-align:center;
-}
-</style>
+	<link rel="stylesheet" href="automated.css?<? echo filemtime('automated.css'); ?>">
 
 	<a href="?">&lt;&lt; Back to Listing</a> (without saving)</a>
 
-	<form method=post>
+	<form name="theForm" method=post>
 
 <div class="curation-header">
     <h3>Images marked with <?
@@ -370,7 +150,7 @@ h3 span {
 	$where[] = "c.score > 5";
 	//$where[] = "cosine <0.75";
 	//$where[] = "(original_width >=1024 or original_height >=1024)";
-	
+
 	$order[] = "round(cosine,1) asc";
 	$order[] = "(original_width >=1024 or original_height >=1024) desc";
 
@@ -381,7 +161,7 @@ h3 span {
 		inner join gridimage_size s using (gridimage_id)
 		WHERE ".implode(" AND ",$where)."
 		ORDER BY ".implode(", ",$order)."
-                LIMIT 200";
+                LIMIT 5";
 	$imagelist->_getImagesBySql($sql);
         if ($imagelist->images) {
                 print "<p class=count>showing ".count($imagelist->images)." images</p>";
@@ -425,6 +205,10 @@ h3 span {
 	print "</div>";
 	print "</form>";
 
+	?>
+        <script src="/js/geograph-api-libs.js?<? echo filemtime("../js/geograph-api-libs.js"); ?>"></script>
+	<script src="automated.js?<? echo filemtime('automated.js'); ?>"></script>
+	<?
 	exit;
 
 }
