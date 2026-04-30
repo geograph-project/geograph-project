@@ -11,8 +11,8 @@ class EmbeddingVector {
    * @param {Float32Array | Array<number | string> | string} data - An array of 512 floats,
    * a regular array of numbers or strings, or a base64 encoded string.
    */
-  constructor(data) {
-    this.dimension = 512;
+  constructor(data, dimension = 512) {
+    this.dimension = dimension;
     this.vector = this._processInput(data);
   }
 
@@ -24,7 +24,9 @@ class EmbeddingVector {
    */
   _processInput(data) {
     if (typeof data === 'string') {
-      return this._decodeBase64(data);
+      let result = this._decodeBase64(data);
+      this.dimension = result.length;
+      return result;
     } else if (data instanceof Float32Array) {
       if (data.length !== this.dimension) {
         throw new Error(`Invalid vector dimension. Expected ${this.dimension}, got ${data.length}`);
@@ -81,7 +83,7 @@ class EmbeddingVector {
     for (let i = 0; i < this.dimension; i++) {
       newVector[i] = this.vector[i] + otherVector.vector[i];
     }
-    const resultVector = new EmbeddingVector(newVector);
+    const resultVector = new EmbeddingVector(newVector, this.dimension);
     return normalize ? resultVector.normalize() : resultVector;
   }
 
@@ -99,7 +101,7 @@ class EmbeddingVector {
     for (let i = 0; i < this.dimension; i++) {
       newVector[i] = this.vector[i] - otherVector.vector[i];
     }
-    const resultVector = new EmbeddingVector(newVector);
+    const resultVector = new EmbeddingVector(newVector, this.dimension);
     return normalize ? resultVector.normalize() : resultVector;
   }
 
@@ -131,7 +133,7 @@ class EmbeddingVector {
       averageVector[i] = sumVector[i] / vectors.length;
     }
 
-    const resultVector = new EmbeddingVector(averageVector);
+    const resultVector = new EmbeddingVector(averageVector, this.dimension);
     return normalize ? resultVector.normalize() : resultVector;
   }
 
@@ -188,13 +190,13 @@ class EmbeddingVector {
     }
     const magnitude = Math.sqrt(sumOfSquares);
     if (magnitude === 0) {
-      return new EmbeddingVector(new Float32Array(this.dimension).fill(0));
+      return new EmbeddingVector(new Float32Array(this.dimension).fill(0), this.dimension);
     }
     const newVector = new Float32Array(this.dimension);
     for (let i = 0; i < this.dimension; i++) {
       newVector[i] = this.vector[i] / magnitude;
     }
-    return new EmbeddingVector(newVector);
+    return new EmbeddingVector(newVector, this.dimension);
   }
 
   /**
@@ -391,10 +393,10 @@ class EmbeddingVector {
             newCentroidVector[j] = sumVector[j] / clusters[i].length;
           }
 
-          const newCentroid = new EmbeddingVector(newCentroidVector);
+          const newCentroid = new EmbeddingVector(newCentroidVector, this.dimension);
           newCentroids.push(newCentroid.normalize());
         } else {
-          newCentroids.push(new EmbeddingVector(new Float32Array(candidates[0].dimension).fill(0)).normalize());
+          newCentroids.push(new EmbeddingVector(new Float32Array(candidates[0].dimension).fill(0), this.dimension).normalize());
         }
       }
       centroids = newCentroids;

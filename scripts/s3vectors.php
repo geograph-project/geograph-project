@@ -65,7 +65,7 @@ require "./_scripts.inc.php";
 
 if (!empty($param['insert'])) {
 
-    if (preg_match('/^(label|user|tags|doc|place|thread|image)-(\w+)/',$param['index'], $m)) {
+    if (preg_match('/^(label|user|tags|snippet|doc|place|thread|image)-(\w+)/',$param['index'], $m)) {
 	$source = $m[1];
 	$model = $m[2]; //todo, could validate the model, but the vector-cmd6.py will do that anyway.
     } else {
@@ -100,6 +100,15 @@ if (!empty($param['insert'])) {
 	    $cmd[] = "-s " . escapeshellarg("tag_id as id, if(prefix in ('top','type','subject','bucket') and canonical =0,tag,tagtext) as input_text,".
 					    " tagtext, count as images, users, if(prefix in ('top','type','subject','bucket') and canonical=0, prefix, if(classification like 'named%' or classification = 'related-to', 'named', 'tag')) as src");
 	    $cmd[] = "-w " . escapeshellarg("tag_id = final_id and status = 1 and count>0");
+
+    } elseif ($source == 'snippet') {
+
+	//in theory the bge-small model will behave better with prefixes during encoding
+	$col =  $model == 'bgesmall'?"CONCAT('passage: ',title)":'title';
+
+	    $cmd[] = "-t " . escapeshellarg("snippet inner join user using (user_id)");
+	    $cmd[] = "-s " . escapeshellarg("snippet_id AS id, $col AS input_text, title, grid_reference, user_id, realname");
+	    $cmd[] = "-w " . escapeshellarg("enabled=1");
 
     } elseif ($source == 'doc') {
 
@@ -398,6 +407,10 @@ if ($param['test']) {
 
 ##################################
 
+    if (preg_match('/^(label|user|tags|snippet|doc|place|thread|image)-(\w+)/',$param['index'], $m)) {
+	$source = $m[1];
+	$model = $m[2]; //todo, could validate the model, but the vector-cmd6.py will do that anyway.
+    }
 
    if (!empty($param['query'])) {
 	//this table sometimes have a enginered prompt, which we want to use

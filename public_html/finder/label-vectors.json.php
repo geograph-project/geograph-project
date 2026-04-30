@@ -9,7 +9,7 @@ header('Content-Type: application/json');
 //header('Access-Control-Allow-Origin: *');
 customExpiresHeader(3600*24*7);
 
-$allowedModels = ['pe', 'clip', 'mpnet'];
+$allowedModels = ['pe', 'clip', 'mpnet', 'bgesmall'];
 
 // Input parameters
 $labels_str = isset($_GET['labels']) ? trim($_GET['labels']) : '';

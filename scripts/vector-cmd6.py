@@ -374,7 +374,7 @@ def insert_from_mysql(
                                 elif isinstance(col_value, bytearray): metadata[col_name] = col_value.decode('utf-8')
                                 else: metadata[col_name] = col_value
 
-                    if embedding_np:
+                    if embedding_np is not None and embedding_np.size > 0:
                         all_vectors.append({
                             "key": str(row_id),
                             "data": {"float32": embedding_np.tolist()},
@@ -606,6 +606,8 @@ def run_query(vector_bucket_name: str, index_name: str, query_text: str, top_k: 
         sys.exit(1)
 
 def main():
+    global s3vectors
+
     parser = argparse.ArgumentParser(
         description="A command-line tool for managing vector embeddings with AWS Bedrock and S3Vectors."
     )
@@ -721,8 +723,9 @@ def main():
 
     args = parser.parse_args()
 
-    if arg.model == 'image-pe':
-        s3vectors = boto3.client('s3vectors', region_name='eu-west-1') # s3vector can be tested in eu-west-1 now!
+    if args.index == 'image-pe' or args.index == 'tags-bgesmall' or args.index == 'snippet-bgesmall':
+        print("Switching to eu-west-1")
+        s3vectors = boto3.client('s3vectors', region_name='eu-west-1') # s3vector can be tested in eu-west-1 now! (we've started putting some indexes there)
 
     if args.command == "insert-file":
         insert_data(args.bucket, args.index, args.file, args.model)
