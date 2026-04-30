@@ -164,6 +164,10 @@ p.count {
     box-shadow: 0 8px 15px rgba(46, 204, 113, 0.2);
 }
 
+.thumb-card:has(input[value="ok"]:checked) { 
+    outline: 3px solid #eee; 
+}
+
 
 .bottom-bar {
     position: fixed;
@@ -232,6 +236,10 @@ h3 span {
 
 #curation-modal::backdrop {
   background: rgba(0, 0, 0, 0.8);
+}
+
+#curation-modal .thumb-grid {
+  min-height:300px; /* prevent a layout shift when paging, so the loading message maintains height of popup*/
 }
 
 .modal-main-view {

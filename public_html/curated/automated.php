@@ -40,50 +40,65 @@ $smarty->display('_std_begin.tpl');
 if (!empty($_GET['label'])) {
 	if (!empty($_POST['submit'])) {
 
-		function submit_results($gridimage_id, $set) {
-			global $db;
+        function submit_results($gridimage_id, $verdict) {
+            global $db, $USER;
 
-			$wheres = array();
-			$wheres['user_id'] = 23277; //Socket
-                        $wheres['group'] = 'Automated';
-                        $wheres['label'] = $_GET['label'];
+            $group = 'Automated';
+            $label = $_GET['label'];
 
-			//we need to ne able to affect ALL imags!
-			if ($gridimage_id)
-				$wheres['gridimage_id'] = intval($gridimage_id);
-			else
-				$wheres['score'] = 10;
+            // --- SINGLE IMAGE UPSERT ---
+            if ($gridimage_id > 0) {
+                // Determine the SET clause and a starting score for new entries
+                if ($verdict == 'good') {
+                    $update_calc = "score = score * 2";
+                    $starting_score = 20;
+                } elseif ($verdict == 'bad') {
+                    $update_calc = "score = score div 2";
+                    $starting_score = 5;
+                } else { // 'ok'
+                    //if user provides this, still to create
+                    $starting_score = 10;
+                    //but its a noop, on existing rows!
+                    $update_calc = "score = score"; //noop!
+                }
 
-			$where = array();
-			foreach($wheres as $key=>$value) {
-				if (is_numeric($value))
-					$where[] = "$key = $value";
-				else
-					$where[] = "`$key` = ".$db->Quote($value);
-			}
+                $user_id = intval($USER->user_id);
 
-			$update = "UPDATE curated1 SET $set WHERE ".implode(' AND ',$where);
-		//	print "$update;<hr>";
-			$db->Execute($update)  or die("$sql\n\n".$db->ErrorMsg()."\n");
-		}
+                // This creates the record if it's new, or updates it if it exists.
+                $sql = "INSERT INTO curated1 (`user_id`, `group`, `label`, `gridimage_id`, `score`)
+                        VALUES ($user_id, " . $db->Quote($group) . ", " . $db->Quote($label) . ", $gridimage_id, $starting_score)
+                        ON DUPLICATE KEY UPDATE $update_calc";
 
-		if ($_POST['submit'] == 'bad') {
-			//affects all!
-			submit_results(0, "score = 1");
-		} else {
-			foreach($_POST['result'] as $gridimage_id => $verdict) {
-				if ($gridimage_id = intval($gridimage_id)) {
-					if ($verdict == 'good') {
-						submit_results($gridimage_id, "score = score * 2");
-					} elseif ($verdict == 'bad') {
-						submit_results($gridimage_id, "score = score div 2");
+                $db->Execute($sql) or die($db->ErrorMsg());
 
-					} //ok = noop
-				}
-			}
-		}
+            // --- GLOBAL UPDATE (The "Bad" button case) ---
+            } else {
+                //... ignores $verdict, for now assums only used for marking bad
+
+                $user_id = 23277; //socket
+
+                // This still uses your original UPDATE logic since it affects existing rows only
+                $where = "user_id = $user_id AND `group` = " . $db->Quote($group) . " AND `label` = " . $db->Quote($label) . " AND score = 10";
+                $sql = "UPDATE curated1 SET score = 1 WHERE $where";
+
+                $db->Execute($sql) or die($db->ErrorMsg());
+            }
+        }
+
+        // --- Main Execution Logic ---
+        if ($_POST['submit'] == 'bad') {
+            submit_results(0, 'bad');
+        } else {
+            foreach($_POST['result'] as $gridimage_id => $verdict) {
+                $id = intval($gridimage_id);
+                if ($id > 0) {
+                    submit_results($id, $verdict);
+                }
+            }
+        }
 
 		if ($_POST['submit'] == 'next') {
+			//todo, track this per region??
 			if (empty($_SESSION['avoid']))
 				$_SESSION['avoid'] = array($_GET['label']);
 			else
@@ -92,7 +107,10 @@ if (!empty($_GET['label'])) {
 			$list = "(".implode(',',array_map(array($db,'Quote'),array_values($_SESSION['avoid']))).")";
 			$label = $db->getOne("  SELECT label FROM curated1 WHERE user_id = 23277 AND `Group` = 'Automated' AND score >=10 AND label NOT IN $list LIMIT 1");
 			if ($label) {
-				header("Location: ?label=".urlencode($label));
+				$url = "?label=".urlencode($label);
+				if (!empty($_GET['region']))
+					$url .= "&region".urlencode($_GET['region']);
+				header("Location: $url");
 				exit;
 			}
 		}
@@ -151,6 +169,10 @@ if (!empty($_GET['label'])) {
 	//$where[] = "cosine <0.75";
 	//$where[] = "(original_width >=1024 or original_height >=1024)";
 
+	if (!empty($_GET['region'])) {
+		$where[] = "region = ".$db->Quote($_GET['region']);
+	}
+
 	$order[] = "round(cosine,1) asc";
 	$order[] = "(original_width >=1024 or original_height >=1024) desc";
 
@@ -161,12 +183,12 @@ if (!empty($_GET['label'])) {
 		inner join gridimage_size s using (gridimage_id)
 		WHERE ".implode(" AND ",$where)."
 		ORDER BY ".implode(", ",$order)."
-                LIMIT 5";
+                LIMIT 200";
 	$imagelist->_getImagesBySql($sql);
         if ($imagelist->images) {
                 print "<p class=count>showing ".count($imagelist->images)." images</p>";
 
-		print "<div class=\"thumb-grid\">";
+		print "<div class=\"thumb-grid main-grid\">";
 		foreach ($imagelist->images as $image) {
 	                $image->reference_index = (strlen($image->grid_reference) == 5)?2:1;
 			print "<div class=thumb-card>";
@@ -209,13 +231,157 @@ if (!empty($_GET['label'])) {
         <script src="/js/geograph-api-libs.js?<? echo filemtime("../js/geograph-api-libs.js"); ?>"></script>
 	<script src="automated.js?<? echo filemtime('automated.js'); ?>"></script>
 	<?
-	exit;
 
+	$smarty->display('_std_end.tpl');
+	exit;
 }
 
 #######################################################################
+//simply gallery
 
 print "<h2>Curated Education images</h2>";
+
+if (empty($_GET['matrix'])) {
+
+
+$regions = $db->getAll("SELECT region, count(*) as cnt FROM curated1 WHERE `group` = 'Automated' AND active = 1 AND score > 5 AND region != '' GROUP BY region ORDER BY region ASC");
+
+$selectedRegion = $_GET['region'] ?? '';
+
+echo '<div class="filter-bar">';
+echo '<form method="GET" action="">';
+// Preserve the label if it's already set in the URL
+if (isset($_GET['label'])) {
+    echo '<input type="hidden" name="label" value="'.htmlentities($_GET['label']).'">';
+}
+
+echo '<label for="region-select">Filter by Region:</label>';
+echo '<select name="region" id="region-select" onchange="this.form.submit()">';
+echo '<option value="">All Regions</option>';
+
+$where = ''; $extra='';
+foreach ($regions as $reg) {
+    $sel = ($selectedRegion == $reg['region']) ? ' selected' : '';
+    echo '<option value="' . htmlentities($reg['region']) . '"' . $sel . '>';
+    echo htmlentities($reg['region']) . ' (' . $reg['cnt'] . ')';
+    echo '</option>';
+
+	if ($selectedRegion == $reg['region']) {
+		$where .= " AND region = ".$db->Quote($selectedRegion);
+		$extra .= "&amp;region=".urlencode($selectedRegion);
+	}
+}
+
+echo '</select>';
+
+	print " <a href=?matrix=1>View all Regions</a>";
+
+echo '</form>';
+echo '</div>';
+
+
+	//still use an initial query, because want to get the top x per group (by distance)
+	//without using row functions would be harder in one query
+        $raw = $db->getAssoc("select label,region,count(*) as images,avg(cosine) as avg,group_concat(gridimage_id order by score desc, cosine asc limit 5) as gridimage_id, count(distinct region) as regions
+	from curated1 where `group` = 'Automated' and active = 1 and score > 5 $where
+	group by label with rollup");
+
+	$ids = array();
+	foreach ($raw as $row) {
+		foreach(explode(',',$row['gridimage_id']) as $id) $ids[] = $id;
+	}
+
+	$images = array();
+	$imagelist->getImagesByIdList($ids);
+	if ($cnt = count($imagelist->images)) {
+		foreach ($imagelist->images as $image) {
+			$images[$image->gridimage_id] = $image;
+		}
+	}
+
+	$labels = $db->getAll("select stack,name,description from curated_label where active=1 and length(clip_query) > 10 order by stack, name");
+
+?>
+<style>
+.gallery-container {font-family: sans-serif;max-width: 1200px;margin: 20px auto;color: #333;}
+.label-section {margin-bottom: 40px;border-bottom: 1px solid #eee;padding-bottom: 20px;}
+.label-header {display: flex;justify-content: space-between;align-items: baseline;margin-bottom: 10px;}
+.label-header h3 {margin: 0;font-size: 1.2rem;color: #555;}
+.label-header h3 a {color: #007bff;text-decoration: none;}
+.image-count {font-size: 0.85rem;color: #888;}
+.thumbnail-grid {display: flex;flex-wrap: wrap;gap: 10px;}
+.thumbnail-grid a {display: inline-block; outline: 2px solid transparent;
+        outline-offset: 3px; }
+.thumbnail-grid a:hover { outline-color: #007bff60; }
+.thumbnail-grid img {border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);display: block; }
+</style>
+<?
+
+
+echo '<div class="gallery-container">';
+
+foreach($labels as $row) {
+    $name = $row['name'];
+    $stack = $row['stack'];
+    $data = $raw[$name] ?? null;
+    $ids = !empty($data['gridimage_id']) ? explode(',', $data['gridimage_id']) : [];
+    $count = $data['images'] ?? 0;
+    $regions = $data['regions'] ?? 0;
+    $url = "?label=" . urlencode($name) . $extra;
+
+    $avg_display = '';
+    if (!empty($data['avg'])) {
+        $min = 0.656312;
+        $max = 0.849066;
+
+        $clamped = max($min, min($max, $data['avg']));
+
+	    // Linear Normalization: (Value - Min) / (Max - Min)
+	    // We subtract from 1 to invert it (lower cosine = higher percentage)
+	    $normalized = 1 - (($clamped - $min) / ($max - $min));
+	    $score = round($normalized * 100);
+
+	    // Choose a color based on the score (Optional but "prettier")
+	    $color = ($score > 70) ? '#28a745' : (($score > 40) ? '#ffc107' : '#dc3545');
+	    $avg_display = "<small style='color: $color; font-weight: bold; margin-left: 10px;'>($score% Match)</small>";
+    }
+
+    echo '<section class="label-section">';
+
+    // Header Row
+    echo '<div class="label-header">';
+    echo '<h3>' . htmlentities($stack) . ' &rsaquo;&rsaquo; <a href="'.$url.'">' . htmlentities($name) . '</a> '.$avg_display.'</h3>';
+    echo '<span class="image-count">' . number_format($count) . ' images, '.$regions.' regions</span>';
+    echo '</div>';
+
+if (!empty($row['description']))
+	print "<p>".htmlentities($row['description']);
+
+    // Image Grid
+    if (!empty($ids)) {
+        echo '<div class="thumbnail-grid">';
+        foreach ($ids as $id) {
+            if (isset($images[$id])) {
+                $imagelist->getThumbnailLink($images[$id]);
+            }
+        }
+        echo '</div>';
+    } else {
+        echo '<p style="color:#ccc; font-style:italic;">No images found in this category.</p>';
+    }
+
+    echo '</section>';
+}
+
+echo '</div>';
+
+
+	$smarty->display('_std_end.tpl');
+	exit;
+}
+
+#######################################################################
+//full matrix display!
 
 $raw = $db->getAll("select label,region,count(*) as images,avg(cosine),group_concat(gridimage_id order by cosine limit 1) as gridimage_id
 	from curated1 inner join gridimage_size using (gridimage_id)
@@ -274,7 +440,10 @@ foreach ($labels as $label => $rows) {
 	foreach($regions as $region => $count) {
 		print "<td align=right>";
 		if (!empty($rows[$region])) {
-			print number_format($rows[$region]['images'],0);
+			if ($region != 'TOTAL')
+				$url = "?label=".urlencode($label)."&amp;region=".urlencode($region);
+
+			print "<a href=\"$url\">".number_format($rows[$region]['images'],0)."</a>";
 		}
 		if ($region == 'TOTAL') {
 			print "<td align=center>";

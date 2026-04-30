@@ -9,7 +9,9 @@ modal.innerHTML = `
     <div class="modal-main-view">
       <button id="prev-btn" class="nav-btn">&lt;</button>
       <div class="image-container">
-        <img id="modal-large-img" src="" alt="Full size">
+        <a href="/photo/">
+           <img id="modal-large-img" src="" alt="Full size">
+        </a>
         <div id="modal-rating-placeholder"></div>
       </div>
       <button id="next-btn" class="nav-btn">&gt;</button>
@@ -36,62 +38,83 @@ let allThumbs = Array.from(document.querySelectorAll('.thumb-card img'));
 // 2. The Core Function to Update Modal Content
 function openCurationModal(index) {
   currentIndex = index;
-  const thumb = allThumbs[currentIndex];
-  const container = thumb.closest('.thumb-card');
-  
+  let thumb = allThumbs[currentIndex];
+
   // Get Large Image URL
   const largeUrl = thumb.src.replace(/_\d+x\d+/, '');
-  document.getElementById('modal-large-img').src = largeUrl;
+  const photoId = thumb.src.match(/\d\/(\d{6,})_\w{8}/)[1];
 
-  // Replicate Rating Bar
-  const originalRating = container.querySelector('.rating-bar');
+  const largeImg = document.getElementById('modal-large-img');
+  largeImg.src = largeUrl;
+  largeImg.parentElement.href = `https://www.geograph.org.uk/photo/${photoId}`;
+  largeImg.title = thumb.alt; //actully better to put it direct into title for a tooltip
+
+  // 2. Get the current rating value from anywhere (Main Grid or Shadow)
+  const existingShadow = shadowContainer.querySelector(`input[name="result[${photoId}]"]`);
+  const existingMain = document.querySelector(`.main-grid .thumb-card input[name="result[${photoId}]"]:checked`);
+  const currentVal = existingShadow ? existingShadow.value : (existingMain ? existingMain.value : null);
+
+  // 3. Render the rating bar from scratch
   const placeholder = document.getElementById('modal-rating-placeholder');
-  placeholder.innerHTML = ''; // Clear previous
-  
-  if (originalRating) {
-    const clonedRating = originalRating.cloneNode(true);
-    const timestamp = Date.now(); // Unique string for this modal instance
+  placeholder.innerHTML = generateRatingHTML(photoId, 'modal-main', currentVal);
 
-    // Sync the radio buttons (unique names for the modal)
-    const originalChecked = originalRating.querySelector('input:checked');
-
-    if (originalChecked) {
-      const valueToMatch = originalChecked.value;
-      clonedRating.querySelectorAll('input').forEach(input => {
-
-        const label = clonedRating.querySelector(`label[for="${input.id}"]`);
-        const newId = `modal-${input.id}-${timestamp}`;
-
-	// 1. Give the input a unique Name and ID for the modal
-        input.name = "modal-rating";
-        input.id = newId;
-
-        //Update the corresponding Label to point to the new ID
-        if (label) { label.setAttribute('for', newId); }
-
-        if (input.value === valueToMatch) input.checked = true;
-
-        // Bonus: Update the background form when modal rating changes
-        input.addEventListener('change', (e) => {
-          const mainInput = originalRating.querySelector(`input[value="${e.target.value}"]`);
-          if (mainInput) mainInput.checked = true;
-        });
-      });
-    }
-    placeholder.appendChild(clonedRating);
-  }
+  // 4. Manual sync logic (since it's not a clone anymore)
+  placeholder.querySelectorAll('input').forEach(input => {
+    input.addEventListener('change', (e) => {
+      syncBackToSource(photoId, e.target.value);
+    });
+  });
 
   //don't await!
   loadSimilarImages(thumb.src);
 
-  modal.showModal();
+  if (modal.open) {
+    //if clicka similar image, scroll back to top
+    modal.scrollTo({
+      top: 0,
+      behavior: 'smooth' // 'smooth' for a nice transition, or 'instant' for speed
+    });
+  } else {
+    modal.showModal();
+  }
 }
 
+function generateRatingHTML(photoId, instancePrefix, currentVal = null) {
+  const isChecked = (val) => (currentVal === val ? 'checked' : '');
+  return `
+    <div class='rating-bar' data-photo-id="${photoId}">
+        <input type='radio' id='bad-${instancePrefix}-${photoId}' name='result2[${photoId}]' value='bad' ${isChecked('bad')}>
+        <label for='bad-${instancePrefix}-${photoId}' class='label-bad'>&#128078;</label>
+
+        <input type='radio' id='ok-${instancePrefix}-${photoId}' name='result2[${photoId}]' value='ok' ${isChecked('ok')}>
+        <label for='ok-${instancePrefix}-${photoId}' class='label-ok'>OK</label>
+
+        <input type='radio' id='good-${instancePrefix}-${photoId}' name='result2[${photoId}]' value='good' ${isChecked('good')}>
+        <label for='good-${instancePrefix}-${photoId}' class='label-good'>&#128077;</label>
+    </div>
+  `;
+}
+
+///////////////////////////////////////////////////////////////
 // 3. Event Listeners
+
 document.addEventListener('click', (e) => {
+  if (e.target.id === 'modal-large-img') {
+    return; // Don't preventDefault, let the browser open the link
+  }
+
   const thumbLink = e.target.closest('a[href*="/photo/"]');
   if (thumbLink) {
     e.preventDefault();
+
+    if (e.target.closest('.modal-content')) { //if clicking a thumb INSIDE the modal
+       //... need to redefine allThumbs to be the current similar images!
+       allThumbs = Array.from(document.querySelectorAll('.modal-content .thumb-card img'));
+    } else {
+       //otherwise reset to the main document thumbs
+       allThumbs = Array.from(document.querySelectorAll('.main-grid .thumb-card img'));
+    }
+
     const clickedImg = thumbLink.querySelector('img');
     const idx = allThumbs.indexOf(clickedImg);
     openCurationModal(idx);
@@ -127,6 +150,8 @@ modal.addEventListener('close', () => {
   saveModalResults();
 });
 
+///////////////////////////////////////////////////////////////
+
 async function loadSimilarImages(thumbSrc) {
   const gridElement = document.querySelector('#curation-modal .thumb-grid');
   gridElement.innerHTML = '<p>Searching for similar images...</p>';
@@ -157,7 +182,6 @@ async function loadSimilarImages(thumbSrc) {
 
 	// Determine if this should be checked on render
 	const currentValue = existingShadow ? existingShadow.value : (existingMain ? existingMain.value : null);
-        const isChecked = (val) => (currentValue === val ? 'checked' : '');
 
         const item = document.createElement('div');
         item.className = 'thumb-card';
@@ -168,16 +192,7 @@ async function loadSimilarImages(thumbSrc) {
           ${getSizeLabel(row.original)}
 	  ${row.takenyear>1000?`<div class="year-label">${row.takenyear}</div>`:''}
 
-    <div class='rating-bar'>
-        <input type='radio' id='bad2-${row.id}' name='result2[${row.id}]' value='bad' ${isChecked('bad')}>
-        <label for='bad2-${row.id}' class='label-bad'>&#128078;</label>
-
-        <input type='radio' id='ok2-${row.id}' name='result2[${row.id}]' value='ok' ${isChecked('ok')}>
-        <label for='ok2-${row.id}' class='label-ok'>OK</label>
-
-        <input type='radio' id='good2-${row.id}' name='result2[${row.id}]' value='good' ${isChecked('good')}>
-        <label for='good2-${row.id}' class='label-good'>&#128077;</label>
-    </div>
+          ${generateRatingHTML(row.id, 'sim', currentValue)}
         `;
         gridElement.appendChild(item);
       });
@@ -202,34 +217,36 @@ function getSizeLabel(width) {
 
 function saveModalResults() {
   const modalRadios = document.querySelectorAll('#curation-modal .rating-bar input:checked');
-  
+
   modalRadios.forEach(modalRadio => {
     // Extract the ID from the modal's input name/id
     // Assuming name format: sim-res[123456] or result[123456]
     const photoIdMatch = modalRadio.name.match(/\[(\d+)\]/);
     if (!photoIdMatch) return;
-    
+
     const photoId = photoIdMatch[1];
     const ratingValue = modalRadio.value;
 
-    // 1. Try to find the radio in the background grid
-    const mainRadio = document.querySelector(`.thumb-grid input[name="result[${photoId}]"][value="${ratingValue}"]`);
-
-    if (mainRadio) {
-      // Case A: Image is in the background grid
-      mainRadio.checked = true;
-      mainRadio.dispatchEvent(new Event('change', { bubbles: true }));
-    } else {
-      // Case B: Image is NOT in the grid (it came from the 'Similar' API)
-      let hiddenInput = shadowContainer.querySelector(`input[name="result[${photoId}]"]`);
-      
-      if (!hiddenInput) {
-        hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = `result[${photoId}]`;
-        shadowContainer.appendChild(hiddenInput);
-      }
-      hiddenInput.value = ratingValue;
-    }
+    syncBackToSource(photoId, ratingValue);
   });
+}
+
+
+function syncBackToSource(photoId, value) {
+  // Update the background grid if it exists
+  const mainInput = document.querySelector(`.main-grid .thumb-card input[name="result[${photoId}]"][value="${value}"]`);
+  if (mainInput) {
+    mainInput.checked = true;
+    mainInput.dispatchEvent(new Event('change', { bubbles: true }));
+  } else {
+    // otherwise update the shadow container (for the API-sourced images)
+    let hiddenInput = shadowContainer.querySelector(`input[name="result[${photoId}]"]`);
+    if (!hiddenInput) {
+      hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      hiddenInput.name = `result[${photoId}]`;
+      shadowContainer.appendChild(hiddenInput);
+    }
+    hiddenInput.value = value;
+  }
 }
