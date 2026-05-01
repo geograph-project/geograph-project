@@ -35,6 +35,30 @@ $smarty->display('_std_begin.tpl');
  $imagelist = new ImageList();
 
 #######################################################################
+
+if (!empty($_GET['jump'])) {
+	//may contain a label, need to avoid! (doesnt matter if add '1' to the list!
+
+	//todo, track this per region??
+	if (empty($_SESSION['avoid']))
+		$_SESSION['avoid'] = array($_GET['jump']);
+	else
+		$_SESSION['avoid'][] = $_GET['jump'];
+
+	$list = "(".implode(',',array_map(array($db,'Quote'),array_values($_SESSION['avoid']))).")";
+	//the order by c, is just so not in alphabetial order!
+	$label = $db->getOne("  SELECT label,count(*) c,sum(score!=10) d FROM curated1 WHERE `group` = 'Automated' AND label NOT IN $list GROUP BY label ORDER BY d asc,c desc LIMIT 1");
+
+	if ($label) {
+		$url = "?label=".urlencode($label);
+		if (!empty($_GET['region']))
+			$url .= "&region".urlencode($_GET['region']);
+		header("Location: $url");
+		exit;
+	}
+}
+
+#######################################################################
 //submit results
 
 if (!empty($_GET['label'])) {
@@ -105,7 +129,9 @@ if (!empty($_GET['label'])) {
 				$_SESSION['avoid'][] = $_GET['label'];
 
 			$list = "(".implode(',',array_map(array($db,'Quote'),array_values($_SESSION['avoid']))).")";
-			$label = $db->getOne("  SELECT label FROM curated1 WHERE user_id = 23277 AND `Group` = 'Automated' AND score >=10 AND label NOT IN $list LIMIT 1");
+//			$label = $db->getOne("  SELECT label FROM curated1 WHERE user_id = 23277 AND `Group` = 'Automated' AND score >=10 AND label NOT IN $list LIMIT 1");
+			$label = $db->getOne("  SELECT label,count(*) c,sum(score!=10) d FROM curated1 WHERE `group` = 'Automated' AND label NOT IN $list GROUP BY label ORDER BY d asc,c desc LIMIT 1");
+
 			if ($label) {
 				$url = "?label=".urlencode($label);
 				if (!empty($_GET['region']))
@@ -125,7 +151,8 @@ if (!empty($_GET['label'])) {
 	?>
 	<link rel="stylesheet" href="automated.css?<? echo filemtime('automated.css'); ?>">
 
-	<a href="?">&lt;&lt; Back to Listing</a> (without saving)</a>
+	<a href="?">&lt;&lt; Back to Listing</a> or
+	<a href="?jump=<? echo urlencode($_GET['label']); ?>">Jump to another subject</a> (without saving)</a>
 
 	<form name="theForm" method=post>
 
@@ -147,13 +174,13 @@ if (!empty($_GET['label'])) {
             </div>
             <div class="instruction-item">
                 <span class="icon">&#128078;</span>
-                <p><strong>Demote:</strong> Mark irrelevant images. You only need to mark the first few where quality begins to drop.</p>
+                <p><strong>Demote:</strong> Mark irrelevant images. You only need to mark the first few, which notes where quality begins to drop.</p>
             </div>
         </div>
         
         <div class="instruction-footer">
-            <p>Everything else is considered <strong>OK</strong>. If most images (over 50%) are bad matches: 
-               <button class="btn-danger" type="submit" name="submit" value="bad">AI Search Didn't Work!</button>
+            <p>Everything else is considered <strong>OK</strong>. If most images (over 50%) are bad matches:
+               <button class="btn-danger" type="submit" name="submit" value="bad">AI Search Didn't Work!</button> (returns to homepage)
             </p>
         </div>
     </div>
@@ -165,7 +192,8 @@ if (!empty($_GET['label'])) {
 	$where[] = "c.`group` = 'Automated'";
 	$where[] = "c.label = ".$db->Quote($_GET['label']);
 	$where[] = "c.active = 1";
-	$where[] = "c.score > 5";
+	if (empty($_GET['ignore']))
+		$where[] = "c.score > 5";
 	//$where[] = "cosine <0.75";
 	//$where[] = "(original_width >=1024 or original_height >=1024)";
 
@@ -173,7 +201,8 @@ if (!empty($_GET['label'])) {
 		$where[] = "region = ".$db->Quote($_GET['region']);
 	}
 
-	$order[] = "round(cosine,1) asc";
+	//$order[] = "round(cosine,1) asc";
+	$order[] = "cosine asc"; //might be better without striping
 	$order[] = "(original_width >=1024 or original_height >=1024) desc";
 
 	$imagelist->cols = str_replace('user_id','gi.user_id', $imagelist->cols);
@@ -186,7 +215,9 @@ if (!empty($_GET['label'])) {
                 LIMIT 200";
 	$imagelist->_getImagesBySql($sql);
         if ($imagelist->images) {
-                print "<p class=count>showing ".count($imagelist->images)." images</p>";
+                print "<p class=count>showing ".count($imagelist->images)." images for <b>".htmlentities($_GET['label'])."</b>";
+		if (!empty($_GET['region']))
+			print ", found in <i>".htmlentities($_GET['region'])."</i>";
 
 		print "<div class=\"thumb-grid main-grid\">";
 		foreach ($imagelist->images as $image) {
@@ -201,6 +232,7 @@ if (!empty($_GET['label'])) {
 				print "<div class=\"size-label\">1024px</div>";
 			if ($image->imagetaken>'1000-00-00')
 				print "<div class=\"year-label\">".substr($image->imagetaken,0,4)."</div>";
+
     print "<div class='rating-bar'>";
         // Bad
         print "<input type='radio' id='bad-$image->gridimage_id' name='result[$image->gridimage_id]' value='bad'>";
@@ -221,9 +253,10 @@ if (!empty($_GET['label'])) {
 	}
 
 	print "<div class=\"bottom-bar\">";
-	print "<button type=submit name=submit value=ok>Submit [".htmlentities($_GET['label'])."] Results</button>";
-        print " ";
-	print "<button type=submit name=submit value=next>Save and move to next subject</button>";
+	print "Label: <b>".htmlentities($_GET['label'])."</b> - ";
+	print "<button type=submit name=submit value=ok>Submit Results</button>";
+        print " - ";
+	print "<button type=submit name=submit value=next>Submit and move to Next</button>";
 	print "</div>";
 	print "</form>";
 
@@ -274,7 +307,9 @@ foreach ($regions as $reg) {
 
 echo '</select>';
 
-	print " <a href=?matrix=1>View all Regions</a>";
+	print " <a href=?matrix=1>View Regional Breakdown</a>";
+
+	print ' or <a href="?jump=1">Jump to an arbitary subject</a> (most in need of review)<hr>';
 
 echo '</form>';
 echo '</div>';
@@ -351,10 +386,11 @@ foreach($labels as $row) {
     // Header Row
     echo '<div class="label-header">';
     echo '<h3>' . htmlentities($stack) . ' &rsaquo;&rsaquo; <a href="'.$url.'">' . htmlentities($name) . '</a> '.$avg_display.'</h3>';
-    echo '<span class="image-count">' . number_format($count) . ' images, '.$regions.' regions</span>';
+    if ($count)
+	    echo '<span class="image-count"><a href="'.$url.'">' . number_format($count) . ' images</a>, '.$regions.' regions</span>';
     echo '</div>';
 
-if (!empty($row['description']))
+    if (!empty($row['description']))
 	print "<p>".htmlentities($row['description']);
 
     // Image Grid
