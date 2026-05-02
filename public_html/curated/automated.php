@@ -97,13 +97,17 @@ if (!empty($_GET['label'])) {
 
             // --- GLOBAL UPDATE (The "Bad" button case) ---
             } else {
-                //... ignores $verdict, for now assums only used for marking bad
+                if ($verdict == 'good') {
+                    $update_calc = "score + 1";
+                } elseif ($verdict == 'bad') {
+                    $update_calc = "score = 1";
+		}
 
                 $user_id = 23277; //socket
 
                 // This still uses your original UPDATE logic since it affects existing rows only
                 $where = "user_id = $user_id AND `group` = " . $db->Quote($group) . " AND `label` = " . $db->Quote($label) . " AND score = 10";
-                $sql = "UPDATE curated1 SET score = 1 WHERE $where";
+                $sql = "UPDATE curated1 SET $update_calc WHERE $where";
 
                 $db->Execute($sql) or die($db->ErrorMsg());
             }
@@ -111,6 +115,8 @@ if (!empty($_GET['label'])) {
 
         // --- Main Execution Logic ---
         if ($_POST['submit'] == 'bad') {
+            submit_results(0, 'bad');
+        } elseif ($_POST['submit'] == 'bad') {
             submit_results(0, 'bad');
         } else {
             foreach($_POST['result'] as $gridimage_id => $verdict) {
@@ -182,9 +188,15 @@ if (!empty($_GET['label'])) {
             <p>Everything else is considered <strong>OK</strong>. If most images (over 50%) are bad matches:
                <button class="btn-danger" type="submit" name="submit" value="bad">AI Search Didn't Work!</button> (returns to homepage)
             </p>
+            <p>or, if <b>most images (over 90%)</b> are ok matches, but none stand out as exceptional, nor particully bad:
+               <button class="btn-danger" style="background-color:#7aca00" type="submit" name="submit" value="ok">AI Search Seems OK</button> (returns to homepage)
+            </p>
         </div>
     </div>
 </div>
+	<div style="float:right">
+		<button type=button id="add-manual-btn">Add image Manually</button>
+	</div>
 
 	<?
 
@@ -250,6 +262,8 @@ if (!empty($_GET['label'])) {
 			print "</div>";
 		}
 		print "</div>";
+	} else {
+		print "<p>No Images Found. Can add some manually:- ";
 	}
 
 	print "<div class=\"bottom-bar\">";
@@ -310,6 +324,9 @@ echo '</select>';
 	print " <a href=?matrix=1>View Regional Breakdown</a>";
 
 	print ' or <a href="?jump=1">Jump to an arbitary subject</a> (most in need of review)<hr>';
+
+$done = $db->getOne("  SELECT format_percent(sum(done)/2, count(*),1) as done from (select label,floor(ln(sum(score!=10))) as done from curated1 where cosine is not null group by label order by null) t2");
+	print " Percentage Verified: $done";
 
 echo '</form>';
 echo '</div>';

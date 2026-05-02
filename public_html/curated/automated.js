@@ -42,7 +42,7 @@ function openCurationModal(index) {
 
   // Get Large Image URL
   const largeUrl = thumb.src.replace(/_\d+x\d+/, '');
-  const photoId = thumb.src.match(/\d\/(\d{6,})_\w{8}/)[1];
+  const photoId = parseInt(thumb.src.match(/\d\/(\d{6,})_\w{8}/)[1], 10);
 
   const largeImg = document.getElementById('modal-large-img');
   largeImg.src = largeUrl;
@@ -83,13 +83,13 @@ function generateRatingHTML(photoId, instancePrefix, currentVal = null) {
   const isChecked = (val) => (currentVal === val ? 'checked' : '');
   return `
     <div class='rating-bar' data-photo-id="${photoId}">
-        <input type='radio' id='bad-${instancePrefix}-${photoId}' name='result2[${photoId}]' value='bad' ${isChecked('bad')}>
+        <input type='radio' id='bad-${instancePrefix}-${photoId}' name='result${instancePrefix}[${photoId}]' value='bad' ${isChecked('bad')}>
         <label for='bad-${instancePrefix}-${photoId}' class='label-bad'>&#128078;</label>
 
-        <input type='radio' id='ok-${instancePrefix}-${photoId}' name='result2[${photoId}]' value='ok' ${isChecked('ok')}>
+        <input type='radio' id='ok-${instancePrefix}-${photoId}' name='result${instancePrefix}[${photoId}]' value='ok' ${isChecked('ok')}>
         <label for='ok-${instancePrefix}-${photoId}' class='label-ok'>OK</label>
 
-        <input type='radio' id='good-${instancePrefix}-${photoId}' name='result2[${photoId}]' value='good' ${isChecked('good')}>
+        <input type='radio' id='good-${instancePrefix}-${photoId}' name='result${instancePrefix}[${photoId}]' value='good' ${isChecked('good')}>
         <label for='good-${instancePrefix}-${photoId}' class='label-good'>&#128077;</label>
     </div>
   `;
@@ -152,6 +152,44 @@ modal.addEventListener('close', () => {
 
 ///////////////////////////////////////////////////////////////
 
+const addButton = document.getElementById('add-manual-btn');
+
+addButton.onclick = async () => {
+  let id = prompt('Enter the ID of an image you know. Focus on visual clarity: definitive images only!', '');
+
+  if (id) {
+    //If it's a Geograph filename/URL, extract the ID specifically
+    id = id.replace(/[\w:\/\.]*\/(\d{6,})_\w{8}(_\w+)?\.jpg/g, '$1');
+    id = id.replace(/[^\d]+/g, ' ').trim();
+  }
+
+  // Basic numeric validation
+  if (id && !isNaN(id)) {
+    const imageData = await fetchImage(id);
+
+    if (imageData) {
+      // Create a virtual img element that matches the structure
+      // our curation modal expects (it extacts the ID from the URL!)
+      const newImg = document.createElement('img');
+      newImg.src = getGeographUrl(imageData.id, imageData.hash, 'med');
+      newImg.alt = `${imageData.title} by ${imageData.realname}`
+
+      allThumbs.push(newImg);
+
+      //should 'inject' a good score into 'shadowContainer'!
+      syncBackToSource(imageData.id, "good");
+
+      // Open the modal on this new last item
+      openCurationModal(allThumbs.length - 1);
+
+    } else {
+      alert("Could not find a Geograph image with that ID.");
+    }
+  }
+};
+
+///////////////////////////////////////////////////////////////
+
 async function loadSimilarImages(thumbSrc) {
   const gridElement = document.querySelector('#curation-modal .thumb-grid');
   gridElement.innerHTML = '<p>Searching for similar images...</p>';
@@ -162,7 +200,7 @@ async function loadSimilarImages(thumbSrc) {
     gridElement.innerHTML = '<p>Could not extract ID for lookup.</p>';
     return;
   }
-  const photoId = match[1];
+  const photoId = parseInt(match[1], 10);
 
   // 2. Build API URL
   const apiUrl = `https://api.geograph.org.uk/api-facetql-vector.php?long=1&select=id%2Cuser_id%2Crealname%2Cgrid_reference%2Ctitle%2Chash%2Ctakenyear%2Coriginal&limit=30&utf=1&label=%5Bid%3A${photoId}%5D&model=pe`;
@@ -248,5 +286,30 @@ function syncBackToSource(photoId, value) {
       shadowContainer.appendChild(hiddenInput);
     }
     hiddenInput.value = value;
+  }
+}
+
+
+async function fetchImage(id) {
+  // Prepare the parameters for the standard Geograph API
+  const params = new URLSearchParams({
+    select: 'id,title,grid_reference,hash,realname,user_id,width,height,takenday',
+    where: 'id=' + id,
+    limit: 1,
+    utf: 1
+  });
+
+  const url = `https://www.geograph.org.uk/api-facetql.php?${params.toString()}`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Status: ${response.status}`);
+    const data = await response.json();
+    if (data && data.rows && data.rows.length) {
+      return data.rows[0];
+    }
+  } catch (error) {
+    console.error("Could not fetch Geograph data for ID " + id, error);
+    return null;
   }
 }
