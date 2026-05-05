@@ -1,7 +1,7 @@
 <?php
 
 // Script parameters
-$param = array('print' => false, 'execute'=>false);
+$param = array('print' => false, 'execute'=>false, 'gen'=>1);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -28,10 +28,17 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $regions = $db->getAssoc("select region,count(*) from sphinx_placenames group by region");
 
-//$labels = $db->getAll("select stack,name,clip_query from curated_label where length(clip_query) > 5");
-$labels = $db->getAll("select stack,name,clip_query
+if ($param['gen'] == 1) {
+	//$labels = $db->getAll("select stack,name,clip_query from curated_label where length(clip_query) > 5");
+	$labels = $db->getAll("select stack,name,clip_query
 	 from curated_label  left join curated1 c on (`group` = 'Automated' and c.label = name)
 	 where length(clip_query) > 5 AND curated_id IS NULL");
+
+} elseif ($param['gen'] == 2) {
+	$labels = $db->getAll("select label as name, concat('[id:',gridimage_id,']') as clip_query, score
+	 from curated1 where score>=20 and cosine is not null AND gen=1");
+
+}
 
 foreach ($labels as $row) {
 	$query = $row['clip_query'];
@@ -91,6 +98,13 @@ function save_results($row, $vectors) {
 			$updates['decade'] = substr($result['metadata']['taken'],0,3)."0s";
 			$updates['gridimage_id'] = intval($result['key']);
 			$updates['cosine'] = floatval($result['distance']);
+			if (!empty($row['score'])) {
+				$updates['src_query'] = $row['clip_query']." #score=".$row['score'];
+				//todo, we could 'skip' the row, if its the image from the query, BUT insert ignore, will help!
+			} else {
+				$updates['src_query'] = $row['clip_query'];
+			}
+			$updates['gen'] = $param['gen'];
 
 			if (empty($param['execute'])) {
 				print_r($updates);exit;
@@ -99,7 +113,7 @@ function save_results($row, $vectors) {
 	                $db->Execute($sql = 'INSERT IGNORE INTO curated1 SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',
 	                        array_values($updates)) or die("$sql\n\n".$db->ErrorMsg()."\n");
 
-			@$regions[$result['metadata']['region']]++;
+			@$regions[$result['metadata']['region']]+=$db->Affected_Rows();
 		}
 	}
 	return $regions;

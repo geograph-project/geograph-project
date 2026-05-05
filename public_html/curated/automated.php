@@ -34,6 +34,8 @@ $smarty->display('_std_begin.tpl');
 
  $imagelist = new ImageList();
 
+$gen = intval($_GET['gen'] ?? 1);
+
 #######################################################################
 
 if (!empty($_GET['jump'])) {
@@ -52,7 +54,9 @@ if (!empty($_GET['jump'])) {
 	if ($label) {
 		$url = "?label=".urlencode($label);
 		if (!empty($_GET['region']))
-			$url .= "&region".urlencode($_GET['region']);
+			$url .= "&region=".urlencode($_GET['region']);
+		if (!empty($_GET['gen']))
+			$url .= "&gen=".urlencode($_GET['gen']);
 		header("Location: $url");
 		exit;
 	}
@@ -65,7 +69,7 @@ if (!empty($_GET['label'])) {
 	if (!empty($_POST['submit'])) {
 
         function submit_results($gridimage_id, $verdict) {
-            global $db, $USER;
+            global $db, $USER, $gen;
 
             $group = 'Automated';
             $label = $_GET['label'];
@@ -106,7 +110,7 @@ if (!empty($_GET['label'])) {
                 $user_id = 23277; //socket
 
                 // This still uses your original UPDATE logic since it affects existing rows only
-                $where = "user_id = $user_id AND `group` = " . $db->Quote($group) . " AND `label` = " . $db->Quote($label) . " AND score = 10";
+                $where = "user_id = $user_id AND `group` = " . $db->Quote($group) . " AND `label` = " . $db->Quote($label) . " AND score = 10 AND `gen`=$gen";
                 $sql = "UPDATE curated1 SET $update_calc WHERE $where";
 
                 $db->Execute($sql) or die($db->ErrorMsg());
@@ -141,7 +145,9 @@ if (!empty($_GET['label'])) {
 			if ($label) {
 				$url = "?label=".urlencode($label);
 				if (!empty($_GET['region']))
-					$url .= "&region".urlencode($_GET['region']);
+					$url .= "&region=".urlencode($_GET['region']);
+				if (!empty($_GET['gen']))
+					$url .= "&gen=".urlencode($_GET['gen']);
 				header("Location: $url");
 				exit;
 			}
@@ -183,7 +189,7 @@ if (!empty($_GET['label'])) {
                 <p><strong>Demote:</strong> Mark irrelevant images. You only need to mark the first few, which notes where quality begins to drop.</p>
             </div>
         </div>
-        
+        <? if ($gen === 1) { ?>
         <div class="instruction-footer">
             <p>Everything else is considered <strong>OK</strong>. If most images (over 50%) are bad matches:
                <button class="btn-danger" type="submit" name="submit" value="bad">AI Search Didn't Work!</button> (returns to homepage)
@@ -192,6 +198,7 @@ if (!empty($_GET['label'])) {
                <button class="btn-danger" style="background-color:#7aca00" type="submit" name="submit" value="ok">AI Search Seems OK</button> (returns to homepage)
             </p>
         </div>
+	<? } ?>
     </div>
 </div>
 	<div style="float:right">
@@ -212,6 +219,7 @@ if (!empty($_GET['label'])) {
 	if (!empty($_GET['region'])) {
 		$where[] = "region = ".$db->Quote($_GET['region']);
 	}
+	$where[] = "gen = ".$db->Quote($gen);
 
 	//$order[] = "round(cosine,1) asc";
 	$order[] = "cosine asc"; //might be better without striping
@@ -291,7 +299,6 @@ print "<h2>Curated Education images</h2>";
 if (empty($_GET['matrix'])) {
 
 
-$regions = $db->getAll("SELECT region, count(*) as cnt FROM curated1 WHERE `group` = 'Automated' AND active = 1 AND score > 5 AND region != '' GROUP BY region ORDER BY region ASC");
 
 $selectedRegion = $_GET['region'] ?? '';
 
@@ -306,7 +313,15 @@ echo '<label for="region-select">Filter by Region:</label>';
 echo '<select name="region" id="region-select" onchange="this.form.submit()">';
 echo '<option value="">All Regions</option>';
 
-$where = ''; $extra='';
+$where = array(); $extra='';
+$where[] = "`group` = 'Automated'";
+$where[] = "active = 1";
+$where[] = "score > 5";
+$where[] = "gen = ".$db->Quote($gen);
+
+
+$regions = $db->getAll("SELECT region, count(*) as cnt FROM curated1 WHERE ".implode(' AND ',$where)." AND region != '' GROUP BY region ORDER BY region ASC");
+
 foreach ($regions as $reg) {
     $sel = ($selectedRegion == $reg['region']) ? ' selected' : '';
     echo '<option value="' . htmlentities($reg['region']) . '"' . $sel . '>';
@@ -314,7 +329,7 @@ foreach ($regions as $reg) {
     echo '</option>';
 
 	if ($selectedRegion == $reg['region']) {
-		$where .= " AND region = ".$db->Quote($selectedRegion);
+		$where[] = "region = ".$db->Quote($selectedRegion);
 		$extra .= "&amp;region=".urlencode($selectedRegion);
 	}
 }
@@ -325,17 +340,20 @@ echo '</select>';
 
 	print ' or <a href="?jump=1">Jump to an arbitary subject</a> (most in need of review)<hr>';
 
-$done = $db->getOne("  SELECT format_percent(sum(done)/2, count(*),1) as done from (select label,floor(ln(sum(score!=10))) as done from curated1 where cosine is not null group by label order by null) t2");
+$done = $db->getOne("  SELECT format_percent(sum(done)/2, count(*),1) as done from (select label,floor(ln(sum(score!=10))) as done from curated1 where ".implode(' AND ',$where)." AND cosine is not null group by label order by null) t2");
+if (!empty($done)) {
 	print " Percentage Verified: $done";
+}
 
 echo '</form>';
 echo '</div>';
 
 
+	$where = implode(' AND ',$where);
 	//still use an initial query, because want to get the top x per group (by distance)
 	//without using row functions would be harder in one query
         $raw = $db->getAssoc("select label,region,count(*) as images,avg(cosine) as avg,group_concat(gridimage_id order by score desc, cosine asc limit 5) as gridimage_id, count(distinct region) as regions
-	from curated1 where `group` = 'Automated' and active = 1 and score > 5 $where
+	from curated1 where $where
 	group by label with rollup");
 
 	$ids = array();
@@ -381,9 +399,14 @@ foreach($labels as $row) {
     $regions = $data['regions'] ?? 0;
     $url = "?label=" . urlencode($name) . $extra;
 
+	if ($gen > 1 && empty($data))
+		continue;
+
+
     $avg_display = '';
     if (!empty($data['avg'])) {
-        $min = 0.656312;
+	if ($gen == 1) $min = 0.656312;
+	if ($gen == 2) $min = 0.10;
         $max = 0.849066;
 
         $clamped = max($min, min($max, $data['avg']));
