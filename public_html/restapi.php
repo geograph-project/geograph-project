@@ -550,7 +550,7 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 				$_GET['perpage'] = intval($_GET['limit']); //perpage param is hardcoded inside buildSimpleQuery!
 
 
-			if (!empty($_GET['new'])) {
+			if (empty($_GET['old'])) { //now have to specifically request old version, rather than request new
 	                        require_once('geograph/imagelist.class.php');
         	                $images = new ImageList();
 

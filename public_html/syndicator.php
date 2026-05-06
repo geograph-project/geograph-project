@@ -45,8 +45,8 @@ foreach(array('distance','simple','i','u','reference_index','first','resultsperp
 
 if (empty($_GET['key']))
 	$_SERVER['HTTPS'] = 'on'; //cheeky, but forces generation of https:// urls :)
-elseif ($_GET['key'] == 'c743e78c04' || $_GET['key'] == '71e8285f66' || $_GET['key'] == 'm3g411th13')
-	$_GET['new'] = 1; //as a test, lets start redirecting certain high-volumn users to the new engine!
+elseif (empty($_GET['old'])) //now need to specifically request old, rather than request new!
+	$_GET['new'] = 1;
 
 require_once('geograph/global.inc.php');
 
