@@ -1447,6 +1447,13 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		}
 		
 		}
+	} elseif ($USER->registered) {
+
+		//these are used by the 'dynamic' block, that shows links to KML, feeds etc
+                $smarty->assign('i', $i);
+                $smarty->assign('currentPage', $pg);
+		$engine->currentPage = $pg; //because, never 'execute' the search doesnt get set!
+                $smarty->assign_by_ref('engine', $engine);
 	}
 
 	if ($engine->criteria->user_id == $USER->user_id) {
