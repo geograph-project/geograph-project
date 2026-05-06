@@ -151,6 +151,6 @@ $REVISIONS['/app/js/contexts.libs.js']=87448789;
 $REVISIONS['/app/js/used-nearby.libs.js']=87448789;
 $REVISIONS['/app/js/snippets.libs.js']=84436493;
 $REVISIONS['/curated/automated.css']=76102783;
-$REVISIONS['/curated/automated.js']=76102783;
+$REVISIONS['/curated/automated.js']=27367734;
 $REVISIONS['/js/vector.class.js']=67855777;
 ?>
