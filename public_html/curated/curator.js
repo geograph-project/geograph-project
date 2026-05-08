@@ -93,6 +93,21 @@ $(document).ready(function() {
             fetchImages(currentQuery, currentPage);
         }
     });
+
+    $(document).on('keydown', function(e) {
+        if (e.altKey && e.key.toLowerCase() === 'r') {
+            if (peFiltersContainer.is(':visible')) {
+                const options = regionFilter.find('option').filter(function() {
+                    return $(this).val() !== "";
+                });
+                if (options.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * options.length);
+                    regionFilter.val($(options[randomIndex]).val()).trigger('change');
+                    e.preventDefault();
+                }
+            }
+        }
+    });
     // --- End PE Filters Logic ---
 
     let pageSize = 20;
