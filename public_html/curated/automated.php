@@ -316,7 +316,6 @@ echo '<option value="">All Regions</option>';
 $where = array(); $extra='';
 $where[] = "`group` = 'Automated'";
 $where[] = "active = 1";
-$where[] = "score > 5";
 $where[] = "gen = ".$db->Quote($gen);
 
 
@@ -347,6 +346,9 @@ if (!empty($done)) {
 
 echo '</form>';
 echo '</div>';
+
+//exclude down voted ones
+$where[] = "score > 5";
 
 
 	$where = implode(' AND ',$where);
