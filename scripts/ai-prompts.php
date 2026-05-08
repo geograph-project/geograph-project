@@ -2,7 +2,7 @@
 
 // Script parameters
 $param = array('offset'=>0, 'batch' => 10, 'print' => true, 'provider'=>'open', 'ai_model' => '',
-		'table' => "ai_responce", 'reason'=>true, 'save'=>false);
+		'table' => "ai_responce", 'reason'=>true, 'save'=>false, 'example'=>false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -13,6 +13,61 @@ require_once "3rdparty/llm-providers.inc.php"; // Provides getLLMResponse and ot
 
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+#########################################################
+
+if (!empty($param['example'])) {
+	//todo, should be checking the time, not just 'active'!
+	$row = $db->getRow("  SELECT * FROM {$param['table']} r INNER JOIN ai_prompt p ON (r.prompt_name = p.prompt_name) WHERE p.active = 1
+	 AND user1 LIKE '%image_url%'
+	 ORDER BY length(content)+length(response)
+	 LIMIT 1");
+
+	//SYSTEM
+	$prompt = $row['content'];
+	if (!empty($row['example'])) {
+		$decode = json_decode($row['example'], TRUE);
+		if (is_array($decode)) {
+			foreach($decode as $key => $value)
+				$prompt = str_replace($key,$value, $prompt);
+		} else {
+			die("unable to replace?\n");
+		}
+	}
+	$messages = [
+	        ['role' => 'system', 'content' => $prompt]
+	];
+
+	//USER
+	if ($row['column_name']) {
+		//the response records the prompt column!
+		$user = $row[$row['column_name']];
+
+		//user may be json messages list (for image request), but have to be careful as it could itself be an json encoded payload!
+		if (preg_match('/^[\[\{]+/',$user)) {
+			$decode = json_decode($user, TRUE);
+			if (!empty($decode[0]['type'])) { //should find actual message lists. 
+				$user = $decode;
+			}
+		}
+
+        	$messages[] = ['role' => 'user', 'content' => $user];
+	}
+
+	//RESPONSE
+		//todo,we could encourage NOT wrapping in json block?
+		//$json = trim($result,"`json \t\n\r");
+	$messages[] = ['role' => 'assistant', 'content' => $row['response']];
+
+	//best to stick with unix newlines
+	//todo, maybe make sure utf8??
+	foreach($messages as &$message)
+		if (is_string($message['content']))
+			$message['content'] = str_replace("\r\n","\n", $message['content']);
+
+	print json_encode($messages, JSON_PRETTY_PRINT);
+	exit;
+}
 
 #########################################################
 
@@ -29,7 +84,6 @@ if (empty($param['ai_model'])) {
 	print "\n";
 	exit;
 }
-
 
 #########################################################
 
