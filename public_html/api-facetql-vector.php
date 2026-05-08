@@ -44,8 +44,11 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 	if (!empty($_GET['model']) && $_GET['model'] == 'pe')
 		$imagelist->setModel('pe');
 
+	//see if we can use metadata directly, to avoid a second query to lookup metadata locally
 	$metadata = false;
 	if (preg_match('/^(,?(id|wgs84_lat|wgs84_long|user_id|takenday|grid_reference))+$/',$_GET['select']) && $_GET['select'] != 'id')
+		$metadata = true;
+	if ($imagelist->model == 'pe' && preg_match('/^(,?(id|wgs84_lat|wgs84_long|user_id|takenday|grid_reference|myriad|largest|region|country))+$/',$_GET['select']) && $_GET['select'] != 'id')
 		$metadata = true;
 
 	if (!empty($_GET['user_id'])) {
@@ -61,8 +64,11 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 		$criteria['label'] = str_replace($m[0],'',$criteria['label']);
 	}
 
-       if (!empty($_GET['larger']) && preg_match('/^\d+\+?$/',$_GET['larger']))
-               $criteria['largest'] = $_GET['larger']; //note is called largest in the vector index.
+        if (!empty($_GET['larger']) && preg_match('/^\d+\+?$/',$_GET['larger']))
+                $criteria['largest'] = $_GET['larger']; //note is called largest in the vector index, but we more normally ue 'larger'
+
+	foreach (['myriad', 'country', 'region', 'gridref'] as $field)
+		if (!empty($_GET[$field])) $criteria[$field] = trim($_GET[$field]);
 
 	if (!empty($_GET['geo'])) {
                 $bits = explode(',',$_GET['geo']);
@@ -121,7 +127,7 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 
 
 	//3. output or fetch further data from local index
-	if (preg_match('/^(,?(id|wgs84_lat|wgs84_long|user_id|takenday|grid_reference))+$/',$_GET['select'])) {
+	if ($metadata || $_GET['select'] === 'id') {
 		//can be fufilled entrirely by metadata!
 
 		$res['rows'] = array();
