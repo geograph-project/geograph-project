@@ -33,7 +33,7 @@ body.dark-theme {
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 10px;
+    padding: 0;
     background-color: var(--bg-color); /* Use variable */
     color: var(--text-color); /* Use variable for default text */
     transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
@@ -57,16 +57,13 @@ body {
 
 .container {
     display: flex;
-    gap: 10px;
-    height: calc(100vh - 40px);
+    height: calc(100vh - 26px);
 }
 
 .column {
+    padding:2px;
     flex: 1;
     background-color: var(--column-bg); /* Use variable */
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
 }
@@ -75,7 +72,6 @@ body {
     display: flex; /* Makes its children (h2 and ai-enhanced-toggle) flex items */
     justify-content: space-between; /* Pushes h2 to left, checkbox to right */
     align-items: center; /* Vertically centers them */
-    margin-bottom: 10px; /* Space below this entire header section */
 }
 
 .column-header h2 {
@@ -96,7 +92,6 @@ h2 {
 .search-box {
     display: flex;
     gap: 5px;
-    margin-bottom: 20px;
 }
 
 .search-box input[type="search"] {
@@ -131,7 +126,7 @@ h2 {
 
     /* Multi-column layout for search results */
     display: grid; /* Use CSS Grid */
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Creates flexible columns */
+    grid-template-columns: repeat(auto-fill, 224px);
     gap: 4px; /* Space between grid items */
     align-content: start; /* Align content to the start of the grid */
 }
@@ -162,15 +157,14 @@ h2 {
 .image-item {
     display: block; /* Changed from flex */
     position: relative; /* Necessary to position the span absolutely */
-    margin-bottom: 5px;
     background-color: var(--item-bg);
     padding: 0; /* Removed padding so image hits the edges */
-    border-radius: 4px;
+    border-radius: 10px;
     overflow: hidden; /* Keeps the title within the rounded corners */
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     cursor: grab;
     transition: background-color 0.3s ease;
-min-height: 120px;
+    height: 224px; /* max resolution of image anyway */
 }
 
 body.dark-theme .image-item {
@@ -178,10 +172,8 @@ body.dark-theme .image-item {
 }
 
 .image-item img {
-    width: 100%; /* Full width of container */
-    max-width: 213px;
-    max-height: 160px; /* max resolution of image anyway */
-    height: auto;
+    width: 224px;
+    height: 224px; /* max resolution of image anyway */
     display: block; /* Removes bottom whitespace in some browsers */
     object-fit: contain;
 }
