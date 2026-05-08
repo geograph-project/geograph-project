@@ -130,6 +130,14 @@ if ($_GET['group'] == 'top') {
                 <input type="search" id="queryInput" value="<? echo htmlentities($query); ?>" placeholder="Enter search query...">
                 <button id="searchButton">Search</button>
             </div>
+            <div id="peFilters" class="pe-filters" style="display: none;">
+                <select id="countryFilter">
+                    <option value="">All Countries</option>
+                </select>
+                <select id="regionFilter">
+                    <option value="">All Regions</option>
+                </select>
+            </div>
             <div class="search-results" id="searchResults"></div>
             <div class="pagination">
                 <button id="prevPage" disabled>Previous</button>
