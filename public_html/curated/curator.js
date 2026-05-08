@@ -4,6 +4,8 @@ const selectedImageIds = new Set(); // Stores IDs of images currently in the 'Se
 const rejectedImageIds = new Set(); // NEW: To store rejected image IDs
 
 $(document).ready(function() {
+    const aiEnhancedCheckbox = $('#aiEnhancedCheckbox');
+
     // --- Settings Panel Logic ---
     const settingsToggleBtn = $('#settingsToggle');
     const settingsPanel = $('#settingsPanel');
@@ -25,12 +27,73 @@ $(document).ready(function() {
 
     // --- Settings Change Logic ---
     $('input[name="aiModel"], input[name="minResolution"]').on('change', function() {
+        updatePeFiltersVisibility();
         if (currentQuery) {
             currentPage = 1;
             fetchImages(currentQuery, currentPage);
         }
     });
     // --- End Settings Change Logic ---
+
+    // --- PE Filters Logic ---
+    const peFiltersContainer = $('#peFilters');
+    const countryFilter = $('#countryFilter');
+    const regionFilter = $('#regionFilter');
+    let peFiltersLoaded = false;
+
+    function updatePeFiltersVisibility() {
+        const useAiEnhanced = aiEnhancedCheckbox.is(':checked');
+        const selectedModel = $('input[name="aiModel"]:checked').val();
+
+        if (useAiEnhanced && selectedModel === 'pe') {
+            peFiltersContainer.show();
+            if (!peFiltersLoaded) {
+                loadPeFilters();
+            }
+        } else {
+            peFiltersContainer.hide();
+        }
+    }
+
+    function loadPeFilters() {
+        $.ajax({
+            url: 'filters.json.php?model=pe',
+            method: 'GET',
+            success: function(response) {
+                if (response) {
+                    if (response.country) {
+                        response.country.sort().forEach(country => {
+                            countryFilter.append($('<option>', { value: country, text: country }));
+                        });
+                    }
+                    if (response.region) {
+                        response.region.sort().forEach(region => {
+                            regionFilter.append($('<option>', { value: region, text: region }));
+                        });
+                    }
+                    peFiltersLoaded = true;
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error("Error loading PE filters:", textStatus, errorThrown);
+            }
+        });
+    }
+
+    countryFilter.on('change', function() {
+        if (currentQuery) {
+            currentPage = 1;
+            fetchImages(currentQuery, currentPage);
+        }
+    });
+
+    regionFilter.on('change', function() {
+        if (currentQuery) {
+            currentPage = 1;
+            fetchImages(currentQuery, currentPage);
+        }
+    });
+    // --- End PE Filters Logic ---
 
     let pageSize = 20;
     let longClickTimer = null; // To store the timeout ID for long click differentiation
@@ -76,7 +139,6 @@ $(document).ready(function() {
 
     // --- End Theme Toggle Logic ---
 
-    const aiEnhancedCheckbox = $('#aiEnhancedCheckbox');
     const AI_ENHANCED_STORAGE_KEY = 'aiEnhancedSearch'; // For remembering state
 
     // --- Retrieve saved state for AI Enhanced checkbox ---
@@ -89,6 +151,8 @@ $(document).ready(function() {
     aiEnhancedCheckbox.on('change', function() {
         let useAiEnhanced = $(this).is(':checked');
         localStorage.setItem(AI_ENHANCED_STORAGE_KEY, useAiEnhanced); // Save state
+
+        updatePeFiltersVisibility();
 
         // If there's a current query, re-run the search with the new setting
         if (currentQuery) { // currentQuery should be initialized from input or STARTER_QUERY
@@ -358,6 +422,18 @@ $(document).ready(function() {
             if (minResolution !== 'none') {
                 data['larger'] = `${minResolution}+`;
             }
+
+            if (selectedModel === 'pe') {
+                const country = $('#countryFilter').val();
+                const region = $('#regionFilter').val();
+                if (country) {
+                    data['country'] = country;
+                }
+                if (region) {
+                    data['region'] = region;
+                }
+            }
+
             pageSize = 50;
             data['limit'] = 50;
         } else {
@@ -625,6 +701,9 @@ $(document).ready(function() {
 
     // --- IMPORTANT: Call the new function to fetch initial selected images on startup ---
     fetchInitialSelectedImages();
+
+    // Check if PE filters should be shown on startup
+    updatePeFiltersVisibility();
 });
 
 
