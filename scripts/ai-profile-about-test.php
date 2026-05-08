@@ -1,6 +1,6 @@
 <?php
 
-$param = array('provider'=>'open', 'limit'=> 10, "table" => "moderation");
+$param = array('provider'=>'open', 'limit'=> 10, "table" => "moderation", 'save'=>false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -13,8 +13,8 @@ require_once "3rdparty/llm-providers.inc.php"; // Provides getLLMResponse and ot
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-
-$prompt = $db->getOne("SELECT content FROM ai_prompt WHERE active=1 AND prompt_name = 'profile-about-test'");
+$prompt_name = "profile-about-test"; //our intrnal name, not the AI model!
+$prompt = $db->getOne("SELECT content FROM ai_prompt WHERE active=1 AND prompt_name = '$prompt_name'");
 
 $table = $param['table'];
 
@@ -30,13 +30,17 @@ foreach ($results as $row) {
 
 	$user = latin1_to_utf8($row['about_yourself']);
 
+	if ($param['save']) {
+        	save_user_prompt($prompt_name, $user);
+	}
+
 	print "UserID: {$row['user_id']}\n";
 	print "Message: {$row['title']}\n"; //short version!
 	if ($row['moderation_status'] != 'pending')
 		print "Human: {$row['moderation_status']}\n";
 	print "Result: ";
 
-        $r = getLLMResponse($prompt, $user, $param['provider'], $model = 'gpt-oss-safeguard-20b');
+        $r = getLLMResponse($prompt, $user, $param['provider'], 'gpt-oss-safeguard-20b');
 
 	print_r($r);
 	print "\n";

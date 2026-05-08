@@ -1,6 +1,6 @@
 <?php
 
-$param = array('provider'=>'open', 'limit'=> 10);
+$param = array('provider'=>'open', 'limit'=> 10, 'save'=>false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -15,7 +15,8 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 ###################################################################
 
-$prompt = $db->getOne("SELECT content FROM ai_prompt WHERE active=1 AND prompt_name = 'profile-name-test'");
+$prompt_name = "profile-name-test"; //our intrnal name, not the AI model!
+$prompt = $db->getOne("SELECT content FROM ai_prompt WHERE active=1 AND prompt_name = '$prompt_name'");
 
 $few = $db->getCol("select concat(moderation_status,': ',title) from moderation where source = 'user' and moderation_status != 'pending' group by title order by moderation_status limit 100");
 
@@ -41,12 +42,19 @@ foreach ($results as $row) {
 
 	$user = latin1_to_utf8($row['realname']);
 
+	if ($param['save']) {
+                $examples = array(
+                        '{few}' => implode("\n",$few),
+                );
+	        save_user_prompt($prompt_name, $user, $examples);
+	}
+
 	print "UserID: {$row['user_id']}\n";
 	print "Message: {$row['title']}\n"; //short version!
 	print "Human: {$row['moderation_status']}\n";
 	print "Result: ";
 
-        $r = getLLMResponse($prompt, $user, $param['provider'], $model = 'gpt-oss-safeguard-20b');
+        $r = getLLMResponse($prompt, $user, $param['provider'], 'gpt-oss-safeguard-20b');
 
 	print_r($r);
 	print "\n";

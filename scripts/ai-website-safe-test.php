@@ -1,6 +1,6 @@
 <?php
 
-$param = array('provider'=>'open', 'table'=>'moderation', 'limit'=>10, 'sleep'=>0);
+$param = array('provider'=>'open', 'table'=>'moderation', 'limit'=>10, 'sleep'=>0, 'save'=>false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -110,6 +110,10 @@ foreach ($results as $row) {
 	// Grab summary of the content
 
 if ($table != 'moderation') {
+	if ($param['save']) {
+		 save_user_prompt("website-content-summary", $user);
+	}
+
 	print "Summary: ";
 	$result = getLLMResponse($content_prompt, $user, $param['provider'], $model = 'gpt-oss-20b');
 	print "$result\n";
@@ -128,8 +132,13 @@ if ($table != 'moderation') {
                 $updates['comment'] = $json['comment'];
         }
 }
+
 	////////////////////
 	// give an assessment
+
+	if ($param['save']) {
+		 save_user_prompt("website-safe-test", $user);
+	}
 
 	print "Result: ";
         $result = getLLMResponse($assess_prompt, $user, $param['provider'], $model = 'gpt-oss-safeguard-20b');
