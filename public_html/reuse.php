@@ -142,6 +142,29 @@ if (isset($_REQUEST['id']))
 			$filesystem = GeographFileSystem();
 
 			if ($filesystem->hasAuth() && empty($_GET['method'])) {
+
+if (strpos($filepath,'_original') !== FALSE) {
+	$db = $image->_getDB();
+	$check = $db->getOne("  SELECT strip_exif FROM user WHERE user_id = ".intval($image->user_id));
+	if (!empty($check)) {
+		//get a local copy of the file
+		$tmpfile = $filesystem->get_local_file($_SERVER['DOCUMENT_ROOT'].$filepath);
+
+		$cmd = "exiftool -all= -TagsFromFile @ -ColorSpaceTags -ICC_Profile -overwrite_original ".escapeshellarg($tmpfile);
+		`$cmd`;
+
+		clearstatcache(true, $tmpfile);
+
+		$size = filesize($tmpfile);
+	        header("Content-Length: ".$size);
+
+        	readfile($tmpfile);
+
+		exit;
+		//tmpfile will automatically be deleted by via a register_shutdown_function
+	}
+}
+
 				customExpiresHeader(86400*180,true);
 
 				//writes direct to STDOUT. But can't output Last-Modified/Content-Length
