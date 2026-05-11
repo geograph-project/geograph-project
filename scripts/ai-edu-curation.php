@@ -1,7 +1,8 @@
 <?php
 
 // Script parameters
-$param = array('print' => false, 'execute'=>false, 'gen'=>1);
+$param = array('print' => false, 'execute'=>false, 'gen'=>1, 'limit1'=>100, 'limit2'=>30,
+	'label'=>'','query'=>'');
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -28,7 +29,15 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $regions = $db->getAssoc("select region,count(*) from sphinx_placenames group by region");
 
-if ($param['gen'] == 1) {
+if (!empty($param['label']) && !empty($param['query'])) {
+	if ($param['query'] == '?')
+		$param['query'] = trim(readline("Query for {$param['label']}:"));
+	if (empty($param['query'])) die("no QUery\n");
+
+	$labels = array(
+		array('name'=>$param['label'], 'clip_query'=>$param['query'])
+	);
+} elseif ($param['gen'] == 1) {
 	//$labels = $db->getAll("select stack,name,clip_query from curated_label where length(clip_query) > 5");
 	$labels = $db->getAll("select stack,name,clip_query
 	 from curated_label  left join curated1 c on (`group` = 'Automated' and c.label = name)
@@ -52,7 +61,7 @@ foreach ($labels as $row) {
 	//$imagelist->getImagesByCriteria($criteria, $limit = 30);
 	//we dont need the full image results, by getting the vectors directly we can get the distance!
 	print "\tNational: ";
-	$vectors = $imagelist->getRawVectorsByCriteria($criteria, 100, true); //use the metadata to get region!
+	$vectors = $imagelist->getRawVectorsByCriteria($criteria, intval($param['limit1']), true); //use the metadata to get region!
 	if (!empty($vectors['vectors'])) {
 		print count($vectors['vectors'])."\n";
 		//get 'national' results
@@ -61,7 +70,7 @@ foreach ($labels as $row) {
 		//print_r($regions);
 		//repeat for specific regions, to try to make sure have good coverage
 		foreach($regions as $region => $count) {
-			if ($count < 4 || $count > 30) { //if got 30, no point do second query!{
+			if ($count < 4 || $count > $param['limit2']) { //if got 30, no point do second query!{
 				print "\t Skiping $region ($count)\n";
 				continue;
 			}
@@ -70,7 +79,7 @@ foreach ($labels as $row) {
 			//repeat for this region specifically
 			$criteria['region'] = $region;
 
-			$vectors = $imagelist->getRawVectorsByCriteria($criteria, 30, true); //use the metadata to get region!
+			$vectors = $imagelist->getRawVectorsByCriteria($criteria, intval($param['limit2']), true); //use the metadata to get region!
 			if (!empty($vectors['vectors'])) {
 				print count($vectors['vectors']);
 		                save_results($row, $vectors);
