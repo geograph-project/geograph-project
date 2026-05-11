@@ -265,7 +265,7 @@ class ImageListS3Vector extends ImageList
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
             'queryVector' => ['float32' => getTextEmbeddingFromQuery($criteria['label'], $this->model) ],
-            'topK' => $limit,
+            'topK' => intval($limit),
             'returnDistance' => true,
             'returnMetadata' => false,
         ];
@@ -282,7 +282,7 @@ class ImageListS3Vector extends ImageList
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
             'queryVector' => ['float32' => $criteria['vector'] ?? getTextEmbeddingFromQuery($criteria['label'], $this->model) ],
-            'topK' => $limit,
+            'topK' => intval($limit),
             'returnDistance' => true,
             'returnMetadata' => $metadata,
         ];
