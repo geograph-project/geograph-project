@@ -6,7 +6,7 @@
     <title>Dynamic Vector Cluster Board</title>
     <style>
         :root {
-            --primary: #2563eb;
+            --primary: #a5bef3;
             --bg: #f8fafc;
             --card-bg: #ffffff;
             --border: #e2e8f0;
@@ -69,6 +69,14 @@
             min-height: 500px;
             border: 0px dashed transparent;
             transition: border-color 0.2s;
+
+--position: sticky;
+--bottom: 20px; /* Pins the BOTTOM of the column instead of the top */
+    --align-self: end; /* Aligns the columns to the bottom of the grid row */
+
+
+/* CRITICAL: Must be visible so the sticky child can pop out of it */
+    overflow: visible;
         }
 
 .column-header-input {
@@ -92,6 +100,25 @@
     background: #ffffff;
     outline: 2px solid var(--primary);
 }
+.add-text-anchor-btn {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s;
+}
+
+.add-text-anchor-btn:hover {
+    background-color: #1d4ed8;
+}
 
         .column h2 {
             margin-top: 0;
@@ -101,6 +128,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+
+position:sticky;
+top:2px;
+left:0;
+z-index:10;
+background-color:#eee;
+
         }
 
         .anchor-count {
@@ -196,7 +230,13 @@ display:none;
     </select>
 
     <button id="search-btn">Search & Cluster</button>
+    <button id="export-btn" style="background-color: #10b981;">Export Data</button>
 </header>
+
+<div id="export-container" style="display: none; max-width: 1200px; margin: 0 auto 20px auto;">
+    <h3 style="margin-top: 0;">Exported Session State</h3>
+    <textarea id="export-textarea" style="width: 100%; height: 200px; font-family: monospace; padding: 10px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; resize: vertical;"></textarea>
+</div>
 
 <div class="board" id="board-container"></div>
 
@@ -222,26 +262,55 @@ function setupBoardDOM() {
             bucketNames[i] = `Bucket ${i + 1}`;
         }
 
+        const isGenericName = /^Bucket \d+$/i.test(bucketNames[i]);
+        const buttonHTML = !isGenericName 
+            ? `<button class="add-text-anchor-btn" data-index="${i}">Add "${escapeHtml(bucketNames[i])}" as anchor</button>` 
+            : '';
+
         const col = document.createElement('div');
         col.className = 'column';
         col.id = `col-${i}`;
         col.innerHTML = `
-            <h2><input type="text" 
-                       class="column-header-input" 
-                       id="header-input-${i}" 
-                       value="${bucketNames[i]}" 
-                       placeholder="Rename bucket..."
-                       title="Click to rename this bucket">
- <span class="anchor-count" id="count-col-${i}">0 anchors</span></h2>
+            <h2>
+                <div style="display: flex; flex-direction: column; width: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <input type="text" 
+                               class="column-header-input" 
+                               id="header-input-${i}" 
+                               value="${bucketNames[i]}" 
+                               placeholder="Rename bucket..."
+                               title="Click to rename this bucket">
+                        <span class="anchor-count" id="count-col-${i}">0 anchors</span>
+                    </div>
+                    <div id="text-anchor-container-${i}">${buttonHTML}</div>
+                </div>
+            </h2>
             <div class="image-list" id="list-col-${i}"></div>
         `;
         board.appendChild(col);
 
         // Listen for typing and save the name instantly to our state array
         const headerInput = col.querySelector(`#header-input-${i}`);
+        const anchorBtnContainer = col.querySelector(`#text-anchor-container-${i}`);
+
         headerInput.addEventListener('input', (e) => {
-            bucketNames[i] = e.target.value;
+            const val = e.target.value.trim();
+            bucketNames[i] = val || `Bucket ${i + 1}`;
+            
+            // Dynamically show/hide the "Add as anchor" button as they type
+            const isGeneric = /^Bucket \d+$/i.test(bucketNames[i]) || bucketNames[i] === '';
+            if (!isGeneric) {
+                anchorBtnContainer.innerHTML = `<button class="add-text-anchor-btn" data-index="${i}">Add "${escapeHtml(bucketNames[i])}" as anchor</button>`;
+                
+                // Wire up the new button's event listener
+                anchorBtnContainer.querySelector('.add-text-anchor-btn').addEventListener('click', () => {
+                    addTextAnchor(bucketNames[i], i);
+                });
+            } else {
+                anchorBtnContainer.innerHTML = '';
+            }
         });
+
         headerInput.addEventListener('focus', (e) => {
             const input = e.target;
             const isGenericName = /^Bucket \d+$/i.test(input.value);
@@ -249,6 +318,21 @@ function setupBoardDOM() {
                 input.select(); // Instantly selects all text for immediate overtyping
             }
         });
+
+        // Bind the button listener if it was loaded with a custom name already
+        const initialBtn = anchorBtnContainer.querySelector('.add-text-anchor-btn');
+        if (initialBtn) {
+            initialBtn.addEventListener('click', () => {
+                addTextAnchor(bucketNames[i], i);
+            });
+        }
+
+        // --- NEW: Double-click to Clear Anchors ---
+        const counterSpan = col.querySelector(`#count-col-${i}`);
+        counterSpan.addEventListener('dblclick', () => {
+            clearBucketAnchors(i);
+        });
+
     }
 }
 
@@ -271,6 +355,7 @@ function initializeBoard(rows) {
         if (image.image_vector) {
             try {
                 const vectorObj = new EmbeddingVector(image.image_vector).normalize();
+                vectorObj.type = 'image';
                 allImages.push({
                     id: image.id,
                     hash: image.hash,
@@ -302,6 +387,12 @@ function initializeBoard(rows) {
 
 // Evaluates positions against dynamic buckets and renders
 function evaluateAndRender() {
+
+    const board = document.getElementById('board-container');
+    // LOCK HEIGHT: Freeze the board at its current height to prevent scroll collapse
+    const currentHeight = board.scrollHeight;
+    board.style.minHeight = `${currentHeight}px`;
+
     // Clear and prepare column lists
     const lists = {};
     for (let i = 0; i < numBuckets; i++) {
@@ -320,7 +411,27 @@ function evaluateAndRender() {
         for (let colIndex = 0; colIndex < numBuckets; colIndex++) {
             anchors[colIndex].forEach(anchorVec => {
                 // Using your exact direct array dot-product logic
-                const sim = calculateSimilarity(image.vector.vector, anchorVec.vector);
+                let sim = calculateSimilarity(image.vector.vector, anchorVec.vector);
+
+                // --- THE FIX ---
+                // If it's a text anchor, boost its similarity score to bridge the Modality Gap
+                if (anchorVec.type === 'text') {
+                    // --- PERCEPTION ENCODER SCALING ---
+                    const peNoiseBaseline = 0.15; // Unrelated images sit below this
+
+                    if (sim > peNoiseBaseline) {
+                        // Extract the signal *above* the baseline
+                        const signal = sim - peNoiseBaseline;
+
+                        // Heavily amplify the signal and add a calibrated boost
+                        // This stretches the 0.15 - 0.35 range out to 0.30 - 0.80
+                        sim = (signal * 2.5) + 0.30; 
+                    } else {
+                        // Punish noise so signs don't drift in
+                        sim = sim - 0.20; 
+                    }
+                }
+
                 if (sim > highestSimilarity) {
                     highestSimilarity = sim;
                     bestColumn = colIndex;
@@ -328,13 +439,20 @@ function evaluateAndRender() {
             });
         }
 
-        const card = createImageCard(image);
+        const card = createImageCard(image, bestColumn);
         lists[bestColumn].appendChild(card);
     });
+
+    // RELEASE HEIGHT: Let the page resize naturally to its new content height
+    // We wrap this in a 0ms timeout to ensure the browser has fully drawn the new cards first
+    setTimeout(() => {
+        board.style.minHeight = '';
+    }, 10);
+
 }
 
 // Generates Image Card with dynamic, numbered action buttons
-function createImageCard(image) {
+function createImageCard(image, currentColumn = -1) {
     const card = document.createElement('div');
     card.className = 'image-card';
     
@@ -343,7 +461,13 @@ function createImageCard(image) {
     // Generate move buttons dynamically based on how many buckets are active
     let actionButtonsHTML = '';
     for (let i = 0; i < numBuckets; i++) {
-        actionButtonsHTML += `<button class="move-btn" data-target="${i}">${i + 1}</button>`;
+        let style = '';
+        if (i === currentColumn) {
+            const isAnchor = anchors[currentColumn].some(anchorVec => anchorVec === image.vector);
+	    if (isAnchor)
+                style = 'color:red;font-weight:bold;background-color:#ffdbdb;outline:1px solid black';
+        }
+        actionButtonsHTML += `<button class="move-btn" data-target="${i}" style="${style}">${i + 1}</button>`;
     }
     
     card.innerHTML = `
@@ -390,6 +514,29 @@ function moveImageAnchor(image, targetColumnIndex) {
     }
 }
 
+function clearBucketAnchors(targetColumnIndex) {
+    // 1. Safety check: Count how many other buckets have at least 1 anchor
+    let otherBucketsWithAnchors = 0;
+    for (let i = 0; i < numBuckets; i++) {
+        if (i !== targetColumnIndex && anchors[i] && anchors[i].length > 0) {
+            otherBucketsWithAnchors++;
+        }
+    }
+
+    // 2. If no other bucket has an anchor, abort and warn the user
+    if (otherBucketsWithAnchors === 0) {
+        alert("Cannot clear! You must leave at least one anchor on the board, otherwise the clustering algorithm has nothing to compare against.");
+        return;
+    }
+
+    // 3. Clear the array for the chosen column
+    anchors[targetColumnIndex] = [];
+
+    // 4. Recalculate and re-render the board immediately
+    evaluateAndRender();
+}
+
+
 // Listen for dynamic bucket changes to adjust columns without losing current progress
 document.getElementById('bucket-count').addEventListener('change', (e) => {
     const nextBuckets = parseInt(e.target.value);
@@ -419,9 +566,146 @@ document.getElementById('bucket-count').addEventListener('change', (e) => {
     }
 });
 
+function exportSessionState() {
+    let output = '';
+
+    // We will group our image results into buckets using the exact same evaluation logic
+    const categorizedImages = {};
+    for (let i = 0; i < numBuckets; i++) {
+        categorizedImages[i] = {
+            anchors: [],
+            others: []
+        };
+    }
+
+    // Step 1: Assign every image to its closest winning bucket
+    allImages.forEach(image => {
+        let bestColumn = 0;
+        let highestSimilarity = -1;
+
+        for (let colIndex = 0; colIndex < numBuckets; colIndex++) {
+            if (anchors[colIndex].length === 0) continue;
+
+            anchors[colIndex].forEach(anchorVec => {
+                let sim = calculateSimilarity(image.vector.vector, anchorVec.vector);
+
+                if (anchorVec.type === 'text') {
+                    const peNoiseBaseline = 0.15;
+                    if (sim > peNoiseBaseline) {
+                        const signal = sim - peNoiseBaseline;
+                        sim = (signal * 2.5) + 0.30; 
+                    } else {
+                        sim = sim - 0.20; 
+                    }
+                }
+
+                if (sim > highestSimilarity) {
+                    highestSimilarity = sim;
+                    bestColumn = colIndex;
+                }
+            });
+        }
+
+        // Step 2: Check if this image vector is in the column's anchors list
+        // Note: Comparing the image vector instance reference directly with the anchor vector instance references
+        const isAnchor = anchors[bestColumn].some(anchorVec => anchorVec === image.vector);
+
+        if (isAnchor) {
+            categorizedImages[bestColumn].anchors.push(image.id);
+        } else {
+            categorizedImages[bestColumn].others.push(image.id);
+        }
+    });
+
+    // Step 3: Loop through all buckets and compile the final text string
+    for (let i = 0; i < numBuckets; i++) {
+        const bucketLabel = bucketNames[i] || `Bucket ${i + 1}`;
+        output += `label: ${bucketLabel}\n`;
+
+        // Export any text anchors first
+        const textAnchors = anchors[i]
+            .filter(anchorVec => anchorVec.type === 'text')
+            // Using the value from the UI input as the label name
+            .map(anchorVec => document.getElementById(`header-input-${i}`)?.value || 'Text Anchor');
+
+        if (textAnchors.length > 0) {
+            output += `text-anchors: ${textAnchors.map(label => `[${label}]`).join(' ')}\n`;
+        }
+
+        // Format Image Anchors
+        const formattedImgAnchors = categorizedImages[i].anchors.map(id => `[[[${id}]]]`).join(' ');
+        output += `anchors: ${formattedImgAnchors || 'None'}\n`;
+
+        // Format Other Images
+        const formattedOthers = categorizedImages[i].others.map(id => `[[[${id}]]]`).join(' ');
+        output += `others: ${formattedOthers || 'None'}\n\n`;
+    }
+
+    // Step 4: Show the textarea and populate it
+    const container = document.getElementById('export-container');
+    const textarea = document.getElementById('export-textarea');
+    
+    textarea.value = output.trim();
+    container.style.display = 'block';
+    
+    // Auto-scroll the page up to focus on the newly opened export block
+    container.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Bind click listener
+document.getElementById('export-btn').addEventListener('click', exportSessionState);
+
+
 
         // --- Helper Functions ---
+
+// Simple helper to prevent HTML injection in dynamic labels
+function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+async function addTextAnchor(label, bucketIndex) {
+    label = label.replace(/,/g,' '); //comma seperates differnet labels
+
+    const params = new URLSearchParams({
+        labels: label,
+        model: 'pe' // Matching your image query model
+    });
+
+    try {
+        const response = await fetch(`/finder/label-vectors.json.php?${params.toString()}`);
+        const labelVectorsData = await response.json();
         
+        // Ensure we got vector data back for our label
+        if (labelVectorsData && labelVectorsData[label]) {
+            try {
+                // Initialize and normalize the vector object
+                const textVectorObj = new EmbeddingVector(labelVectorsData[label]).normalize();
+                textVectorObj.type = 'text'; //need to know it from text.
+
+                // Push the new text anchor to this bucket!
+                anchors[bucketIndex].push(textVectorObj);
+                
+                // Instantly re-cluster everything based on this new zero-shot target
+                evaluateAndRender();
+                
+                // Optional: Remove the button once clicked so they don't spam it
+                const btnContainer = document.getElementById(`text-anchor-container-${bucketIndex}`);
+                if (btnContainer) btnContainer.innerHTML = '<span style="font-size: 11px; color: green; font-weight: normal; margin-top: 4px;">Text vector added as anchor</span>';
+                
+            } catch (e) {
+                console.error(`Could not parse returned vector for "${label}":`, e);
+                alert(`Error parsing vector for "${label}".`);
+            }
+        } else {
+            alert(`No vector representation found for "${label}".`);
+        }
+    } catch (error) {
+        console.error("Error fetching text vector:", error);
+        alert("Failed to fetch label vector from API.");
+    }
+}
+
         // Standard Dot Product for normalized vectors (Cosine Similarity)
         function calculateSimilarity(vecA, vecB) {
             // Assumes normalized array of floats. If your library returns a custom object, 

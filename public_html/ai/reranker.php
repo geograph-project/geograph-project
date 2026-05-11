@@ -39,7 +39,7 @@
 
         button {
             background-color: var(--primary);
-            color: white;
+            color: black;
             border: none;
             padding: 10px 20px;
             border-radius: 8px;
@@ -147,7 +147,10 @@
             border-right: 1px solid var(--border);
         }
     </style>
-    
+
+    <script src="/js/geograph-api-libs.js?<?php echo filemtime("../js/geograph-api-libs.js"); ?>"></script>
+    <script src="/js/vector.class.js"></script>
+
     </head>
 <body>
 
@@ -186,13 +189,6 @@
 
         // --- Helper Functions ---
         
-        // Helper to construct Geograph image URL
-        function getGeographUrl(id, hash, size = 'med') {
-            return `https://images.geograph.org.uk/geograph_original/images/${hash}_${id}.jpg`; // Fallback structure
-            // Adjust if you use a specific Geograph CDN wrapper:
-            // return `https://www.geograph.org.uk/photos/${hash.slice(0,2)}/${hash}_${size}.jpg`;
-        }
-
         // Standard Dot Product for normalized vectors (Cosine Similarity)
         function calculateSimilarity(vecA, vecB) {
             // Assumes normalized array of floats. If your library returns a custom object, 
@@ -214,7 +210,7 @@
                 long: 1,
                 utf: 1,
                 limit: 100, // Fetching 100 to make the clustering feel alive
-                model: 'clip' // or whatever your server default model is
+                model: 'pe' // or whatever your server default model is
             });
 
             try {
@@ -239,16 +235,14 @@
                 if (image.image_vector) {
                     try {
                         // Create and normalize vector array
-                        // Modify this instantiation if your library's constructor behaves differently
-                        const parsedVector = JSON.parse(image.image_vector);
-                        const vectorObj = new EmbeddingVector(parsedVector).normalize();
-                        
+                        const vectorObj = new EmbeddingVector(image.image_vector).normalize();
+
                         allImages.push({
                             id: image.id,
                             hash: image.hash,
                             title: image.title || 'Untitled',
                             realname: image.realname || 'Unknown',
-                            vector: vectorObj.values || vectorObj // Store the normalized vector array
+                            vector: vectorObj
                         });
                     } catch (e) {
                         console.error(`Skipping image ${image.id} due to vector parse error`, e);
@@ -297,7 +291,10 @@
                 // Check similarity against all anchors across all active columns
                 [0, 1, 2].forEach(colIndex => {
                     anchors[colIndex].forEach(anchorVec => {
-                        const sim = calculateSimilarity(image.vector, anchorVec);
+                        //pass the objects..
+			//distance = anchorVec.distance(image.vector);
+			//sim = anchorVec._dotProduct(image.vector)
+                        const sim = calculateSimilarity(image.vector.vector, anchorVec.vector);
                         if (sim > highestSimilarity) {
                             highestSimilarity = sim;
                             bestColumn = colIndex;
@@ -324,9 +321,9 @@
                 </a>
                 <p>${image.title}</p>
                 <div class="move-actions">
-                    <button class="move-btn" data-target="0">← Left</button>
-                    <button class="move-btn" data-target="1">● Mid</button>
-                    <button class="move-btn" data-target="2">Right →</button>
+                    <button class="move-btn" data-target="0">&lt; Left</button>
+                    <button class="move-btn" data-target="1">&middot;</button>
+                    <button class="move-btn" data-target="2">Right &gt;</button>
                 </div>
             `;
 
