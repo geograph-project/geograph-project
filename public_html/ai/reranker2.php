@@ -114,6 +114,7 @@
     cursor: pointer;
     text-align: center;
     transition: background 0.2s;
+        display:none !important; /* button doesnt work yet, hide it in the demo */
 }
 
 .add-text-anchor-btn:hover {
@@ -166,9 +167,10 @@ background-color:#eee;
 
         .image-card img {
             width: 100%;
-aspect-ratio: 1 / 1; /* Forces a perfect square */
+            aspect-ratio: 1 / 1; /* Forces a perfect square */
             object-fit: cover;
             background: #e2e8f0;
+            display: block;
         }
 
         .image-card p {
