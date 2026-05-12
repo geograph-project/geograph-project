@@ -156,7 +156,7 @@ server {
 
   ###################################
 
-  if ($http_host = www.geograph.org.ie) {	rewrite ^/robots.txt /robots.ie.txt last;  }
+  if ($http_host = www.geograph.ie) {	rewrite ^/robots.txt /robots.ie.txt last;  }
 
   if ($http_host !~ "^(www|t0)\." ) {	rewrite ^/robots.txt /robots-none.txt last;  }
 
