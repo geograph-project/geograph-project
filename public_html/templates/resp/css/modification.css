@@ -16,6 +16,18 @@ input#search_toggle, label#search_label {
 	color:#000066;
 	font-weight:normal;
 	padding:8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        border: 2px solid white;
+	border-top:0;
+}
+#searchoptions ul {
+	padding-left:10px;
+}
+#searchoptions label {
+	padding:2px;
+}
+#searchoptions label:has(input:checked) {
+	background-color:white;
 }
 
 #searchterm:focus ~ #searchoptions, #searchoptions:hover {
