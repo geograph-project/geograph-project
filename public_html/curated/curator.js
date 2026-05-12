@@ -413,7 +413,7 @@ $(document).ready(function() {
 
         let pageLimit = (page - 1) * pageSize;
         let apiUrl = `${API_DOMAIN}/api-facetql.php`;
-        let data = { 'select': 'id,title,hash,realname' };
+        let data = { 'select': 'id,title,hash,realname', 'utf': 1 };
 
         if (query.trim().match(/^(?:\d{6,}|(?:,\d*|\d+,|\d*,\d*)+)$/)) {
             let ids = query.trim().split(',').filter(part => part !== '');
