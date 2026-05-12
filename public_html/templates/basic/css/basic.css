@@ -1449,6 +1449,13 @@ img {
 	border: 0;
 }
 
+#searchbutton2 {
+	font-size: 1.2em;
+	border: 0;
+        color:white;
+	background-color:transparent;
+}
+
 #search_block #search {
 	position: absolute;
 	top: 28px;

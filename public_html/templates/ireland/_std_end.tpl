@@ -146,8 +146,8 @@
     <form method="get" action="/search.php">
     <div id="searchfield">
     <input type="hidden" name="form" value="simple"/>
-    {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" placeholder="Search images..." title="Enter a Postcode, Grid Reference, Placename or a text search"/>{/dynamic}
-    <input id="searchbutton" type="submit" name="go" value="Find"/></div>
+    {dynamic}<input id="searchterm" type="search" name="q" value="{$searchq|escape:'html'}" size="10" placeholder="Search images..." title="Enter a Postcode, Grid Reference, Placename or a text search"/>{/dynamic}
+    <input id="searchbutton2" type="submit" name="go" value="&#x1F50D;&#xFE0E;"/></div>
     </form>
     </div>
   </div>
