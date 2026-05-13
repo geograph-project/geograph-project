@@ -27,7 +27,7 @@ if (!empty($_GET['prefix']) && $_GET['prefix'] == 'top' && empty($_GET['output']
 }
 
 require_once('geograph/global.inc.php');
-init_session();
+init_session_or_cache(3600*24, 3600);
 
 $smarty = new GeographPage;
 
