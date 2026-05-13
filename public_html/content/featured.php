@@ -22,7 +22,7 @@
  */
 
 require_once('geograph/global.inc.php');
-init_session();
+init_session_or_cache(3600*24, 60);
 
 $smarty = new GeographPage;
 
