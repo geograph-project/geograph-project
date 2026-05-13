@@ -44,15 +44,16 @@ if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 	$template='statistics_table.tpl';
 }
 $smarty->assign('responsive', true);
+$_GET['responsive'] = 4; //hack to force the page to remain responsive, even though templates are loaded from basic. do this AFTER init_session!
 
 
 $cacheid='tags/prefix';
-if (!empty($_GET['prefix'])) {
-	$cacheid .= "|".md5($_GET['prefix']);
-}
-if (!empty($_GET['all'])) {
+if (!empty($_GET['prefix']))
+	$cacheid .= "|".substr(md5($_GET['prefix']),0,8);
+if (!empty($_GET['output']))
+	$cacheid .= "|".substr(md5($_GET['output']),0,8);
+if (!empty($_GET['all']))
 	$cacheid .= "|all";
-}
 
 if (!$smarty->is_cached($template, $cacheid))
 {
