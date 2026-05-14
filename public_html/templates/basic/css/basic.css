@@ -1450,10 +1450,12 @@ img {
 }
 
 #searchbutton2 {
-	font-size: 1.2em;
+	font-size: 1.6em;
 	border: 0;
         color:white;
 	background-color:transparent;
+        padding:0;
+	line-height:1em;
 }
 
 #search_block #search {
