@@ -24,8 +24,6 @@ export function render() {
 
 		    <p>If you find your location data is missing, here are three ways to ensure your coordinates stay attached to your images:</p>
 
-		    <hr>
-
 		    <section>
 		        <h4>1. Use the App's Built-in Camera</h4>
 		        <p>Taking photos directly through the app is the most reliable way to preserve location data.</p>
@@ -86,6 +84,32 @@ export function render() {
 			  <li>Select your photo.</li>
 			  <li>Tick the box to immediately submit the photo once the upload finishes.</li>
 			</ol>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-button" onclick="this.nextElementSibling.classList.toggle('hidden')">
+			I've uploaded photos in the app, how do I submit them <b>on another device</b>?
+                </button>
+                <div class="faq-content hidden">
+
+			You can easily finish your submissions on a larger screen like a tablet, laptop, or desktop computer.
+			Images uploaded via the website or the app, end up in the same folder for submission. Choose the method that works best for you:
+
+			<ul>
+			  <li>
+			    <strong>Via the Web App:</strong> 
+			    Open <code>geograph.org.uk/app</code> in the browser of your other device and use the standard <strong>Submit</strong> button (this works on desktop screens too).
+			  </li>
+			  <li>
+			    <strong>Via the Main Website (original submission):</strong> 
+			    Click <strong>Multi</strong> in the top corner of the page, then select <strong>Submit Images v1</strong>. Your app uploads will be waiting for you in the same folder.
+			  </li>
+			  <li>
+			    <strong>Via the Main Website (using v2):</strong> 
+			    Click <strong>Select an uploaded image</strong> to view your pending files, or click <strong>Submit an uploaded image</strong> to immediately begin working on a photo from your uploaded folder.
+			  </li>
+			</ul>
                 </div>
             </div>
 
