@@ -776,6 +776,13 @@ body.dark-mode .review-view .saved {
 .faq-view h2 {
     text-align:center;
 }
+.faq-view h4 {
+    font-size:1.1em;
+       background-color: var(--input-bg);
+        color: var(--content-text);
+  
+}
+
 .tap-prompt {
     text-align:center;
 }

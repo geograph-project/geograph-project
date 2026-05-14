@@ -17,7 +17,7 @@ export function render() {
 
             <div class="faq-item">
                 <button class="faq-button" onclick="this.nextElementSibling.classList.toggle('hidden')">
-			Why all the complication with taking photos and missing location?
+			Why does the app <b>lose the GPS location</b> of my photos?
                 </button>
                 <div class="faq-content hidden">
 		    <p>Many mobile devices and browsers automatically strip <strong>GPS metadata</strong> (EXIF data) from photos during the upload process. While this is a privacy feature designed to prevent accidental location sharing on social media, it can be inconvenient for Geograph contributors who want to document exact coordinates.</p>
@@ -47,6 +47,7 @@ export function render() {
 
 		    <section>
 		        <h4>3. Use the "Advanced File Browser"</h4>
+			<p>(Enabled this experimental feature via the Settings page)</p>
 		        <p>You can grant the app access to specific photo folders to create a customized local gallery optimized for contributors.</p>
 		        <ul>
 		            <li><strong>Bypass Privacy Filters:</strong> This method reads coordinates directly from the source folder, sidestepping browser-based stripping.</li>
@@ -58,6 +59,35 @@ export function render() {
                 </div>
             </div>
 
+
+            <div class="faq-item">
+                <button class="faq-button" onclick="this.nextElementSibling.classList.toggle('hidden')">
+			Why does the app separate <b>taking, uploading, and submitting</b> photos?
+                </button>
+                <div class="faq-content hidden">
+			<p>The app treats taking, uploading, and submitting as three distinct steps to give you maximum flexibility.</p>
+			<p>By separating them, you can capture and upload photos "as you go" throughout your day. Uploading immediately means you won't have to spend time digging through your phone's gallery to upload everything later.</p>
+
+			<h4>What are my options for taking and uploading photos?</h4>
+			<p>You can choose the workflow that best fits your style:</p>
+			<ul>
+			  <li><strong>The Traditional Way:</strong> Take photos using your phone’s standard camera app, then open the Geograph app later to upload them.</li>
+			  <li><strong>The "As You Go" Way:</strong> Take and upload photos directly through the app's Capture page.</li>
+			  <li><strong>The Map Method:</strong> Tap the camera icon directly on the map to take and upload photos without ever leaving the map view.</li>
+			</ul>
+
+			<h4>Why is submission a separate step?</h4>
+			<p>Submission is kept separate because adding descriptions, coordinates, or extra data often requires a bit more time and focus. By separating this step, you can upload your photos on the move, then sit down later to finish the submissions—either in the app or on a larger screen using the main website.</p>
+
+			<h4>Can I upload and submit a photo at the same time?</h4>
+			<p>Yes! If you prefer a faster, combined workflow:</p>
+			<ol>
+			  <li>Go to the Upload page.</li>
+			  <li>Select your photo.</li>
+			  <li>Tick the box to immediately submit the photo once the upload finishes.</li>
+			</ol>
+                </div>
+            </div>
 
             <div id="app-questions" class="faq-list">
                 <p class="loading">Loading frequently asked questions...</p>
@@ -103,11 +133,11 @@ const staticlist = [
 */
 
   {
-    "title": "Can I use the app without installing it?",
+    "title": "Can I use the app [without installing] it?",
     "content": "Yes! The Geograph app is fully functional directly within your mobile browser. You don't need to download anything from an app store to start capturing and uploading photos; simply open the link and go."
   },
   {
-    "title": "How do I install the app on my device?",
+    "title": "How do I [install] the app on my device?",
     "content": "As a Progressive Web App (PWA), there is no need to visit an App Store. You can install it directly through your mobile browser while connected to the internet:\n\n* **Android (Chrome):** Open the app link, tap the three-dot menu (⋮), and select 'Install app' or 'Add to home screen.'\n* **iOS/iPhone (Safari):** Open the app link, tap the 'Share' icon (the square with an up arrow), and scroll down to select 'Add to Home Screen.'\n\nOnce added, the Geograph icon will appear on your home screen and function like a regular native app."
   },
 
