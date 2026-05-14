@@ -105,7 +105,7 @@
   </div>
 </div>
 <input type=checkbox id="search_toggle">
-<label id="search_label" for="search_toggle">&#128269;</label>
+<label id="search_label" for="search_toggle">&#x1F50D;&#xFE0E;</label>
 <div id="search_block" class="no_print">
   <div id="search">
     <div id="searchform">
@@ -113,7 +113,7 @@
     <div id="searchfield">
     <input type="hidden" name="form" value="simple"/>
     {dynamic}<input id="searchterm" type="text" name="q" placeholder="enter search query" value="{$searchq|escape:'html'}" size="10" title="Enter a Postcode, Grid Reference, Placename or a text search"/>{/dynamic}
-    <input id="searchbutton" type="submit" name="go" value="Find"/>
+    <input id="searchbutton2" type="submit" name="go" value="&#x1F50D;&#xFE0E;"/>
 	<div id="searchoptions">
 		 What to search:<ul class="touchPadding">
                                 <li><label><input type=radio name=type checked onclick="this.form.action = '/of/'">Photos</label> &nbsp; <i>Enter keywords or a location/postcode to search nearby images</i>
