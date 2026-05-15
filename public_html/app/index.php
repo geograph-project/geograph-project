@@ -146,7 +146,7 @@ function generate_import_map($dir, $basePath = '/app/js/') {
                 <li><a href="/" target="_blank">Open Main Site</a></li>
                 <li><a href="/app/settings" data-route="/app/settings">Settings</a></li>
                 <li><a href="/app/recent" data-route="/app/recent">Recent Submissions</a></li>
-                <li><a href="/app/help" data-route="/app/help">App Help</a></li>
+                <li><a href="/app/help" data-route="/app/help">App Help / FAQ</a></li>
                 <li><a href="/app/contact" data-route="/app/contact">Contact Us</a></li>
                 <li><a href="/app/contact" data-route="/app/contact" data-param="concern">Report a Concern</a></li>
                 <li><a href="/app/tos" data-route="/app/tos">Terms of Service</a></li>
