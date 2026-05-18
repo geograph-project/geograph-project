@@ -230,6 +230,18 @@ async function loadSubmissions(filter, edit_id = null) {
         const response = await fetch(url);
         currentData = await response.json();
 
+        if (currentData.error) {
+            listContainer.textContent = currentData.error;
+
+            if (currentData.error === 'login required') {
+                const link = document.createElement('a');
+                link.href = "javascript:void(history.go(0))";
+                link.textContent = "Reload App to prompt login";
+                listContainer.appendChild(link);
+            }
+            return;
+        }
+
         //only show if something to sort!
         sortSelect.classList.toggle('hidden', currentData.length<2);
 
