@@ -31,6 +31,7 @@ $db = GeographDatabaseConnection(false);
 $conv = new Conversions;
 $reference_index = 1;
 
+$smarty->assign('responsive', true);
 $smarty->display('_std_begin.tpl');
 
 $links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz6.php' => 'Isle of Man', '/finder/places.php'=>'Search', '/mapper/combined.php'=>'Map');
@@ -76,6 +77,27 @@ print '</div>';
 		from planet_im where $where group by name,round(lat,1),round(lon,1)");
 		//note, tehre is a county column, but not many 'places' have it!
 		//the group by is because tehre are some duplicate names, adding lat/lon is just case any far! (for place's that fine)
+
+
+if (!empty($_GET['table'])) {
+	print "<table cellspacing=0 cellpadding=3 border=1 bordercolor=#eee>";
+	print "<tr>";
+	print "<th>gridref";
+	foreach($data[0] as $key => $value)
+		print "<th>$key";
+	foreach($data as $row) {
+		print "<tr>";
+		list($e,$n,$reference_index) = $conv->wgs84_to_national($row['lat'],$row['lon'],true);
+		list ($gridref,) = $conv->national_to_gridref($e,$n,4,$reference_index);
+		print "<td>$gridref";
+		foreach($row as $key => $value)
+			print "<td>".htmlentities($value);
+	}
+	print "</table>";
+
+	$smarty->display('_std_end.tpl');
+	exit;
+}
 
 
 	print "<div style=\"columns: auto 24em\">";
