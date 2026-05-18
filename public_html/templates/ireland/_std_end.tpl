@@ -138,7 +138,7 @@
 </div>
 
 <input type=checkbox id="search_toggle">
-<label id="search_label" for="search_toggle">&#128269;</label>
+<label id="search_label" for="search_toggle">&#x1F50D;&#xFE0E;</label>
 
 <div id="search_block" class="no_print" style="min-height:inherit">
   <div id="search">

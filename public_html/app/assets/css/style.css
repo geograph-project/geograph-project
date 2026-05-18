@@ -776,6 +776,12 @@ body.dark-mode .review-view .saved {
 .faq-view h2 {
     text-align:center;
 }
+.faq-view h4 {
+    margin-top:1em;
+    background-color: var(--input-bg);
+    color: var(--content-text);
+}
+
 .tap-prompt {
     text-align:center;
 }
@@ -791,7 +797,10 @@ button.faq-button:has(+ .faq-content:not(.hidden)) {
 }
 
 div.faq-content {
-	margin-bottom: 12px; margin-left:8px; line-height: 1.5; font-size: 0.95rem; white-space: pre-line;
+	margin-bottom: 12px; margin-left:2px; border-left:1px dashed silver; border-bottom:1px dashed silver; padding:6px; line-height: 1.5; --font-size: 0.95rem; --white-space: pre-line;
+}
+div.faq-content ul, div.faq-content ol {
+	padding-left: 16px;
 }
 
 .error-text {

@@ -100,18 +100,6 @@ if (is_internet_archive() || !empty($_GET['a'])) {
         $CONF['forums'] = false;
 }
 
-if (!empty($_GET['id']) && is_numeric($_GET['id'])) {
-	//we can start ther request early -- the smarty footer will use this!
-	if (empty($_GET['nokick']) && $CONF['template']!='charcoal' && $CONF['template']!='archive' && ($_GET['id']%11 > 7)) {
-		//for now, only 'inlining' and prerendering for certain bots. Google in particular may not load all requests due to crawl budget.
-		if (preg_match('/Googlebot|GoogleOther|bingbot|Baiduspider|InspectionTool/', @$_SERVER['HTTP_USER_AGENT'])) {
-			//for now we deliberately routing this via cloudflare, to use their cache!
-			$url = "https://www.geograph.org.uk/stuff/related.json.php?http=1&id=".intval($_GET['id']);
-			fetchurl_async($url, 'start', "Internal Request");
-		}
-	}
-}
-
 customGZipHandlerStart();
 
 $smarty = new GeographPage;

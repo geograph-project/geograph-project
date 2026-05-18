@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'HEAD' || strpos('monit',@$_SERVER['HTTP_USER_
 
 
 if (!empty($_GET)) {
-	$allowed = array('lang','potd','preview','fbclid','ddev');//only ones allowed
+	$allowed = array('lang','potd','preview','fbclid','ddev','php_profile','utm_source','__cf_chl_tk'); //only ones allowed
 	if (array_diff(array_keys($_GET),$allowed)) {
 		header('HTTP/1.0 400 Bad Request');
         	exit;
@@ -262,6 +262,8 @@ if (!$smarty->is_cached($template, $cacheid))
 
 /////////////////////////////
 // featured collection
+if (in_array($CONF['template'],array('basic','resp','cy'))) {
+
 	$datecolumn = 'updated';
 	$where = "content.content_id = (select content_id from content_featured where showday <= date(now()) order by showday desc limit 1)";
 	$limit = 1;
@@ -322,7 +324,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$colours[$key] = $colours[$idx%$cnt];
 	}
 	$smarty->assign_by_ref("colours",$colours);
-
+}
 
 	//$job = $db->getRow("select blog_id,title from blog where tags like 'job posting' and approved = 1 order by rand() limit 1");
 	//$smarty->assign_by_ref("job",$job);
