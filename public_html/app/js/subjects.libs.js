@@ -95,8 +95,8 @@
             }
         }
 
-	const safeQuery = escapeRegex(query);
-	const regex = new RegExp(`(${safeQuery})(?!(?:[^&;]+;))`, "gi");
+    	const safeQuery = escapeRegex(query);
+	    const regex = new RegExp(`(${safeQuery})(?!(?:[^&;]+;))`, "gi");
 
         // 3. Render
         subjectSugg.innerHTML = matches.map(m => {
@@ -128,36 +128,61 @@
     });
 
     subjectInput.addEventListener('focus', (e) => {
-        if (subjectList.options.length==0) {
-            subjectSugg.innerHTML = '<div class="suggestion-item">No Suggestions Available</div>';
-            return;
-        }
-        const query = subjectInput.value.trim().toLowerCase();
-        if (query.length < 1) {
-            subjectInput.placeholder = 'Start typing... (showing popular subjects)';
+        // Check if we have API suggestions available first
+        if (typeof subjectSuggestions !== 'undefined' && Array.isArray(subjectSuggestions) && subjectSuggestions.length > 0) {
+
+            subjectInput.placeholder = 'Select a suggestion, or start typing to search...';
             subjectInput.setCustomValidity("");
-            const options = Array.from(subjectList.options);
 
-            const matches = options
-            .map(opt => {
-                const val = opt.value.toLowerCase();
-                return { val: opt.value, id: opt.dataset.id, count: opt.dataset.count };
-            })
-            .sort((a, b) => b.count - a.count) // Higher score first
-            .slice(0, 25);
+            // Map the API array directly (maintaining original order)
+            const apiMatches = subjectSuggestions.map(sugg => {
+                // Find the matching option in subjectList to pull its data-id if needed
+                const matchingOption = Array.from(subjectList.options).find(
+                    opt => opt.value.toLowerCase() === sugg.label.toLowerCase()
+                );
+                const id = matchingOption ? matchingOption.dataset.id : '';
 
-            subjectSugg.innerHTML = matches.map(m => {
-                return `<div class="suggestion-item" data-id="${m.id}">${escapeHTML(m.val).toTitleCase()}</div>`
+                return { val: sugg.label, id: id };
+            });
+
+            // Render the API suggestions
+            subjectSugg.innerHTML = apiMatches.map(m => {
+                return `<div class="suggestion-item" data-id="${m.id}">${escapeHTML(m.val).toTitleCase()}</div>`;
             }).join('');
+
         } else {
-            subjectInput.placeholder = 'Type to search subjects...'; //probably wont be seen, but resets the default above!
+            //Otherwise display most popular subjects (just for inspiration)
+
+            if (subjectList.options.length==0) {
+                subjectSugg.innerHTML = '<div class="suggestion-item">No Suggestions Available</div>';
+                return;
+            }
+            const query = subjectInput.value.trim().toLowerCase();
+            if (query.length < 1) {
+                subjectInput.placeholder = 'Start typing... (showing popular subjects)';
+                subjectInput.setCustomValidity("");
+                const options = Array.from(subjectList.options);
+
+                const matches = options
+                .map(opt => {
+                    const val = opt.value.toLowerCase();
+                    return { val: opt.value, id: opt.dataset.id, count: opt.dataset.count };
+                })
+                .sort((a, b) => b.count - a.count) // Higher score first
+                .slice(0, 25);
+
+                subjectSugg.innerHTML = matches.map(m => {
+                    return `<div class="suggestion-item" data-id="${m.id}">${escapeHTML(m.val).toTitleCase()}</div>`
+                }).join('');
+            } else {
+                subjectInput.placeholder = 'Type to search subjects...'; //probably wont be seen, but resets the default above!
+            }
         }
 
         // Wait a tiny bit for the mobile keyboard to fully animate up
         setTimeout(() => {
             const rect = subjectInput.getBoundingClientRect();
             const viewportHeight = window.innerHeight;
-
 
             // If the input is in the bottom 30% of the visible area
             if (rect.top > viewportHeight * 0.7) {

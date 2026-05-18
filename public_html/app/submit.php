@@ -1511,6 +1511,7 @@ function toggleLock() {
 </script>
 
 <script src="<? echo smarty_modifier_revision("/app/js/used-nearby.libs.js"); ?>"></script>
+<script src="<? echo smarty_modifier_revision("/app/js/suggestions.libs.js"); ?>"></script>
 <script src="<? echo smarty_modifier_revision("/app/js/contexts.libs.js"); ?>"></script>
 <script src="<? echo smarty_modifier_revision("/app/js/subjects.libs.js"); ?>"></script>
 <script src="<? echo smarty_modifier_revision("/app/js/tags.libs.js"); ?>"></script>
@@ -2652,6 +2653,11 @@ function renderNotesList() {
 
     	    remoteOverlay.style.display = 'none';
 
+            // Only launch suggestions if it's the title field, has a meaningful length, and the function exists
+            if (localTitle.value.trim().length > 5 && typeof fetchAndProcessSuggestions !== 'undefined') {
+                fetchAndProcessSuggestions(upload_id, localTitle.value.trim()); // no need to await
+            }
+
     		//need to make sure to remove this, so the next iframe can add its own
     	    parentWin.visualViewport.removeEventListener('resize', parentWin.updateRemoteLayout);
     	    parentWin.visualViewport.removeEventListener('scroll', parentWin.updateRemoteLayout);
@@ -2775,6 +2781,11 @@ function renderNotesList() {
     }
 
     function handleBlur(e) {
+        // Only launch suggestions if it's the title field, has a meaningful length, and the function exists
+        if (e.target.id == 'localTitle' && e.target.value.trim().length > 5 && typeof fetchAndProcessSuggestions !== 'undefined') {
+            fetchAndProcessSuggestions(upload_id, e.target.value.trim()); // no need to await
+        }
+
         // Delay blur to allow clicking a pill before the bar disappears
         blurTimer = setTimeout(() => {
 		//if just clicking a suggestion, dont hide the bar (useSuggestion will refocus it anyway!)

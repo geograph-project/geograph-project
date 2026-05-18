@@ -13,14 +13,14 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
             option.style.color = ''; // Resets to default browser color
         });
     }
+    // and clear the subject list
+    subjectSuggestions = [];
 
-console.log('fetching', transferId, title);
+    if (!transferId)
+	return;
 
     // 2. Construct the URL dynamically
     const baseUrl = '/app/mlp.json.php';
-
-console.log(baseUrl, window.location.origin);
-
     const url = new URL(baseUrl, window.location.origin);
     url.searchParams.append('transfer_id', transferId);
 
@@ -42,6 +42,8 @@ console.log(baseUrl, window.location.origin);
             return;
         }
 
+        const subjectInput = document.getElementById('subject-input');
+
         // 4. Process the suggestions
         data.suggestions.forEach(suggestion => {
             if (suggestion.model === 'clip') {
@@ -54,9 +56,13 @@ console.log(baseUrl, window.location.origin);
                     });
                 }
             } else if (suggestion.model === 'subjects') {
-                // If the model is 'subjects', push it to the global array
+                // If the model is 'subjects', push it to the global array (only renders when click to focus)
                 subjectSuggestions.push(suggestion);
-            }
+
+		if (subjectInput && subjectInput.placeholder == 'Search subjects...')
+			subjectInput.placeholder = "Search subjects... (or click to view suggestions)";
+            } //else if (suggestion.model === 'types') {
+		//todo, store non-geo flag, so can suppress provisional points
         });
 
     } catch (error) {
