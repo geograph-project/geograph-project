@@ -49,6 +49,19 @@ export async function onMount() {
         }
 
         currentData = await response.json();
+
+        if (currentData.error) {
+            gridContainer.textContent = currentData.error;
+
+            if (currentData.error === 'login required') {
+                const link = document.createElement('a');
+                link.href = "javascript:void(history.go(0))";
+                link.textContent = "Reload App to prompt login";
+                gridContainer.appendChild(link);
+            }
+            return;
+        }
+
     } catch (error) {
         // Log the error for debugging
         console.error("Failed to fetch uploads:", error);
