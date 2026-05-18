@@ -108,6 +108,18 @@ async function loadSubmissions(filter = 'recent') {
         const response = await fetch(url);
         currentData = await response.json();
 
+        if (currentData.error) {
+            gridContainer.textContent = currentData.error;
+
+            if (currentData.error === 'login required') {
+                const link = document.createElement('a');
+                link.href = "javascript:void(history.go(0))";
+                link.textContent = "Reload App to prompt login";
+                gridContainer.appendChild(link);
+            }
+            return;
+        }
+
         //only show if something to sort!
         sortSelect.classList.toggle('hidden', currentData.length<2);
 
@@ -184,6 +196,12 @@ async function displayStats() {
    try {
         const response = await fetch(url);
         const data = await response.json();
+
+        if (data.error) {
+            //gridContainer.textContent = data.error;
+            //dont need to display a message, the main submissions list will show login button
+            return;
+        }
 
         const displayData = {
             "Total Images": data.images,
