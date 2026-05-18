@@ -509,6 +509,7 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 			$where[] = 'ge.gridimage_id IS NULL';
 			$where= implode(' AND ',$where);
 
+			//the main results
 			$results = $db->getAll($sql="SELECT s.*,realname,COUNT(gs.snippet_id) AS images,SUM(gs.user_id = {$USER->user_id}) AS yours $fields FROM snippet s LEFT JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gs.gridimage_id < 4294967296) LEFT JOIN gridimage_snippet ge ON (s.snippet_id = ge.snippet_id AND ge.gridimage_id = $gid) WHERE $where GROUP BY s.snippet_id $orderby LIMIT 200"); 
 
 			//the results have likly come from sphinx which only moderateed images (so will exclude newly created snippets, and also used on pending images)
@@ -519,15 +520,23 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 
 				if (!empty($results2)) {
 					if (!empty($results)) {
-						//dedplicate
-						$done = array();
-						foreach($results as $row)
-							$done[$row['snippet_id']]=1;
-						foreach($results2 as $row)
-							if (empty($done[$row['snippet_id']]))
-								array_unshift($results, $row);
+						if (count($results) > 10) {
+							//$results2, then $results (so used are top of list)
+							$results2_ids = array_column($results2, 'snippet_id', 'snippet_id');
+							$filtered_results = array();
+							foreach ($results as $row)
+							        if (empty($results2_ids[$row['snippet_id']]))
+							            $filtered_results[] = $row;
+							$results = array_merge(array_reverse($results2), $filtered_results);
+						} else {
+							//just prepend missing (minimise shuffling)
+							$results_ids = array_column($results, 'snippet_id', 'snippet_id');
+							foreach($results2 as $row)
+								if (empty($results_ids[$row['snippet_id']]))
+									array_unshift($results, $row);
+						}
 					} else {
-						$results = $results2;
+						$results = array_reverse($results2);
 					}
 				}
 			}
