@@ -51,7 +51,7 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
                 if (selectElement) {
                     Array.from(selectElement.options).forEach(option => {
                         if (option.value === suggestion.label) {
-                            option.style.color = 'blue';
+                            option.style.color = '#0000CC';
                         }
                     });
                 }
