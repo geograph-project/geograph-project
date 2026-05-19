@@ -1148,6 +1148,7 @@ function toggleLock() {
         </div>
 
 	  <button type="button" onclick="openModal('tag-modal')" class="help-link">What do all these fields mean? &#9432;</button>
+	  <button type="button" onclick="openCreateSnippetModal()" class="btn btn-secondary" style="width: auto; display: inline-block; margin: 0 0 0 10px; padding: 10px 20px;">Create New Shared Description</button>
 
 
 <dialog id="tag-modal" onclick="closeModal('tag-modal')">
@@ -1474,6 +1475,31 @@ function toggleLock() {
 	<br><br>
 </form>
 
+<dialog id="create-snippet-modal">
+    <div style="max-height: 80vh; overflow-y: auto;">
+        <h3>Create New Shared Description</h3>
+        <form id="create-snippet-form">
+            <label for="snippet-title">Title</label>
+            <input type="text" id="snippet-title" name="title" maxlength="64" required placeholder="Short descriptive title">
+
+            <label for="snippet-comment">Description</label>
+            <textarea id="snippet-comment" name="comment" maxlength="16384" required rows="5" placeholder="Detailed description..."></textarea>
+
+            <label for="snippet-gridref">Grid Reference</label>
+            <input type="text" id="snippet-gridref" name="grid_reference" pattern="^[A-Za-z]{1,2}\s*\d{1,5}\s*\d{1,5}$" placeholder="e.g. TQ 123 456">
+
+            <label class="flag-item" for="snippet-nogr">
+                <input type="checkbox" id="snippet-nogr" name="nogr" value="1" onchange="toggleSnippetGridRef(this.checked)">
+                <span><b>Do not Attach Location</b></span>
+            </label>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button type="submit" class="btn btn-primary" style="flex: 1;">Create</button>
+                <button type="button" onclick="closeModal('create-snippet-modal')" class="btn btn-secondary" style="flex: 1;">Cancel</button>
+            </div>
+        </form>
+    </div>
+</dialog>
 
     <!--- this is just a template that gets cloned, not the active suggestion bar! (should not be inside the actual form) -->
     <div id="blockForRemote" style="display:none">
@@ -2975,6 +3001,46 @@ function setValidationUI(el, fieldName, isValid, message = '') {
         if (icon) icon.style.display = 'none';
     }
 }
+
+// ---------------------
+
+    window.openCreateSnippetModal = function() {
+        const mainGR = document.getElementById('grid_reference').value;
+        document.getElementById('snippet-gridref').value = mainGR;
+        document.getElementById('snippet-gridref').disabled = false;
+        document.getElementById('snippet-nogr').checked = false;
+        document.getElementById('create-snippet-form').reset();
+        document.getElementById('snippet-gridref').value = mainGR; // Reset clears it, so set again
+        openModal('create-snippet-modal');
+    };
+
+    window.toggleSnippetGridRef = function(nogr) {
+        document.getElementById('snippet-gridref').disabled = nogr;
+    };
+
+    document.getElementById('create-snippet-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        formData.append('create', 'true');
+        
+        try {
+            const response = await fetch('/submit_snippet.php?json=1', {
+                method: 'POST',
+                body: formData
+            });
+            if (!response.ok) throw new Error('Network response was not ok');
+            const result = await response.json();
+            if (result.error) {
+                alert('Error: ' + result.error);
+            } else {
+                addSnippet(result.id, result.title);
+                closeModal('create-snippet-modal');
+            }
+        } catch (error) {
+            console.error('Error creating snippet:', error);
+            alert('Failed to create shared description. Please try again.');
+        }
+    });
 
 // ---------------------
 

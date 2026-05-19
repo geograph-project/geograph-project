@@ -113,28 +113,38 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 	}
 
 	$db->Execute('INSERT INTO snippet SET created=NOW(),point_en=GeomFromText('.$point.'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+	$snippet_id = $db->Insert_ID();
 
 	if ($gid) {
 		$updates = array();
 		$updates['user_id'] = $USER->user_id;
-		$updates['snippet_id'] = $db->Insert_ID();
+		$updates['snippet_id'] = $snippet_id;
 		$updates['gridimage_id'] = $gid;
 
 		$db->Execute('INSERT INTO gridimage_snippet_real SET `'.implode('` = ?,`',array_keys($updates)).'` = ? ON DUPLICATE KEY UPDATE status=2',array_values($updates));
 
-		$_SESSION['last_snippet'] = intval($updates['snippet_id']);
+		$_SESSION['last_snippet'] = intval($snippet_id);
 	}
-	if ($gid < 4294967296) {
+	if ($gid && $gid < 4294967296) {
 		//clear any caches involving this photo
 		$ab=floor($gid/10000);
 		$smarty->clear_cache(null, "img$ab|{$gid}");
 
-		$smarty->clear_cache("snippet.tpl", $updates['snippet_id']);
+		$smarty->clear_cache("snippet.tpl", $snippet_id);
 
 		$memcache->name_delete('sd', $gid);
 	}
 
 	split_timer('snippet','create',$gid); //logs the wall time
+
+	if (!empty($_GET['json'])) {
+		header('Content-Type: application/json');
+		echo json_encode(array(
+			'id' => $snippet_id,
+			'title' => $_POST['title']
+		));
+		exit;
+	}
 
 ################################################
 
