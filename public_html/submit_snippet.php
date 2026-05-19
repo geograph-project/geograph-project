@@ -113,6 +113,7 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 	}
 
 	$db->Execute('INSERT INTO snippet SET created=NOW(),point_en=GeomFromText('.$point.'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+	$new_snippet_id = $db->Insert_ID();
 
 	if ($gid) {
 		$updates = array();
@@ -135,6 +136,15 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 	}
 
 	split_timer('snippet','create',$gid); //logs the wall time
+
+	if (!empty($_GET['json'])) {
+		header('Content-Type: application/json');
+		echo json_encode(array(
+			'id' => $new_snippet_id,
+			'title' => $_POST['title']
+		));
+		exit;
+	}
 
 ################################################
 
