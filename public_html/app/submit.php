@@ -1147,8 +1147,8 @@ function toggleLock() {
             <div id="snippet-suggestions" class="dropdown"></div>
         </div>
 
-	  <button type="button" onclick="openModal('tag-modal')" class="help-link">What do all these fields mean? &#9432;</button>
 	  <button type="button" onclick="openCreateSnippetModal()" class="btn btn-secondary" style="width: auto; display: inline-block; margin: 0 0 0 10px; padding: 10px 20px;">Create New Shared Description</button>
+	  <button type="button" onclick="openModal('tag-modal')" class="help-link">What do all these fields mean? &#9432;</button>
 
 
 <dialog id="tag-modal" onclick="closeModal('tag-modal')">
@@ -1167,7 +1167,7 @@ function toggleLock() {
 	        <h2>Shared Descriptions</h2>
 	        <p>Contributors can write descriptions that can be attached to multiple images. You might find someone has already written such a description for the place or subject you photographed. You are welcome to attach SDs created by others to your image.</p>
 
-    		<p>Note: at this time, it's not possible to create (or edit) SDs via the App. Use the main website to create a SD.</p>
+    		<p>Note: at this time, it's not possible to edit SDs via the App. Use the main website to edit a SD.</p>
 	    </section>
 
 	    <section>
@@ -1483,9 +1483,9 @@ function toggleLock() {
             <input type="text" id="snippet-title" name="title" maxlength="64" required placeholder="Short descriptive title">
 
             <label for="snippet-comment">Description</label>
-            <textarea id="snippet-comment" name="comment" maxlength="16384" required rows="5" placeholder="Detailed description..."></textarea>
+            <textarea id="snippet-comment" name="comment" maxlength="16384" required rows="7" placeholder="Detailed description..."></textarea>
 
-            <label for="snippet-gridref">Grid Reference</label>
+            <label for="snippet-gridref">Grid Reference <span style="font-weight:normal">(if SD is for a specific location)</span></label>
             <input type="text" id="snippet-gridref" name="grid_reference" pattern="^[A-Za-z]{1,2}\s*\d{1,5}\s*\d{1,5}$" placeholder="e.g. TQ 123 456">
 
             <label class="flag-item" for="snippet-nogr">
@@ -1514,9 +1514,8 @@ function toggleLock() {
         <div class="remote-body">
             <input type="text" id="remoteTitleInput" maxlength="128" placeholder="Enter Title...">
             <textarea id="remoteDescArea" maxlength="65000" placeholder="Enter Optional Description..."></textarea>
-<div class="info-icon" id="titleInfo" title="Style Hint">!</div>
-<div class="info-icon" id="descInfo" title="Style Hint">!</div>
-
+            <div class="info-icon" id="titleInfo" title="Style Hint">!</div>
+            <div class="info-icon" id="descInfo" title="Style Hint">!</div>
         </div>
     	<div class="remote-suggestions" id="remoteSuggBar"></div>
     </div>
@@ -3022,7 +3021,7 @@ function setValidationUI(el, fieldName, isValid, message = '') {
         e.preventDefault();
         const formData = new FormData(e.target);
         formData.append('create', 'true');
-        
+
         try {
             const response = await fetch('/submit_snippet.php?json=1', {
                 method: 'POST',
