@@ -1,0 +1,74 @@
+
+We've run this... 
+
+ALTER TABLE gridimage_tag ADD COLUMN origin ENUM('manual', 'suggested', 'primed', 'auto') DEFAULT 'manual';
+
+
+------------------------
+
+
+First need to fix top ones (we originally called them 'suggested', but now changed to calling them 'primed' via submission)
+
+Need to reclassfiy the ones via submission (only for 'top', subjects remain suggested!)
+
+Primary.geograph_live>select gt.*,prefix,tag from gridimage_tag gt inner join tag t using (tag_id) where gridimage_id > 8100000 and origin = 'suggested' and prefix = 'top' limit 10;
++--------------+--------+---------+---------------------+--------+---------------------+-----------+--------+----------------+
+| gridimage_id | tag_id | user_id | created             | status | updated             | origin    | prefix | tag            |
++--------------+--------+---------+---------------------+--------+---------------------+-----------+--------+----------------+
+|      8322277 |    787 |    1837 | 2026-05-20 17:40:33 |      2 | 2026-05-20 17:40:33 | suggested | top    | Coastal        |
+|      8322285 |    787 |    1837 | 2026-05-20 17:51:02 |      2 | 2026-05-20 17:51:02 | suggested | top    | Coastal        |
+|      8322286 |    787 |    1837 | 2026-05-20 17:53:32 |      2 | 2026-05-20 17:53:32 | suggested | top    | Coastal        |
+|      8322237 |    809 |   11160 | 2026-05-20 17:02:13 |      2 | 2026-05-20 17:02:13 | suggested | top    | Paths          |
+|      8322238 |    809 |    1837 | 2026-05-20 17:02:45 |      2 | 2026-05-20 17:02:45 | suggested | top    | Paths          |
+|      8322240 |    809 |    1837 | 2026-05-20 17:05:08 |      2 | 2026-05-20 17:05:08 | suggested | top    | Paths          |
+|      8322259 |    809 |   11160 | 2026-05-20 17:20:10 |      2 | 2026-05-20 17:20:10 | suggested | top    | Paths          |
+|      8322275 |    809 |   38492 | 2026-05-20 17:38:57 |      2 | 2026-05-20 17:38:57 | suggested | top    | Paths          |
+|      8322291 |    809 |   38492 | 2026-05-20 17:58:55 |      2 | 2026-05-20 17:58:55 | suggested | top    | Paths          |
+|      8322228 |    834 |   11160 | 2026-05-20 16:56:32 |      2 | 2026-05-20 16:56:32 | suggested | top    | Sport, Leisure |
++--------------+--------+---------+---------------------+--------+---------------------+-----------+--------+----------------+
+
+
+So can run... 
+
+update gridimage_tag gt inner join tag t using (tag_id)
+SET gt.origin = 'primed', gt.updated=gt.updated
+ where gridimage_id > 8100000 and origin = 'suggested' and prefix = 'top';
+
+Do this FIRST, so that it does NOT change hte ones from `clipthelandscape` tab from suggested to primed!
+
+8100000 is just arbitary cutoff, to avoid processing whole table! (no index on origin!)
+
+
+------------------------
+-- now can bring over the ones from clipthelandscape ... 
+
+select c.*,gt.created,gt.origin,prefix,tag from clipthelandscape c inner join gridimage_tag gt using (gridimage_id) inner join tag t using (tag_id) where processed is NOT null and prefix = 'top' and gt.created BETWEEN DATE_SUB(c.processed, INTERVAL 5 MINUTE) AND DATE_ADD(c.processed, INTERVAL 5 MINUTE) limit 10;
+
+what I am doing is wanting to run 
+
+UPDATE gridimage_tag gt
+INNER JOIN clipthelandscape c USING (gridimage_id)
+INNER JOIN tag t USING (tag_id)
+SET gt.origin = 'suggested', gt.updated=gt.updated
+WHERE processed is NOT null AND prefix = 'top' AND gt.created BETWEEN DATE_SUB(c.processed, INTERVAL 5 MINUTE) AND DATE_ADD(c.processed, INTERVAL 5 MINUTE);
+
+We were just marking the whole row clipthelandscape when they 'looked' at the suggestions, But not added column to gridimage_tag to mark individual tags as been suggested from the AI. 
+
+
+------------------------
+-- pretty much exactly the same thing for subject!
+
+Primary.geograph_live>select s.*,gt.created,gt.origin,prefix,tag from subjects_ai_result s inner join gridimage_tag gt using (gridimage_id) inner join tag t using (tag_id) where processed is NOT null and prefix = 'subject' and gt.created BETWEEN DATE_SUB(s.processed, INTERVAL 5 MINUTE) AND DATE_ADD(s.processed, INTERVAL 5 MINUTE) limit 10;
+
+UPDATE gridimage_tag gt
+INNER JOIN subjects_ai_result s USING (gridimage_id)
+INNER JOIN tag t USING (tag_id)
+SET gt.origin = 'suggested', 
+    gt.updated = gt.updated
+WHERE s.processed IS NOT NULL 
+  AND t.prefix = 'subject' 
+  AND gt.created BETWEEN DATE_SUB(s.processed, INTERVAL 5 MINUTE) 
+                     AND DATE_ADD(s.processed, INTERVAL 5 MINUTE);
+
+
+
