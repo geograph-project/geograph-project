@@ -14,8 +14,8 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
 
         // Find the input inside this label to strip out previous tracking markers
         const checkbox = label.querySelector('input[type="checkbox"]');
-        if (checkbox && checkbox.value.endsWith('*')) {
-            // Slice off the trailing asterisk to restore the original clean value
+        if (checkbox && checkbox.value.endsWith('~')) {
+            // Slice off the trailing mark to restore the original clean value
             checkbox.value = checkbox.value.slice(0, -1);
         }
     });
@@ -66,7 +66,7 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
                 if (checkbox) {
                     //mark the value, so we know it a 'suggested' tag!
                     if (!checkbox.checked) //but dont mark if already checked!
-			    checkbox.value += '*';
+			    checkbox.value += '~'; //so know was 'primed'
                     // Find its closest parent label element and turn its text blue
                     const label = checkbox.closest('label');
                     if (label) {

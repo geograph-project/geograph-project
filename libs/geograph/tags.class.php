@@ -71,7 +71,13 @@ class Tags
 			//the trailing star is an AI marker, need to remove,
 			// but still keep track, to record in gridimage_tag
 			$tag = preg_replace('/\*$/','',$tag);
-			$ai = true;
+			$ai = 'suggested';
+
+		} elseif (preg_match('/\~$/',$tag)) {
+			//the trailing star is an AI marker, need to remove,
+			// but still keep track, to record in gridimage_tag
+			$tag = preg_replace('/\~$/','',$tag);
+			$ai = 'primed';
 		}
 
                 $prefix = '';
@@ -94,7 +100,7 @@ class Tags
                 }
 		//once got tag_id!
 		if (!empty($ai))
-			$this->ai_ids[$tag_id] = true;
+			$this->ai_ids[$tag_id] = $ai;
 		return $tag_id;
 	}
 
@@ -144,15 +150,10 @@ class Tags
 		$db = $this->_getDB(true);
 
 		$lookup = array();
-		$ai = array();
 		foreach ($this->tags as $tag => $tag_id) {
 			if (empty($tag_id)) {
-				if (preg_match('/\*$/',$tag)) {
-					$ai[$tag] = true;
-					//the trailing star is an AI marker, need to remove for the lookup
-					// but still keep track, to record in gridimage_tag
-					$tag = preg_replace('/\*$/','',$tag);
-				}
+				//dont need the marker on the 'lookup'
+				$tag = preg_replace('/[\*~]$/','',$tag);
 
 				$tag = str_replace('\\','',$tag);
 				$bits = explode(':',$tag,2);
@@ -180,9 +181,13 @@ class Tags
 				if (isset($this->tags[$tag])) {
 					$this->tags[$tag] = $tag_id;
 				}
+				//the marker is still there
 				if (isset($this->tags["$tag*"])) {
 					$this->tags["$tag*"] = $tag_id;
-					$this->ai_ids[$tag_id] = true;
+					$this->ai_ids[$tag_id] = 'suggested';
+				} elseif (isset($this->tags["$tag~"])) {
+					$this->tags["$tag~"] = $tag_id;
+					$this->ai_ids[$tag_id] = 'primed';
 				}
 			}
 
@@ -230,7 +235,7 @@ class Tags
 			foreach ($this->tags as $tag => $tag_id) {
 
 				$u['tag_id'] = $tag_id;
-				$u['origin'] = empty($this->ai_ids[$tag_id])?'manual':'suggested';
+				$u['origin'] = empty($this->ai_ids[$tag_id])?'manual':$this->ai_ids[$tag_id];
 
 				$db->Execute('INSERT INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?  ON DUPLICATE KEY UPDATE status = '.$u['status'],array_values($u));
 
