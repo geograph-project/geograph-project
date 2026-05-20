@@ -1,0 +1,120 @@
+
+/**
+ * Fetches suggestions from the Geograph API and processes them for the checkbox/select UI.
+ * @param {string} transferId - The unique transfer ID.
+ * @param {string} [title] - Optional title to include in the API request.
+ */
+async function fetchAndProcessSuggestions(transferId, title = '') {
+
+    // 1. Reset Context Checkboxes (Targeting the parent labels)
+    // Find all labels inside containers with class 'plist'
+    const contextLabels = document.querySelectorAll('.plist label');
+    contextLabels.forEach(label => {
+        label.style.color = ''; // Reset to default browser/CSS color
+    });
+
+    // 2. Clear out any previous AI Suggestions optgroup from the subject dropdown
+    const subjectSelect = document.getElementById('subject');
+    if (subjectSelect) {
+        const oldGroup = subjectSelect.querySelector('optgroup[data-type="ai-suggestions"]');
+        if (oldGroup) {
+            oldGroup.remove();
+        }
+    }
+
+    // 3. Construct the URL dynamically using the relative path fix
+    const baseUrl = '/app/mlp.json.php';
+    const url = new URL(baseUrl, window.location.origin);
+    url.searchParams.append('transfer_id', transferId);
+
+    if (title) {
+        url.searchParams.append('title', title);
+    }
+
+    try {
+        // 4. Make the API request
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.suggestions || !Array.isArray(data.suggestions)) {
+            return;
+        }
+
+        // Create an optgroup element to hold our incoming subject suggestions
+        let aiOptGroup = null;
+        let topSuggestion = null;
+
+        // 5. Process the suggestions
+        data.suggestions.forEach(suggestion => {
+
+            if (suggestion.model === 'clip') {
+                // Look for the checkbox by its value attribute (matching "top:Label Name")
+                const targetValue = `top:${suggestion.label}`;
+                const checkbox = document.querySelector(`.plist input[value="${targetValue}"]`);
+
+                if (checkbox) {
+                    // Find its closest parent label element and turn its text blue
+                    const label = checkbox.closest('label');
+                    if (label) {
+                        label.style.color = 'blue';
+                    }
+                }
+
+            } else if (suggestion.model === 'subjects' && subjectSelect) {
+                // Initialize the optgroup if we haven't yet
+                if (!aiOptGroup) {
+                    aiOptGroup = document.createElement('optgroup');
+                    aiOptGroup.label = 'Suggestions';
+                    aiOptGroup.setAttribute('data-type', 'ai-suggestions');
+                }
+
+                // Create a new option element for this suggestion
+                const option = document.createElement('option');
+                option.value = suggestion.label;
+
+		//save the first!
+                if (!topSuggestion) topSuggestion = suggestion.label;
+
+                option.textContent = `${suggestion.label} (${Math.round(suggestion.score * 100)}%)`;
+
+                aiOptGroup.appendChild(option);
+            }
+        });
+
+        // 6. Prepend the new optgroup right after the initial "select..." options
+        if (aiOptGroup && subjectSelect) {
+            // Inserts right after the very first element child (usually the placeholder "select...")
+            if (subjectSelect.firstElementChild) {
+                subjectSelect.insertBefore(aiOptGroup, subjectSelect.firstElementChild.nextSibling);
+            } else {
+                subjectSelect.appendChild(aiOptGroup);
+            }
+
+            // Update the second blank option with our saved top suggestion
+	    if (topSuggestion) {
+	        const options = subjectSelect.getElementsByTagName('option');
+	        
+	        // Index 1 is the second option element
+	        if (options.length > 1) {
+	            const secondOption = options[1];
+	            const updatedText = `select subject... (top suggestion: ${topSuggestion})`;
+	            
+	            secondOption.textContent = updatedText;
+	            
+	            // Mirror to the label attribute since your template outputs them explicitly
+	            if (secondOption.hasAttribute('label')) {
+	                secondOption.setAttribute('label', updatedText);
+	            }
+	        }
+	    }
+
+        }
+
+    } catch (error) {
+        console.error('Error fetching suggestions:', error);
+    }
+}
