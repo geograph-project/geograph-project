@@ -145,7 +145,7 @@ $REVISIONS['/app/js/modules/intro-view.js']=19686591;
 $REVISIONS['/js/Leaflet.GeographCoverage/Leaflet.GeographCoverage.css']=94536842;
 $REVISIONS['/js/L.Control.Locate.js']=19760747;
 $REVISIONS['/app/js/tags.libs.js']=98832698;
-$REVISIONS['/app/js/subjects.libs.js']=35352436;
+$REVISIONS['/app/js/subjects.libs.js']=77056735;
 $REVISIONS['/app/js/recents.libs.js']=70590247;
 $REVISIONS['/app/js/contexts.libs.js']=87448789;
 $REVISIONS['/app/js/used-nearby.libs.js']=87448789;
@@ -154,6 +154,6 @@ $REVISIONS['/curated/automated.css']=76102783;
 $REVISIONS['/curated/automated.js']=27367734;
 $REVISIONS['/js/vector.class.js']=67855777;
 $REVISIONS['/js/company-message.js']=63039136;
-$REVISIONS['/app/js/suggestions.libs.js']=33873281;
-$REVISIONS['/js/submit-suggestions.js']=72636835;
+$REVISIONS['/app/js/suggestions.libs.js']=77056735;
+$REVISIONS['/js/submit-suggestions.js']=77056735;
 ?>
