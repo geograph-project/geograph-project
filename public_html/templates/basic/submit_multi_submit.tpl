@@ -50,7 +50,7 @@
 				<tr>
 					<td height="100"><a href="/submit.php?preview={$item.transfer_id}" target="_blank"><img loading="lazy" src="/submit.php?preview={$item.transfer_id}" width="160"/></a></td>
 					<td><form action="/submit.php" method="post" target="_blank" style="margin:0; background-color:lightgrey; padding:5px">
-						Subject GR: <input type="text" name="grid_reference" size="10" value="{$item.grid_reference}"/> {if $item.grid_reference}<small>{$item.grid_reference} from EXIF</small>{/if}<br/>
+						Subject GR: <input type="text" name="grid_reference" required size="10" value="{$item.grid_reference}"/> {if $item.grid_reference}<small>{$item.grid_reference} from EXIF</small>{/if}<br/>
 						{if $item.photographer_gridref}Camera: <input type="text" name="photographer_gridref" size="10" value="{$item.photographer_gridref}"/><br/> <small style="font-size:0.7em">{$item.photographer_gridref} from EXIF</small><br/>{/if}
 
 						<br/><input type="hidden" name="gridsquare" value="1">
