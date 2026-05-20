@@ -1,8 +1,8 @@
 <?php
 
 // Script parameters
-$param = array('offset'=>0, 'batch' => 10, 'print' => true, 'provider'=>'open', 'ai_model' => '',
-		'table' => "ai_responce", 'reason'=>true, 'save'=>false, 'example'=>false);
+$param = array('print' => true, 'provider'=>'open', 'ai_model' => '',
+		'table' => "ai_responce", 'reason'=>true, 'example'=>false, 'simple'=>false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -17,9 +17,20 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 #########################################################
 
 if (!empty($param['example'])) {
-	//todo, should be checking the time, not just 'active'!
-	$row = $db->getRow("  SELECT * FROM {$param['table']} r INNER JOIN ai_prompt p ON (r.prompt_name = p.prompt_name) WHERE p.active = 1
-	 AND user1 LIKE '%image_url%'
+	$where = array();
+	$where[] = "p.active = 1";	//todo, should be checking the time, not just 'active'!
+
+	if (!is_numeric($param['example'])) {
+		$where[] = "p.prompt_name = ".$db->Quote($param['example']);
+	} elseif (empty($param['simple'])) {
+		$where[] = "user1 LIKE '%image_url%'";
+	} else {
+		$where[] = "user1 NOT LIKE '%image_url%'";
+		$where[] = "content like '%JSON%'";
+	}
+
+	$row = $db->getRow("  SELECT * FROM {$param['table']} r INNER JOIN ai_prompt p ON (r.prompt_name = p.prompt_name)
+	 WHERE ".implode(' AND ',$where)."
 	 ORDER BY length(content)+length(response)
 	 LIMIT 1");
 
@@ -54,6 +65,13 @@ if (!empty($param['example'])) {
         	$messages[] = ['role' => 'user', 'content' => $user];
 	}
 
+if (!empty($param['simple'])) {
+	foreach($messages as $m)
+		print $m['content']."\n\n";
+	exit;
+}
+
+
 	//RESPONSE
 		//todo,we could encourage NOT wrapping in json block?
 		//$json = trim($result,"`json \t\n\r");
@@ -73,7 +91,7 @@ if (!empty($param['example'])) {
 
 if (empty($param['ai_model'])) {
 	print "\n";
-	$data = $db->getAll("select ai_model,count(*),round(avg(length(response))) as avglength,max(updated) from ai_responce group by ai_model");
+	$data = $db->getAll("select ai_model,count(*),round(avg(length(response))) as avglength,round(avg(timing),3) as timing, max(updated) as last from ai_responce group by ai_model order by last desc");
 	foreach ($data as $row) {
 		$cmd = "php $argv[0] --config={$param['config']} --ai_model={$row['ai_model']}";
 
@@ -87,15 +105,24 @@ if (empty($param['ai_model'])) {
 
 #########################################################
 
-    if (empty($where))
-	$where[] = 1;
+$column_name = "user4";
+
+//todo, need a way to detect image only, also exclude text only
+//    $where[] = "$column_name LIKE '%image_url%'";
+//$where[] = "LENGTH(content)+LENGTH($column_name) <= 4000"; //for short context models
+
+    $where[] = "LENGTH($column_name) > 10";
 
     print "-- WHERE ".implode(" AND ", $where)."\n";
 
+
+    if (empty($where))
+	$where[] = 1;
+
     $sql = "SELECT p.*
 	FROM ai_prompt p
-	LEFT JOIN {$param['table']} r ON (r.prompt_name = p.prompt_name AND r.ai_model = '{$param['ai_model']}')
-	WHERE LENGTH(user1) > 10 AND p.active = 1 AND r.prompt_name IS NULL";
+	LEFT JOIN {$param['table']} r ON (r.prompt_name = p.prompt_name AND r.ai_model = '{$param['ai_model']}' AND r.column_name = '$column_name')
+	WHERE ".implode(" AND ",$where)." AND p.active = 1 AND r.prompt_name IS NULL";
 
     $rs = $db->Execute($sql);
 
