@@ -295,6 +295,22 @@ if (isset($_GET['success'])) {
                 	}
 		}
 
+		if (!empty($square) && !empty($square->db) && !empty($USER->user_id)) {
+			$db = $square->_getDb();
+			$titles = $db->getCol("
+			    (SELECT DISTINCT title
+			    FROM gridimage
+			    WHERE user_id = {$USER->user_id}
+			    ORDER BY gridimage_id DESC LIMIT 5)
+			    UNION
+			    (SELECT DISTINCT title
+			    FROM gridimage
+			    WHERE user_id = {$USER->user_id} AND gridsquare_id = {$square->gridsquare_id}
+			    ORDER BY gridimage_id DESC LIMIT 10)
+			");
+			$smarty->assign_by_ref('titles',$titles);
+		}
+
 		if (!empty($_REQUEST['imagetaken']) && $_REQUEST['imagetaken'] != '0000-00-00') {
 			$smarty->assign('imagetaken', stripslashes($_REQUEST['imagetaken']));
 		} elseif ($smarty->get_template_vars('imagetaken')) {

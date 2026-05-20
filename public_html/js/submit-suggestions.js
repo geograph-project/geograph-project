@@ -76,8 +76,8 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
                 const option = document.createElement('option');
                 option.value = suggestion.label;
 
-		//save the first!
-                if (!topSuggestion) topSuggestion = suggestion.label;
+        		//save the first!
+                if (!topSuggestion && suggestion.score > 0.2) topSuggestion = suggestion.label;
 
                 option.textContent = `${suggestion.label} (${Math.round(suggestion.score * 100)}%)`;
 
@@ -94,24 +94,20 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
                 subjectSelect.appendChild(aiOptGroup);
             }
 
-            // Update the second blank option with our saved top suggestion
-	    if (topSuggestion) {
-	        const options = subjectSelect.getElementsByTagName('option');
-	        
-	        // Index 1 is the second option element
-	        if (options.length > 1) {
-	            const secondOption = options[1];
-	            const updatedText = `select subject... (top suggestion: ${topSuggestion})`;
-	            
-	            secondOption.textContent = updatedText;
-	            
-	            // Mirror to the label attribute since your template outputs them explicitly
-	            if (secondOption.hasAttribute('label')) {
-	                secondOption.setAttribute('label', updatedText);
-	            }
-	        }
-	    }
+            if (topSuggestion && subjectSelect.selectedIndex !== -1) {
+                const currentOption = subjectSelect.options[subjectSelect.selectedIndex];
 
+                // Double-check it's an empty option so we don't overwrite an existing selection
+                if (currentOption.value === "") {
+                    const updatedText = `select subject... (top suggestion: ${topSuggestion})`;
+
+                    currentOption.textContent = updatedText;
+
+                    if (currentOption.hasAttribute('label')) {
+                        currentOption.setAttribute('label', updatedText);
+                    }
+                }
+            }
         }
 
     } catch (error) {

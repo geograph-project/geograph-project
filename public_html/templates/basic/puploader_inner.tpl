@@ -151,10 +151,18 @@
 	<p><label for="title"><b>Title</b></label> {if $error.title}
 		<br/><span class="formerror">{$error.title}</span>
 		{/if}<br/>
-	&nbsp;<input size="50" id="title" name="title" value="{$title|escape:'html'}" disabled spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);"/> <span class="formerror" style="display:none" id="titlestyle">Possible style issue. See Guide above. <span id="titlestylet" style="font-size:0.9em"></span></span></p>
+	&nbsp;<input size="50" id="title" name="title" value="{$title|escape:'html'}" {if $titles}list="titles"{/if} disabled spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);"/> <span class="formerror" style="display:none" id="titlestyle">Possible style issue. See Guide above. <span id="titlestylet" style="font-size:0.9em"></span></span></p>
 	 {if $place.distance}
 	 <p style="font-size:0.7em">Gazetteer info as will appear:<br/> <span style="color:silver;">{place place=$place}</span></p>
 	 {/if}
+	{if $titles}
+		<datalist id="titles">
+			<option>Recent titles...</option>
+			{foreach from=$titles item=example}
+				<option>{$example|escape:'html'}</option>
+			{/foreach}
+		</datalist>
+	{/if}
 
 	<p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
 	&nbsp;<textarea id="comment" name="comment" disabled rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
@@ -176,6 +184,58 @@
 			</select>
 			<div style="font-size:0.7em">The Subject is a special type of tag, used to highlight the primary subject of the photo</div>
 		</div>
+
+		<script src="{"/js/submit-suggestions.js"|revision}"></script>
+		<script>
+		var upload_id = {$upload_id|json_encode};
+		{literal}
+		let blurTimer = null;
+		let suggestionsFetched = false;
+		document.addEventListener('DOMContentLoaded', () => {
+			const titleElement = document.getElementById('title');
+			const tagsContainer = document.getElementById('div1'); //its the first tab!
+
+			titleElement.addEventListener('input', function() {
+				//if come back!
+				if (blurTimer) clearTimeout(blurTimer);
+				suggestionsFetched = false;
+			});
+			titleElement.addEventListener('blur', function() {
+				if (blurTimer) clearTimeout(blurTimer);
+			        blurTimer = setTimeout(() => {
+					if (titleElement.value.length>5 && !suggestionsFetched) {
+						fetchAndProcessSuggestions(upload_id, titleElement.value); // no need to await
+						suggestionsFetched = true;
+					}
+					blurTimer = null;
+			        }, 700);
+			});
+
+			// --- Feature Detection Guard ---
+			if (typeof IntersectionObserver === 'undefined') {
+		                return;
+		        }
+
+			const observer = new IntersectionObserver((entries) => {
+			    entries.forEach(entry => {
+			      if (entry.isIntersecting && !suggestionsFetched) {
+			        const titleText = titleElement.value.trim();
+			        
+			        //if (titleText !== '') { -- actully maybe should fetch suggestions even without title
+			          fetchAndProcessSuggestions(upload_id, titleElement.value); // no need to await
+			          suggestionsFetched = true; 
+			        //}
+			      }
+			    });
+			}, {
+			    root: null,
+			    //Safe threshold handling for large containers on small screens
+			    threshold: tagsContainer.offsetHeight > window.innerHeight ? 0.6 : 1.0
+			});
+
+			observer.observe(tagsContainer);
+		});
+		</script>{/literal}
 
 		<br/>
 
