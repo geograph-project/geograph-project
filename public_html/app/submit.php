@@ -1922,7 +1922,7 @@ console.log("Error", e);
             const hiddenId = document.getElementById('subject-id');
             const options = document.querySelectorAll('#subject-list option');
             if (options.length) {
-                const valueLower = input.value.toLowerCase();
+                const valueLower = input.value.toLowerCase().replace(/\*$/,''); //need to remove the AI marker
 
                 // Find if the typed value matches a valid tag
                 const match = Array.from(options).find(o => o.value.toLowerCase() === valueLower);

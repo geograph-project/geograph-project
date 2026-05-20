@@ -45,6 +45,7 @@ class Tags
 	* array of tags
 	*/
 	var $tags=array();
+	var $ai_ids=array();
 
 
 	/**
@@ -66,6 +67,13 @@ class Tags
 
 		$db = $this->_getDB(false);
 
+		if (preg_match('/\*$/',$tag)) {
+			//the trailing star is an AI marker, need to remove,
+			// but still keep track, to record in gridimage_tag
+			$tag = preg_replace('/\*$/','',$tag);
+			$ai = true;
+		}
+
                 $prefix = '';
                 if (strpos($tag,':') !== FALSE) {
                         list($prefix,$tag) = explode(':',$tag,2);
@@ -84,7 +92,9 @@ class Tags
                         $db->Execute('INSERT INTO tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
                         $tag_id = $db->Insert_ID();
                 }
-
+		//once got tag_id!
+		if (!empty($ai))
+			$this->ai_ids[$tag_id] = true;
 		return $tag_id;
 	}
 
@@ -134,8 +144,16 @@ class Tags
 		$db = $this->_getDB(true);
 
 		$lookup = array();
+		$ai = array();
 		foreach ($this->tags as $tag => $tag_id) {
 			if (empty($tag_id)) {
+				if (preg_match('/\*$/',$tag)) {
+					$ai[$tag] = true;
+					//the trailing star is an AI marker, need to remove for the lookup
+					// but still keep track, to record in gridimage_tag
+					$tag = preg_replace('/\*$/','',$tag);
+				}
+
 				$tag = str_replace('\\','',$tag);
 				$bits = explode(':',$tag,2);
 				if (count($bits) == 2) {
@@ -157,18 +175,26 @@ class Tags
 					$tag = $row['tag'];
 				}
 
+				//$tag is the 'clean' tag from database (wont contain the marker)
+
 				if (isset($this->tags[$tag])) {
 					$this->tags[$tag] = $tag_id;
+				}
+				if (isset($this->tags["$tag*"])) {
+					$this->tags["$tag*"] = $tag_id;
+					$this->ai_ids[$tag_id] = true;
 				}
 			}
 
 			if ($create) {
 				foreach ($this->tags as $tag => $tag_id) {
+					//now $tag is the user tag, whic may still contain the * marker
+
 					if (empty($tag_id)) {
 						//reuse getTagId, which WILL create the tag, if doesnt find it. Ineffient as it tries lookup up the tag AGAIN, but saves duplicating code here
 						//AND sorts out a bug, that the above optimised lookup fails when case of the tags dont match (eg some subjects)
 						//... not a big deal, because only will be called, when tag really doesnt exist OR, tag case doesnt match
-						$this->tags[$tag] = $this->getTagId($tag, $create);
+						$this->tags[$tag] = $this->getTagId($tag, $create); //will itself mark ai_ids
 					}
 				}
 			}
@@ -204,6 +230,7 @@ class Tags
 			foreach ($this->tags as $tag => $tag_id) {
 
 				$u['tag_id'] = $tag_id;
+				$u['origin'] = empty($this->ai_ids[$tag_id])?'manual':'suggested';
 
 				$db->Execute('INSERT INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?  ON DUPLICATE KEY UPDATE status = '.$u['status'],array_values($u));
 
@@ -226,7 +253,7 @@ class Tags
 #################################################
 	//adds a tag to multiple images, uses gridimage_search, so only adds to live images, as well as possible to filter to user!
 
-	function multiCommit($gids, $tag_id, $user_id, $onlymine = true, $status = 2) {
+	function multiCommit($gids, $tag_id, $user_id, $onlymine = true, $status = 2, $origin = 'manual') {
 		$db = $this->_getDB(false);
 
 		$tag_id = intval($tag_id);
@@ -240,7 +267,7 @@ class Tags
 
 		$where = implode(" AND ",$where);
 		$sql = "INSERT INTO gridimage_tag
-		SELECT gridimage_id,$tag_id AS tag_id,$user_id AS user_id,NOW() as created,$status AS status,NOW() AS updated
+		SELECT gridimage_id,$tag_id AS tag_id,$user_id AS user_id,NOW() as created,$status AS status,NOW() AS updated, '$origin' as `origin`
 		FROM gridimage_search WHERE $where ON DUPLICATE KEY UPDATE status = $status";
 
 		$this->db->Execute($sql);
@@ -251,7 +278,7 @@ class Tags
 	//this special function will blindly add/remove tag to image
 	// most functions only allow the contributor to add a tag. This is used by mods to add/remove tag
 
-	function commitAdminTag($status, $tag_id, $gridimage_id, $user_id = 0) {
+	function commitAdminTag($status, $tag_id, $gridimage_id, $user_id = 0, $origin = 'manual') {
 		$db = $this->_getDB(false);
 
 		if ($status) {
@@ -260,6 +287,7 @@ class Tags
 	                $u['user_id'] = $user_id;
                         $u['gridimage_id'] = $gridimage_id;
         	        $u['status'] = intval($status);
+			$u['origin'] = $origin;
 
 			$db->Execute('INSERT INTO gridimage_tag SET created=NOW(), `'.implode('` = ?, `',array_keys($u)).'` = ?  ON DUPLICATE KEY UPDATE status = '.$u['status'],array_values($u));
 		} else {

@@ -11,6 +11,10 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
     if (selectElement) {
         Array.from(selectElement.options).forEach(option => {
             option.style.color = ''; // Resets to default browser color
+	    if (option.value.endsWith('*')) {
+                // Slice off the trailing asterisk to restore the original clean value
+                option.value = option.value.slice(0, -1);
+            }
         });
     }
     // and clear the subject list
@@ -52,6 +56,9 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
                     Array.from(selectElement.options).forEach(option => {
                         if (option.value === suggestion.label) {
                             option.style.color = '#0000CC';
+			    if (!option.selected && !option.value.endsWith('*')) {
+			        option.value += '*';
+			    }
                         }
                     });
                 }

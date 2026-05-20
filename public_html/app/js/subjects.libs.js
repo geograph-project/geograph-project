@@ -117,6 +117,8 @@
 
             } else if (item.dataset.id) { //useful to avoid error messages, even dont use id!
                 subjectInput.value = item.textContent;
+                if (item.dataset.suggestion)
+			 subjectInput.value += "*"; //need to mark it from a suggestion!
                 document.getElementById('subject-id').value = item.dataset.id;
 
 		if (typeof updateFormProgress == 'function')
@@ -147,7 +149,7 @@
 
             // Render the API suggestions
             subjectSugg.innerHTML = apiMatches.map(m => {
-                return `<div class="suggestion-item" data-id="${m.id}">${escapeHTML(m.val).toTitleCase()}</div>`;
+                return `<div class="suggestion-item" data-id="${m.id}" data-suggestion="1">${escapeHTML(m.val).toTitleCase()}</div>`;
             }).join('');
 
         } else {

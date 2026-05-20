@@ -11,6 +11,13 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
     const contextLabels = document.querySelectorAll('.plist label');
     contextLabels.forEach(label => {
         label.style.color = ''; // Reset to default browser/CSS color
+
+        // Find the input inside this label to strip out previous tracking markers
+        const checkbox = label.querySelector('input[type="checkbox"]');
+        if (checkbox && checkbox.value.endsWith('*')) {
+            // Slice off the trailing asterisk to restore the original clean value
+            checkbox.value = checkbox.value.slice(0, -1);
+        }
     });
 
     // 2. Clear out any previous AI Suggestions optgroup from the subject dropdown
@@ -57,10 +64,13 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
                 const checkbox = document.querySelector(`.plist input[value="${targetValue}"]`);
 
                 if (checkbox) {
+                    //mark the value, so we know it a 'suggested' tag!
+                    if (!checkbox.checked) //but dont mark if already checked!
+			    checkbox.value += '*';
                     // Find its closest parent label element and turn its text blue
                     const label = checkbox.closest('label');
                     if (label) {
-                        label.style.color = 'blue';
+                        label.style.color = '#0000CC';
                     }
                 }
 
@@ -74,7 +84,7 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
 
                 // Create a new option element for this suggestion
                 const option = document.createElement('option');
-                option.value = suggestion.label;
+                option.value = suggestion.label+"*"; // so we know it a 'suggested' tag!
 
         		//save the first!
                 if (!topSuggestion && suggestion.score > 0.2) topSuggestion = suggestion.label;
