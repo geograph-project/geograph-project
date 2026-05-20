@@ -104,7 +104,7 @@ if (!empty($images)) {
             if (preg_match('/^(.*)\s(\d+%)$/', trim($sug), $matches)) {
                 $tagName = trim($matches[1]);
                 echo '<label style="display: block; margin: 2px;">';
-                echo '<input type="radio" name="subject[' . $image->gridimage_id . ']" value="' . htmlspecialchars($tagName) . '"> ';
+                echo '<input type="radio" name="subject[' . $image->gridimage_id . ']" value="' . htmlspecialchars($tagName) . '*"> '; //need to mark as 'suggestd' tag!
                 echo htmlspecialchars($tagName) . ' <small style="color:#888">(' . $matches[2] . ')</small>';
                 echo '</label>';
             }

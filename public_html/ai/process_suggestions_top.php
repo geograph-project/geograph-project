@@ -90,7 +90,7 @@ if (!empty($images)) {
             $tag = trim($tag);
             if (!empty($tag)) {
                 echo '<label style="display: block; margin: 2px;">';
-                echo '<input type="checkbox" name="tags[' . $image->gridimage_id . '][]" value="' . htmlspecialchars($tag) . '" checked> ';
+                echo '<input type="checkbox" name="tags[' . $image->gridimage_id . '][]" value="' . htmlspecialchars($tag) . '*" checked> '; //need to mark as a 'suggested' tag!
                 echo htmlspecialchars($tag);
                 echo '</label>';
             }
