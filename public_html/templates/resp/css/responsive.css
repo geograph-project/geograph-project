@@ -620,6 +620,9 @@ details[open] summary {
   grid-template-rows: max-content max-content max-content;
   grid-template-columns: 1fr;
   }
+  .tab-link {
+    flex-grow: 1;
+  }
 }
 .reuse-ccdeed-requirements {
   grid-area: reuse-ccdeed-requirements;
