@@ -160,7 +160,7 @@ async function showNearbyTagsModal(gridRef, usedNames = [], usedIds = [], curren
                     if (select) {
                         // Look for the option where the value matches the label text
                         Array.from(select.options).forEach(opt => {
-                            if (opt.value === label) {
+                            if (opt.value === label || opt.value === label+'~') { //may have the AI tag
                                 opt.selected = true;
                             }
                         });

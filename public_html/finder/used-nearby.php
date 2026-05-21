@@ -125,6 +125,7 @@ ul a.used {
 
 		$where = "match(".$sph->Quote($sphinx->q).")";
 
+	//lookup results
 		$results = array();
 		$attributes = array('context' ,'subject','tag','snippet');
 		$links = array(
@@ -145,13 +146,14 @@ ul a.used {
 				$names = explode('_SEP_',$row[$attribute.'s']);array_shift($names); //the first is always blank!
 				$row['label'] = trim($names[array_search($row['group'],$ids)]);
 
-                                if ($attribute == 'tag' && strpos($row['label'],'type:') === 0)
+                                if ($attribute == 'tag' && strpos($row['label'],'type:') === 0) //they shoudnt be tags but just in case
                                         continue;
 
 				$dist = round($row['dist']/1000);
 
 				@$results[$dist][$attribute][] = $row;
 			}
+			//do, also lookup usage on contributor own pending images -- needs very different queries!
 		}
 
 
@@ -165,6 +167,7 @@ if (empty($results)) {
 
 		print "<br/><i>The other tabs, should reflect items added from this box, but currently changes made elsewhere might not reflect here.</i>";
 
+	//check what items are already used on the image
 		if (!empty($gid)) {
 			$db = GeographDatabaseConnection(true);
 			$tag_ids = $db->getAssoc("SELECT tag_id as id,tag_id FROM gridimage_tag WHERE status = 2 AND gridimage_id = $gid");
@@ -173,6 +176,7 @@ if (empty($results)) {
 			$tag_ids = $snippet_ids = array();
 		}
 
+	//render the table
 		print "<table cellspacing=0 cellpadding=1 border=1 bordercolor=#eee>";
 		print "<tr>";
 			print "<th></th>";
@@ -247,7 +251,7 @@ function useIt(that,attribute,id,label) {
 						var ele = window.parent.document.forms['theForm'].elements['subject'];
 						found = false;
 						for(q=0;q<ele.options.length;q++) {
-                                                        if (ele.options[q].value == label) {
+                                                        if (ele.options[q].value == label) { //we DONT match * prefix, here. just want to match the original
                                                                 ele.options[q].selected=checked;
 
 								if (typeof window.parent.parentUpdateVariables == 'function') {
@@ -267,7 +271,7 @@ function useIt(that,attribute,id,label) {
 			case 'context':	if (window.parent && window.parent.document.forms && window.parent.document.forms['theForm'] && window.parent.document.forms['theForm'].elements['tags[]']) {
 						var eles = window.parent.document.forms['theForm'].elements['tags[]'];
 						for(q=0;q<eles.length;q++) {
-							if (eles[q].value == 'top:'+label) {
+							if (eles[q].value == 'top:'+label || eles[q].value == 'top:'+label+'~') {
 								eles[q].checked=checked;
 
 								window.parent.window.rehighlight(eles[q],true);

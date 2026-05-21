@@ -111,7 +111,9 @@
 
         // 2. Update with new selections (overwrite/set to NOW)
         selectedTags.forEach(tag => {
-            existingEntries[tag] = Date.now();
+	    //shouldnt be saving the AI flags
+            const cleanedTag = tag.replace(/[\*~]$/, '');
+            existingEntries[cleanedTag] = Date.now();
         });
 
         // 3. Convert back to "timestamp|tag" lines
