@@ -16,7 +16,7 @@ function showNearbyTagsModalWrapper() {
     const contextSelect = document.getElementById('contexts');
     if (contextSelect) {
         Array.from(contextSelect.options).forEach(opt => {
-            if (opt.selected) usedNames.push(opt.value);
+            if (opt.selected) usedNames.push(opt.value.replace(/[\*~]$/,''));
         });
     }
 
@@ -38,7 +38,7 @@ function showNearbyTagsModalWrapper() {
     }
 
     // 3. Get the current Subject value
-    const currentSubject = form.elements['subject'].value;
+    const currentSubject = form.elements['subject'].value.replace(/[\*~]$/,'');
 
     // 4. Fire the Modal
     showNearbyTagsModal(gridRef, usedNames, usedIds, currentSubject);
