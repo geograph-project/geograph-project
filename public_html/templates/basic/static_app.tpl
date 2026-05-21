@@ -9,19 +9,19 @@
 
     {dynamic}
     {if $user->registered}
-        <div class="user-status interestBox">
-            <p>As you are already registered, you can simply log in with your existing credentials when you first open the app.</p>
+        <div class="user-status interestBox" style=" border-radius:9px">
+            As you are already registered, you can simply log in with your existing credentials when you first open the app.
         </div><br>
     {else}
-        <div id="post-reg-notice" style="display:none; background: #fffde7; border: 1px solid #ffd54f; padding: 1em; margin: 1em 0;">
-            <h3>Registration received!</h3>
+        <div id="post-reg-notice" style="display:none; background: #fffde7; border: 1px solid #ffd54f; padding: 1em; margin: 1em 0;  border-radius:9px">
+            <h3 style="margin-top:0">Registration received!</h3>
             <p>Please check your email and follow the confirmation link to activate your account. Once confirmed, you will be able to use your new login details in the app.</p>
         </div>
 
-        <div id="registration-notice" style="border: 1px solid #ccc; padding: 1em; margin: 1em 0;">
-            <h3>Before you start</h3>
+        <div id="registration-notice" style="border: 1px solid #ccc; padding: 1em; margin: 1em 0; background-color:#e4e4fc;  border-radius:9px">
+            <h3 style="margin-top:0">Before you start</h3>
             <p>To use the app, you must have a Geograph account. Registration is not yet available inside the app, so please create your account here first.</p>
-            <a href="/register.php?redir=/help/app%3Fregistered"><strong>Register for Geograph</strong></a>
+            &#128073; <a href="/register.php?redir=/help/app%3Fregistered"><strong>Register for Geograph</strong></a>
         </div>
     {/if}
     {/dynamic}
@@ -48,8 +48,8 @@
                 device so it works just like a native app.</li>
             </ol>
 
-            <p>Want to see how it looks now?</p>
-            <a href="https://www.geograph.org.uk/app/" class="button">Launch App on Desktop</a>
+            <p>Want to see how it looks now?<br>
+            &#128073; <a href="https://www.geograph.org.uk/app/" class="button">Launch App on Desktop</a></p>    
         </div>
         
         <div id="mobile-msg" style="display:none;">
@@ -85,6 +85,10 @@
 
             <p>You can always use the app directly without installing.</p>
         </div>
+    </div>
+
+    <div style="background-color:#e4e4fc;padding:10px; border-radius:9px">
+	We hope you enjoy using the Geograph app. It cost &pound;25k to run Geograph in 2025. Please consider making a one-off or regular donation. See <a href="https://www.geograph.org.uk/help/donate">geograph.org.uk/help/donate</a>
     </div>
 
     <div class="app-faq-preview">
