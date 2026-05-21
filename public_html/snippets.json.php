@@ -55,9 +55,9 @@ if (isset($_GET['term'])) {
 	if (empty($_GET['term']) && !empty($CONF['sphinx_host'])) {
 		$_REQUEST['q'] = $_GET['q'] = '..'; //falls though as an empty to query, which sphinx now orders by images desc - so gives most popular snippets!
 	}
-	$sql['columns'] = "snippet_id,title,comment,s.grid_reference,s.user_id,u.realname";
+	$sql['columns'] = "snippet_id,s.title,s.comment,s.grid_reference,s.user_id,u.realname";
 } else {
-	$sql['columns'] = "snippet_id,title,comment,s.grid_reference,s.user_id,u.realname";
+	$sql['columns'] = "snippet_id,s.title,s.comment,s.grid_reference,s.user_id,u.realname";
 }
 
 if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
@@ -141,6 +141,11 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 			if (!empty($sphinx->q)) {
 				$before = $sphinx->q;
 
+				if ($_GET['mode'] == 'prefix' || $_GET['mode'] == 'prefixplus') {
+
+					$sphinx->q = "\"^{$sphinx->q}*\" | (^$sphinx->q*) | (=$sphinx->q) | ($sphinx->q*)";
+
+				} else
 				if (!preg_match('/[@"|-]/',$sphinx->q) && //this doesnt work, if already operatores in the search
 						!preg_match('/(images|alpha)$/',$_GET['mode'])) { //no point doing all this, ebcause going to ignore WEIGHT()
 
@@ -174,6 +179,8 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 						break;
 
 					case 'nearby':
+					case 'nearbyplus':
+					case 'prefixplus':
 						if (!empty($_GET['gr']) && preg_match('/^([A-Z]{1,2}) (\d{2})\d* (\d{2})\d*$/i',$_GET['gr'],$m)) {
 							$_GET['gr'] = $m[1].$m[2].$m[3];
 						}
@@ -186,6 +193,11 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 							$sphinx->processQuery();
 							$sphinx->q = str_replace('@grid_reference (',"@image_square ({$_GET['gr']} | ",$sphinx->q);
 						}
+
+						if ($_GET['mode'] == 'nearbyplus' || $_GET['mode'] == 'prefixplus') {
+							$sphinx->q = str_replace('@image_square',' MAYBE @image_square', $sphinx->q);
+						}
+
 						break;
 				}
 			}
@@ -211,7 +223,14 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 				$sphinx->addFilters(array('user_id'=>array(intval($_GET['user_id']))));
 			}
 
-			$ids = $sphinx->returnIds($pg,'snippet');
+			if (!empty($_GET['debu']))
+				print htmlentities($sphinx->q)."<hr>";
+
+			if ($_GET['mode'] == 'prefix' || $_GET['mode'] == 'prefixplus') {
+		    		$ids = $sphinx->returnIds($pg,'snippet2');
+        		} else {
+	    			$ids = $sphinx->returnIds($pg,'snippet');
+        		}
 
 			//second chance, as a 'prefix' search :)
 			if (empty($ids) && strlen($before) > 2 && strpos($before,'@') === FALSE) {
@@ -220,10 +239,12 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 				$sphinx->sort = "title ASC";
 				$client->SetRankingMode(SPH_RANK_NONE);
 				$ids = $sphinx->returnIds($pg,'snippet');
+
+$fallback = true;
 			}
 
 			//todo: prepend snippets used on pending images.
-			if ($USER->user_id && !empty($_GET['mode']) && $_GET['mode'] == 'nearby' && $_GET['q'] == '..' && !empty($_GET['gr']) && preg_match('/^\w{1,2}\d{4}$/',$_GET['gr'])) {
+			if (!empty($USER->user_id) && !empty($_GET['mode']) && $_GET['mode'] == 'nearby' && $_GET['q'] == '..' && !empty($_GET['gr']) && preg_match('/^\w{1,2}\d{4}$/',$_GET['gr'])) {
 				//selfrecent will find them, but should include on near results (or at least in the square!)
 
 				//we only lookup ids here!
@@ -275,6 +296,7 @@ if (!empty($_GET['deb']))
         print_r($query);
 
 	$data = $db->getAll($query);
+
 	if (!empty($data))
 		//json expects utf8
 		foreach ($data as $idx => $row) {
@@ -286,6 +308,16 @@ if (!empty($_GET['deb']))
 			$data[$idx]['images'] = $sphinx->res['matches'][$row['snippet_id']]['attrs']['images'];
 		}
 	}
+
+if (!empty($fallback) && !empty($data)) {
+	array_unshift($data, array(
+		'snippet_id'=>0,
+		'title' => '-- No results, displaying fallback results...',
+		'realname' => 'n/a',
+	));
+}
+
+
 
 outputJSON($data);
 

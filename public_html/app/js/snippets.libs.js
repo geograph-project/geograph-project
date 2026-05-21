@@ -38,7 +38,7 @@
                    //                 throw new Error(`Unable to convert`);
 
                     //for nearby
-                    mode = 'nearbyplus';
+                    mode = 'prefixplus'; //plus means to priortize used-nearby results
                     extra += `&gr=${encodeURIComponent(grid.getGridRef(2).replace(/ /g,''))}`;
                 }
             }
