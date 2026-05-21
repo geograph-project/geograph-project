@@ -43,6 +43,8 @@ export function render() {
 
             <p align=center><a href=# data-route="/app/settings"><i class="fa fa-cog"></i> Settings</a>
 
+            <p align=center style=color:gray><br><br>Enjoying Geograph? Please consider <a href="/help/donate" target="_blank" style="color:gray"><u>donating</u></a>!</p>
+
 	    	<br><br>
 	        <p align=center class="install-tip">Tip: Use 'Add to Home Screen' from the Chrome menu to install quick loading icon</p>
         </div>
