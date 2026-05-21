@@ -26,6 +26,7 @@
             let normalizedResults = [];
 
             let conv;
+            let mode = 'prefix';
     	    if (document.getElementById('grid_reference')) {
                 const gridRef = document.getElementById('grid_reference').value;
                 const match = gridRef.match(/([A-Z]{1,2})\s*(\d{2,})/i);
@@ -35,11 +36,15 @@
                     conv = grid.getWGS84(true);
                  //         if (!conv || conv.status != 'OK') //conversion could fail! (although unlikly)
                    //                 throw new Error(`Unable to convert`);
+
+                    //for nearby
+                    mode = 'nearbyplus';
+                    extra += `&gr=${encodeURIComponent(grid.getGridRef(2).replace(/ /g,''))}`;
                 }
             }
 
             try {
-                const response = await fetch(`/snippets.json.php?term=${encodeURIComponent(query)}&mode=ranked${extra}`);
+                const response = await fetch(`/snippets.json.php?term=${encodeURIComponent(query)}&mode=${mode}${extra}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
