@@ -186,16 +186,27 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 						}
 						if (!empty($_GET['gr']) && preg_match('/^\w{1,2}\d{4}$/',$_GET['gr'])) {
 							if (empty($sphinx->q)) {
+								//can just do a plain query
 								$sphinx->q = $_GET['gr'];
 							} else {
+								//add the GR at the start to be expanded by processQuery
 								$sphinx->q = "{$_GET['gr']} ({$sphinx->q})";
 							}
 							$sphinx->processQuery();
-							$sphinx->q = str_replace('@grid_reference (',"@image_square ({$_GET['gr']} | ",$sphinx->q);
-						}
 
-						if ($_GET['mode'] == 'nearbyplus' || $_GET['mode'] == 'prefixplus') {
-							$sphinx->q = str_replace('@image_square',' MAYBE @image_square', $sphinx->q);
+							//actully we want to search 'used-nearby' squares, not the GR of the SD itself in this case
+							$sphinx->q = str_replace('@grid_reference (',"@image_square ({$_GET['gr']} | ",$sphinx->q);
+
+							//make it 'optional' using MAYBE
+							if ($_GET['mode'] == 'nearbyplus' || $_GET['mode'] == 'prefixplus') {
+								if (strpos($sphinx->q,$_GET['gr']) === 0 && strlen($sphinx->q) > strlen($_GET['gr'])) {
+									//if the GR is still at the start, means it failed to 'expand' via processQuery, with plus, still want results, even if none nearby.
+									// so strip the (invalid) GR back off! (and append it with MAYBE so Sphinx treats it loosely)
+									$sphinx->q = preg_replace("/^".preg_quote($_GET['gr'],'/')." /", '', $sphinx->q)." MAYBE ".$_GET['gr'];
+								} else {
+									$sphinx->q = str_replace('@image_square',' MAYBE @image_square', $sphinx->q);
+								}
+							}
 						}
 
 						break;
