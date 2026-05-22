@@ -29,10 +29,10 @@
             let mode = 'prefix';
     	    if (document.getElementById('grid_reference')) {
                 const gridRef = document.getElementById('grid_reference').value;
-                const match = gridRef.match(/([A-Z]{1,2})\s*(\d{2,})/i);
-                if (match && match[2].length >= 4) {
+                const match = gridRef.match(/([A-Z]{1,2})\s*(\d{2,})\s*(\d{2,})/i);
+                if (match) {
                     let grid = (match[1].length === 2) ? new GT_OSGB() : new GT_Irish();
-                    grid.parseGridRef(match[1]+match[2]);
+                    grid.parseGridRef(match[1]+match[2]+match[3]);
                     conv = grid.getWGS84(true);
                  //         if (!conv || conv.status != 'OK') //conversion could fail! (although unlikly)
                    //                 throw new Error(`Unable to convert`);
