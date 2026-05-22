@@ -40,6 +40,9 @@
                     //for nearby
                     mode = 'prefixplus'; //plus means to priortize used-nearby results
                     extra += `&gr=${encodeURIComponent(grid.getGridRef(2).replace(/ /g,''))}`;
+
+			//just want the plain one for debug!
+                    extra += `&subject=${encodeURIComponent(gridRef)}`;
                 }
             }
 
