@@ -50,9 +50,7 @@ $query_sd = "SELECT s.snippet_id, title, comment
 and s.snippet_id > $rand
 
  LIMIT 1";
-$rs_sd = $db->Execute($query_sd);
 
-/*
 // 2. Fetch Shared Description Data (Prioritizing least classified, excluding current user)
 $query_sd = "SELECT s.snippet_id, s.title, s.comment, COUNT(c.snippet_id) as classification_count
              FROM snippet s
@@ -67,9 +65,17 @@ $query_sd = "SELECT s.snippet_id, s.title, s.comment, COUNT(c.snippet_id) as cla
                AND s.enabled = 1 
                AND images > 5
              GROUP BY s.snippet_id, s.title, s.comment
-             ORDER BY classification_count ASC, s.snippet_id ASC
+
+HAVING classification_count = 1
+
+             ORDER BY classification_count ASC,  s.snippet_id > $rand DESC, s.snippet_id ASC
              LIMIT 1";
-*/
+
+
+//HAVING is temporary, just to promote some doubles!
+
+
+$rs_sd = $db->Execute($query_sd, [$USER->user_id]);
 
 if (!$rs_sd || $rs_sd->EOF) {
     die("Snippet not found.");
