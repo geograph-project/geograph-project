@@ -784,14 +784,20 @@ function pageMustBeHTTPS($status = 301) {
 		&& !empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') //checks it really is a https request
 		return; //page is already HTTPS via proxy!
 
+	//init_session_or_cache is often called before pageMustBeHTTPS, resulting in the redirect having caching headers
 	if ($status == 301) {
 		//this to HTTPS redirect is going to be unconditional, and permenant, dont need any previouslly set caching headers
+
+		// overwriting, should be more reliable than removing
+                header("Cache-Control: no-cache, no-store, must-revalidate, max-age=0, s-maxage=0");
+                header("Pragma: no-cache"); //for http/1.0
+
 		header_remove("Expires");
-	        header_remove("Cache-Control");
         	header_remove("Vary");
+		header_remove("Last-Modified"); // also incase CustomCacheControl is used!
+		header_remove("Etag");
 	}
 
-	//TODO/TOFIX, should perhaps be using SELF_HOST but that might not be https yet.
 	header("Location: https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}", true, $status);
 	exit;
 }
