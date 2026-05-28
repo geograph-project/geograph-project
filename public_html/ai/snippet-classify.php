@@ -12,6 +12,11 @@ $USER->mustHavePerm("basic"); //mainly just as anti-scraping
         $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $message = '';
+$user_id = $USER->user_id;
+if (!empty($_GET['verify'])) {
+    $user_id += 1000000;
+}
+
 
 // 1. Handle Form Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['classification'])) {
@@ -23,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['classification'])) {
     $insertData = array(
         'snippet_id' => $submitted_snippet_id,
         'classification' => $classification,
-	'user_id' => $USER->user_id
+	'user_id' => $user_id,
     );
     
     // Using ADOdb AutoExecute for a clean, injection-safe INSERT
@@ -52,6 +57,27 @@ and s.snippet_id > $rand
  LIMIT 1";
 
 // 2. Fetch Shared Description Data (Prioritizing least classified, excluding current user)
+
+//by default, start with unknowns (unlikly all 25k will get done, so really this is finding 0's)
+$order = "classification_count ASC";
+$having = '';
+$roll = rand(1, 7);
+
+if (!empty($_GET['verify'])) {
+    //look for items to review...
+	// the difference between Single-Cluster and Area is a very fine line, ignore that for now
+    $having = "having count(distinct replace(c.classification,'Single-Cluster','Area')) > 1 or sum(c.classification in ('Skip','Other'))>0";
+    $order = "s.snippet_id ASC"; //might as well go though in consistent order
+
+} elseif ($roll < 3) {
+    // Prioritize exactly 1 classification, to kick-start doubles
+    $order = "(COUNT(c.snippet_id) = 1) DESC";
+} elseif ($roll == 5) {
+    // hunt for the most-classified items to test user calibration
+    $order = "classification_count DESC";
+}
+
+
 $query_sd = "SELECT s.snippet_id, s.title, s.comment, COUNT(c.snippet_id) as classification_count
              FROM snippet s
              INNER JOIN snippet_centroids USING (snippet_id)
@@ -65,17 +91,12 @@ $query_sd = "SELECT s.snippet_id, s.title, s.comment, COUNT(c.snippet_id) as cla
                AND s.enabled = 1 
                AND images > 5
              GROUP BY s.snippet_id, s.title, s.comment
-
-HAVING classification_count = 1
-
-             ORDER BY classification_count ASC,  s.snippet_id > $rand DESC, s.snippet_id ASC
+		$having
+             ORDER BY $order,  s.snippet_id > $rand DESC, s.snippet_id ASC
              LIMIT 1";
 
 
-//HAVING is temporary, just to promote some doubles!
-
-
-$rs_sd = $db->Execute($query_sd, [$USER->user_id]);
+$rs_sd = $db->Execute($query_sd, [$user_id]);
 
 if (!$rs_sd || $rs_sd->EOF) {
     die("Snippet not found.");
