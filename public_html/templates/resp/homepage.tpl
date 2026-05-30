@@ -295,7 +295,7 @@ div.homepage {
                         &nbsp;<span style="background-color:#{$colours.$source}">{$sources.$source}</span><span style="color:#666">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}" style="color:#6699CC">{$item.realname|escape:'html'}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}.
                         {if $item.updated}Updated {$item.updated}.{/if}{if $item.created}Created {$item.created}.{/if}</span>
                         {if $item.extract}
-                                <div style="margin-top:10px;" title="{$item.extract|escape:'html'}">{$item.extract|escape:'html'|truncate:90:"... (<u>more</u>)"}</div>
+                                <div style="margin-top:10px;" title="{$item.extract|escape:'html'}">{$item.extract|escape:'html'|truncate:90:"... (<a href='`$item.url`'>more</a>)"}</div>
                         {/if}
                         <br style="clear:left">
                 </div>
