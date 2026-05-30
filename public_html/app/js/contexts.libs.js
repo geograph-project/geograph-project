@@ -9,6 +9,8 @@
             const group = document.createElement('optgroup');
             group.label = 'Recently Used';
             recent.forEach(tag => {
+                if (tag.match(/[\*~]$/)) //these shouldnt of been saved, but a few early testers saved a few rows
+                    return;
                 const opt = new Option(tag, tag);
                 group.appendChild(opt);
             });

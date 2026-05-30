@@ -19,15 +19,18 @@
         // Clear existing
         dropdown.innerHTML = '<option value="">Recently Used</option>';
         items.forEach(item => {
+            if (item.match(/[\*~]$/)) //these shouldnt of been saved, but a few early testers saved a few rows
+                return;
+
             const opt = document.createElement('option');
-	    if (item.indexOf(':::') == -1) {
-	            opt.value = item;
-        	    opt.textContent = item;
-	    } else {
-		const bits = item.split(':::');
-	        opt.value = bits[0];
-        	opt.textContent = bits[1];
-	    }
+    	    if (item.indexOf(':::') == -1) {
+    	        opt.value = item;
+            	opt.textContent = item;
+    	    } else {
+    		    const bits = item.split(':::');
+    	        opt.value = bits[0];
+            	opt.textContent = bits[1];
+    	    }
             dropdown.appendChild(opt);
         });
     }
