@@ -1011,9 +1011,6 @@ $str[] = "
 
 	####################################################
 
-	if (!empty($USER) && !empty($USER->registered) && strpos($USER->rights,'member') > -1 && $CONF['template'] == 'resp' && empty($_COOKIE['company2026'])) {
-		$_GET['company']=1;
-	} else
 	if (!empty($USER) && empty($USER->registered) && appearsToBePerson() && $CONF['template'] != 'archive') {
 		//if (empty($_COOKIE['appeal']) && !empty($_SERVER['HTTP_REFERER']) && preg_match('/^https?:\/\/(\w+)\.geograph\.(org\.uk|ie)\//',$_SERVER['HTTP_REFERER']))
 		//        $_GET['appeal'] = 1;
@@ -1055,7 +1052,7 @@ END;
 
 } else
 
-	if ((!empty($_GET['appeal']) || !empty($_GET['ads']) || !empty($_GET['survey']) || !empty($_GET['company']))
+	if ((!empty($_GET['appeal']) || !empty($_GET['ads']) || !empty($_GET['survey']))
 		&& empty($USER->is_login_form) //catch inline logins!
 		&& $_SERVER["PHP_SELF"] != '/login.php'
 		&& $_SERVER["PHP_SELF"] != '/register.php'
@@ -1070,9 +1067,6 @@ END;
 		&& $CONF['template']!='charcoal' && $CONF['template']!='archive' && $CONF['template']!='charcoal_cy'
 		&& $_SERVER['HTTP_HOST'] != 'schools.geograph.org.uk'
 	) {
-		if (!empty($_GET['company'])) {
-			$str[] = '<script src="'.smarty_modifier_revision("/js/company-message.js").'"></script>';
-		} else
 		if (!empty($_GET['survey'])) {
 			if (!empty($USER) && $USER->registered)
 				$str[] = '<script>const registered_user_servey = true;</script>';
