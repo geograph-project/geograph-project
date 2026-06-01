@@ -321,7 +321,7 @@ You can only edit your own trips.  Choose one from the list below:
           $descr=str_replace("\n",'</p><p>',htmlentities2($trips[$i]['descr']));
           if (strlen($descr)>500) $descr=substr($descr,0,500).'...';
           require_once('geograph/gridimage.class.php');
-          $image = new GridImage($trips[$i]['img']);
+          $image = new GridImage($trips[$i]['img'], true);
           if ($image->isValid() && $image->moderation_status!='rejected') {
             $thumb=$image->getThumbnail(213,160,true);
           } else {
@@ -329,7 +329,7 @@ You can only edit your own trips.  Choose one from the list below:
           }
           $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$trips[$i]['uid']}\">".htmlentities2($trips[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" /></span>";
           print('<div class="inner">');
-          print("<div class=\"inner flt_r\" style=\"max-width:213px\"><img src=\"$thumb\" alt=\"\" title=\"$title\" /><br />$cred</div>");
+          print("<div class=\"inner flt_r\" style=\"max-width:213px\"><img src=\"$thumb\" alt=\"\" title=\"$title\" loading=\"lazy\"/><br />$cred</div>");
           print("<b>$title</b><br />");
           print("<em>".htmlentities2($trips[$i]['location'])."</em> &ndash; A ".whichtype($trips[$i]['type'], false)." from ".htmlentities2($trips[$i]['start'])."<br />");
           print("by <a href=\"/profile/{$trips[$i]['uid']}\">".htmlentities2($trips[$i]['user'])."</a>");
