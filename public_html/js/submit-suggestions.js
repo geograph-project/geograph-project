@@ -118,6 +118,30 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
                     }
                 }
             }
+
+            subjectSelect.addEventListener('change', function() {
+                // 1. Restore the original text (with percentages) for all options first
+                Array.from(this.options).forEach(opt => {
+                    if (opt.dataset.originalText) {
+                        opt.textContent = opt.dataset.originalText;
+                    }
+                });
+
+                // 2. Get the currently selected option
+                const selectedOption = this.options[this.selectedIndex];
+                if (!selectedOption) return;
+
+                // 3. If it has a percentage, strip it for the display
+                if (selectedOption.textContent.match(/\(\d+[\.\d]*%\)/)) {
+                    // Save the original text so we can restore it later if they change their mind
+                    if (!selectedOption.dataset.originalText) {
+                        selectedOption.dataset.originalText = selectedOption.textContent;
+                    }
+                    
+                    // Strip the trailing space and percentage (e.g., " " followed by "(85%)")
+                    selectedOption.textContent = selectedOption.textContent.replace(/\s+\(\d+[\.\d]*%\)/, '');
+                }
+            });
         }
 
     } catch (error) {
