@@ -111,18 +111,31 @@
         const item = e.target.closest('.suggestion-item');
         if (item) {
             if (item.dataset.tag) {
-		addTag(item.dataset.tag);
+                addTag(item.dataset.tag);
                 subjectInput.value = ''; //its been added as tag instead!
                 subjectInput.placeholder = 'Type to search subjects...';
 
             } else if (item.dataset.id) { //useful to avoid error messages, even dont use id!
                 subjectInput.value = item.textContent;
-                if (item.dataset.suggestion)
-			 subjectInput.value += "*"; //need to mark it from a suggestion!
+                if (item.dataset.suggestion) {
+                    //subjectInput.value += "*"; //need to mark it from a suggestion!
+                    // 1. Remove any existing marker first (in case they change suggestions)
+                    const existingMarker = document.getElementById('subject-marker');
+                    if (existingMarker) {
+                        existingMarker.remove();
+                    }
+                    const markerInput = document.createElement('input');
+                    markerInput.type = 'hidden';
+                    markerInput.name = 'subjectmarker';
+                    markerInput.id = 'subject-marker'; // Added ID so we can clean it up easily later
+                    markerInput.value = item.textContent + '*';
+                    // Insert it right after the subject-id element
+                    document.getElementById('subject-id').after(markerInput);
+                }
                 document.getElementById('subject-id').value = item.dataset.id;
 
-		if (typeof updateFormProgress == 'function')
-		    updateFormProgress();
+			    if (typeof updateFormProgress == 'function')
+			        updateFormProgress();
             }
             subjectInput.setCustomValidity("");
             subjectSugg.innerHTML = '';

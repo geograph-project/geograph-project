@@ -65,8 +65,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             $um->setClass($_POST['imageclass']);
     }
 
-    if (!empty($_POST['subject']))
+    // Check if the AI marker exists and matches the submitted subject
+    if (!empty($_POST['subjectmarker']) && preg_match('/^'.preg_quote($_POST['subject'], '/').'[\*~]$/', $_POST['subjectmarker']))
+        // The user didn't tamper with the input; keep the AI marker tag
+        $_POST['tags'][] = "subject:".$_POST['subjectmarker'];
+    elseif (!empty($_POST['subject']))
         $_POST['tags'][] = "subject:".$_POST['subject'];
+
     if (!empty($_POST['vfov']))
         $_POST['tags'][] = "vfov:".$_POST['vfov'];
     if (!empty($_POST['hfov']))
