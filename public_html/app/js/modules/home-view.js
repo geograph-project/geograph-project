@@ -41,7 +41,7 @@ export function render() {
 
     	    <p align=center><a href="/" target="_blank">Open Main Site</a><br><br>
 
-            <p align=center><a href=# data-route="/app/settings"><i class="fa fa-cog"></i> Settings</a>
+            <p align=center><a href=# data-route="/app/settings"><i class="fa fa-cog"></i> Settings | <i class="fa fa-question-circle" aria-hidden="true"></i> <a href="/app/faq" data-route="/app/faq">FAQ</a></p>
 
             <p align=center style=color:gray><br><br>Enjoying Geograph? Please consider <a href="/help/donate" target="_blank" style="color:gray"><u>donating</u></a>!</p>
 

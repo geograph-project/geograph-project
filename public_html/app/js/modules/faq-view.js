@@ -17,7 +17,7 @@ export function render() {
 
             <div class="faq-item">
                 <button class="faq-button" onclick="this.nextElementSibling.classList.toggle('hidden')">
-        			Why does the app <b>lose the GPS location</b> of my photos?
+        			Why does the app <b>not see the GPS location</b> of my photos?
                 </button>
                 <div class="faq-content hidden">
         		    <p>Many mobile devices and browsers automatically strip <strong>GPS metadata</strong> (EXIF data) from photos during the upload process. While this is a privacy feature designed to prevent accidental location sharing on social media, it can be inconvenient for Geograph contributors who want to document exact coordinates.</p>
@@ -193,6 +193,12 @@ const staticlist = [
     "title": "Are there specific [permissions] or settings required?",
     "content": "The app requires access to your device's location, camera, and filestore to be fully functional. You must grant these permissions when prompted or via your device settings. Additionally, ensure \"Desktop site\" is disabled in your browser settings so the app scales correctly to your screen."
   },
+
+  {
+    "title": "Can I change where [photos taken via the app are saved]?",
+    "content": "No, because the app runs in your browser, images are saved to your device's default 'Downloads' folder. This is standard behavior for web downloads.\n\nHowever, this is mostly meant as a backup! Normally, you can tap the upload button immediately after capturing the photo to submit it directly, without needing to browse your files. You only need to look in your Downloads folder if you want to edit the image first or upload it later. If you want these files in your main gallery, you can set apps like Google Photos to back up your Downloads folder.\n\nIf being able to choose a different save location is important to you, please let us know via the **Feedback** option in the main menu."
+  },
+
 /*
   {
     "title": "What should I know about [capturing and uploading] images?",
