@@ -1336,6 +1336,9 @@ function orientationChanged() {
 
 {if !$inner}
 		<hr>
+		<b>Recommended for Mobile</b>: For the best experience, use our new dedicated <a href="/help/app">Geograph App</a>.
+		<br><br><hr> 
+
 		<a href="?redir=false">Choose different Submission Process</a>
 
 		<div style="float:right;position:relative"><a href="/submit.php?redir=false">v1</a> / <a href="/submit2.php">v2</a> / <b>mobile</b> / <a href="/submit-multi.php">multi</a> / <a href="/help/submit">more...</a></div>

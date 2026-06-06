@@ -44,6 +44,7 @@ if (!empty($_GET['auto']) || !empty($_GET['inner'])) {
 
 if (!empty($_POST['choose']) && empty($_GET['redir'])) {
 	switch($_POST['choose']) {
+		case 'app': header("Location: /app/", false, 302); exit;
 		//case 'single' ... falls though to below!
 		case 'multi': header("Location: /submit-multi.php?tab=upload&mobile=1", false, 302); exit;
 		case 'v1': header("Location: /submit.php?redir=false", false, 302); exit;

@@ -830,6 +830,7 @@ else
 				$choose = $USER->getPreference('submit.mobile','',true);
 
 			        switch($_POST['choose']) {
+			                case 'app': $url = "/app/"; break;
 			                case 'multi': $url = "/submit-multi.php?tab=upload&mobile=1"; break;
 			                case 'v1': $smarty->assign("mobile_browser", 0); break; // just stay on this page! (doesn't have a mobile template anyway!)
         			        case 'v2': $url = "/submit2.php?display=mobile&redir=false"; break;
@@ -843,6 +844,8 @@ else
 				$url = "/submit2.php?display=tabs";
 			} elseif ($USER->submission_method == 'multi') {
 				$url = "/submit-multi.php";
+			} elseif ($USER->submission_method == 'app') {
+				$url = "/app/"; //todo, could perhaps open app in iframe??!
 			} elseif ($USER->submission_method == 'mobile') {
 				$url = "/submit-mobile.php";
 			}

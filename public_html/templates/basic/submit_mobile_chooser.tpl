@@ -18,6 +18,9 @@
 		margin-bottom:30px;
 		margin-left:auto;
 		margin-right:auto;
+		background-color:#007aff82;
+		border:0;
+		border-radius:10px;
 	}
 {/literal}</style>
 </head>
@@ -40,9 +43,30 @@
 
 <form method=post action="/submit-mobile.php">
 <br>
-Choose submission method:
 
-<button type=submit name=choose value=single>Submit a Single Image (new!)</button>
+  <p>
+    <strong>Recommended for Mobile:</strong> 
+    For the best experience, use our dedicated <strong>Geograph App</strong>. 
+    It makes submitting on the go much easier and includes single and multi-uploading, and can be installed directly to your home screen!
+  </p>
+
+  <p>
+    &#128073; <strong><a href="/help/app">Read the App Guide &amp; Installation Steps</a></strong>
+  </p>
+
+  <p>
+    Already know how it works? Jump straight in:
+    <br>
+    <button type="submit" name="choose" value="app">Launch Geograph App</button>
+    <em>Opens instantly in your browser, no app store download required.</em>
+  </p>
+
+  <br>
+  <hr>
+  <br>
+
+Alternatively can still use existing submission:
+<button type=submit name=choose value=single>Submit a Single Image</button>
 
 (upload in bulk now, and submit later on desktop)
 <button type=submit name=choose value=multi>Upload a Batch of Images</button>

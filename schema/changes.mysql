@@ -2957,4 +2957,21 @@ alter table user add http_referer varchar(255) default null, add birth_year year
 
 #################################################
 
+-- should record this, this seems that the OS50k gazetter has marked St David's - a village in Perth and Kinross as the city, while St Davids/Tyddewi is left as a 'Other'. Should fix that
+
+UPDATE os_gaz SET f_code = 'C' WHERE seq = 206276 and def_nam = "St David's/Tyddewi";
+
+UPDATE os_gaz SET f_code = 'O' WHERE seq = 206269 and def_nam = "St David's";
+
+
+-- this at best a small hamlet, but acciudentyl marked as Town!
+UPDATE os_gaz SET f_code = 'O' WHERE seq = 257325 AND def_nam = 'Wotton Cross';
+
+
+#################################################
+
+alter table user modify   `submission_method` enum('submit','submit2','multi','submit2tabs','mobile','app') DEFAULT 'submit';
+
+#################################################
+
 
