@@ -1540,6 +1540,7 @@ function toggleLock() {
 	window.updateAppState = updateAppState;
 </script>
 
+<script src="<? echo smarty_modifier_revision("/js/Geograph.MediaDatabase.class.js"); ?>"></script>
 <script src="<? echo smarty_modifier_revision("/app/js/used-nearby.libs.js"); ?>"></script>
 <script src="<? echo smarty_modifier_revision("/app/js/suggestions.libs.js"); ?>"></script>
 <script src="<? echo smarty_modifier_revision("/app/js/contexts.libs.js"); ?>"></script>
@@ -1563,6 +1564,8 @@ function toggleLock() {
     window.max_size = 8 * 1024 * 1024; //larger files will be downsized!
     window.uploadMaxDimension = 65536;
 
+    let dbHistory;
+
     window.addEventListener('message', (event) => {
         if (event.origin !== window.location.origin) return;
 
@@ -1576,7 +1579,7 @@ function toggleLock() {
                 theForm.elements['largestsize'].value = window.uploadMaxDimension;
                 updateDimensionsDisplay();
             }
-	    if (data.settings && data.settings.darkMode) {
+	        if (data.settings && data.settings.darkMode) {
                 // Handle Dark Mode
                 document.body.classList.toggle('dark-mode', data.settings.darkMode);
             }
@@ -1589,9 +1592,12 @@ function toggleLock() {
                 currentHeight = data.height;
                 updateDimensionsDisplay();
             } else {
-		currentWidth = null; //so it can be autoloaded from image!
-	    }
+        		currentWidth = null; //so it can be autoloaded from image!
+    	    }
 
+            ////////////////////////////
+
+            let hasGeo = false;
             //uploaded page will send grid_reference+photographer_gridref
             if (data.grid_reference)
                 document.getElementById('grid_reference').value = data.grid_reference;
@@ -1599,13 +1605,43 @@ function toggleLock() {
                 document.getElementById('photographer_gridref').value = data.photographer_gridref;
                 centerMap(data.photographer_gridref);
                 saveMapPosition(map, 'Location from EXIF');
+                hasGeo = true;
             }
 
             //but submit will send lat/long!
             if (data.lat) { //long may be exacty zero (meridian!
                 setLatLong(data.lat, data.long, 'photographer_gridref','EXIF')
                 saveMapPosition(map, 'Location from EXIF');
+                hasGeo = true;
             }
+
+            let warningBox = document.getElementById('guessed_location');
+            if (warningBox) warningBox.remove();
+
+            //if there is no geolocation, see if we can guestimate from media database
+            if (!hasGeo && data.imagetaken) {
+                if (!dbHistory) dbHistory = new MediaDatabase();
+
+                //we are not an async function so not using await, also dont want to hold this function up!
+                dbHistory.findApproximateLocationByExifDate(data.imagetaken).then(result => {
+                    if (result && result.lat) {
+                        setLatLong(result.lat, result.long, 'photographer_gridref', 'Nearest / '+result.filename)
+                        saveMapPosition(map, 'Location from Nearest Image');
+
+                        if (result.diffSeconds > 10) { //within 10 seconds it likly it was just matched against the same image! (just that lcoation was stripped during upload)
+                            warningBox = document.createElement('div');
+                            warningBox.id = 'guessed_location';
+                            warningBox.style.padding = '20px';
+                            warningBox.style.backgroundColor = '#fbfbe1';
+                            warningBox.style.textAlign = 'center';
+                            warningBox.textContent = "The location has been estimated from an image ("+result.filename+") taken about the same time. Please check the circle is correctly located.";
+                            document.getElementById('maparea')?.before(warningBox);
+                        }
+                    }
+                });
+            }
+
+            ////////////////////////////
 
             resetDateControls(data.imagetaken ?? '')
 

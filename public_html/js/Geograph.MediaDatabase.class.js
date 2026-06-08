@@ -226,6 +226,89 @@ class MediaDatabase {
     }
 
     /**
+     * Look up an approximate location given a timestamp.
+     * Evaluates records based strictly on their internal exifData.date.
+     * Prefers a record just BEFORE the timestamp (within 10 mins),
+     * falling back to one just AFTER (within 10 mins).
+     * * @param {string|Date} timestamp - The target timestamp to find a location for.
+     * @returns {Promise<{lat: number, long: number, filename: string, diffSeconds: number}|null>}
+     */
+    async findApproximateLocationByExifDate(timestamp) {
+        const targetDateStr = this.#toSortableDate(timestamp);
+        const targetMs = new Date(targetDateStr).getTime();
+        const tenMinutesMs = 10 * 60 * 1000;
+        const graceThresholdMs = 1 * 60 * 1000; // 1 minute threshold
+
+        // 1. Fetch all records from the store
+        const allRecords = await this.getAllUploads();
+
+        let bestBefore = null;
+        let bestAfter = null;
+
+        for (const record of allRecords) {
+            // 1. Ensure it actually has geo-data first
+            if (record.hasGeo !== 1) continue;
+
+            // 2. Determine the best available timestamp for when it was captured
+            let recordDateStr = null;
+
+            if (record.exifData?.date) {
+                // Standard parsed EXIF date
+                recordDateStr = this.#toSortableDate(record.exifData.date);
+            } else if (record.status === 'taken') {
+                // Freshly taken photo where EXIF hasn't been parsed yet
+                recordDateStr = record.lastActivity; 
+            }
+
+            // If we couldn't resolve a reliable capture date, skip this record
+            if (!recordDateStr) continue;
+
+            const recordMs = new Date(recordDateStr).getTime();
+            const timeDiff = recordMs - targetMs; // Negative means before target, Positive means after
+
+            // Scenario A: Record is BEFORE or EXACTLY AT the target time
+            if (timeDiff <= 0 && timeDiff >= -tenMinutesMs) {
+                if (!bestBefore || timeDiff > bestBefore.timeDiff) {
+                    bestBefore = {
+                        lat: record.exifData.lat,
+                        long: record.exifData.long,
+                        filename: record.filename,
+                        diffSeconds: Math.abs(timeDiff) / 1000,
+                        timeDiff: timeDiff // keep tracking raw difference to find the closest
+                    };
+                }
+            } 
+            // Scenario B: Record is AFTER the target time
+            else if (timeDiff > 0 && timeDiff <= tenMinutesMs) {
+                if (!bestAfter || timeDiff < bestAfter.timeDiff) {
+                    bestAfter = {
+                        lat: record.exifData.lat,
+                        long: record.exifData.long,
+                        filename: record.filename,
+                        diffSeconds: timeDiff / 1000,
+                        timeDiff: timeDiff
+                    };
+                }
+            }
+        }
+
+        // If we have both, check if the 'after' time is close enough to steal the win
+        if (bestBefore && bestAfter) {
+            const afterMs = bestAfter.diffSeconds * 1000;
+            const beforeMs = bestBefore.diffSeconds * 1000;
+
+            // Condition: 'After' is within 1 minute AND strictly closer in time than 'before'
+            if (afterMs <= graceThresholdMs && afterMs < beforeMs) {
+                return bestAfter;
+            }
+            return bestBefore;
+        }
+
+        // Fallback if only one of them (or neither) was found
+        return bestBefore || bestAfter || null;
+    }
+
+    /**
      * Keeps the database size under control
      */
     async pruneHistory(keepCount = 1000) {
