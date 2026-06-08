@@ -45,7 +45,7 @@ export function render() {
 
         		    <section>
         		        <h4>3. Use the "Advanced File Browser"</h4>
-        			<p>(Enabled this experimental feature via the Settings page)</p>
+        			<p>(Enable this <i>experimental</i> feature via the Settings page)</p>
         		        <p>You can grant the app access to specific photo folders to create a customized local gallery optimized for contributors.</p>
         		        <ul>
         		            <li><strong>Bypass Privacy Filters:</strong> This method reads coordinates directly from the source folder, sidestepping browser-based stripping.</li>
@@ -54,6 +54,16 @@ export function render() {
         		            <li><strong>One-Tap Sync:</strong> Once configured, you only need to click <strong>"Rescan Folders"</strong> to pick up new images without having to browse for the folders again.</li>
         		        </ul>
         		    </section>
+
+			    <section>
+                                <h4>4. Take an App Photo as a Reference</h4>
+                                <p>The app includes an intelligent history log that can estimate missing locations by correlating image timestamps.</p>
+			        <ul>
+			            <li><strong>Automatic Backup Matching:</strong> Even if you capture photos using your device&apos;s native camera app and upload them later, if their GPS data gets stripped, the app can look at your local history.</li>
+			            <li><strong>The &quot;Anchor&quot; Trick:</strong> When out exploring, take at least one photo using the Geograph App camera at your location. Even if you choose not to submit that specific app photo, its coordinates are safely stored in your local history log.</li>
+			            <li><strong>Smart Guessing:</strong> Any regular photos you upload that were shot within 10 minutes of that anchored app photo will automatically inherit its approximate location, saving you from manual mapping!</li>
+			        </ul>
+			    </section>
                 </div>
             </div>
 
@@ -221,6 +231,11 @@ const staticlist = [
   {
     "title": "Can I record a [location tracklog] for later use?",
     "content": "If you wish to specifically record a location track-log (e.g., for correlation with photos later, or a GeoTrip), you will need to install a native app on your device with that capability. The Geograph app only supports saving individual annotated locations as notes or taking photos with location data embedded in the filename."
+  },
+
+  {
+    "title": "Why do see [Estimated Location] on upload?",
+    "content": "Some devices strip location metadata when uploading images for privacy reasons. This label means we found an existing image taken around the same time and used its position to provide an approximate location. Please double-check that the location is correct before final submission."
   },
 
   {
