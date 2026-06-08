@@ -392,9 +392,12 @@ async function renderUI() {
         displayArea.innerHTML = `
             <div class="hero-view" id="wrapper-${item.id}">
                 <img src="${item.isHeic?'/app/assets/heic-placeholder.png':item.dataUri}">
-                ${item.exifData.hasGeo ? '' : '<div class="warning">Missing Geo-tags</div>'}
-                ${(item.exifData.orientation && item.exifData.orientation !== 1) ? '<div class="warning">Needs Rotating</div>' : ''}
+                <div class="warning status-badges"></div>
             </div>`;
+
+        const container = displayArea.querySelector(`#wrapper-${item.id} .status-badges`);
+        injectMediaStatusBadges(item.exifData, container);
+
     } else {
         const grid = document.createElement('div');
         grid.className = 'grid';
@@ -405,12 +408,15 @@ async function renderUI() {
             if(!item.exifData.hasGeo) missingGeo++;
             div.innerHTML = `
                 <img src="${item.isHeic?'/app/assets/heic-placeholder.png':item.dataUri}">
-                ${item.exifData.hasGeo ? '' : '<div class="warning">Missing Geo</div>'}
-                ${(item.exifData.orientation && item.exifData.orientation !== 1) ? '<div class="warning">Needs Rotating</div>' : ''}
+                <div class="hidden status-badges"></div>
                 <div class="remove-overlay" onclick="removeItem('${item.id}')">
                     <span class="remove-icon">&#10005;</span>
                 </div>`;
             grid.appendChild(div);
+
+            // Fire async badge loader for this specific grid item row background
+            const container = div.querySelector('.status-badges');
+            injectMediaStatusBadges(item.exifData, container); //no await
         }
         displayArea.appendChild(grid);
     }
@@ -421,6 +427,53 @@ async function renderUI() {
     document.getElementById('missing-btn').classList.toggle('hidden', !missingGeo);
 }
 
+/**
+ * Asynchronously calculates and injects the geo and orientation status text 
+ * into a target element container.
+ * * @param {Object} exifData - The item's EXIF data object
+ * @param {HTMLElement} badgeContainer - The DOM element where warnings should be injected
+ */
+async function injectMediaStatusBadges(exifData, badgeContainer) {
+    if (!badgeContainer) return;
+
+    let htmlBadges = '';
+
+    // 1. Evaluate Geo Status
+    if (exifData.hasGeo) {
+        // Native geo-data exists; no action needed or add a success badge if desired
+    } else if (exifData.date) {
+        try {
+            if (!window.dbHistory) window.dbHistory = new MediaDatabase();
+
+            // Check IndexedDB for a nearby match
+            const approxLoc = await window.dbHistory.findApproximateLocationByExifDate(exifData.date);
+            if (approxLoc && approxLoc.lat) {
+                htmlBadges += `Estimated Location<br>`;
+            } else {
+                htmlBadges += `Missing Geo<br>`;
+            }
+        } catch (err) {
+            console.error("Failed looking up approximate location", err);
+            htmlBadges += `Missing Geo<br>`;
+        }
+    } else {
+        // No native geo and no capture date to query against
+        htmlBadges += `Missing Geo<br>`;
+    }
+
+    // 2. Evaluate Orientation Status
+    if (exifData.orientation && exifData.orientation !== 1) {
+        htmlBadges += `Needs Rotating<br>`;
+    }
+
+    if (htmlBadges.length) {
+        // Inject the generated statuses into the specific placeholder element
+        badgeContainer.className = "warning"; //this removes the hidden
+        badgeContainer.innerHTML = htmlBadges;
+    } else {
+        badgeContainer.remove();
+    }
+}
 
     function removeItem(id) {
         fileQueue = fileQueue.filter(f => f.id !== id);
