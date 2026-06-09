@@ -51,6 +51,10 @@ if (!empty($_GET['since'])) {
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+if ($USER->user_id == 3)
+	$db->Execute("USE geograph_live");
+
+
 //needs to use gridimage/gridsquare because may be pending images. but join in gridimage_search, as may already be moderated, which case have the lat/long ready to use!
 $sql = "select gridimage_id,g.submitted,gs.grid_reference,g.title,g.comment,nateastings,natnorthings,natgrlen,gs.reference_index,wgs84_lat,wgs84_long,g.imagetaken, g.user_id, g.moderation_status, gs.x, gs.y, tags
 	from gridimage g

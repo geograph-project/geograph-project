@@ -16,6 +16,8 @@ function init() {
         'results': { isIframe: true, url: '/finder/finder.php?inner=1', title: 'Results' },
         'map':     { isIframe: true, url: '/mapper/combined.php?mobile=1&inner=1&camera=1', title: 'Map' },
 
+        'web': { isIframe: true, url: '/discuss/?live=1', title: 'Web' },
+
         'upload':  { isIframe: true, url: '/app/upload.php', title: 'Upload' },
         'chooser':  { isIframe: true, url: '/app/chooser.php', title: 'Chooser' },
         'uploaded':{ module: '/app/js/modules/uploaded-view.js', title: 'Submit' },

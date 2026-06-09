@@ -224,7 +224,7 @@ h3 {
 	    <button type="button" class="btn" onclick="closeModal('why-modal')">Close</button>
 	</dialog>
 
-    <button id="missing-btn" onclick="openModal('why-modal')" style="float:right" class="btn btn-help hidden" type="button">Why this page?</button>
+    <button id="missing-btn" onclick="openModal('why-modal')" style="float:right" class="btn btn-help hidden" type="button">About this page &#9432;</button>
 
     <p>Use this button to take a photo with your camera. Location data will be included in the filename, which will be saved to your
     Downloads folder. If you don't receive a download notification, you can try the download again.

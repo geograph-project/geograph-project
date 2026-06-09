@@ -1103,7 +1103,7 @@ function toggleLock() {
                 <li><strong>Manual Method:</strong> Tap the Subject box to toggle to "Subject" Centering then drag the map until the subject is under the center crosshair.</li>
             </ul>
             <blockquote>
-                <p><strong>Tip:</strong> If your photo already has GPS data, simply double-tap the subject on the map and drag to refine if necessary.</p>
+                <p><strong>Quick Tip:</strong> If your photo already has GPS data, all need to do is simply double-tap the subject on the map and drag to refine if necessary.</p>
             </blockquote>
         </article>
 
@@ -1187,11 +1187,13 @@ function toggleLock() {
 	    <section>
 	        <h2>Geographical Context</h2>
 	        <p>Select a few relevant tags from the list that describe the general environment where the image was taken and what it depicts. You aren't expected to be perfectly accurate here; just pick the ones that feel relevant.</p>
+		<p>Tip: Some Context might be highlighted in blue, these are suggestions of possible labels for the specific image. You don't have to follow the suggestions, they are just aiming to provide a starting point.
 	    </section>
 
 	    <section>
 	        <h2>Subject</h2>
 	        <p>We provide a list of tags intended to denote the <strong>primary</strong> subject of the photo (as opposed to everything the image covers). Use the dedicated Subject search to find a possible tag for the main subject.</p>
+		<p>Tip: When first click the Subject search box, may see a short list of automatic suggestions. We might have found a likly subject for your image, not the top suggestion may not be the best, look though all ten suggestions for the best one.
 	    </section>
 
 	    <section>
@@ -1202,6 +1204,7 @@ function toggleLock() {
         <section>
             <h2>Special Flags</h2>
             <p>We ask that images taken by drone be specifically marked. Additionally, if the image is a wide-angle panorama, you can flag it as such. This enables a special viewer on the photo page, allowing users to pan and zoom into high-resolution images. We allow panoramas up to 12MB in size with unlimited resolution.</p>
+	    <p>Note: Its recommended, to first submit a normal viewing angle (eg a single shot from a stitched panaorama) first as the main image. Then add the full panorama as a 'Larger Upload' aftewards (link will be provided after submission).
         </section>
 
         <br><br>

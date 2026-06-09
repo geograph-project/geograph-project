@@ -121,7 +121,6 @@ if (!empty($CONF['submission_message'])) {
         .btn-secondary { background: var(--secondary-bg); color: var(--secondary-text); width: 100%; }
 	.btn-help { background-color:#8ddf8d; }
 
-
         /* Progress Bar */
         .progress-container { width: 100%; height: 6px; background: #eee; border-radius: 10px; margin: 10px 0; overflow: hidden; display: none; }
         .progress-bar { width: 0%; height: 100%; background: var(--success); transition: width 0.3s; }
@@ -199,7 +198,7 @@ if (!empty($CONF['submission_message'])) {
         <div class="progress-bar" id="progress-fill"></div>
     </div>
 
-	<button id="missing-btn" onclick="openModal('geo-modal')"  class="btn btn-help hidden" type="button">Why am I seeing a 'Missing Geo' error?</button>
+	<button id="missing-btn" onclick="openModal('geo-modal')"  class="btn btn-help hidden" type="button">Read more about 'Missing Geo' &#9432;</button>
 
     <button id="upload-btn" class="btn btn-upload hidden">Start Upload</button>
 
@@ -274,6 +273,8 @@ if (!empty($CONF['submission_message'])) {
 
 	<p>Using our <strong>'Take Photo'</strong> page allows you to take images that save the coordinates directly into the filename. This
 	prevents the browser from stripping the data and ensures the photo is quickly placed on the map. </p>
+
+	<p>&middot; Also can directly upload the photo right after taking, rather than having to upload seperately. </p>
 
         <button type="button" class="btn" onclick="closeModal('geo-modal')">Close</button>
 </dialog>
