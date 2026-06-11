@@ -24,6 +24,8 @@
 require_once('geograph/global.inc.php');
 //init_session();
 
+customNoCacheHeader();
+
 $result = array();
 
 if (!empty($CONF['submission_message'])) {
