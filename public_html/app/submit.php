@@ -138,13 +138,145 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
     <style>
         :root {
             --primary: #007AFF;
-            --secondary: #e9ecef;
+            --secondary-bg: #e9ecef;
             --success: #28a745;
             --bg: #f8f9fa;
             --accent: #6c757d;
+            --secondary: #eee;
+
+            --content-text: #333;
+            --header-bg: #fff;
+            --header-border: #ddd;
+
+            --sticky-bg: #fff;
+            --sticky-border: #007bff;
+            --sticky-shadow: rgba(0,0,0,0.1);
+
+            --input-bg: #fff;
+            --input-border: #ccc;
+            --input-text: #000;
+            --input-invalid-bg: #f5f5f0;
+            --input-warning-bg: #fff9c4;
+            --input-warning-border: #fbc02d;
+            --error-color: #d9534f;
+            --success-text: #1b5e20;
+            --success-bg: #e8f5e9;
+            --success-border: #c8e6c9;
+            --success-active-border: #52a52d;
+
+            --pill-bg: #fff;
+            --pill-border: #ccc;
+            --pill-active-bg: #e0e0e0;
+
+            --suggestion-bg: #f5f5f0;
+            --suggestion-border: #aaa;
+
+            --tag-pill-bg: #d4e5bd;
+
+            --flag-bg: #f9f9f9;
+            --flag-border: #eee;
+
+            --btn-ghost-bg: #d8def9;
+            --btn-ghost-text: #007bff;
+
+            --fieldset-bg: #f5f5f0;
+
+            --dialog-bg: #e4e4fc;
+            --dialog-border: #ccc;
+            --dialog-shadow: rgba(0,0,0,0.2);
+            --dialog-backdrop: rgba(0, 0, 0, 0.5);
+
+            --map-border: silver;
+            --map-input-bg: var(--bg);
+            --map-input-active-bg: #fff;
+            --map-input-active-border: #000;
+            --camera-label: #210b7b;
+            --subject-label: #5300ff;
+            --label-active-bg: yellow;
+
+            --info-box-bg: #fbfbe1;
+            --info-box-text: #000;
+            --orientation-warn-bg: pink;
+
+            --info-icon-bg: #fbc02d;
+            --info-icon-text: #000;
+
+            --modal-header-bg: #f8f9fa;
+            --modal-header-border: #ddd;
+            --modal-item-border: #eee;
+            --modal-item-hover: #f0f7ff;
+            --modal-list-bg: #fff;
+
+            --floating-note-bg: rgba(0, 0, 0, 0.85);
+            --floating-note-text: #fff;
         }
 
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        body.dark-mode {
+            --bg: #121212;
+            --content-text: #e0e0e0;
+            --secondary: #333;
+            --accent: #a0a0a0;
+
+            --header-bg: #1e1e1e;
+            --header-border: #333;
+
+            --sticky-bg: #1e1e1e;
+            --sticky-border: #007bff;
+            --sticky-shadow: rgba(0,0,0,0.5);
+
+            --input-bg: #2c2c2c;
+            --input-border: #444;
+            --input-text: #e0e0e0;
+            --input-invalid-bg: #3d1b1b;
+            --input-warning-bg: #443c1a;
+            --input-warning-border: #fbc02d;
+            --error-color: #ff6b6b;
+            --success-text: #b2ff59;
+            --success-bg: #1b5e20;
+            --success-border: #2e7d32;
+            --success-active-border: #52a52d;
+
+            --pill-bg: #2c2c2c;
+            --pill-border: #444;
+            --pill-active-bg: #007bff;
+
+            --suggestion-bg: #2c2c2c;
+            --suggestion-border: #555;
+
+            --tag-pill-bg: #3d5a2d;
+
+            --flag-bg: #1e1e1e;
+            --flag-border: #333;
+
+            --btn-ghost-bg: #1e2a5a;
+            --btn-ghost-text: #75aaff;
+
+            --fieldset-bg: #1e1e1e;
+
+            --dialog-bg: #1e1e3a;
+            --dialog-border: #444;
+            --dialog-shadow: rgba(0,0,0,0.5);
+            --dialog-backdrop: rgba(0, 0, 0, 0.7);
+
+            --map-input-bg: #2c2c2c;
+            --map-input-active-bg: #3d3d3d;
+            --map-input-active-border: #fff;
+            --camera-label: #75aaff;
+            --subject-label: #9975ff;
+            --label-active-bg: #666600;
+
+            --info-box-bg: #33331a;
+            --info-box-text: #e0e0e0;
+            --orientation-warn-bg: #4d001a;
+
+            --modal-header-bg: #252525;
+            --modal-header-border: #444;
+            --modal-item-border: #333;
+            --modal-item-hover: #1a2a3a;
+            --modal-list-bg: #1e1e1e;
+        }
+
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--content-text); margin: 0; padding: 0; }
 
         /* Very important this is on the preview image at least, so users see image needs rotating */
         img {
@@ -153,13 +285,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
         .btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; touch-action: manipulation; font-weight: 600; transition: all 0.2s; display: inline-block; margin: 8px 0; font-size: 16px; }
         .btn-primary { background: var(--primary); color: white; width: 100%; box-sizing: border-box; }
-        .btn-secondary { background: var(--secondary); color: #333333; width: 100%; box-sizing: border-box; }
+        .btn-secondary { background: var(--secondary); color: var(--content-text); width: 100%; box-sizing: border-box; }
 
 
         /* 1. The Main Header (Scrolls normally) */
         .main-header {
-            background: #fff;
-            border-bottom: 1px solid #ddd;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--header-border);
             text-align: center;
             width: 100%;
         }
@@ -186,12 +318,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             left: 0;
             right: 0;
             height: 60px;
-            background: #fff;
-            border-bottom: 2px solid #007bff;
+            background: var(--sticky-bg);
+            border-bottom: 2px solid var(--sticky-border);
             display: flex;
             align-items: center;
             padding: 0 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px var(--sticky-shadow);
             z-index: 10000;
 
             transform: translateY(-100%);
@@ -207,20 +339,41 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
         #form-status-bar {
             margin-left: auto;
-            color: gray;
+            color: var(--accent);
         }
         #form-status-bar.complete {
-            color: #1b5e20;
-            background-color: #e8f5e9;
-            border-color: #c8e6c9;
+            color: var(--success-text);
+            background-color: var(--success-bg);
+            border-color: var(--success-border);
             font-weight: bold;
         }
         .sticky-bar:has(#form-status-bar.complete) {
-            border-color: #52a52d;
+            border-color: var(--success-active-border);
         }
 
         .thumb-img { height: 45px; width: auto; border-radius: 4px; margin-right: 12px; }
-        .sticky-title { font-weight: bold; color: #333; }
+        .sticky-title { font-weight: bold; color: var(--content-text); }
+
+        #image-dimensions {
+            padding: 10px;
+            font-weight: bold;
+            background: var(--secondary);
+            color: var(--content-text);
+        }
+
+        #mapInfo {
+            padding: 10px;
+            border-radius: 10px;
+            background-color: var(--info-box-bg);
+            color: var(--info-box-text);
+            position: sticky;
+            bottom: 0;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        #maparea label[for=photographer_gridref] { color: var(--camera-label); }
+        #maparea label[for=grid_reference] { color: var(--subject-label); }
 
         /* Content spacing */
         .content { padding: 20px; max-width: 600px; margin: 0 auto; }
@@ -233,11 +386,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
 
 /* Form Inputs */
 
-        label { display: block; margin: 15px 0 5px; font-weight: bold; color: #555; touch-action: manipulation; user-select: none;  }
+        label { display: block; margin: 15px 0 5px; font-weight: bold; color: var(--accent); touch-action: manipulation; user-select: none;  }
         input, textarea { 
             width: 100%; padding: 12px; margin-bottom: 10px; 
-            border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; 
+            border: 1px solid var(--input-border); border-radius: 6px; box-sizing: border-box;
             font-size:1.1em;
+            background-color: var(--input-bg);
+            color: var(--input-text);
         }
 
         input, select, textarea {
@@ -258,8 +413,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
         }
 
 input:invalid, select:invalid, #contexts:invalid, .input-invalid {
-    border: 1px solid #ff0000;
-    background-color: #f5f5f0;
+    border: 1px solid var(--error-color);
+    background-color: var(--input-invalid-bg);
 }
 
 .field-header {
@@ -273,8 +428,9 @@ input:invalid, select:invalid, #contexts:invalid, .input-invalid {
     padding: 2px 5px;
     max-width: 150px;
     border-radius: 4px;
-    border: 1px solid #ccc;
-    background: #f9f9f9;
+    border: 1px solid var(--pill-border);
+    background: var(--pill-bg);
+    color: var(--content-text);
 }
 
 /* suggestion-pill is used for placename ugestions on title/description */
@@ -285,7 +441,7 @@ input:invalid, select:invalid, #contexts:invalid, .input-invalid {
     overflow-x: auto;
     gap: 2px;
     padding: 4px;
-    background: #f4f4f4;
+    background: var(--bg);
     height: 44px;
     align-items: center;
 }
@@ -296,8 +452,9 @@ input:invalid, select:invalid, #contexts:invalid, .input-invalid {
 .suggestion-pill {
     padding: 6px;
     border-radius: 20px;
-    border: 1px solid #ccc;
-    background: white;
+    border: 1px solid var(--pill-border);
+    background: var(--pill-bg);
+    color: var(--content-text);
     cursor: pointer;
     white-space:nowrap;
     user-select: none;
@@ -326,7 +483,7 @@ input:invalid, select:invalid, #contexts:invalid, .input-invalid {
 }
 
 .suggestion-pill:active {
-     background: #e0e0e0;
+     background: var(--pill-active-bg);
 }
 .long-distance {
 	text-decoration: line-through;
@@ -341,14 +498,19 @@ input:invalid, select:invalid, #contexts:invalid, .input-invalid {
     padding-left: 3px; /* Gives the items room to breathe */
     font-size: 16px; /* Prevents iOS from auto-zooming on focus */
     line-height: 1.5;
-    border: 1px solid #ccc;
+    border: 1px solid var(--input-border);
     border-radius: 6px;
     margin-bottom: 10px;
+    background-color: var(--input-bg);
+    color: var(--input-text);
 }
 #contexts option {
     font-weight: bold;
-    color:#555;
+    color: var(--accent);
 }
+        .secondary-option {
+            color: var(--accent);
+        }
 #contexts optgroup {
     padding-top: 10px;
     padding-bottom: 5px;
@@ -359,7 +521,7 @@ input:invalid, select:invalid, #contexts:invalid, .input-invalid {
 /* subject/tag/SD autocomplete */
 
 .tag-input-container {
-    background-color:white;
+    background-color: var(--input-bg);
     border-radius:6px;
 }
 .tag-input-container input {
@@ -376,26 +538,26 @@ input:invalid, select:invalid, #contexts:invalid, .input-invalid {
     user-select: none;
     white-space: nowrap;
     border-radius: 15px;   /* Rounded pill look */
-    border: 1px solid #aaa;
-    background: #fff;
-    background-color: #f5f5f0;
+    border: 1px solid var(--suggestion-border);
+    background: var(--suggestion-bg);
+    color: var(--content-text);
     transition: background 0.2s;
     overflow:hidden;
     text-overflow: ellipsis;
 }
 .suggestion-item:hover {
-    background: #e0e0e0;
+    background: var(--pill-active-bg);
 }
 .suggestion-item:active {
-    background: #007bff;
-    color: white;
-    border-color: #0056b3;
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
 }
 
 .suggestion-item strong {
     font-weight: 500;
     text-decoration: underline;
-    text-decoration-color: silver;
+    text-decoration-color: var(--accent);
     pointer-events: none;
 }
 
@@ -404,6 +566,11 @@ input:invalid, select:invalid, #contexts:invalid, .input-invalid {
     border: 1px dashed #38b2ac; /* Dashed border to imply 'creating' */
     color: #2c7a7b;
     font-weight: bold;
+}
+body.dark-mode .add-new-tag {
+    background-color: #1a3a3a;
+    border-color: #38b2ac;
+    color: #4fd1c5;
 }
 
 div.active-tags {
@@ -417,11 +584,15 @@ span.tag-pill {
     white-space: nowrap;
     font-weight: 500;
     border-radius: 15px;
-    background: #d4e5bd;
+    background: var(--tag-pill-bg);
+    color: #000;
+}
+body.dark-mode span.tag-pill {
+    color: var(--content-text);
 }
 span.tag-pill button {
     border:none;
-    color:red;
+    color: var(--error-color);
     margin-left: 6px;
     padding:0;
     background-color:transparent;
@@ -430,9 +601,9 @@ span.tag-pill button {
 
 /* Compact Flag Container */
     .flag-container {
-        background: #f9f9f9;
+        background: var(--flag-bg);
         border-radius: 8px;
-        --border: 1px solid #eee;
+        border: 1px solid var(--flag-border);
     }
 
     .flag-container label {
@@ -464,10 +635,10 @@ span.tag-pill button {
 /* more general forms */
 
     button {
-        padding: 8px 16px; border: 0; background: #d8def9;
-        color: #007bff; border-radius: 14px; cursor: pointer; font-weight: bold; touch-action: manipulation;
+        padding: 8px 16px; border: 0; background: var(--btn-ghost-bg);
+        color: var(--btn-ghost-text); border-radius: 14px; cursor: pointer; font-weight: bold; touch-action: manipulation;
     }
-    button:active { background: #007bff; color: #fff; }
+    button:active { background: var(--primary); color: #fff; }
 
     button.help-link {
         background-color:#e4ffe4;
@@ -475,11 +646,15 @@ span.tag-pill button {
         border:0;
         color:black;
     }
+    body.dark-mode button.help-link {
+        background-color: #1b3d1b;
+        color: #e0e0e0;
+    }
 
 	fieldset {
 		margin-top:20px;
 		border-radius:8px;
-	    background-color:#f5f5f0; padding:3px;
+	    background-color: var(--fieldset-bg); padding:3px;
         border: 0;
 	}
 	fieldset legend {
@@ -491,11 +666,11 @@ span.tag-pill button {
 	    width:inherit;
 	}
 	#licence input[type=text] {
-	    background-color:white;
+	    background-color: var(--input-bg);
 	}
 
 	dialog::backdrop {
-	    background: rgba(0, 0, 0, 0.5);
+	    background: var(--dialog-backdrop);
         backdrop-filter: blur(3px)
 	}
 
@@ -507,9 +682,10 @@ span.tag-pill button {
 	    width: 500px;
 	    padding: 20px;
 	    border-radius: 12px;
-	    border: 1px solid #ccc;
-	    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-	    background-color:#e4e4fc;
+	    border: 1px solid var(--dialog-border);
+	    box-shadow: 0 10px 25px var(--dialog-shadow);
+	    background-color: var(--dialog-bg);
+        color: var(--content-text);
 	}
     dialog button {
         display:block;
@@ -542,7 +718,7 @@ span.tag-pill button {
     width: 350px;
     aspect-ratio: 1 / 1;
     max-height: 90svh;
-    border:1px solid silver; border-radius:5px;
+    border:1px solid var(--map-border); border-radius:5px;
 }
 
 #maparea .controls {
@@ -575,6 +751,9 @@ span.tag-pill button {
     #maparea .map-edge-guard:active {
 	background: rgba(0, 0, 0, 0.08);
     }
+    body.dark-mode #maparea .map-edge-guard:active {
+	background: rgba(255, 255, 255, 0.08);
+    }
 
 }
 
@@ -604,31 +783,36 @@ span.tag-pill button {
 #maparea input[type=text] {
     width:180px;
     font-family: sans-serif;
-    color:gray;
-    background-color:var(--bg);
-    border:1px solid silver;
+    color: var(--accent);
+    background-color: var(--map-input-bg);
+    border:1px solid var(--map-border);
 }
 #maparea label {
     display:unset;
 }
 #maparea input.active {
-        color:black;
-        background-color:white;
-        border:1px solid black;
+        color: var(--content-text);
+        background-color: var(--map-input-active-bg);
+        border:1px solid var(--map-input-active-border);
 }
 #maparea input#photographer_gridref.active {
-    border:1px solid #210b7b;
+    border:1px solid var(--camera-label);
 }
 #maparea input#grid_reference.active {
-    border:1px solid #5300ff;
+    border:1px solid var(--subject-label);
 }
+#maparea label[for=photographer_gridref] { color: var(--camera-label); }
+#maparea label[for=grid_reference] { color: var(--subject-label); }
 #maparea label.active {
-    background-color:yellow;
+    background-color: var(--label-active-bg);
 }
 #dist_message {
     padding-left:10px;
     min-height:22px;
-    color:brown;
+    color: #a52a2a;
+}
+body.dark-mode #dist_message {
+    color: #ff9999;
 }
 
 /* Hide button by default (Desktop/Mouse) */
@@ -653,12 +837,12 @@ span.tag-pill button {
 .notes-bar {
     border-radius: 10px;
     padding: 10px;
-    background-color: #eee;
+    background-color: var(--secondary);
     margin-top: 10px;
 }
 
 #orientation_message {
-    background-color:pink;
+    background-color: var(--orientation-warn-bg);
     padding:6px;
     font-size:1.1em;
     margin-bottom: 100vh;
@@ -690,20 +874,23 @@ dialog#tag-selector-modal .tag-modal-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f8f9fa;
+    background: var(--modal-header-bg);
     white-space: nowrap;
 }
 
 dialog#tag-selector-modal .tag-modal-header {
     padding: 12px 20px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--modal-header-border);
 }
 dialog#tag-selector-modal .tag-modal-header button {
-    width:100px; color:red;
+    width:100px; color: #ff0000;
+}
+body.dark-mode dialog#tag-selector-modal .tag-modal-header button {
+    color: #ff6666;
 }
 
 dialog#tag-selector-modal .tag-modal-footer {
-    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--modal-header-border);
     padding: 0px 8px;
 }
 
@@ -711,7 +898,7 @@ dialog#tag-selector-modal .tag-modal-footer {
 dialog#tag-selector-modal .tag-list-scroll {
     overflow-y: auto;
     max-height: 60vh;
-    background: #fff;
+    background: var(--modal-list-bg);
 }
 
 /* Individual Row Styling */
@@ -719,7 +906,7 @@ dialog#tag-selector-modal .tag-item-row {
     display: flex;
     align-items: center;
     padding: 10px 15px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--modal-item-border);
     cursor: pointer;
     font-weight: normal;
 }
@@ -730,23 +917,23 @@ dialog#tag-selector-modal .tag-item-row {
 }
 
 dialog#tag-selector-modal .tag-item-row:hover {
-    background-color: #f0f7ff;
+    background-color: var(--modal-item-hover);
 }
 
 /* Typography & Badges inside rows */
 dialog#tag-selector-modal .tag-dist {
     font-family: monospace;
-    color: #666;
+    color: var(--accent);
     flex-shrink: 0;
     margin-right:6px;
 }
 
 dialog#tag-selector-modal .tag-attr-type {
-    background: #eee;
+    background: var(--secondary);
     border-radius: 8px;
     margin-left:2px;
     margin-right: 8px;
-    color: #555;
+    color: var(--accent);
     text-align: center;
 }
 
@@ -755,13 +942,13 @@ dialog#tag-selector-modal .tag-label-text {
     font-weight:600;
 }
 dialog#tag-selector-modal .tag-label-text span {
-    font-weight:normal; color:gray;
+    font-weight:normal; color: var(--accent);
 }
 
 dialog#tag-selector-modal .tag-count {
     text-align:right;
     width:30px;
-    color:silver;
+    color: var(--map-border);
 }
 
 /* Checkbox/Radio spacing */
@@ -782,8 +969,8 @@ dialog#tag-selector-modal .tag-modal-floating-note {
     transform: translateX(-50%);
     
     /* Visual styling */
-    background: rgba(0, 0, 0, 0.85); /* Dark background */
-    color: #fff;
+    background: var(--floating-note-bg); /* Dark background */
+    color: var(--floating-note-text);
     padding: 10px 18px;
     border-radius: 20px;
     font-size: 0.85rem;
@@ -804,7 +991,7 @@ dialog#tag-selector-modal .tag-modal-floating-note::after {
     margin-left: -8px;
     border-width: 8px;
     border-style: solid;
-    border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+    border-color: var(--floating-note-bg) transparent transparent transparent;
 }
 
 /* Ensure the dialog itself doesn't 'clip' the floating note */
@@ -817,33 +1004,34 @@ dialog#tag-selector-modal {
     <!-- THIS IS A SEPERATE STYLE BLOCK, THAT GETS DUPLCIATED INTO PARENT -->
 	<style id="styleforRemoteBlock">
 	    #remoteEditorOverlay {
-	        position: fixed; left: 0; width: 100vw; background: white;
+	        position: fixed; left: 0; width: 100vw; background: var(--bg);
 	        z-index: 999999; display: none; flex-direction: column; overflow: hidden;
 	    }
 	    .remote-header { 
-	        height: 48px; background: #f8f9fa; display: flex; 
+	        height: 48px; background: var(--modal-header-bg); display: flex;
 	        justify-content: space-between; align-items: center; padding: 0 12px;
-	        border-bottom: 1px solid #ddd;
+	        border-bottom: 1px solid var(--modal-header-border);
 	    }
-	    .toggle-group { display: flex; background: #eee; border-radius: 6px; padding: 2px; }
+	    .toggle-group { display: flex; background: var(--secondary); border-radius: 6px; padding: 2px; }
 	    .toggle-btn { 
 	        border: none; padding: 6px 12px; font-size: 13px; border-radius: 4px; 
 	        cursor: pointer; background: transparent; 
+            color: var(--content-text);
 	    }
-	    .toggle-btn.active { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); font-weight: bold; }
+	    .toggle-btn.active { background: var(--input-bg); box-shadow: 0 1px 3px var(--sticky-shadow); font-weight: bold; color: var(--content-text); }
 	    
-	    .remote-body { position:relative; flex: 1; display: flex; flex-direction: column; padding: 0px; background-color:#f8f9fa; }
+	    .remote-body { position:relative; flex: 1; display: flex; flex-direction: column; padding: 0px; background-color: var(--bg); }
 	    
 	    /* Input visibility controls */
-	    #remoteTitleInput, #remoteDescArea { width: 100%; border: 1px solid #eee; font-size: 18px; outline: none; box-sizing: border-box; font-family: Georgia, Verdana, Arial, serif}
+	    #remoteTitleInput, #remoteDescArea { width: 100%; border: 1px solid var(--input-border); font-size: 18px; outline: none; box-sizing: border-box; font-family: Georgia, Verdana, Arial, serif; background-color: var(--input-bg); color: var(--input-text); }
 	    #remoteTitleInput { height: 45px; padding: 0 6px; }
 	    #remoteDescArea { flex: 1; padding: 6px; resize: none; max-width:652px; }
 
 	    .remote-suggestions { 
-	        height: 50px; --background: #222; color: white; display: flex; 
+	        height: 50px; background: var(--header-bg); color: var(--content-text); display: flex;
 	        align-items: center; gap: 10px; padding: 0 10px; overflow-x: auto; flex-shrink: 0;
 	    }
-	    .suggestion-pill { background: #444; color:white; padding: 6px 12px; border-radius: 4px; font-size: 13px; white-space: nowrap; }
+	    .suggestion-pill { background: var(--pill-bg); color: var(--content-text); border: 1px solid var(--pill-border); padding: 6px 12px; border-radius: 4px; font-size: 13px; white-space: nowrap; }
 
 	/* Portrait: Show both at once */
 	@media (orientation: portrait) {
@@ -861,8 +1049,8 @@ dialog#tag-selector-modal {
 
 /* The warning state on the input itself */
 .input-warning {
-    background-color: #fff9c4 !important;
-    border: 1px solid #fbc02d !important;
+    background-color: var(--input-warning-bg) !important;
+    border: 1px solid var(--input-warning-border) !important;
 }
 
 /* The Icon as a sibling */
@@ -870,8 +1058,8 @@ dialog#tag-selector-modal {
     position: absolute;
     /* Use 'right' and a top offset based on the input's position */
     right: 12px;
-    background: #fbc02d;
-    color: #000;
+    background: var(--info-icon-bg);
+    color: var(--info-icon-text);
     width: 22px;
     height: 22px;
     border-radius: 50%;
@@ -892,8 +1080,8 @@ dialog#tag-selector-modal {
     display: none;
     position: absolute;
     right: 12px;
-    background: #333;
-    color: #fff;
+    background: var(--floating-note-bg);
+    color: var(--floating-note-text);
     padding: 5px 10px;
     border-radius: 4px;
     white-space: nowrap;
@@ -940,7 +1128,7 @@ dialog#tag-selector-modal {
 <div id="top-boundary"></div>
 
 <div class="main-header" id="mainHeader">
-    <div id="image-dimensions" style="padding: 10px; font-weight: bold; background: #eee;"></div>
+    <div id="image-dimensions"></div>
     <img id="imgLarge" class="preview-img-large" src="" alt="Full Preview">
     <div class="controls">
         <button onclick="rotateImage(270)"><span>&#8634;</span> Rotate Left</button>
@@ -986,12 +1174,12 @@ dialog#tag-selector-modal {
     <span id="btnIcon">&#9000;</span>
   </button>
 
-                <span class=nowrap><label for=photographer_gridref class="gr active" style="color:#210b7b">Camera</label>:
+                <span class=nowrap><label for=photographer_gridref class="gr active">Camera</label>:
                         <input type="text" name="photographer_gridref" id="photographer_gridref" value="" size="12" maxlength="14"
                          pattern="^[A-Za-z]{1,2}\s*\d{1,5}\s*\d{1,5}$" title="Optional: 1-2 letters plus an even number of digits (e.g. TQ 123 456 or O 12 34)"
                          onblur="checkGridref(this)" placeholder="(Camera Location)" class="active"/></span>
                 &nbsp;
-                <span class=nowrap><label for=grid_reference class="gr" style="color:#5300ff;">Subject</label>:
+                <span class=nowrap><label for=grid_reference class="gr">Subject</label>:
                         <input type="text" name="grid_reference" value="" id="grid_reference" size="12" maxlength="14"
                          required pattern="^[A-Za-z]{1,2}\s*\d{1,5}\s*\d{1,5}$" title="Enter a 1 or 2 letter grid ref followed by an even number of digits (e.g., TQ 123 456 or O 12 34)"
                          onblur="checkGridref(this)" placeholder="(Subject Location)"/></span>
@@ -1047,23 +1235,23 @@ function toggleLock() {
 
             <label for="view_direction">View</label>:
             <select id="view_direction" name="view_direction">
-                    <option value="-1" style="color:gray">Direction</option>
+                    <option value="-1" class="secondary-option">Direction</option>
                     <option value="0">NORTH            : 0 deg</option>
-                    <option value="22" style="color:gray">North-northeast  : 22 deg</option>
+                    <option value="22" class="secondary-option">North-northeast  : 22 deg</option>
                     <option value="45">Northeast        : 45 deg</option>
-                    <option value="67" style="color:gray">East-northeast   : 67 deg</option>
+                    <option value="67" class="secondary-option">East-northeast   : 67 deg</option>
                     <option value="90">EAST             : 90 deg</option>
-                    <option value="112" style="color:gray">East-southeast   : 112 deg</option>
+                    <option value="112" class="secondary-option">East-southeast   : 112 deg</option>
                     <option value="135">Southeast        : 135 deg</option>
-                    <option value="157" style="color:gray">South-southeast  : 157 deg</option>
+                    <option value="157" class="secondary-option">South-southeast  : 157 deg</option>
                     <option value="180">SOUTH            : 180 deg</option>
-                    <option value="202" style="color:gray">South-southwest  : 202 deg</option>
+                    <option value="202" class="secondary-option">South-southwest  : 202 deg</option>
                     <option value="225">Southwest        : 225 deg</option>
-                    <option value="247" style="color:gray">West-southwest   : 247 deg</option>
+                    <option value="247" class="secondary-option">West-southwest   : 247 deg</option>
                     <option value="270">WEST             : 270 deg</option>
-                    <option value="292" style="color:gray">West-northwest   : 292 deg</option>
+                    <option value="292" class="secondary-option">West-northwest   : 292 deg</option>
                     <option value="315">Northwest        : 315 deg</option>
-                    <option value="337" style="color:gray">North-northwest  : 337 deg</option>
+                    <option value="337" class="secondary-option">North-northwest  : 337 deg</option>
                     <option value="00">NORTH            : 0 deg</option>
              </select>
             <div id="dist_message"></div>
@@ -1073,7 +1261,7 @@ function toggleLock() {
         </div>
 	</div>
 
-    <div id="mapInfo" style="padding:10px;border-radius:10px; background-color:#fbfbe1; position:sticky; bottom:0; z-index:1000; text-align:center">
+    <div id="mapInfo">
         If the image lacks location data, use the <strong>Locate/Pin</strong> icon to find your current position or the <strong>Search</strong> icon to find a place by name.<br><br>
         <strong>Drag the map</strong> to align the central cross-hairs with the Camera/Photographer location.<br><br>
         Tap the <strong>Grid Reference boxes</strong> to toggle between positioning the Camera and the Subject (the active selection is highlighted in white).
@@ -1180,7 +1368,7 @@ function toggleLock() {
 	        <p>We do ask for the date the photo was taken if at all possible. If you really don't know, or can only provide the approximate year/month, then that is fine too.</p>
 	    </section>
 
-	    <blockquote style="background-color:#d4e5bd;">
+	    <blockquote style="background-color: var(--tag-pill-bg);">
 	        <strong>Tip:</strong> Use <strong>'View Nearby Tags'</strong> to see tags and shared descriptions used nearby. These are simply images that happen to be in the vicinity, so while many suggestions won't be correct, you might find some interesting ones you can use.
 	    </blockquote>
 
@@ -1272,7 +1460,7 @@ function toggleLock() {
         </div>
 
         <br><br>
-        <button type=button class="btn btn-secondary" onclick="showNearbyTagsModalWrapper();" style="background-color:#d4e5bd;">Tags Used Nearby</button>
+        <button type=button class="btn btn-secondary" onclick="showNearbyTagsModalWrapper();" style="background-color: var(--tag-pill-bg);">Tags Used Nearby</button>
 
         <div class="field-header">
     	    <label>Geographical Contexts</label>
@@ -1329,7 +1517,7 @@ function toggleLock() {
                 </select>
 
                 <div class=nowrap id="showvfov" style="display:none">(vfov: <input type=number step=0.01 name=vfov id=vfov placeholder=120 style=width:70px;text-align:right>degrees wide)</div>
-                <div class=nowrap id="showhfov">(hfov: <input type=number step=0.01 name=hfov id=hfov placeholder=90 style=width:70px;text-align:right>degrees high)</div>
+                <div class=nowrap id="showhfov">(hfov: <input type=number step=0.01 name=hfov id=hfov placeholder=90 style="width:70px;text-align:right">degrees high)</div>
 
         		<button type="button" onclick="openModal('pano-modal')" class="help-link">How to Submit Panoramas &#9432;</button>
 
@@ -1517,7 +1705,7 @@ function toggleLock() {
                 <button class="toggle-btn" id="btnModeTitle">Title</button>
                 <button class="toggle-btn" id="btnModeDesc">Description</button>
             </div>
-            <button id="remoteCloseBtn" style="background:#007bff; color:white; border:none; padding:8px 15px; border-radius:4px;">Done</button>
+            <button id="remoteCloseBtn" style="background: var(--primary); color:white; border:none; padding:8px 15px; border-radius:4px;">Done</button>
         </div>
         <div class="remote-body">
             <input type="text" id="remoteTitleInput" maxlength="128" placeholder="Enter Title...">
@@ -1827,7 +2015,7 @@ console.log("Error", e);
         const finalDimText = `${finalWidth} x ${finalHeight} pixels`;
 
         document.getElementById('image-dimensions').innerHTML = `Current Size: ${dimText}` +
-            (downsized ? `<br><span style="color: #d9534f;">Note: This image will be downsized to ${finalDimText} server-side.</span>` : '');
+            (downsized ? `<br><span style="color: var(--error-color, #d9534f);">Note: This image will be downsized to ${finalDimText} server-side.</span>` : '');
 
         const finalDimsEl = document.getElementById('final-dimensions');
         if (finalDimsEl) {
@@ -2087,7 +2275,8 @@ console.log("Error", e);
             errorBox = document.createElement('div');
             errorBox.id = 'submission_error';
             errorBox.style.padding = '20px';
-            errorBox.style.backgroundColor = '#fbfbe1';
+            errorBox.style.backgroundColor = 'var(--info-box-bg)';
+            errorBox.style.color = 'var(--info-box-text)';
             submitBtn.before(errorBox);
     	}
     	errorBox.textContent = message;
