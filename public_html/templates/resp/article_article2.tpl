@@ -1,0 +1,1 @@
+../basic/article_article2.tpl
