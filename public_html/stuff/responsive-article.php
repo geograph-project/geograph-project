@@ -58,8 +58,11 @@ if (!empty($_GET['id'])) {
                         $where[] = "article_id NOT IN ($ids)";
         }
 
+	$where[] = "(category_name regexp '\\\\bgeograph\\\\b' or type = 'document')";
+
 	$row = $db->getRow($sql = "
 		SELECT article_id,url FROM article
+		INNER JOIN article_cat c using (article_cat_id)
 		LEFT JOIN responsive_article USING (article_id)
 		WHERE ".implode(' AND ',$where)." LIMIT 1");
 }
