@@ -307,7 +307,7 @@ div.homepage {
 		Tools for Mobile Devices:<br>
 		&middot; <a href="https://m.geograph.org.uk/nearest">Nearest Image</a>
 		&middot; <a href="/mapper/combined.php">Coverage Map</a>
-		&middot; <a href="/submit-mobile.php">Submit Image</a>
+		&middot; <a href="/help/app">Submit Image</a>
 		&middot; <a href="https://m.geograph.org.uk/radar/">Geograph Radar</a>
 		&middot; 
 	</div><br>

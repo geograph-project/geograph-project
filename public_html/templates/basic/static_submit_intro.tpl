@@ -25,7 +25,7 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 {/if}
 {/dynamic}
 
-<p>Submitting photos via Geograph is a 4-step process: <i>(Note: this is our <b>desktop</b> process, on mobile we have a different process)</i></p>
+<p>Submitting photos via Geograph is a 4-step process: <i>(Note: this is our <b>desktop</b> process, on mobile please use <a href="/help/app">our new Geograph App</a>)</i></p>
 
 <ol class="spaced">
 	<li><b>Define the square</b> for your image - by entering or selecting the grid reference, searching by placename or dragging on map. (see below for more tips)
