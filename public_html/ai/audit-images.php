@@ -26,8 +26,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-
-//customExpiresHeader(3600,false,true);
+$USER->mustHavePerm('basic');
 
 
 //	$smarty->display('_std_begin.tpl');
