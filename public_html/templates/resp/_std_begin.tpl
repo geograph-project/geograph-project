@@ -48,4 +48,4 @@
 {else}
 {dynamic}<div {if $maincontentclass}class="{$maincontentclass}"{else}class="content2"{/if} id="maincontent_block">{/dynamic}
 {/if}
-<div id="maincontent" style="position:relative">
+<div id="maincontent" style="position:relative" role="main">

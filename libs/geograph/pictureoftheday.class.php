@@ -24,7 +24,6 @@
  */
 
 
-require_once("geograph/token.class.php");
 require_once("geograph/gridimage.class.php");
 /**
 * Provides a class for managing picture of the day
@@ -134,8 +133,12 @@ class PictureOfTheDay
 		$pictureoftheday['gridimage_id']=$this->gridimage_id;
 		$pictureoftheday['width']=$this->width;
 		$pictureoftheday['height']=$this->height;
-		$pictureoftheday['image']=new GridImage($this->gridimage_id);
+		$pictureoftheday['image']=new GridImage($this->gridimage_id, true);
 		$pictureoftheday['image']->compact();
+
+		//seems the smarty template hasnt been escaping this!
+		$pictureoftheday['image']->title = htmlentities2($pictureoftheday['image']->title);
+		$pictureoftheday['image']->realname = htmlentities2($pictureoftheday['image']->realname);
 
 		$db=$this->_getDB(true);
 		$pictureoftheday['image']->brightness = $db->getOne("SELECT brightness FROM gridimage_daily WHERE gridimage_id = {$this->gridimage_id}");
@@ -143,23 +146,6 @@ class PictureOfTheDay
 		$smarty->assign('pictureoftheday', $pictureoftheday);
 
 		$this->image =& $pictureoftheday['image'];
-	}
-
-	function serveImageFromToken($tokenstr)
-	{
-		$token=new Token;
-		if ($token->parse($tokenstr))
-		{
-		    $this->width=$token->getValue("w");
-		    $this->height=$token->getValue("h");
-		    $this->gridimage_id=$token->getValue("i");
-
-		    $image=new GridImage($this->gridimage_id);
-		}
-		else
-		{
-			header("HTTP/1.0 403 Bad Token");
-		}
 	}
 }
 

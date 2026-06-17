@@ -161,15 +161,15 @@ div.homepage {
 		<div class="imageContainer shadow">
 		        <div class="interestBox titleBox">
 		                <div class="rightLinks">
-		                        <a href="/stuff/daily.php" title="Previous Photos of the Day">view previous &gt;</a>
+		                        <a href="/stuff/daily.php" aria-label="View Previous Photos of the Day">view previous &gt;</a>
 		                </div>
 		                <h3>{$ptitle}</h3>
 		        </div>
 
-	                <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a><br>
+	                <a href="/photo/{$pictureoftheday.gridimage_id}" aria-label="Load page for photo of the day">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a><br>
 
 	                <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->title}</a>
-	                <span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname}</a></span>
+	                <span class="nowrap">by <a aria-label="{$pictureoftheday.image->realname}'s Contributor Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname}</a></span>
 	                <span class="nowrap">for square <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></span>{if $pictureoftheday.image->imagetaken > '1000'},
 	                <span class="no-wrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1">{$pictureoftheday.image->getFormattedTakenDate()}</a></span>{/if}
 	        </div>
@@ -212,7 +212,7 @@ div.homepage {
 	                        <li>It's a <a href="/help/freedom">free</a> and <a href="/faq.php#opensource">open online community</a> project for all</li>
 	                </ul>
 
-	                <p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how
+	                <p><a aria-label="register now" href="/register.php">Registration</a> is free so come and join us and see how
 	                many grid squares you submit!</p>
 		</div>
 
@@ -231,8 +231,8 @@ div.homepage {
 	        <div id="photo_block">
 	                <div class="interestBox titleBox">
 	                        <div class="rightLinks">
-	                                <a href="/explore/searches.php" title="Featured Selections">other selections &gt;</a>&nbsp;&nbsp;
-	                                <a href="/finder/recent.php" title="Show the most recent submissions"><b>see more</b> &gt;</a>
+	                                <a href="/explore/searches.php" aria-label="Other Featured Selections">other selections &gt;</a>&nbsp;&nbsp;
+	                                <a href="/finder/recent.php" aria-label="View recent photo submissions"><b>see more</b> &gt;</a>
 	                        </div>
 	                        <h3>Recent Photos</h3>
 	                </div>
@@ -270,7 +270,7 @@ div.homepage {
 
 		<div class="interestBox titleBox">
 	                <div class="rightLinks">
-				<a href="/content/featured.php">view previous &gt;</a> &nbsp; <a href="/content/">all collections &gt;</a>
+				<a href="/content/featured.php" aria-label="View Previous featured collections">view previous &gt;</a> &nbsp; <a href="/content/">all collections &gt;</a>
 			</div>
 	                <h3>Featured Collection</h3>
 		</div>
