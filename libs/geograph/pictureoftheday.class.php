@@ -133,7 +133,7 @@ class PictureOfTheDay
 		$pictureoftheday['gridimage_id']=$this->gridimage_id;
 		$pictureoftheday['width']=$this->width;
 		$pictureoftheday['height']=$this->height;
-		$pictureoftheday['image']=new GridImage($this->gridimage_id, true);
+		$pictureoftheday['image']=new GridImage($this->gridimage_id);
 		$pictureoftheday['image']->compact();
 
 		//seems the smarty template hasnt been escaping this!
