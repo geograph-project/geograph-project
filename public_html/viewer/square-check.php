@@ -53,10 +53,13 @@ foreach($data as $row) {
 	print "<td>{$row['transfer_id']}";
 	print "<td>".htmlentities($row['imagetaken']);
         if (!empty($row['grid_reference'])) {
-		$stat = null;
-		print "<td><tt>".htmlentities($row['grid_reference']);
-		if (!empty($stats[$row['grid_reference']])) {
-			$stat = $stats[$row['grid_reference']];
+
+		$stat = $stats[$row['grid_reference']] ?? null;
+
+		$distance = $stat?1:2;
+		$url = "/search.php?gridref={$row['grid_reference']}&amp;distance=$distance&amp;user_id=$user_id&amp;do=1";
+		print "<td><tt><a href=\"$url\">".htmlentities($row['grid_reference']);
+		if (!empty($stat)) {
 			print "<td align=right sortvalue=\"{$stat['imagecount']}\">".number_format($stat['imagecount'],0);
 			if (!empty($stat['max_ftf']))
 				print "<td>Personal";
