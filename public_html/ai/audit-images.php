@@ -175,9 +175,9 @@ $image->fastInit($row);
                 <button type="button" id="btn-placed" onclick="submitAudit('placed')" disabled>I&rsquo;ve Placed the Pin</button>
                 <button type="button" id="btn-reset" onclick="resetMarker()">Reset Pin</button>
                 
-                <button type="button" id="btn-incorrect" title="Know the location, 100% certain photo not taken there, but don&rsquo;t know the correct location" onclick="submitAudit('incorrect')">Incorrect Location</button>
+                <button type="button" id="btn-incorrect" title="Know the Pin location, 100% certain photo not taken there, but don&rsquo;t know the correct location" onclick="submitAudit('incorrect')">Incorrect Location</button>
                 
-                <button type="button" id="btn-skip" onclick="submitAudit('skip')">Don&rsquo;t know</button>
+                <button type="button" id="btn-skip" title="Don't reconcise the photo, or too subjective to accurately place" onclick="submitAudit('skip')">Don&rsquo;t know</button>
                 <span id="distance-display" style="font-size:0.85em; color:#666;"></span>
             </div>
 
