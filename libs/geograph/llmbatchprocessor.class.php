@@ -47,6 +47,16 @@ class LLMBatchProcessor {
         $this->internalModelName = $internalModelName ?: $promptName; //used for labeller_progress table, seperate variable, as could be different to the prompt name!
         $this->params['image_prompt'] = $imagePrompt;
 
+	//it seems nvidia uses vllm, which can technicall accept a http URL, BUT with no control over the user-agent, seems often blocked by cloudflare
+	// .. force encode mode, so that we fetch the image and bundle it into the request
+	if ($this->params['provider'] == 'nvidia' && $this->params['image_prompt'])
+		$this->params['encode'] = true;
+
+	//also for nvidia, there is strict rate limit, so make sure enable OUR sleep based rate limiting
+	if ($this->params['provider'] == 'nvidia')
+		$this->params['sleep'] = true;
+
+
         // Append shard data if applicable to isolate the tracking identifier
         if (!empty($this->params['shard']) && preg_match('/^(\d+)\/(\d+)$/', $this->params['shard'])) {
             $this->internalModelName .= $this->params['shard'];
@@ -161,7 +171,7 @@ class LLMBatchProcessor {
                     if ($this->params['encode']) {
                         ini_set("user_agent", "Internal Request");
                         $imageData = file_get_contents($path);
-                        print "imageData = " . strlen($imageData) . " bytes\n";
+                        print "Fetched " . strlen($imageData) . " bytes for image $path\n";
                         $base64Image = base64_encode($imageData);
                         $path = "data:image/jpeg;base64,{$base64Image}";
                     }
@@ -239,7 +249,7 @@ class LLMBatchProcessor {
         if (!empty($last_id) && !empty($this->params['direction'])) {
             $this->db->Execute(
                 "INSERT INTO labeller_progress (model, last_id, direction) VALUES (?, ?, ?)
-                 ON DUPLICATE KEY UPDATE last_id = VALUES(last_id)", 
+                 ON DUPLICATE KEY UPDATE last_id = VALUES(last_id)",
                 [$this->internalModelName, $last_id, $this->params['direction']]
             );
         }
