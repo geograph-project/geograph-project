@@ -171,7 +171,7 @@
 <script>
 var feature_type_id = {$feature_type_id};
 var feature_type_updated = `{$updated}`;
-var editing = {dynamic}{if $user->registered && $create_enabled}1{else}0{/if}; //{$isadmin}{/dynamic}
+var editing = {if $create_enabled}1{else}0{/if} && {dynamic}{if $user->registered}1{else}0{/if}; //{$isadmin}{/dynamic}
 
 var columns = {$item_columns};
 var resultCount = {$count};
