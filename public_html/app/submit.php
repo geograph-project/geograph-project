@@ -1524,15 +1524,22 @@ function toggleLock() {
            </div>
            <script>
            function updatePanoDisplay() {
+                const select = document.getElementById("panoselect");
+
                 if (document.getElementById("c-pano").checked) {
-                    const select = document.getElementById("panoselect");
                     document.getElementById('showvfov').style.display = (select.value == 'panorama:wideangle')?'':'none';
                     document.getElementById('showhfov').style.display = (select.value == 'panorama:photosphere')?'none':'';
                     document.getElementById("showpano").style.display = "";
-                    document.getElementById("panoselect").required = true;
+
+                    // Enable it AND enforce that they must select an option
+                    select.disabled = false;
+                    select.required = true;
                 } else {
                     document.getElementById("showpano").style.display ="none";
-                    document.getElementById("panoselect").required = false;
+
+                    // Disabling it automatically stops 'required' validation AND prevents submission
+                    select.disabled = true;
+                    select.required = false;
                 }
            }
            </script>
