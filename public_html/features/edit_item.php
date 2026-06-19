@@ -41,8 +41,6 @@ $cacheid = '';
 
 	$db=GeographDatabaseConnection(false);
 
-
-
 	if (!empty($_GET['type_id'])) {
 		//todo, honour licewnce=none?!
 		$type_id = intval($_REQUEST['type_id']);
@@ -56,9 +54,6 @@ $cacheid = '';
 		$smarty->display('static_404.tpl');
 	        exit;
 	}
-
-
-
 
 	if ($_REQUEST['id'] == 'new') {
 		$smarty->assign('item', array(
@@ -92,7 +87,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$errors = array();
 	$updates = array();
 	foreach (explode(',',$row['item_columns']) as $key) {
-		if (isset($_POST[$key]) && $page[$key] != $_POST[$key] && !preg_match('/_images$/',$key)) { //the _images columns are auto-maintained!
+		if (isset($_POST[$key]) && $_POST[$key] != ($page[$key] ?? null) && !preg_match('/_images$/',$key)) { //the _images columns are auto-maintained!
 			$updates[$key] = trim(strip_tags($_POST[$key]));
 			$smarty->assign($key, $_POST[$key]);
 		}
@@ -104,8 +99,8 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		//but also allow them to 'claim' an previously auto selected image. But not if doing a general edit of all feilds
 		$updates['gridimage_id_user_id'] = $USER->user_id;
 
-	//todo, when edit 'gridref' need to invalidae the eastings/norhting/ri + lat/long
-	//same is was enable editing easting/northing directly for example.
+	//todo, when edit 'gridref' need to invalidate the easting/northing/ri + lat/long/point_ll
+	//same if was enable editing easting/northing directly for example.
 
 	if (!count($updates)) {
 		$smarty->assign('error', "No Changes to Save");
@@ -114,7 +109,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	if ($_REQUEST['id'] == 'new') {
 		$updates['feature_type_id'] = $_REQUEST['type_id'];
 		$updates['user_id'] = $USER->user_id;
-		$sql = 'INSERT INTO feature_item SET `'.implode('` = ?,`',array_keys($updates)).'` = ?';
+		$sql = 'INSERT INTO feature_item SET `'.implode('` = ?,`',array_keys($updates)).'` = ?, point_ll = POINT(0,0)'; //Spatial columns dont like NULL, and dont seem to to be able to set DEFAULT POINT(0,0)
 	} else {
 		$sql = 'UPDATE feature_item SET `'.implode('` = ?,`',array_keys($updates)).'` = ? WHERE feature_item_id = '.$db->Quote($_REQUEST['id']);
 	}
@@ -135,9 +130,9 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
                 $inserts['user_id'] = $USER->user_id;
 
                 foreach ($updates as $key => $value) {
-                        if ($value != @$page[$key] && $key != 'gridimage_id_user_id') { //gridimage_id_user_id ends up kinda duplicating user_id anyway
+                        if ($value != ($page[$key] ?? null) && $key != 'gridimage_id_user_id') { //gridimage_id_user_id ends up kinda duplicating user_id anyway
                                 $inserts['field'] = $key;
-                                $inserts['oldvalue'] = @$page[$key];
+                                $inserts['oldvalue'] = $page[$key] ?? null;
                                 $inserts['newvalue'] = $value;
 
                                 $db->Execute('INSERT INTO feature_item_log SET `'.implode('` = ?,`',array_keys($inserts)).'` = ?',array_values($inserts));
