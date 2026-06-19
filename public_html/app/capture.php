@@ -68,7 +68,7 @@ init_session();
         .btn-upload { background: var(--primary); color: white; width: 100%; }
         .btn-upload:disabled { background: #ccc; cursor: not-allowed; }
         .btn-secondary { background: var(--secondary-bg); color: var(--secondary-text); width: 100%; }
-	.btn-help { background-color:#8ddf8d; }
+	.btn-help { background-color:#8ddf8d; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
 
 	#map {
 	 width:350px; height:350px; max-height:90vh; max-width:90vw;
