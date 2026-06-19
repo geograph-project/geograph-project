@@ -391,14 +391,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && empty($_POST['email'])) { //aovid a
             width: 100%; padding: 12px; margin-bottom: 10px; 
             border: 1px solid var(--input-border); border-radius: 6px; box-sizing: border-box;
             font-size:1.1em;
-            background-color: var(--input-bg);
-            color: var(--input-text);
         }
 
         input, select, textarea {
             /* Set this to the height of your sticky header + a bit of padding */
             scroll-margin-top: 120px;
             font-family: Georgia, Verdana, Arial, serif; /* set this as this is what used for display in main site!! */
+            background-color: var(--input-bg);
+            color: var(--input-text);
         }
 
         @media screen and (max-height: 500px) and (orientation: landscape) {
@@ -1004,13 +1004,13 @@ dialog#tag-selector-modal {
     <!-- THIS IS A SEPERATE STYLE BLOCK, THAT GETS DUPLCIATED INTO PARENT -->
 	<style id="styleforRemoteBlock">
 	    #remoteEditorOverlay {
-	        position: fixed; left: 0; width: 100vw; background: var(--bg);
+	        position: fixed; left: 0; width: 100vw; background: var(--app-bg);
 	        z-index: 999999; display: none; flex-direction: column; overflow: hidden;
 	    }
 	    .remote-header { 
-	        height: 48px; background: var(--modal-header-bg); display: flex;
+	        height: 48px; background: var(--card-bg); display: flex;
 	        justify-content: space-between; align-items: center; padding: 0 12px;
-	        border-bottom: 1px solid var(--modal-header-border);
+	        border-bottom: 1px solid var(--card-border);
 	    }
 	    .toggle-group { display: flex; background: var(--secondary); border-radius: 6px; padding: 2px; }
 	    .toggle-btn { 
@@ -1020,18 +1020,18 @@ dialog#tag-selector-modal {
 	    }
 	    .toggle-btn.active { background: var(--input-bg); box-shadow: 0 1px 3px var(--sticky-shadow); font-weight: bold; color: var(--content-text); }
 	    
-	    .remote-body { position:relative; flex: 1; display: flex; flex-direction: column; padding: 0px; background-color: var(--bg); }
+	    .remote-body { position:relative; flex: 1; display: flex; flex-direction: column; padding: 0px; background-color: var(--app-bg); }
 	    
 	    /* Input visibility controls */
-	    #remoteTitleInput, #remoteDescArea { width: 100%; border: 1px solid var(--input-border); font-size: 18px; outline: none; box-sizing: border-box; font-family: Georgia, Verdana, Arial, serif; background-color: var(--input-bg); color: var(--input-text); }
+	    #remoteTitleInput, #remoteDescArea { width: 100%; border: 1px solid var(--input-border); font-size: 18px; outline: none; box-sizing: border-box; font-family: Georgia, Verdana, Arial, serif; background-color: var(--input-bg); color: var(--content-text); }
 	    #remoteTitleInput { height: 45px; padding: 0 6px; }
 	    #remoteDescArea { flex: 1; padding: 6px; resize: none; max-width:652px; }
 
 	    .remote-suggestions { 
-	        height: 50px; background: var(--header-bg); color: var(--content-text); display: flex;
+	        height: 50px; background: var(--app-bg); color: var(--content-text); display: flex;
 	        align-items: center; gap: 10px; padding: 0 10px; overflow-x: auto; flex-shrink: 0;
 	    }
-	    .suggestion-pill { background: var(--pill-bg); color: var(--content-text); border: 1px solid var(--pill-border); padding: 6px 12px; border-radius: 4px; font-size: 13px; white-space: nowrap; }
+	    .suggestion-pill { background: var(--secondary-bg); color: var(--content-text); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 4px; font-size: 13px; white-space: nowrap; }
 
 	/* Portrait: Show both at once */
 	@media (orientation: portrait) {
@@ -1049,8 +1049,8 @@ dialog#tag-selector-modal {
 
 /* The warning state on the input itself */
 .input-warning {
-    background-color: var(--input-warning-bg) !important;
-    border: 1px solid var(--input-warning-border) !important;
+    background-color: var(--error-bg-soft) !important;
+    border: 1px solid var(--error-color) !important;
 }
 
 /* The Icon as a sibling */
@@ -1058,8 +1058,8 @@ dialog#tag-selector-modal {
     position: absolute;
     /* Use 'right' and a top offset based on the input's position */
     right: 12px;
-    background: var(--info-icon-bg);
-    color: var(--info-icon-text);
+    background: var(--danger-bg);
+    color: var(--danger-text);
     width: 22px;
     height: 22px;
     border-radius: 50%;
@@ -1823,7 +1823,8 @@ function toggleLock() {
                             warningBox = document.createElement('div');
                             warningBox.id = 'guessed_location';
                             warningBox.style.padding = '20px';
-                            warningBox.style.backgroundColor = '#fbfbe1';
+		                    warningBox.style.backgroundColor = 'var(--info-box-bg)';
+				            warningBox.style.color = 'var(--info-box-text)';
                             warningBox.style.textAlign = 'center';
                             warningBox.textContent = "The location has been estimated from an image ("+result.filename+") taken about the same time. Please check the circle is correctly located.";
                             document.getElementById('maparea')?.before(warningBox);
