@@ -1,8 +1,8 @@
 <?php
 
 // Script parameters
-$param = array('offset'=>0, 'batch' => 10, 'print' => false, 'provider'=>'open', 'direction'=>'forward',
-		'table' => "curated_judge", 'reason'=>true, 'ai'=>"google/gemma-4-26b-a4b-it");
+$param = array('offset'=>0, 'batch' => 10, 'print' => false, 'provider'=>'open', 'direction'=>'forward', 'restart'=>false, 'save'=>false,
+		'table' => "curated_judge", 'reason'=>true, 'ai_model'=>"google/gemma-4-26b-a4b-it", 'single' =>false, 'max_tokens' => 512);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -14,153 +14,115 @@ require_once "3rdparty/llm-providers.inc.php"; // Provides getLLMResponse and ot
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-#########################################################
 
-$aiModel = $param['ai'];
+$model_label = "edu-judge"; // Internal progress monitoring key name
 
-$model = "edu-judge"; //this is OUR model label!
-
-#########################################################
-
-$where = array();
-
-$where[] = "cosine < 0.8";
+// Initialize handler: Multi-modal vision enabled (imagePrompt = true)
+$processor = new LLMBatchProcessor($db, $param, $model_label, true);
 
 #########################################################
+// 0. Define rows to process
 
-$last_id = $db->getOne("SELECT last_id FROM labeller_progress WHERE model = '$model' AND direction = '{$param['direction']}'");
+$processor->setQueryCallback(function(&$where, $order, $param) use ($db) {
+    $factor = 100;
 
-        if ($param['direction'] == 'forward') {
-            if (!empty($last_id)) $where['last'] = "gi.gridimage_id > $last_id";
-            $order = "gi.gridimage_id ASC";
-        } else {
-            if (!empty($last_id)) $where['last'] = "gi.gridimage_id < $last_id";
-            else $last_id = 99999999;
-            $order = "gi.gridimage_id DESC";
+    // 1. Handle auto-targeting mode for labels needing samples
+    if (!empty($param['single'])) {
+        if ($param['single'] == 'auto') {
+            $param['single'] = $db->getOne("SELECT label,
+                COUNT(c.gridimage_id) AS total, SUM(is_gold_standard) AS gold,
+                SUM(j.gridimage_id IS NULL) AS todo,
+                SUM(j.updated > DATE_SUB(NOW(), INTERVAL 24 HOUR)) AS recent,
+                AVG(IF(j.updated > DATE_SUB(NOW(), INTERVAL 24 HOUR), is_gold_standard, NULL)) AS percent
+                FROM curated1 c LEFT JOIN curated_judge j USING (label, gridimage_id)
+                WHERE cosine IS NOT NULL AND gen > 0
+                GROUP BY label
+                HAVING (gold > 0 OR (total - todo < 20))
+                   AND todo > 0
+                   AND NOT (recent > 12 AND percent = 0)
+                ORDER BY gold ASC LIMIT 1");
         }
+        $where[] = "c.label = " . $db->Quote($param['single']);
+        $factor *= 2; // double resolution scale factor for target matching
+    }
+
+    $where[] = "c.active = 1 AND c.user_id = 23277";
+
+    return "SELECT gi.gridimage_id, gi.user_id, title, comment, stack, name, feature_tag, critical_feature, cosine
+            FROM gridimage_search gi 
+            INNER JOIN curated1 c USING (gridimage_id)
+            INNER JOIN curated_label l ON (l.name = c.label)
+            LEFT JOIN {$param['table']} r ON (r.gridimage_id = gi.gridimage_id AND r.label = c.label)
+            WHERE " . implode(" AND ", $where) . " AND r.gridimage_id IS NULL
+            GROUP BY name, ROUND(cosine * $factor)
+            ORDER BY $order LIMIT " . (int)$param['batch'];
+});
 
 #########################################################
+// 1. Callback to handle text prompt compilation
 
-	$where[] = "c.active=1 and c.user_id = 23277 and c.score = 10";
+$processor->setFormatPromptCallback(function($fields) use ($param, $model_label) {
+    // Elegant workaround for row template tags: Feed them cleanly at the top of the user block
+    $userText = "### Context Variables\n";
+    $userText .= "Target Entity Name: " . latin1_to_utf8($fields['name']) . "\n";
+    $userText .= "Target Entity Stack: " . latin1_to_utf8($fields['stack']) . "\n";
+    $userText .= "Feature Tag Reference: " . latin1_to_utf8($fields['feature_tag']) . "\n";
+    $userText .= "Critical Target Feature: " . latin1_to_utf8($fields['critical_feature']) . "\n\n";
 
-    if (empty($where))
-	$where[] = 1;
-
-    print "-- WHERE ".implode(" AND ", $where)."\n";
-
-        $sql = "SELECT gi.gridimage_id, gi.user_id, title, comment,  stack,name,feature_tag,critical_feature
-	FROM gridimage_search gi INNER JOIN curated1 c USING (gridimage_id)
-		INNER JOIN curated_label l ON (l.name = c.label)
-	LEFT JOIN {$param['table']} r ON (r.gridimage_id = gi.gridimage_id and r.label = c.label)
-	WHERE " . implode(" AND ", $where) . " AND r.gridimage_id IS NULL ORDER BY $order LIMIT ".$param['batch'];
-
-    $rs = $db->Execute($sql);
-
-    if ($rs->EOF) {
-        //break;
-        print "$sql;\n\n";
-	exit;
+    $userText .= "### Image Meta Context\n";
+    $userText .= "Title: " . latin1_to_utf8($fields['title']) . "\n";
+    if (!empty($fields['comment'])) {
+        $userText .= "Description: " . latin1_to_utf8($fields['comment']) . "\n";
     }
 
-############################################################
+    // Retain debugging diagnostics prints
+    print "ID: " . intval($fields['gridimage_id']) . "\n";
+    print "Label: " . htmlentities($fields['name']) . "\n";
+    print "Title: " . htmlentities($fields['title']) . "\n";
 
-    $prompt = $db->getOne("SELECT content FROM ai_prompt WHERE active=1 AND prompt_name = '$model'");
-
-    if ($param['print']) {
-	print "$prompt\n";
+    // Legacy prompt library save integration hook compatibility support
+    if (!empty($param['save'])) {
+        $examples = array(
+            '{{stack}}'            => $fields['stack'],
+            '{{name}}'             => $fields['name'],
+            '{{feature_tag}}'      => $fields['feature_tag'],
+            '{{critical_feature}}' => $fields['critical_feature']
+        );
+        save_user_prompt($model_label, $userText, $examples);
     }
 
-    while (!$rs->EOF) {
-        $image=new GridImage;
-        $image->fastInit($rs->fields);
+    return $userText;
+});
 
-	$path = $image->getSquareThumbnail(224,224,'fullpath');
+#########################################################
+// 2. Callback to handle saving the deeply nested decoded JSON scores
 
-	if (basename($path) == 'error.jpg') {
-		print_r($rs->fields);
-		print "faile\n";
-		exit;
-	}
-
-###################################################
-
-	$prompt2 = str_replace('{{stack}}',$image->stack,$prompt);
-	$prompt2 = str_replace('{{name}}',$image->name,$prompt2);
-	$prompt2 = str_replace('{{feature_tag}}',$image->feature_tag,$prompt2);
-	$prompt2 = str_replace('{{critical_feature}}',$image->critical_feature,$prompt2);
-
-	if ($param['print']) {
-		print "$prompt2\n";
-	}
-
-###################################################
-
-	$userText = "Title: ".latin1_to_utf8($image->title)."\n";
-	if (!empty($image->comment)) {
-	    $userText .= "Description: ".latin1_to_utf8($image->comment)."\n";
-	}
-
-###################################################
-
-	//for a image request, send structured (callOpenRouter will call json encode which copes!)
-	$user = [ [ 'type' => 'text', 'text' => $userText ],
-		  [ 'type' => 'image_url', 'image_url' => [ 'url' => $path ] ]
-		];
-
-	if ($param['print']) {
-		print_r($user);
-		exit;
-	}
-
-	print "ID: ".intval($rs->fields['gridimage_id'])."\n";
-	print "Label: ".htmlentities($rs->fields['name'])."\n";
-	print "Title: ".htmlentities($rs->fields['title'])."\n";
-	print "Image: ".$path."\n";
-
-	$response = callOpenRouter($prompt2, $user, 512, $aiModel); //so can specify max_toksn
-
-	print "RESPONSE: $response\n\n";
-
-		 if ($param['reason'] && !empty($GLOBALS['reasoning']))
-		         print "Reasoning: {$GLOBALS['reasoning']}\n";
-
-	$json = json_decode(trim($response,"`json \t\n\r"), TRUE);
-
-###################################################
-
-	if (!empty($json)) {
-		$updates = array();
-		$updates['reasoning'] = $json['reasoning'];
-		$updates['accuracy'] = $json['scores']['accuracy'];
-		$updates['prominence'] = $json['scores']['prominence'];
-		$updates['validity'] = $json['scores']['prominence'];
-		$updates['is_gold_standard'] = $json['is_gold_standard']?1:0;
-
-                $updates['gridimage_id'] = $rs->fields['gridimage_id'];
-                $updates['label'] = $rs->fields['name'];
-                $updates['ai_model'] = $aiModel;
-
-                 $db->Execute($sql = 'INSERT INTO '.$param['table'].' SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
-                          ' ON DUPLICATE KEY UPDATE `'.implode('` = ?,`',array_keys($updates)).'` = ?',
-                         array_merge(array_values($updates),array_values($updates))) or die("$sql\n\n".$db->ErrorMsg()."\n");
-	}
-
-###################################################
-
-        if ($param['direction'] == 'forward') {
-                $last_id = max($last_id, $rs->fields['gridimage_id']);
-        } else {
-                $last_id = min($last_id, $rs->fields['gridimage_id']);
-        }
-
-	print "\n\n".str_repeat('~',80)."\n\n";
-        $rs->MoveNext();
+$processor->setSaveDataCallback(function($json, $fields, $param) use ($db) {
+    if (empty($json)) {
+        return;
     }
 
-###################################################
+    $updates = array();
+    $updates['reasoning']        = $json['reasoning'] ?? '';
+    $updates['accuracy']         = $json['scores']['accuracy'] ?? 0;
+    $updates['prominence']       = $json['scores']['prominence'] ?? 0;
+    $updates['validity']         = $json['scores']['validity'] ?? 0;
+    $updates['is_gold_standard'] = !empty($json['is_gold_standard']) ? 1 : 0;
 
-                if (!empty($last_id)) {
-                        $db->Execute("INSERT INTO labeller_progress (model, last_id, direction) VALUES ('$model', $last_id, '{$param['direction']}')
-                                ON DUPLICATE KEY UPDATE last_id = VALUES(last_id)");
-                }
+    $updates['gridimage_id']     = $fields['gridimage_id'];
+    $updates['label']            = $fields['name'];
+    $updates['ai_model']         = $param['ai_model'];
+
+    $columns = array_keys($updates);
+    $sql = 'INSERT INTO ' . $param['table'] . ' SET `' . implode('` = ?,`', $columns) . '` = ?' .
+           ' ON DUPLICATE KEY UPDATE `' . implode('` = ?,`', $columns) . '` = ?';
+
+    $payload = array_merge(array_values($updates), array_values($updates));
+    $db->Execute($sql, $payload) or die("$sql\n\n" . $db->ErrorMsg() . "\n");
+});
+
+#########################################################
+// Run engine workflow pipeline
+
+$processor->run();
 

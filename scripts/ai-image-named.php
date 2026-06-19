@@ -12,8 +12,6 @@ require_once "geograph/llmbatchprocessor.class.php";
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-$param['clean_double'] = true; //special option as diffusion gemma sometimes double encoded the outer array! (only safe to use, if prompt DOESNT ask for doubel array)
-
 // Initialize the generalized handler
 $processor = new LLMBatchProcessor($db, $param, "name-extract", true);
 

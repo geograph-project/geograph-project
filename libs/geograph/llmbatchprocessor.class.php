@@ -78,10 +78,10 @@ class LLMBatchProcessor {
         }
 
         if ($this->params['direction'] == 'forward') {
-            if (!empty($last_id)) $where['last'] = "gridimage_id > " . intval($last_id);
+            if (!empty($last_id)) $where['last'] = "gi.gridimage_id > " . intval($last_id);
         }
         if ($this->params['direction'] == 'backward') {
-            if (!empty($last_id)) $where['last'] = "gridimage_id < " . intval($last_id);
+            if (!empty($last_id)) $where['last'] = "gi.gridimage_id < " . intval($last_id);
         }
 
         return $where ?: [1];
@@ -132,7 +132,18 @@ class LLMBatchProcessor {
         $path = '';
 
         while (!$rs->EOF) {
-            // 1. Core Image Handling Logic
+
+            // 1. First Callback: Format Text Context
+            $userTextContent = call_user_func($this->formatPromptCallback, $rs->fields);
+
+            // If the callback returns null, skip processing entirely for this record
+            if ($userTextContent === null) {
+                print "Skipping row: " . ($rs->fields['gridimage_id'] ?? $rs->fields['snippet_id'] ?? 'unknown') . " (skipped by callback)\n";
+                $rs->MoveNext();
+                continue;
+            }
+
+            // 2. Core Image Handling Logic
             if ($this->params['image_prompt']) {
                 $currentRowId = $rs->fields['gridimage_id'];
 
@@ -156,13 +167,8 @@ class LLMBatchProcessor {
                     }
                     $fetched_id = $currentRowId;
                 }
-            }
 
-            // 2. First Callback: Format Text Context
-            $userTextContent = call_user_func($this->formatPromptCallback, $rs->fields);
-
-            if ($this->params['image_prompt']) {
-                // Bundle Text with Image for Multi-modal LLM request format
+            // Bundle Text with Image for Multi-modal LLM request format
                 $userPromptPayload = [
                     ['type' => 'text', 'text' => $userTextContent],
                     ['type' => 'image_url', 'image_url' => ['url' => $path]]
@@ -173,7 +179,9 @@ class LLMBatchProcessor {
                 } else {
                     print "ID: {$currentRowId}\n";
                 }
+
             } else {
+            //otherwise just send the text content
                 $userPromptPayload = $userTextContent;
                 if (!empty($rs->fields['gridimage_id'])) {
                     print "ID: {$rs->fields['gridimage_id']}\n";
@@ -209,7 +217,7 @@ class LLMBatchProcessor {
             $json = json_decode(trim($response, "`json \t\n\r"), true);
 
             // 5. Second Callback: Process results & Save to DB
-            call_user_func($this->saveDataCallback, $json, $rs->fields, $this->params);
+            call_user_func($this->saveDataCallback, $json ?? $response, $rs->fields, $this->params);
 
             // Update local tracking variables safely if parsing sequentially
             if ($this->params['direction'] == 'forward') {
