@@ -1,12 +1,14 @@
 <?php
 
 //NOTE: This code was hardcoded to use openai/gpt-oss-120b
-//... but then openai/gpt-oss-safeguard-20b was released, which we want to try!
-//... so for now, the model override, is basic, and assumes openai for now!
-//... also no check is made to see if the model is available by each provider, (but know OpenRouter has the new model already)
-
+//... but then openai/gpt-oss-safeguard-20b was released, which we wanted to try!
+//... but then the number of models released exploded, so has grown a lot to add support range of models and providers
 
 ######################################
+
+// general calling function
+//... also NO check is made to see if the model is available by a provider (the caller, has to know which provider(s) to use for which)
+// but note in particular should use 'open' for 'gpt-oss-safeguard-20b' but will use backup via bedrock if getting rate-limited.
 
 function getLLMResponse($prompt, $user, $provider = 'cloudflare', $model = 'gpt-oss-120b', $max_tokens = 4096) {
 
@@ -293,9 +295,11 @@ function callOpenRouterKey($url = "https://openrouter.ai/api/v1/key") {
     }
 }
 
+######################################
+
 /**
  * Generates a unified embedding vector via OpenRouter's embeddings API.
- * Supports text-only, image-only, or combined multimodal inputs.
+ * Supports text-only, image-only, or combined multimodal inputs (using EmbeddingGamini 2 syntax!).
  *
  * @param array|string $input Configuration array or plain string.
  * @param string $model The OpenRouter model identifier.
@@ -303,11 +307,11 @@ function callOpenRouterKey($url = "https://openrouter.ai/api/v1/key") {
  * @return array The raw float array containing the vector.
  * @throws Exception If the cURL request fails or returns an error response.
  */
-function getEmbeddingViaOpenRouter($input, $model = 'google/gemini-embedding-2', $dimensions = 3072): array 
+function getEmbeddingViaOpenRouter($input, $model = 'google/gemini-embedding-2', $dimensions = 3072): array
 {
     global $CONF;
     $apiKey = $CONF['openrouter_api_key'] ?? '';
-    
+
     if (empty($apiKey)) {
         throw new Exception("OpenRouter API key is missing from configuration.");
     }
@@ -320,7 +324,7 @@ function getEmbeddingViaOpenRouter($input, $model = 'google/gemini-embedding-2',
             'type' => 'text',
             'text' => 'task: sentence similarity | query: ' . trim($input)
         ];
-    } 
+    }
     // Case 2: Structured array input
     elseif (is_array($input)) {
         $type = $input['type'] ?? 'document';
@@ -339,12 +343,12 @@ function getEmbeddingViaOpenRouter($input, $model = 'google/gemini-embedding-2',
         } else { // Defaults to 'document' ingestion style
             $title = $input['title'] ?? 'none';
             $text = $input['text'] ?? null;
-            
+
             $compiledText = "title: " . trim($title);
             if (!empty($text)) {
                 $compiledText .= " | text: " . trim($text);
             }
-            
+
             $structuredInput[] = [
                 'type' => 'text',
                 'text' => $compiledText
@@ -366,7 +370,7 @@ function getEmbeddingViaOpenRouter($input, $model = 'google/gemini-embedding-2',
         throw new Exception("The provided input yielded an empty payload.");
     }
 
-    // Double brackets around $structuredInput forces OpenRouter to pass 
+    // Double brackets around $structuredInput forces OpenRouter to pass
     // the text and image components together as ONE single item to embed.
     $payloadData = [
         'model' => $model,
@@ -374,13 +378,11 @@ function getEmbeddingViaOpenRouter($input, $model = 'google/gemini-embedding-2',
         'input' => [['content' => $structuredInput]]
     ];
 
-print_r($payloadData);
-
     $payload = json_encode($payloadData);
 
     // Prepare and execute the cURL request
     $ch = curl_init('https://openrouter.ai/api/v1/embeddings');
-    
+
     $headers = [
         'Authorization: Bearer ' . $apiKey,
         'Content-Type: application/json',
@@ -394,7 +396,7 @@ print_r($payloadData);
     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
     $response = curl_exec($ch);
-    
+
     if (curl_errno($ch)) {
         $errorMsg = curl_error($ch);
         curl_close($ch);
@@ -403,8 +405,6 @@ print_r($payloadData);
 
     $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-
-print_r($response);
 
     $responseData = json_decode($response, true);
 
@@ -435,7 +435,7 @@ function bedrockChat($systemPrompt, $userPrompt, $modelId, $region = 'eu-west-1'
 	if (!defined('QUIET'))
 	    print "Using Model $modelId (via bedrock-runtime.$region)\n";
 
-    $filesystem = new FileSystem();
+    $filesystem = new FileSystem(); //requied to get the STS token
     $host = "bedrock-runtime.$region.amazonaws.com";
     $method = "POST";
     $uri = "/model/$modelId/converse";
@@ -531,8 +531,6 @@ if (empty($reply)) {
 	print str_repeat('-',80)."\n";
 }
 
-
-
 	//this is our standard reply format...
     $GLOBALS['reasoning'] = $reasoning;
     return $reply;
@@ -604,9 +602,9 @@ function callNvidia($prompt, $user = null, $modelName = 'google/diffusiongemma-2
     }
 
 if (empty($responseData['choices'][0]['message']['content'])) {
-print str_repeat('-',80)."\n";
-print_r($response); print "\n";
-print str_repeat('-',80)."\n";
+    print str_repeat('-',80)."\n";
+    print_r($response); print "\n";
+    print str_repeat('-',80)."\n";
 }
 
 
@@ -686,10 +684,6 @@ function callLMStudio($prompt, $user = null, $modelName = 'gpt-oss-120b') {
     return null;
 }
 
-
-
-
-
 ######################################
 
 /**
@@ -726,7 +720,6 @@ function classify_tags_batch($tags, $provider = 'open', $print = false) {
 
 ################################
 
-
 function classify_query_batch($queries, $provider = 'open', $print = false, $model = 'gpt-oss-120b') {
 
     if (empty($queries)) {
@@ -749,6 +742,7 @@ function classify_query_batch($queries, $provider = 'open', $print = false, $mod
     return getLLMResponse($prompt, $user, $provider, $model);
 }
 
+################################
 
 /**
  * Fetches content from the r.jina.ai API for a given URL, handling
@@ -838,8 +832,6 @@ function fetchJinaContent(string $targetUrl): array
         'response_body' => $responseBody
     ];
 }
-
-
 
 #####################
 
