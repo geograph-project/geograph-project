@@ -8,16 +8,22 @@
 
 ######################################
 
-function getLLMResponse($prompt, $user, $provider = 'cloudflare', $model = 'gpt-oss-120b') {
+function getLLMResponse($prompt, $user, $provider = 'cloudflare', $model = 'gpt-oss-120b', $max_tokens = 4096) {
 
         if ($provider=='cloudflare') {
                 return callCloudflare($prompt, $user, $model);
 
-        } elseif ($provider=='open') {
-                return callOpenRouter($prompt, $user, /* $max_tokens = */ 2048*2, $model);
+        } elseif ($provider=='open' || $provider=='openrouter') {
+                return callOpenRouter($prompt, $user, $max_tokens, $model);
+
+        } elseif ($provider=='aws') {
+		return bedrockChat($prompt, $user, $model, $region = 'eu-west-1', $tier = 'flex'); //$CONF['s3_region']
 
         } elseif ($provider=='lmstudio') {
 		return callLMStudio($prompt, $user, $model);
+
+        } elseif ($provider=='nvidia') {
+		return callNvidia($prompt, $user, $model, $max_tokens);
 
         } else {
                 return getLLMLocalResponse($prompt, $user, /* $model = */ 'gemma270m'); //for now, doesnt support other models anyway!
@@ -162,10 +168,19 @@ function callOpenRouter($prompt, $user = null, $maxTokens = 2048, $model = 'gpt-
     global $CONF;
     $apiKey = $CONF['openrouter_api_key'];
 
-    $modelName = 'openai/'.$model; //currently assumes openai models!
+    if (strpos($model,'/') === FALSE) {
+	    $modelName = 'openai/'.$model; //currently assumes openai models!
+    } else {
+	    $modelName = $model;
+    }
 
-	if (!defined('QUIET'))
-	    print "Using Model $modelName (via OpenRouter)\n";
+	if (preg_match('/#(\w+)$/',$model, $m)) {
+		$reasoning = $m[1];
+		$modelName = preg_replace('/#(\w+)$/','',$modelName);
+	}
+
+    if (!defined('QUIET'))
+        print "Using Model $modelName (via OpenRouter)\n";
     $url = "https://openrouter.ai/api/v1/chat/completions";
 
     $messages = [
@@ -179,14 +194,25 @@ function callOpenRouter($prompt, $user = null, $maxTokens = 2048, $model = 'gpt-
 
     $data = [
         'model' => $modelName,
+        'service_tier' => 'flex',
         'messages' => $messages,
         'temperature' => 0.2, // Add optional parameters as needed
         'max_tokens' => $maxTokens,
         'provider' => [
            'sort' => 'price', //prioritize low prices, and not apply any load balancing
-	   'max_price' => ["prompt" => 0.2, "completion" => 0.49], //optimized for current prices for gpt-oss-120b,
         ],
     ];
+	//we can manually specify other models now!
+    if (strpos($modelName,'openai/') === 0) {
+        $data['provider']['max_price'] = ["prompt" => 0.2, "completion" => 0.49]; //optimized for current prices for gpt-oss-120b,
+    }
+    if (!empty($reasoning)) {
+        $data['reasoning'] = array(
+		'effort'=>$reasoning,
+		//'enabled'=> $reasoning != 'none'
+	);
+    }
+
     $payload = json_encode($data);
 
     $ch = curl_init();
@@ -204,12 +230,26 @@ function callOpenRouter($prompt, $user = null, $maxTokens = 2048, $model = 'gpt-
 
     $response = curl_exec($ch);
 
+//print_r($response);
+
     if (curl_errno($ch)) {
         echo 'cURL Error: ' . curl_error($ch);
         curl_close($ch);
         return null;
     } else {
         $responseData = json_decode($response, true);
+
+	if (!empty($responseData['error']['code']) && $responseData['error']['code'] != 200) {
+		//if ($responseData['error']['code'] == 429 && ... in fact might as well 'redirect' on any error...
+		if ($modelName == "openai/gpt-oss-safeguard-20b") { //&& provider==open :)
+			//we only have some models enabled on bedrock! But groq seems to have throtted on openrouter
+			return bedrockChat($prompt, $user, $modelName);
+		}
+		if ($responseData['error']['code'] == 402) { //insuffient credits
+			die("No Credits Left. Aborting\n"); //stop more loops!
+		}
+		sleep(5); //to otherwise slow down loops!
+	}
 
         if (isset($responseData['choices'][0]['message']['reasoning'])) {
 		$GLOBALS['reasoning'] = $responseData['choices'][0]['message']['reasoning'];
@@ -253,7 +293,334 @@ function callOpenRouterKey($url = "https://openrouter.ai/api/v1/key") {
     }
 }
 
+/**
+ * Generates a unified embedding vector via OpenRouter's embeddings API.
+ * Supports text-only, image-only, or combined multimodal inputs.
+ *
+ * @param array|string $input Configuration array or plain string.
+ * @param string $model The OpenRouter model identifier.
+ * @param int $dimensions The target dimensions for the vector.
+ * @return array The raw float array containing the vector.
+ * @throws Exception If the cURL request fails or returns an error response.
+ */
+function getEmbeddingViaOpenRouter($input, $model = 'google/gemini-embedding-2', $dimensions = 3072): array 
+{
+    global $CONF;
+    $apiKey = $CONF['openrouter_api_key'] ?? '';
+    
+    if (empty($apiKey)) {
+        throw new Exception("OpenRouter API key is missing from configuration.");
+    }
+
+    $structuredInput = [];
+
+    // Case 1: Plain string input
+    if (is_string($input)) {
+        $structuredInput[] = [
+            'type' => 'text',
+            'text' => 'task: sentence similarity | query: ' . trim($input)
+        ];
+    } 
+    // Case 2: Structured array input
+    elseif (is_array($input)) {
+        $type = $input['type'] ?? 'document';
+	if (empty($input['query'])) $type='query';
+
+        // 1. Process Text Context depending on the task intent
+        if ($type === 'query') {
+            //if no query, assumes must be providing image as the query!
+            $queryText = !empty($input['query']) ? trim($input['query']) : "Find the most relevant match for this asset";
+            if (!empty($queryText)) {
+                $structuredInput[] = [
+                    'type' => 'text',
+                    'text' => 'task: search result | query: ' . trim($queryText)
+                ];
+            }
+        } else { // Defaults to 'document' ingestion style
+            $title = $input['title'] ?? 'none';
+            $text = $input['text'] ?? null;
+            
+            $compiledText = "title: " . trim($title);
+            if (!empty($text)) {
+                $compiledText .= " | text: " . trim($text);
+            }
+            
+            $structuredInput[] = [
+                'type' => 'text',
+                'text' => $compiledText
+            ];
+        }
+
+        // 2. Process and append the image if it exists
+        if (!empty($input['image'])) {
+            $structuredInput[] = [
+                'type' => 'image_url',
+                'image_url' => [
+                    'url' => $input['image']
+                ]
+            ];
+        }
+    }
+
+    if (empty($structuredInput)) {
+        throw new Exception("The provided input yielded an empty payload.");
+    }
+
+    // Double brackets around $structuredInput forces OpenRouter to pass 
+    // the text and image components together as ONE single item to embed.
+    $payloadData = [
+        'model' => $model,
+        'dimensions' => $dimensions,
+        'input' => [['content' => $structuredInput]]
+    ];
+
+print_r($payloadData);
+
+    $payload = json_encode($payloadData);
+
+    // Prepare and execute the cURL request
+    $ch = curl_init('https://openrouter.ai/api/v1/embeddings');
+    
+    $headers = [
+        'Authorization: Bearer ' . $apiKey,
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($payload)
+    ];
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+    $response = curl_exec($ch);
+    
+    if (curl_errno($ch)) {
+        $errorMsg = curl_error($ch);
+        curl_close($ch);
+        throw new Exception("cURL error occurred: " . $errorMsg);
+    }
+
+    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+print_r($response);
+
+    $responseData = json_decode($response, true);
+
+    if ($statusCode !== 200) {
+        $apiError = $responseData['error']['message'] ?? 'Unknown OpenRouter Error';
+        throw new Exception("OpenRouter API returned HTTP {$statusCode}: {$apiError}");
+    }
+
+    // Dig into OpenAI style data arrays to pluck out the float vector
+    if (!isset($responseData['data'][0]['embedding'])) {
+        throw new Exception("Failed to retrieve embedding vector from response structure.");
+    }
+
+    return $responseData['data'][0]['embedding'];
+}
+
 ######################################
+
+function bedrockChat($systemPrompt, $userPrompt, $modelId, $region = 'eu-west-1', $tier = 'flex') {
+
+	//openai.gpt-oss-safeguard-20b
+    if (strpos($modelId,'/') === FALSE) {
+	    $modelId = 'openai.'.$modelId; //currently assumes openai models!
+    } else {
+	    $modelId = str_replace('/','.',$modelId);
+    }
+
+	if (!defined('QUIET'))
+	    print "Using Model $modelId (via bedrock-runtime.$region)\n";
+
+    $filesystem = new FileSystem();
+    $host = "bedrock-runtime.$region.amazonaws.com";
+    $method = "POST";
+    $uri = "/model/$modelId/converse";
+
+    // Build the payload
+    $payload = [
+        "system" => [["text" => $systemPrompt]],
+        "messages" => [
+            [
+                "role" => "user",
+                "content" => [["text" => $userPrompt]]
+            ]
+        ],
+        "inferenceConfig" => [
+            "maxTokens" => 2048*2,
+            "temperature" => 0.2
+        ]
+    ];
+
+    // Add the Service Tier parameter
+    // Valid values: 'flex', 'priority', 'default'
+    if ($tier !== 'default') {
+        $payload["serviceTier"] = ["type" => $tier];
+    }
+
+    $data = json_encode($payload);
+
+    $amzHeaders = [
+        "X-Amz-Security-Token" => S3::$securityToken,
+        "Content-Type" => "application/json"
+    ];
+
+    $otherHeaders = [
+        "Host" => $host,
+        "Date" => gmdate('D, d M Y H:i:s T'),
+    ];
+
+    // Sign the request
+    $newHeaders = $filesystem->__getSignatureV4(
+        $amzHeaders,
+        $otherHeaders,
+        $method,
+        $uri,
+        $data,
+        'bedrock'
+    );
+
+    $headers = [];
+    foreach (array_merge($amzHeaders, $otherHeaders, $newHeaders) as $k => $v) {
+        $headers[] = "$k: $v";
+    }
+
+    $ch = curl_init("https://$host$uri");
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+
+    curl_setopt($ch, CURLOPT_TIMEOUT, 180); // particully as 'flex', could be slow!
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode !== 200) {
+print_r($response);
+
+        throw new Exception("Bedrock Error ($httpCode): " . $response);
+    }
+
+    $result = json_decode($response, true);
+
+// Extracting the reply and reasoning
+    // Note: 'reasoning' is returned if the model supports "Thinking/Reasoning" blocks
+    $reply = $result['output']['message']['content'][0]['text'] ?? '';
+    
+    // Look for reasoning content if available (specific to "Thinking" models)
+    $reasoning = null;
+    foreach ($result['output']['message']['content'] as $part) {
+	// Check for the actual response text (might not of been at 0)
+        if (isset($part['text'])) {
+            $reply = $part['text'];
+        }
+        if (isset($part['reasoningContent']['text'])) {
+            $reasoning = $part['reasoningContent']['text'];
+            break;
+        }
+    }
+
+if (empty($reply)) {
+	print str_repeat('-',80)."\n";
+	print $response."\n";
+	print str_repeat('-',80)."\n";
+}
+
+
+
+	//this is our standard reply format...
+    $GLOBALS['reasoning'] = $reasoning;
+    return $reply;
+
+
+    return [
+        'reply' => $reply,
+        'reasoning' => $reasoning
+    ];
+
+    return json_decode($response, true);
+}
+
+######################################
+
+function callNvidia($prompt, $user = null, $modelName = 'google/diffusiongemma-26b-a4b-it', $max_tokens = 4096) {
+    $url = "https://integrate.api.nvidia.com/v1/chat/completions";
+
+    global $CONF;
+    echo "Using $modelName at {$url}\n";
+
+    // Build the messages array for the OpenAI-compatible API
+    $messages = [
+        ['role' => 'system', 'content' => $prompt],
+        ['role' => 'user', 'content' => $user]
+    ];
+
+    $payload = json_encode([
+        'model' => $modelName,
+        'messages' => $messages,
+	'max_tokens' => $max_tokens,
+        'temperature' => 0.2, // You can adjust this value
+        'stream' => false
+    ]);
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    $headers = [
+        'Authorization: Bearer '.$CONF['nvidia_api_key'],
+        'Accept: application/json',
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($payload)
+    ];
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        echo 'cURL Error: ' . curl_error($ch);
+        curl_close($ch);
+        return null;
+    }
+
+    $responseData = json_decode($response, true);
+    curl_close($ch);
+
+	if (!empty($responseData['status']) && $responseData['status'] == 429) {
+		print("Error: ".$responseData['title']."\n\n");
+		return $responseData['status'];
+	}
+
+    // Check for errors in the API response
+    if (isset($responseData['error'])) {
+        error_log("API Error: " . $responseData['error']['message']);
+        return null;
+    }
+
+if (empty($responseData['choices'][0]['message']['content'])) {
+print str_repeat('-',80)."\n";
+print_r($response); print "\n";
+print str_repeat('-',80)."\n";
+}
+
+
+    // Extract the generated text from the OpenAI-compatible response format
+    if (isset($responseData['choices'][0]['message']['content'])) {
+        return $responseData['choices'][0]['message']['content'];
+    }
+
+    return null;
+}
+
+
+######################################
+
 
 /**
  * Calls the local LM Studio API to run an LLM.
@@ -337,82 +704,20 @@ function classify_tags_batch($tags, $provider = 'open', $print = false) {
         return [];
     }
 
-    // Define few-shot examples and classification rules for the LLM prompt.
-    $prompt_examples = [
-        ["tag" => "London", "class" => "[named-place]"],
-        ["tag" => "South Downs Way", "class" => "[named-path]"],
-        ["tag" => "National Cycle Route 5", "class" => "[named-cyclepath]"],
-        ["tag" => "St Peters Church", "class" => "[named-poi]"],
-        ["tag" => "View to Nant Gwrtheyrn", "class" => "[related-to]"],
-        ["tag" => "Lake District National Park", "class" => "[named-area]"],
-        ["tag" => "York Street (Belfast)", "class" => "[named-feature]"],
-        ["tag" => "place:Frinkley Lane", "class" => "[named-feature]"],
-        ["tag" => "Meredith", "class" => "[named-person]"],
-        ["tag" => "Bayliss Engine", "class" => "[branded-object]"],
-        ["tag" => "Art-Deco", "class" => "[architectural-style]"],
-        ["tag" => "petrifying well", "class" => "[geographical]"],
-        ["tag" => "farm", "class" => "[geographical]"],
-        ["tag" => "hotel", "class" => "[geographical]"],
-        ["tag" => "national park", "class" => "[geographical]"],
-        ["tag" => "greenspace", "class" => "[geographical]"],
-        ["tag" => "Steam Engine", "class" => "[object]"],
-        ["tag" => "cart", "class" => "[object]"],
-        ["tag" => "flower", "class" => "[object]"],
-        ["tag" => "autumn", "class" => "[temporal]"],
-        ["tag" => "snowscene", "class" => "[temporal]"],
-        ["tag" => "sunset", "class" => "[temporal]"],
-        ["tag" => "1978", "class" => "[date]"],
-        ["tag" => "nudists", "class" => "[unsafe]"],
-        ["tag" => "close", "class" => "[ambiguous]"],
-        ["tag" => "Bunn s Lane footpath", "class" => "[typo]"],
-        ["tag" => "fly tipping", "class" => "[other]"],
-    ];
-
-    // Build the prompt string for the LLM.
-    $prompt = "You are a professional tag classifier. Your task is to classify a list of given tags into one of the following categories:\n\n";
-    $prompt .= "- [unsafe]: Potentially sensitive, or not suitable for children and/or specifically adult themed (This category overrules others).\n";
-    $prompt .= "- [named-place]: An actual, named settlement or place (not named road, even if in a specific place).\n";
-    $prompt .= "- [named-feature]: A named feature like a river, lake, road, or hill.\n";
-    $prompt .= "- [named-path]: A specific, named walking path.\n";
-    $prompt .= "- [named-cyclepath]: A numbered or named cycle route.\n";
-    $prompt .= "- [named-area]: A named area, national park, SSNI or similar.\n";
-    $prompt .= "- [named-poi]: A specific named building, company, or point of interest (e.g., 'St Peters Church', **not** general 'farm' or 'hotel').\n";
-    $prompt .= "- [named-person]: The tag refers to a specific person, e.g. architect.\n";
-    $prompt .= "- [architectural-style]: The tag refers to a specifically named architectural style or period.\n";
-    $prompt .= "- [related-to]: A tag that notes a **named** place/feature but is not the place itself.\n";
-    $prompt .= "- [event]: The tag relates to a specific event (e.g. 'Geograph Meetup').\n";
-    $prompt .= "- [geographical]: A general geographical term or feature that is not a named place.\n";
-    $prompt .= "- [branded-object]: A specicaly named branded object, that mentions a company or similar brand.\n";
-    $prompt .= "- [object]: A movable object, or item not tied to specific location.\n";
-    $prompt .= "- [date]: The tag appears to be a specific date or year.\n";
-    $prompt .= "- [temporal]: The tag relates to a time, period, season or weather condition. When the photo taken, other than a specific date.\n";
-    $prompt .= "- [ambiguous]: Could mean different things depending on context (tag alone does not indentify what it represents).\n";
-    $prompt .= "- [typo]: Looks like the tag contains a typo or spelling mistake (This category overrules others).\n";
-    $prompt .= "- [other]: Anything else that doesn't fit the above categories.\n\n";
-    $prompt .= "The capitalization of the tag is not definitive, not all named entities are capitalized.\n\n";
-    $prompt .= "Here are some examples of tag classifications:\n";
-    foreach ($prompt_examples as $example) {
-        $prompt .= "Tag: \"{$example['tag']}\", class: \"{$example['class']}\"\n";
-    }
-
-    $prompt .= "You can ignore a 'place:' prefix on a tag, and still try to classify as you otherwise would. The user may not been very precise, and included the prefix on different types of tag.\n";
+    //we've moved the prompt library into the database (for better version tracking)
+    $prompt = get_ai_prompt("tag-classification");
 
 //if ($param['provider']=='open')
 //	$prompt .= 'Provide your reasoning in a brief, one-sentence summary.\n\n';
+// (was an experiment to see if could shorten the reasoning)
 
-//Todo (need testing!) but perhaps could try JSON Lines, to be less fragile in decoding.
-//"Your response must be a series of JSON objects, one per line, conforming to this schema: { "tag": "string", "class": "string" }. Do not include any other text, comments, or explanations before or after the JSON."
-
-
-    $prompt .= 'Your response must be a single JSON array, conforming to this schema: [ { "tag": "string", "class": "string" } ].
-Do not include any other text, comments, or explanations before or after the JSON.'."\n";
     $user = "Tags to classify:\n";
     foreach ($tags as $tag_item) {
         $user .= "- \"{$tag_item['tag']}\"\n";
     }
 
     if (!empty($print)) {
-        print "$prompt$user\n";
+        print "$prompt\n$user\n";
         exit;
     }
 
@@ -422,93 +727,18 @@ Do not include any other text, comments, or explanations before or after the JSO
 ################################
 
 
-function classify_query_batch($queries, $provider = 'open', $print = false) {
+function classify_query_batch($queries, $provider = 'open', $print = false, $model = 'gpt-oss-120b') {
 
     if (empty($queries)) {
         return [];
     }
 
-$prompt = <<<'EOD'
-You are a professional classifier. Your task is to classify a list of given search queries with one or more of the following labels:
-
-- [branded]: specifically mentions geograph project by name.
-- [navigational]: they likly looking for a webpage, not content directly, example 'geograph search' is looking for search page, rather than content from geograph.
-- [location]: appears to be looking for a specific location, rather than actual photos (eg "wembley stadium postcode" or "directions to ...").
-
-- [named-place]: they are likly looking for a specific named place (ie singular place that that could be identified on a map).
-- [named-feature]: A named natural feature like a river, lake, or hill.
-- [named-area]: they are likly looking for a specific named area (like a county, island, national park, or similar, could be informal area/region like "southern england").
-- [named-poi]: they are looking (for images of) a specific named point of interest (that is not a settlement), eg a castle, church or specific road.
-- [named-path]: A specific, named walking path.
-- [named-cyclepath]: A numbered or named cycle route.
-
-- [something]: they are looking for something (could be that looking for something at a place (like "loch aslaich bothy" is looking for "bothy" at "loch aslaich") - or just looking for soemthing in general (for example "bridges" is an item).
-- [item-at-location]: looking for a specific something in a specific place.
-
-- [named-person]: looking for photos related to a specific named person like an artitect.
-- [photographer]: looking for photos taken by a specific named contributor/photographer.
-- [event]: photos related to specific event like a social gathering, meet, or other named event.
-- [temporal]: looking for images on some data based criteral (like a specific year, or season, or historic/older images).
-- [weather]: looking for images in speciifc weather condistions (eg snow, fog, rain etc)
-- [mapped-feature]: looking for a something what likly is marked on maps (eg looking for cliffs in general).
-- [architectural-style]: refers to a specifically named architectural style or period.
-
-- [unsafe]: Potentially sensitive, or not suitable for children and/or specifically adult themed. Might provide misleading results (because the actual images have already been moderated, so dont have any unsafe images, but the query could still provide unsafe results.
-- [extra-words]: contains word(s) that don't contribute to meaning (ie the site is specifically listing photos, so in query like "photos of llandudno", the  "photos" and "of" are extra words, and hence wouldnt actulyl be needed to by the search engine).
-- [ambiguous]: Could mean different things depending on context (query alone does not indentify what it really looking for).
-- [typo]: Looks like the query contains a typo or spelling mistake.
-- [other]: Anything else that doesn't fit the above categories.
-
-Here are some examples of labels:
-[
-	{"query":"geograph", "labels":["branded","navigational"]},
-	{"query":"forest lodge windsor great park", "labels":["named-poi","named-area"]},
-	{"query":"forest lodge windsor", "labels":["named-poi","named-place"]},
-	{"query":"geograph uk", "labels":["branded","navigational"]},
-	{"query":"jeremy beadle grave", "labels":["named-person","specific-item"]},
-	{"query":"east gate piece hall", "labels":["named-poi","named-place"]},
-	{"query":"frogs end farm hargrave", "labels":["named-poi","named-place"]},
-	{"query":"river witham", "labels":["named-feature"]},
-	{"query":"aldi galashiels", "labels":["named-poi","named-place"]},
-	{"query":"photos by ben brooksbank", "labels":["photographer","extra-words"]},
-	{"query":"rivers beginning with a", "labels":["navigational","other"]},
-        {"query":"limestone outcrop", "labels":["specific-item"]},
-	{"query":"house of gray dundee", "labels":["named-poi","named-place"]},
-	{"query":"ore stone", "labels":["specific-item"]},
-	{"query":"great wall of deerness", "labels":["named-poi","named-place"]},
-	{"query":"gate 4 principality stadium", "labels":["named-poi","named-place","specific-item"]},
-	{"query":"strangers gate norwich", "labels":["named-poi","named-place","item-at-location"]},
-	{"query":"peakirk wildlife park", "labels":["named-poi","named-place"]},
-	{"query":"bridleway", "labels":["something","map-feature"]},
-	{"query":"capel egryn", "labels":["named-poi"]},
-	{"query":"winter photos", "labels":["temporal","extra-words"]},
-	{"query":"captains pool kidderminster", "labels":["named-feature","named-place"]},
-	{"query":"birchen clough bridge car park", "labels":["named-poi","named-place"]}
-]
-
-Your response must be a single JSON array, conforming to this schema:
-{
-  "type":"array",
-  "items":{
-    "type":"object",
-    "properties":{
-      "query": {"type":"string", "description":"The search query"},
-      "labels": {"type":"array", "minItems":1, "items":{"type":"string"}, "description":"A list of labels associated with the query"}
-    },
-    "required":[
-      "query",
-      "labels"
-    ]
-  }
-}
-
-Do not include any other text, comments, or explanations before or after the JSON.
-
-EOD;
+	//we've moved the prompt library into the database (for better version tracking)
+    $prompt = get_ai_prompt("classify-query");
 
     $user = "Queries to classify:\n";
     foreach ($queries as $item) {
-        $user .= "- \"{$item['query']}\"\n";
+        $user .= "- ".json_encode($item['query'])."\n";
     }
 
     if (!empty($print)) {
@@ -516,7 +746,7 @@ EOD;
         exit;
     }
 
-    return getLLMResponse($prompt, $user, $provider);
+    return getLLMResponse($prompt, $user, $provider, $model);
 }
 
 
@@ -609,3 +839,41 @@ function fetchJinaContent(string $targetUrl): array
     ];
 }
 
+
+
+#####################
+
+function get_ai_prompt($prompt_name) {
+	global $db;
+	if (empty($db))
+		$db = GeographDatabaseConnection(true);
+	//todo, this is where could insert example if needed!
+	return $db->getOne("SELECT content FROM ai_prompt WHERE active=1 AND prompt_name = ".$db->Quote($prompt_name));
+}
+
+function save_user_prompt($prompt_name, $user, $example = '') {
+	global $db;
+	if (empty($db) || !empty($db->readonly))
+		$db = GeographDatabaseConnection(false);
+	$row = $db->getRow("SELECT * FROM ai_prompt WHERE active=1 AND prompt_name = ".$db->Quote($prompt_name));
+	$column = null;
+	$i = 1;
+	while(!empty($row['user'.$i]))
+		$i++;
+	if (array_key_exists('user'.$i, $row)) { //isset wont 'see' null!
+		if (is_array($user))
+			$user = json_encode($user);
+
+		$updates = array();
+		$updates['user'.$i] = $user;
+		if (!empty($example) && empty($row['example'])) {
+			if (is_array($example))
+	                        $example = json_encode($example);
+			$updates['example'] = $example;
+		}
+
+		$update = "UPDATE ai_prompt SET `".implode('` = ?,`',array_keys($updates))."` = ? WHERE active=1 AND prompt_name = ".$db->Quote($prompt_name);
+		$db->Execute($update, array_values($updates));
+		print "Saved to user$i on $prompt_name.\n";
+	}
+}
