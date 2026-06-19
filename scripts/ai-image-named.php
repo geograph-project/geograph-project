@@ -1,7 +1,7 @@
 <?php
 
 // Script parameters
-$param = array('batch' => 10, 'print' => true, 'provider'=>'open', 'loops'=>10, 'direction'=>'forward', 'shard'=>false,
+$param = array('batch' => 10, 'print' => true, 'provider'=>'open', 'loops'=>10, 'direction'=>'forward', 'shard'=>false, 'max_tokens'=>2048*2,
 		'table' => "gridimage_named", 'reason'=>false, 'ai_model'=>'google/gemma-4-26b-a4b-it', 'save'=>false, 'encode'=>false, 'sleep'=>false);
 
 chdir(__DIR__);
