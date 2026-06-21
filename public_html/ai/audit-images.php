@@ -99,7 +99,8 @@ $sql = "SELECT gi.gridimage_id, gi.user_id, gi.title, gi.grid_reference, gi.real
         FROM gridimage_search gi
         LEFT JOIN gridimage_audit a ON (a.gridimage_id = gi.gridimage_id AND a.type = ? AND a.user_id = ?)
         WHERE a.user_id IS NULL
-        AND gi.grid_reference = ? 
+        AND gi.grid_reference = ?
+	ORDER BY gi.gridimage_id DESC
         LIMIT 1";
 
 $row = $db->getRow($sql, [$type, $user_id, $gridref]);
@@ -111,8 +112,29 @@ if (!$row) {
     exit;
 }
 
-$image = new GridImage();
-$image->fastInit($row);
+//$image = new GridImage();
+//$image->fastInit($row);
+
+//turns out the lat/long in gs is not reliable, for now compute it fresh..
+
+        $image = new Gridimage($row['gridimage_id']); //we DONT use fastInit because want the full object that will load location fom 'gridimage' NOT using 'gridimage_saerch'
+
+	require_once('geograph/conversions.class.php');
+	$conv = new Conversions;
+
+	#############################
+
+        //this is now updateCachedTables does it
+        $square = $image->grid_square;
+
+                        if ($square->nateastings) { //NOTE, nateastings is unsigned, so rockall fails eastings is stored as 0!
+                                list($lat,$long) = $conv->national_to_wgs84($square->nateastings,$square->natnorthings,$square->reference_index);
+                        } else {
+                                list($lat,$long) = $conv->internal_to_wgs84($square->x,$square->y,$square->reference_index);
+                        }
+	$row['wgs84_lat'] = $lat;
+	$row['wgs84_long'] = $long;
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
