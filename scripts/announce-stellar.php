@@ -44,7 +44,7 @@ if (!$db->getOne("SHOW TABLES LIKE 'gridimage_score_daily'"))
 $db->Execute("select @max := max(gridimage_id) from gridimage_score_daily");
 $db->Execute("insert ignore into gridimage_score_daily (submitted,gridimage_id,count)
 select date(submitted) as submitted,gridimage_id,count(*) as count from  gridimage_score s inner join gridimage_search using (gridimage_id)
- where s.model = 'sds1' AND s.score=10 and gridimage_id > @max and submitted < date_sub(now(),interval 2 day) group by substring(submitted,1,10)");
+ where s.model = 'sds1' AND s.score=10 and gridimage_id > @max and submitted < date_sub(now(),interval 2 day) and user_id NOT in (124913) group by substring(submitted,1,10)");
 
 ############################################
 
