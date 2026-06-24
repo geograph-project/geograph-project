@@ -1336,8 +1336,9 @@ function orientationChanged() {
 
 {if !$inner}
 		<hr>
+		<div style="padding:5px; background-color:#fbf9de;">
 		<b>Recommended for Mobile</b>: For the best experience, use our new dedicated <a href="/help/app">Geograph App</a>.
-		<br><br><hr> 
+		</div><br><hr> 
 
 		<a href="?redir=false">Choose different Submission Process</a>
 
