@@ -179,7 +179,7 @@
 				<br/><span class="formerror">{$error.subject}</span>
 			{/if}<br/>
 			&nbsp;<select id="subject" name="subject" style="width:300px">
-				<option value="">select...</option>
+				<option value="">&middot; select...</option>
 				{html_options options=$subjects selected=$subject}
 			</select>
 			<div style="font-size:0.7em">The Subject is a special type of tag, used to highlight the primary subject of the photo</div>

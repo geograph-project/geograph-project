@@ -89,7 +89,8 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
         		//save the first!
                 if (!topSuggestion && suggestion.score > 0.2) topSuggestion = suggestion.label;
 
-                option.textContent = `${suggestion.label} (${Math.round(suggestion.score * 100)}%)`;
+		//add the middot, so doesnt interfere with typing
+                option.textContent = `\u00B7 ${suggestion.label} (${Math.round(suggestion.score * 100)}%)`;
 
                 aiOptGroup.appendChild(option);
             }
@@ -105,11 +106,12 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
             }
 
             if (topSuggestion && subjectSelect.selectedIndex !== -1) {
+		//find the blank option, not nesserially the first, the dropdown can contain a empty subject which gets 'selected' as current value.
                 const currentOption = subjectSelect.options[subjectSelect.selectedIndex];
 
                 // Double-check it's an empty option so we don't overwrite an existing selection
                 if (currentOption.value === "") {
-                    const updatedText = `select subject... (top suggestion: ${topSuggestion})`;
+                    const updatedText = `\u00B7 select subject... (top suggestion: ${topSuggestion})`;
 
                     currentOption.textContent = updatedText;
 
@@ -139,7 +141,7 @@ async function fetchAndProcessSuggestions(transferId, title = '') {
                     }
                     
                     // Strip the trailing space and percentage (e.g., " " followed by "(85%)")
-                    selectedOption.textContent = selectedOption.textContent.replace(/\s+\(\d+[\.\d]*%\)/, '');
+                    selectedOption.textContent = selectedOption.textContent.replace(/\s+\(\d+[\.\d]*%\)/, '').replace(/^\s*\u00B7\s*/, '');
                 }
             });
         }

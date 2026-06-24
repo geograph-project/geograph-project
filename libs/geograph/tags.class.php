@@ -332,7 +332,7 @@ class Tags
 	function assignSubjectSmarty($smarty, $name = 'subjects') {
 		$db = $this->_getDB(true);
 
-		$subjects = $db->getCol("SELECT LOWER(subject) AS subject FROM subjects ORDER BY subject");
+		$subjects = $db->getCol("SELECT LOWER(subject) AS subject FROM subjects WHERE subject != '' ORDER BY subject");
 
 		$smarty->assign($name, array_combine($subjects,$subjects) );
 	}
