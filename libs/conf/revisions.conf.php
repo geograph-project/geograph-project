@@ -155,6 +155,6 @@ $REVISIONS['/curated/automated.js']=27367734;
 $REVISIONS['/js/vector.class.js']=67855777;
 $REVISIONS['/js/company-message.js']=63039136;
 $REVISIONS['/app/js/suggestions.libs.js']=59650308;
-$REVISIONS['/js/submit-suggestions.js']=93679344;
+$REVISIONS['/js/submit-suggestions.js']=53834762;
 $REVISIONS['/challanged.html']=1234;
 ?>
