@@ -2,21 +2,58 @@
 
 require_once 'geograph/global.inc.php';
 
-
 // Get a database connection
 $db = GeographDatabaseConnection();
 
+#################################################################
+
 $model = 'clip';
-if (!empty($_GET['model']) && preg_match('/^\w+$/',$_GET['model']))
-	$model = $_GET['model'];
+if (!empty($_GET['model']) && preg_match('/^\w+\-?\w*$/',$_GET['model']))
+        $model = $_GET['model'];
 
-// Fetch daily stats
-$dailyStatsQuery = "SELECT `day`, `count` FROM `embedding_progress_$model` ORDER BY `day`";
+if ($model == 'named') {
+	//no material view yet!
+	$dailyStatsQuery = "select date(updated) as day,count(distinct gridimage_id) as count from gridimage_named group by date(updated)";
+	$totalImagesQuery = "SELECT `images` FROM `user_stat` WHERE `user_id` = 3101"; //not perfect!
+
+} elseif ($model == 'sd-match') {
+	//not purfect, as processing may span, but using last is a good for quick overview!
+	$dailyStatsQuery = "select date(last) as day,count(snippet_id) as count from snippet_judge_done group by date(last)";
+	$totalImagesQuery = "SELECT COUNT(*) FROM snippet_stat st WHERE st.last > 8000000"; //conctnrate on recently used SDs
+
+} elseif ($model == 'sd-class') {
+
+	$dailyStatsQuery = "select date(updated) as day,count(*) as count from snippet_class group by date(updated)";
+	$totalImagesQuery = "SELECT COUNT(*) FROM snippet_stat st WHERE st.last > 7900000"; //conctnrate on recently used SDs
+
+} elseif ($model == 'edu') {
+
+	$dailyStatsQuery = "select date(updated) as day,count(*) as count from curated_judge group by date(updated)";
+	$totalImagesQuery = "SELECT COUNT(*) FROM curated1 WHERE cosine IS NOT NULL AND gen > 0";
+
+} else {
+	$dailyStatsQuery = "SELECT `day`, `count` FROM `embedding_progress_$model` ORDER BY `day`";
+	$totalImagesQuery = "SELECT `images` FROM `user_stat` WHERE `user_id` = 0";
+}
+
 $dailyStats = $db->GetAll($dailyStatsQuery);
-
-// Fetch total images
-$totalImagesQuery = "SELECT `images` FROM `user_stat` WHERE `user_id` = 0";
 $totalImages = $db->GetOne($totalImagesQuery);
+
+
+#################################################################
+
+$models = array('sd-match');
+
+print "<form method=get>";
+foreach($db->getCol("show tables like 'embedding_progress%'") as $table)
+	if (!strpos($table,'old') && !strpos($table,'_by_id'))
+		$models[] = str_replace('embedding_progress_','',$table);
+print "<select name=model onchange=this.form.submit()><option>";
+foreach($models as $m)
+	printf('<option value="%s"%s>%s</option>',$m,($model==$m)?' selected':'',$m);
+print "</select></form>";
+
+#################################################################
 
 // Process data
 $labels = [];
@@ -85,9 +122,7 @@ if ($n > 1) {
     <div style="width: 80%; margin: auto;">
         <canvas id="progressChart"></canvas>
     </div>
-    <p>Total Images Processed: <?php echo number_format($cumulativeTotal); ?></p>
-    <p>Total Images to Process: <?php echo number_format($totalImages); ?></p>
-    <p>Percentage Complete: <?php echo round(($cumulativeTotal / $totalImages) * 100, 2); ?>%</p>
+    <p>Total Processed: <big><?php echo number_format($cumulativeTotal); ?></big> / <?php echo number_format($totalImages); ?> or <b> <?php echo round(($cumulativeTotal / $totalImages) * 100, 2); ?>%</b></p>
     <p>Predicted Completion Date: <?php echo $completionDateStr; ?></p>
 
     <script>
