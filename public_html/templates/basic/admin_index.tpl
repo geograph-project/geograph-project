@@ -60,9 +60,9 @@
 	<b>Map-fixing in Progress</b> - please come back later.<br/>
 	{else}>{/if}
 
-	<form method="get" action="http://{$http_host}/admin/mapfixer.php" style="display:inline">
+	<form method="get" action="/admin/mapfixer.php" style="display:inline">
 
-	<a title="Map Fixer" href="http://{$http_host}/admin/mapfixer.php">Map Fixer</a>: <label for="gridref">Grid Reference:</label>
+	<a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a>: <label for="gridref">Grid Reference:</label>
 	<input type="text" size="6" name="gridref" id="gridref" value="{$gridref|escape:'html'}"/>
 	<span class="formerror">{$gridref_error}</span>
 	<input type="submit" name="show" value="Check"/> or <a href="/mapfixer.php">add to queue</a><br/>
