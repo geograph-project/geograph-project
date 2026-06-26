@@ -99,10 +99,21 @@ if (!empty($_REQUEST['scout'])) { // so works as a GET :)
 	$where[] = "(".implode(' OR ',$crit).")";
 
 	//$squares will be used to filter geographically - will be running one SQL query per sequare anyway!
-	if (!empty($_REQUEST['squares']))
-		foreach(preg_split('/[\s,;\.-]/',trim($_REQUEST['squares'])) as $square)
-			if (preg_match('/^([A-Za-z]{1,2})(\d{2})?/',$square))
+	if (!empty($_REQUEST['squares'])) {
+		if (preg_match('/^([A-Za-z]{1,2})(\d{4})$/',$_REQUEST['squares'])) {
+			$square=new GridSquare;
+			if ($square->setByFullGridRef($_REQUEST['squares'])) {
+				$x = $square->x;
+				$y = $square->y;
+
+				$squares = $db->getCol("SELECT hectad FROM hectad_stat WHERE x between $x-18 and $x+18 AND y between $y-18 and $y+18 LIMIT 10");
+			}
+
+		} else foreach(preg_split('/[\s,;\.-]/',trim($_REQUEST['squares'])) as $square)
+			if (preg_match('/^([A-Za-z]{1,2})(\d{2})?$/',$square))
 				$squares[] = strtoupper($square);
+	}
+
 	if (empty($squares)) {
 		die("Need to specify square(s)\n");
 	} elseif (count($squares)>10)

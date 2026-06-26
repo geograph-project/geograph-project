@@ -171,15 +171,17 @@
           name="squares" 
           size=40
 	  placeholder="eg: TQ,TV,SZ,SU"
-          {literal}pattern="^[A-Z]{1,2}(\d{2}|)([\s ;,]+[A-Z]{1,2}(\d{2}|))*$" {/literal}
+          {literal}pattern="^([A-Z]{1,2}\d{4}|[A-Z]{1,2}(\d{2}|)([\s,;\.-]+[A-Z]{1,2}(\d{2}|))*)$"{/literal}
           title="Please enter up to 10 valid Myriad or Hectad codes separated by spaces, commas, or semicolons."
           required
         >
+	<p>
+	or can provide a <b>single</b> 4 fig GR to receive the 9 <i>hectad</i> grid.
       </fieldset>
 
       <button type="submit" onclick="handleGPXSubmit(event, this)">Download Scout GPX file...</button>
 
-	Reminder: can be upto 10,000 squares per myriad, so this can produce VERY large files. Make sure your software can safely load large files.<hr>
+	<p>Reminder: can be upto 10,000 squares per myriad, so this can produce VERY large files. Make sure your software can safely load large files.<hr>
 	For most contributors the 'Personal Available' will be the largest layer; if the file is too large inverting to get your DONE squares instead, will typicall be a much smaller file.
 
     </form>
