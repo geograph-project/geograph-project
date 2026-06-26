@@ -68,8 +68,6 @@ where parent_link_id = 0   AND  url like '%maps%.kml%' AND next_check < '9999-00
 
 $offset = (!empty($param['offset']))?intval($param['offset']).",":'';
 
-$domains = array("http://www.geograph.org.uk/","https://www.geograph.org.uk/","http://www.geograph.ie/","https://www.geograph.ie/");
-
 $where = array();
 $where[] = 'parent_link_id = 0';
 if (!empty($param['force']))
@@ -79,13 +77,13 @@ else
 
 
 if ($param['mode'] == 'geograph') {
-	//we dont normally do geograph links,as links-3B-check-geograph.php is more efficient, but we CAN do them to catch stragglers
-	$where[] = "(url like '".implode("%' OR url like '",$domains)."%')";
-} else {
-	//temporally bodge, to not bother checking these, they DONT work!
-	$domains[] = "http://list.english-heritage.org.uk";
+	//we dont normally do geograph links, as links-3B-check-geograph.php is more efficient, but we CAN do them to catch stragglers
 
-	$where[] = "url NOT like '".implode("%' AND url NOT like '",$domains)."%'";
+	$where[] = "b.internal=1"; //specifcally domains marked internal
+
+} else {
+	//exclude all blacklisted - including internal domains :)
+	$where[] = "b.id IS NULL";
 }
 
 if (!empty($param['id']))
@@ -102,12 +100,13 @@ SELECT
         gridimage_link_id,gridimage_id,content_id,url,HTTP_Last_Modified,failure_count
 FROM
         gridimage_link l
+	LEFT JOIN domain_blacklist b ON l.url LIKE CONCAT(b.domain, '%')
 WHERE
         $where
 LIMIT {$offset}{$param['number']}";
 
 $done = 0;
-$recordSet = $db->Execute("$sql");
+$recordSet = $db->Execute($sql);
 
 #####################
 
@@ -153,7 +152,7 @@ while (!$recordSet->EOF)
 
 	$bindts = $db->BindTimeStamp(time());
 	$bindts10 = $db->BindTimeStamp(time()+3600*24*10);
-	$bindts90 = $db->BindTimeStamp(time()+3600*24*90);
+	$bindts90 = $db->BindTimeStamp(time()+3600*24*120);
 
 	if ($rs['gridimage_id']) {
 		$user_agent = "$ua\r\nReferer: http://{$_SERVER['HTTP_HOST']}/photo/{$rs['gridimage_id']}";

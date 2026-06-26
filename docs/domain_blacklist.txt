@@ -1,0 +1,30 @@
+TODO, need a proper update schedule. Both to add new, but retirn old blocks? 
+
+
+
+ CREATE TABLE `domain_blacklist` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `domain` text NOT NULL,
+  `last_checked` datetime NOT NULL,
+  `sev403` int(10) unsigned DEFAULT NULL,
+  `twe403` int(10) unsigned DEFAULT NULL,
+  `updated` datetime NOT NULL,
+  `internal` tinyint(4) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `domain` (`domain`) USING HASH
+) ENGINE=InnoDB;
+
+alter table domain_blacklist add `twe200` int(10) unsigned DEFAULT NULL after `last_checked`;
+
+
+
+INSERT INTO domain_blacklist
+select NULL AS id, substring_index(url,'/',3) domain, MAX(last_checked) AS last_checked,
+sum(HTTP_Status_Final IN (200,304) ) as twe200,
+sum(HTTP_Status_Final IN (403,400,405,429) AND last_checked>date_sub(now(),interval 7 day)) as sev403,
+sum(HTTP_Status_Final IN (403,400,405,429) ) as twe403,
+now() as updated, url like '%geograph.org.uk/%' as internal 
+FROM links_full WHERE last_checked > date_sub(now(),interval 28 day) AND HTTP_Status_Final IN (403,400,405, 200,304)
+GROUP BY domain HAVING (twe403>1000 OR sev403 > 100) AND twe200 = 0
+ON DUPLICATE KEY UPDATE  last_checked = VALUES(last_checked), twe200 = VALUES(twe200), sev403 = VALUES(sev403), twe403 = VALUES(twe403), updated=NOW();
+
