@@ -13,7 +13,19 @@ function generate_schema_sql($param, $multis, $joineds, $options) {
 
     if (!empty($param['drop'])) {
         if (!empty($param['cluster'])) {
-            $schema_sql .= "ALTER CLUSTER {$param['cluster']} DROP {$param['index']};\n";
+		global $rt;
+
+		if (!empty($rt)) {
+                        //as have a connection can check!
+			$cluster_status = $rt->getRow($sql = "SHOW STATUS LIKE 'cluster_{$param['cluster']}_indexes'");
+			$cluster_indexes = explode(',', $cluster_status['Value']);
+			if (in_array($param['index'], $cluster_indexes))
+				//only if actully in the indexes. Trying to drop if not already part, is a fatal error!
+				$schema_sql .= "ALTER CLUSTER {$param['cluster']} DROP {$param['index']};\n";
+		} else {
+                    //will just ahave to assume
+		    $schema_sql .= "ALTER CLUSTER {$param['cluster']} DROP {$param['index']};\n";
+		}
         }
         $schema_sql .= "DROP TABLE IF EXISTS {$param['index']};\n";
     }
@@ -190,7 +202,7 @@ function generate_data_sql($param, $multis, $joineds, $file_handle = null) {
     $lastid = 0;
     $converted = array();
     while (true) {
-	//todo, this looping is designd for selecting FROM manticore, not really needed for selecting from DB!
+	//todo, this looping is designd for selecting FROM manticore, not really needed for selecting from DB! (although it can still avoid loading entire result in at once)
 
         if (preg_match('/ LIMIT (\d+,)?(\d+)\s*$/i', $param['select'], $m)) {
 		//assume user knows what doing, and just let it run one big loop!
@@ -299,6 +311,12 @@ function generate_data_sql($param, $multis, $joineds, $file_handle = null) {
                     fwrite($file_handle, $output . ";\n");
 	        } elseif ($param['execute']) {
 		    $rt->Execute($output);
+
+					if ($param['debug'])
+						 fwrite(STDERR,"affected$c: ".$rt->Affected_Rows()."\n");
+
+sleep(2);
+
                 } else {
                     $data_sql .= $output . ";\n";
                 }
@@ -316,6 +334,7 @@ function generate_data_sql($param, $multis, $joineds, $file_handle = null) {
 
             } elseif ($param['execute']) {
 		$rt->Execute($output);
+
             } else {
                 $data_sql .= $output . ";\n";
             }

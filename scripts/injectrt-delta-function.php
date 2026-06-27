@@ -54,7 +54,7 @@ require "./injectrt_lib.php";
 
 ############################################
 
-//bodge for now! - could be rad from sample6.conf
+//bodge for now! - could be read from sample6.conf
 if ($param['table'] == 'gridimage') {
 	//sql_attr_multi          = uint my_square from ranged-main-query; \
 	//        select gridimage_id, u.user_id from gridimage_search inner join user_gridsquare u using (grid_reference) WHERE  WHERE gridimage_id>=$start AND gridimage_id<=$end order by gridimage_id
@@ -90,8 +90,8 @@ if (!empty($param['delta'])) {
 $host = empty($CONF['db_read_connect'])?$CONF['db_connect']:$CONF['db_read_connect'];
 if ($param['host']) {
     $host = $param['host'];
+    fwrite(STDERR,date('H:i:s')."\tUsing db server: $host\n");
 }
-fwrite(STDERR,date('H:i:s')."\tUsing db server: $host\n");
 $DSN_READ = str_replace($CONF['db_connect'],$host,$DSN);
 
 //we've setup $DSN_READ, using $param[host] even if isn't a db_read_connect

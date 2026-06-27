@@ -26,9 +26,9 @@
 
 $param=array(
     'host'=>false, //override mysql host
-    'cluster'=>'manticore',
+    'cluster'=>'manticore_cluster',
     'tmpfile'=>'/tmp/gridimage_group_stat.rt',
-    'execute'=>2,
+    'execute'=>0,
 );
 
 $ABORT_GLOBAL_EARLY=1; //avoids global.inc.php auto connecteding to redis to with "$memcache" variable
@@ -50,8 +50,8 @@ $db_primary = GeographDatabaseConnection(false);
 $host = empty($CONF['db_read_connect'])?$CONF['db_connect']:$CONF['db_read_connect'];
 if ($param['host']) {
     $host = $param['host'];
+    fwrite(STDERR,date('H:i:s')."\tUsing db server: $host\n");
 }
-fwrite(STDERR,date('H:i:s')."\tUsing db server: $host\n");
 $DSN_READ = str_replace($CONF['db_connect'],$host,$DSN);
 
 //we've setup $DSN_READ, using $param[host] even if isn't a db_read_connect
@@ -160,12 +160,8 @@ $row = $db->getRow("SELECT grid_reference, last_grouped FROM gridsquare ORDER BY
 $bits = explode('.',$CONF['manticorert_host']);
 $sql = "REPLACE INTO sph_server_index SET index_name = 'gridimage_group_stat', server_id = '{$bits[0]}', last_indexed = '{$row['last_grouped']}', updated=NOW()";
 fwrite(STDERR, "\nRun this on the database: $sql;\n");
-//we dont run it here, as it probably should be run on the primary, not the slave read above!
 
 if ($param['execute'] > 1)
         $db_primary->Execute($sql);
-
-############################################
-
 
 ############################################

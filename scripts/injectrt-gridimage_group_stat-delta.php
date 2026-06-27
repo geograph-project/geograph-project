@@ -74,8 +74,8 @@ if (empty($param['date'])) {
 $host = empty($CONF['db_read_connect'])?$CONF['db_connect']:$CONF['db_read_connect'];
 if ($param['host']) {
     $host = $param['host'];
+    fwrite(STDERR,date('H:i:s')."\tUsing db server: $host\n");
 }
-fwrite(STDERR,date('H:i:s')."\tUsing db server: $host\n");
 $DSN_READ = str_replace($CONF['db_connect'],$host,$DSN);
 
 //we've setup $DSN_READ, using $param[host] even if isn't a db_read_connect
@@ -115,6 +115,7 @@ if (!$recordSet->RecordCount()) {
 
 //we delete, because need to deelte all the labels in the squares, they may not get reinserted!
 if ($param['execute']) {
+	print "# deleting ".$recordSet->RecordCount()." squares..";
 	$rt = GeographSphinxConnection('manticorert');
 	$c = 0;
 	$sql_query = "";
@@ -164,7 +165,6 @@ $row = $db->getRow("SELECT grid_reference, last_grouped FROM gridsquare ORDER BY
 $bits = explode('.',$CONF['manticorert_host']);
 $sql = "REPLACE INTO sph_server_index SET index_name = 'gridimage_group_stat', server_id = '{$bits[0]}', last_indexed = '{$row['last_grouped']}', updated=NOW()";
 fwrite(STDERR, "\nRun this on the database: $sql;\n");
-//we dont run it here, as it probably should be run on the primary, not the slave read above!
 
 //todo, should CHECK that tehre was somehting updated, OR that nothing failed - ie dont update on error!
 if ($param['execute'] > 1)

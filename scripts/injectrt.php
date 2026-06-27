@@ -26,6 +26,8 @@
 $param=array(
 	'host'=>false, //override the mysql host to dump from
 
+		'worker'=>'', //could be zero! - overrtides the worker to send to!
+
         'schema'=>false, //show the schema used to create a new sphinx index.
 		'drop' => false, //add drop table to output
 	'data'=>true, //include the actual data (can use to just get schema, but the default limit=1 means usually safe to test data queries.
@@ -40,7 +42,7 @@ $param=array(
 	'select' => "SELECT * FROM sphinx_view", //the query will be used for getting data (using 'table' will automatically define this!)
 	//BE WEARY OF ADDING GROUP BY TO THIS QUERY, AS THE SCHEMA BELOW USING LIMIT 1 WILL STRUGGLE.
 
-	'cluster' => 'manticore',
+	'cluster' => 'manticore_cluster',
 	'extended' => true, //output extended inserts
 	'limit' => 1, //if sepcified, myst be under 1000!
 
@@ -99,13 +101,18 @@ if (!empty($param['delta'])) {
 $host = empty($CONF['db_read_connect'])?$CONF['db_connect']:$CONF['db_read_connect'];
 if ($param['host']) {
     $host = $param['host'];
+    fwrite(STDERR,date('H:i:s')."\tUsing db server: $host\n");
 }
-fwrite(STDERR,date('H:i:s')."\tUsing db server: $host\n");
 $DSN_READ = str_replace($CONF['db_connect'],$host,$DSN);
 
 //we've setup $DSN_READ, using $param[host] even if isn't a db_read_connect
 $db = GeographDatabaseConnection(true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+if (strlen($param['worker']))
+	$CONF['manticorert_host'] = "manticorert-worker-{$param['worker']}.{$CONF['manticorert_host']}";
+
+fwrite(STDERR,date('H:i:s')."\tSending to {$CONF['manticorert_host']}\n");
 
 #########################################################
 // extract query from a sphinx.conf file
@@ -126,6 +133,10 @@ if (!empty($param['table'])) {
 #########################################################
 // SCHEMA
 
+if ($param['execute'])
+    //connection needed to generate schema. (well just to know if part of cluster or not!)
+    $rt = GeographSphinxConnection('manticorert');
+
 $schema_sql = '';
 if (!empty($param['schema'])) {
     $schema_sql = generate_schema_sql($param, $multis, $joineds, $options);
@@ -137,9 +148,11 @@ if ($param['filename']) {
         fwrite($file_handle, $schema_sql);
     }
 } elseif ($param['execute']) {
-    $rt = GeographSphinxConnection('manticorert');
     if (!empty($schema_sql)) {
-	$rt->Execute($schema_sql);
+	//todo, generate_schema_sql should probably be updated to run commands itself, as may be multipel queries, and manticore can't accept mu;litple DDL commands
+	foreach(explode(";\n",$schema_sql) as $sql)
+		if (!empty($sql))
+			$rt->Execute($sql);
     }
 } else {
         print $schema_sql;
