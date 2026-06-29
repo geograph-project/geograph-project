@@ -387,13 +387,16 @@ $offset = 0;
 				print "<td><a href=\"{$row['url']}\" target=preview-window>".htmlentities($row['realname'])."</a>";
 
 				print "<td>";
-					if (strpos($row['rights'],'basic') !== FALSE) {
+					if (strpos($row['rights'],'deleted') === FALSE) {
 						print "<form method=post action=\"#uid{$row['user_id']}\">";
 						print "<input type=hidden name=delete_user value=".intval($row['user_id']).">";
-						print "<button type=submit name=delete>DELETE USER</button>";
+						print "<button type=submit name=delete>DELETE PROFILE</button>";
 						print "</form>";
 					} else {
-						print "user deleted";
+						print "profile deleted";
+					}
+					if (strpos($row['rights'],'basic') === FALSE) {
+						print ", unable to login";
 					}
 
 				foreach($cols as $source => $count) {
@@ -466,8 +469,11 @@ $offset = 0;
 				} else {
 					print " [".intval($row['images'])."]";
 				}
-				if (strpos($row['rights'],'basic') === FALSE) {
-					print "<span style=color:brown>&middot <b>User deleted</b>.</span>";
+				if (strpos($row['rights'],'deleted') !== FALSE) {
+					print " <span style=color:brown>&middot <b>Profile deleted</b>.</span>";
+				}
+                                if (strpos($row['rights'],'basic') === FALSE) {
+					print " <span style=color:brown>&middot <b>No Login</b>.</span>";
 				}
 				print "</span>";
 			}
@@ -491,7 +497,7 @@ $offset = 0;
 				if (strpos($row['rights'],'basic') !== FALSE) {
 					print "<form method=post action=\"#uid{$row['user_id']}\">";
 					print "<input type=hidden name=delete_user value=".intval($row['user_id']).">";
-					print "<button type=submit name=delete>DELETE USER</button>";
+					print "<button type=submit name=delete>DELETE PROFILE</button>";
 					print "</form>";
 				}
 			}
