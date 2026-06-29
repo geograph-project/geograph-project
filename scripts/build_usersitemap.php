@@ -75,12 +75,13 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 
 	$offset=($sitemap-1)*$urls_per_sitemap;
 	$recordSet = $db->Execute(
-		"select u.user_id,date(upd_timestamp) as moddate ".
-		"from user_stat u ".
-		"inner join gridimage_search gi on(u.last = gridimage_id) ".
-		"where u.user_id NOT IN (0,1695) AND gi.reference_index = 1 ".
-		"order by u.user_id ".
-		"limit $offset,$urls_per_sitemap");
+		"select u.user_id,date(upd_timestamp) as moddate
+		from user_stat u
+		inner join user using (user_id)
+		inner join gridimage_search gi on(u.last = gridimage_id)
+		where u.user_id NOT IN (0,1695) AND gi.reference_index = 1 and user.rights NOT LIKE '%deleted%'
+		order by u.user_id
+		limit $offset,$urls_per_sitemap");
 
 	//write one <url> line per result...
 	while (!$recordSet->EOF)

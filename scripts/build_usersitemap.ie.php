@@ -76,11 +76,12 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 
 	$offset=($sitemap-1)*$urls_per_sitemap;
 	$recordSet = $db->Execute(
-		"select user_id,date(max(last_submitted)) as moddate ".
-		"from hectad_user_stat ".
-		"where length(hectad) = 3 ".
-		"group by user_id ".
-		"limit $offset,$urls_per_sitemap");
+		"select user_id,date(max(last_submitted)) as moddate
+		from hectad_user_stat
+		inner join user using (user_id)
+		where length(hectad) = 3 and user.rights NOT LIKE '%deleted%'
+		group by user_id
+		limit $offset,$urls_per_sitemap");
 
 	//write one <url> line per result...
 	while (!$recordSet->EOF)
