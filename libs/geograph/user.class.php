@@ -1000,6 +1000,9 @@ class GeographUser
 			$profile['public_about']=1;
 			$profile['use_age_group']=0;
 
+			//the full about text can get stripped, (to make the object smaller when serialzied!)
+			$this->about_yourself = $db->getOne("SELECT about_yourself FROM user WHERE user_id = {$this->user_id}");
+
 			//record changes for public fields (shows on profile)
                         $update_sql = "insert into user_change set user_id = %d, field = '%s', value = %s";
                         foreach (array('realname','nickname','website','about_yourself') as $field) {
@@ -1007,6 +1010,7 @@ class GeographUser
                                         $db->Execute(sprintf($update_sql, $this->user_id, $field, $db->Quote($profile[$field]) ));
                                 }
                         }
+
                         //only record email change if shown publically (explicit changes to email are recorded seperatly)
                         if ($profile['public_email'] && ($this->email != $profile['email'] //if change email while public
                         || !$this->public_email) ) { //OR wasn't public, they could of changed it while hidden!)
