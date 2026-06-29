@@ -138,7 +138,7 @@ if (!empty($_GET['preview_user'])) {
 
 	print "<h3>Preview for user - links are not clickable</h3>";
 	print "<table cellspacing=0 cellpadding=3 border=1 bordercolor=#eee style=max-width:60em>";
-	$keys = explode(',', 'user_id,realname,nickname,email,rights,website,about_yourself,message_sig,signup_date,images,last,home_gridsquare,http_host,http_referer,last_login,agree_terms,birth_year,register_timing');
+	$keys = explode(',', 'user_id,realname,nickname,email,rights,website,about_yourself,message_sig,signup_date,images,content,last,home_gridsquare,http_host,http_referer,last_login,agree_terms,birth_year,register_timing');
 	foreach ($keys as $key) {
 		print "<tr><th>$key</th>";
 		print "<td>";
@@ -151,6 +151,26 @@ if (!empty($_GET['preview_user'])) {
 			if (!$user['public_about'])
 				print "<i>NOT displayed publically</i><span style=color:gray>";
 			print "<pre style=\"white-space:pre-wrap;\">".htmlentities($user[$key])."</pre>";
+		} elseif ($key == 'images') {
+			if ($user[$key] > 0) {
+				print "<a href=\"/search.php?user_id={$user['user_id']}&amp;do=1\">Images: <b>{$user[$key]}</b></a> (only shows moderated images)";
+
+				print "<br>View: <a href=\"/admin/suggestions.php?user_id={$user['user_id']}&type=all\">Suggestion Ticket(s)</a> (if any)";
+			} else {
+				print $user[$key];
+			}
+
+		} elseif ($key == 'content') {
+			if ($user[$key] > 0) {
+				print "<a href=\"/content/?user_id={$user['user_id']}&scope=all\">Collections: <b>{$user[$key]}</b></a>";
+			} else {
+				print "<i>unknown</i>";
+			}
+
+		} elseif ($key == 'last') {
+			if ($user[$key] > 0) {
+				print "<a href=\"/photo/{$user[$key]}\">{$user[$key]}</a> (most recent image)";
+			}
 		} else {
 			print htmlentities($user[$key]);
 		}
@@ -169,7 +189,9 @@ if (!empty($_GET['preview_user'])) {
 		print "<table cellspacing=0 cellpadding=3 border=1 bordercolor=#eee style=max-width:60em>";
 		print "<tr><th>".implode("</th><th>",array_map('htmlentities',array_keys($rows[0])))."</th></tr>";
 		foreach ($rows as $row) {
-			print "<tr><td>".implode("</td><td>",array_map('htmlentities',$row))."</td></tr>";
+			print "<tr><td>".implode("</td><td>",array_map('htmlentities',$row))."</td>";
+			if ($row['created'] == $user['signup_date'])
+				print "<td> (set at signup)";
 		}
 		print "</table>";
 	}
