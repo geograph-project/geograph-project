@@ -160,6 +160,19 @@ if (!empty($_GET['preview_user'])) {
 	if (empty($user['images']) && (!empty($user['website']) || !empty($user['about_yourself'])))
 		print "<p><big><i>No images submitted - profile <b>will not display</b> email, link or the about text</i></big></p>";
 
+
+	$rows = $db->getAll("(select created,field,value as newvalue from user_change where user_id = {$user['user_id']})
+	 UNION ALL (select requested as created,'email' as field, newemail as newvalue from user_emailchange where user_id = {$user['user_id']} and status = 'completed' AND newemail LIKE '%@%')
+	 ORDER BY created ASC");
+	if (!empty($rows)) {
+		print "<h4>Profile Edits</h4>";
+		print "<table cellspacing=0 cellpadding=3 border=1 bordercolor=#eee style=max-width:60em>";
+		print "<tr><th>".implode("</th><th>",array_map('htmlentities',array_keys($rows[0])))."</th></tr>";
+		foreach ($rows as $row) {
+			print "<tr><td>".implode("</td><td>",array_map('htmlentities',$row))."</td></tr>";
+		}
+		print "</table>";
+	}
 	//$smarty->display('_std_end.tpl');
 	//exit;
 	print "<br><br>";

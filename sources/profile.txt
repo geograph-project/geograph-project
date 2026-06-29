@@ -29,3 +29,28 @@ FROM user
 WHERE one.moderation_status = 'flagged' AND one.source != 'user' AND two.moderation_id IS NULL
 
 
+user_edit:
+SELECT  'user' AS source,
+        `user_id` AS foreign_id,
+        CONCAT('edit_',field) as event_type,
+        c.created as event_date,
+        `user_id` as user_id,
+        CONCAT(field,'= ',TRIM(value)) AS title,
+        CONCAT('/profile/',user_id) AS url
+FROM user_change c
+INNER JOIN user u USING (user_id)
+WHERE ABS(UNIX_TIMESTAMP(c.created)-UNIX_TIMESTAMP(signup_date))>900 AND c.created > date_sub(now(),interval 7 day)
+
+
+edit_email:
+SELECT  'user' AS source,
+        `user_id` AS foreign_id,
+        'edit_email' as event_type,
+        c.requested as event_date,
+        `user_id` as user_id,
+        CONCAT(oldemail, ' > ', newemail) AS title,
+        CONCAT('/profile/',user_id) AS url
+FROM user_emailchange c
+INNER JOIN user u USING (user_id)
+WHERE status = 'completed' AND newemail LIKE '%@%' AND public_email = 1 AND c.requested > date_sub(now(),interval 7 day)
+

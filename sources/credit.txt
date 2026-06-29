@@ -1,0 +1,17 @@
+name: Image Credit Licence
+table_name: gridimage_ticket
+
+
+user_edit:
+SELECT  'credit' AS source,
+        t.`user_id` AS foreign_id,
+        'user_edit' as event_type,
+        t.suggested as event_date,
+        t.`user_id` as user_id,
+        CONCAT('Credit: ',oldvalue,' > ',IF(newvalue='','(default)',newvalue), IF(COUNT(*)>1, CONCAT(' (',COUNT(*),' images)'),'')) AS title,
+        CONCAT('/editimage.php?id=',gridimage_id) AS url
+FROM gridimage_ticket_item i
+inner join gridimage_ticket t using (gridimage_ticket_id) 
+WHERE i.field = 'realname' and i.status = 'immediate' AND t.suggested > date_sub(now(),interval 7 day)
+GROUP BY oldvalue,newvalue
+
