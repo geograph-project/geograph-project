@@ -996,35 +996,24 @@ class GeographUser
 		if ($ok)
 		{
 			//about box is always public - col to be removed
+			//and we should never share the age group anyway
 			$profile['public_about']=1;
 			$profile['use_age_group']=0;
 
-			//age info is useless to others, nice for us, no need
-			//to give use a public option
+			//record changes for public fields (shows on profile)
+                        $update_sql = "insert into user_change set user_id = %d, field = '%s', value = %s";
+                        foreach (array('realname','nickname','website','about_yourself') as $field) {
+                                if ($this->{$field} != $profile[$field]) {
+                                        $db->Execute(sprintf($update_sql, $this->user_id, $field, $db->Quote($profile[$field]) ));
+                                }
+                        }
+                        //only record email change if shown publically (explicit changes to email are recorded seperatly)
+                        if ($profile['public_email'] && ($this->email != $profile['email'] //if change email while public
+                        || !$this->public_email) ) { //OR wasn't public, they could of changed it while hidden!)
+                                $db->Execute(sprintf($update_sql, $this->user_id, 'email', $db->Quote($profile['email']) ));
+                        }
 
-			if ($this->realname != $profile['realname'])
-			{
-				$db->Execute(sprintf("insert into user_change set
-					user_id = %d,
-					field = 'realname',
-					value = %s
-					",
-					$this->user_id,
-					$db->Quote($profile['realname'])
-					));
-			}
-			if ($this->nickname != $profile['nickname'])
-			{
-				$db->Execute(sprintf("insert into user_change set
-					user_id = %d,
-					field = 'nickname',
-					value = %s
-					",
-					$this->user_id,
-					$db->Quote($profile['nickname'])
-					));
-			}
-
+			//the full proper update
 			$sql = sprintf("update user set
 				realname=%s,
 				nickname=%s,
