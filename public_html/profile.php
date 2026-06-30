@@ -305,15 +305,7 @@ if ($template=='profile.tpl')
 			exit;
 		}
 
-		if ($profile->user_id==0)
-		{
-			header("HTTP/1.0 404 Not Found");
-			header("Status: 404 Not Found");
-			$smarty->display('static_404.tpl');
-			exit;
-		}
-
-		if (strpos($profile->rights,'deleted') !== FALSE)
+		if ($profile->user_id==0 || empty($profile->rights) || strpos($profile->rights,'deleted') !== FALSE)
 		{
 			header("HTTP/1.0 404 Not Found");
 			header("Status: 404 Not Found");

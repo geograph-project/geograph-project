@@ -39,7 +39,7 @@ SELECT  'user' AS source,
         CONCAT('/profile/',user_id) AS url
 FROM user_change c
 INNER JOIN user u USING (user_id)
-WHERE ABS(UNIX_TIMESTAMP(c.created)-UNIX_TIMESTAMP(signup_date))>900 AND c.created > date_sub(now(),interval 7 day)
+WHERE UNIX_TIMESTAMP(c.created)-UNIX_TIMESTAMP(signup_date)>900 AND c.created > date_sub(now(),interval 7 day)
 
 
 edit_email:
