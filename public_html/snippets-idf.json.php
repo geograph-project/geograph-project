@@ -11,7 +11,8 @@ if (empty($query)) {
 }
 
 //TODO, just for DEV!
-customNoCacheHeader();
+//customNoCacheHeader();
+        customExpiresHeader(3600*24);
 
 
 // 1. Get stats for each word in the query string
