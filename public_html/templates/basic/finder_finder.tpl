@@ -724,7 +724,7 @@ function renderFinderResults(url, divId, countDivId) {
                             htmlContent = `
                                 <div class="river-item-thumb">
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">
-                                        <img src="${getGeographUrl(row.id, row.hash, 'full')}" alt="${escapeHtml(row.title)}" width="${row.width}" height="${row.height}" loading="lazy" crossorigin onerror="retryCross(this)">
+                                        <img src="${getGeographUrl(row.id, row.hash, 'full')}" alt="${escapeHtml(row.title)}" width="${row.width}" height="${row.height}" loading="lazy" crossorigin="use-credentials" onerror="retryCross(this)">
                                     </a>
                                 </div>
                                 <div class="river-item-info">

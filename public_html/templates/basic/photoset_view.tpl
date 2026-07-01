@@ -590,7 +590,7 @@ var cameraOptions = {
 
 		geotagPhotoCamera[{$idx}]._cameraMarker.on('click',{literal}function() { {/literal}
 			$('#firstcontainer a').attr('href','/photo/{$image->gridimage_id}');
-			$('#firstcontainer img').attr('srcset',null).attr('src','{$image->_getFullpath(true,true)}').attr('crossorigin','crossorigin').css('max-height','500px');
+			$('#firstcontainer img').attr('srcset',null).attr('src','{$image->_getFullpath(true,true)}').attr('crossorigin','use-credentials').css('max-height','500px');
 		{literal} }); {/literal}
 
 	{/foreach}

@@ -3,10 +3,23 @@ var IE = document.all?true:false;
 
 function retryCross(that) {
 	//this function allows retry of tags with crossorigin. Note the query string doesnt do anything on the server, its just to bust the local browser cache (that might have the non-cors image cached)
-        if (that.src.indexOf('crossorigin') == -1 && that.hasAttribute('crossorigin')) {
-                that.src = that.src + '?crossorigin';
-		if (that.hasAttribute('srcset'))
-			that.srcset = that.srcset.replace(/\.jpg/g,'.jpg?crossorigin');
+	if (that.hasAttribute('crossorigin')) {
+	        if (that.src.indexOf('credentials') == -1 && that.getAttribute('crossorigin') == 'use-credentials') {
+			//specifically retry to add credentials
+	                that.src = that.src + '?credentials';
+			if (that.hasAttribute('srcset'))
+				that.srcset = that.srcset.replace(/\.jpg/g,'.jpg?credentials');
+
+		} else if (that.src.indexOf('crossorigin') == -1) {
+			//otherwise just bust cache
+        	        that.src = that.src + '?crossorigin';
+			if (that.hasAttribute('srcset'))
+				that.srcset = that.srcset.replace(/\.jpg/g,'.jpg?crossorigin');
+
+		} else {
+			//if that still fails, then remove the attribute
+			that.removeAttribute('crossorigin');
+		}
 	}
 }
 

@@ -715,6 +715,10 @@ split_timer('gridimage'); //starts the timer
 				$this->snippets_as_ref =1;
 			else
 				$this->snippets_as_ref =false;
+
+			foreach($this->snippets as $row)
+				if ($row['user_id'] != $this->user_id)
+					$this->snippets_by_others = true;
 		}
 
 split_timer('gridimage','loadSnippets',$this->gridimage_id); //logs the wall time
@@ -1295,7 +1299,8 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 		$counter++;
 
 		//the normal tag, but with additional srcset
-		$html="<img alt=\"$title\" src=\"$fullpath\" crossorigin {$size[3]}$srcset onerror=\"retryCross(this)\"/>";
+		$html="<img alt=\"$title\" src=\"$fullpath\" crossorigin=\"use-credentials\" {$size[3]}$srcset onerror=\"retryCross(this)\"/>";
+		//note, we now use use-credentials, for cloudflare, due to the managed challange blocking images, only works on geograph.org.uk subdomains
 
 		//then add responsive sizing
 		if (!empty($simple) && $responsive !== 'basic' && $responsive) {
@@ -2148,7 +2153,7 @@ if (!empty($_GET['ddd'])) {
 		$resized=$this->_getResized($params);
 
 		if (!empty($resized['html']))
-			$resized['html'] = str_replace("<img", "<img crossorigin onerror=\"retryCross(this)\"", $resized['html']);
+			$resized['html'] = str_replace("<img", "<img crossorigin=\"use-credentials\" onerror=\"retryCross(this)\"", $resized['html']);
 
 		if (!empty($urlonly)) {
 			if ($urlonly === 2)

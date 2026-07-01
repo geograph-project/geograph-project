@@ -242,7 +242,7 @@ Note that we have two versions for this image, which differ slightly. This is li
 </ul>
 
 
-{if basename($image->altUrl) != "error.jpg"}<img src="{$image->altUrl}" crossorigin onerror="retryCross(this)"/><br>
+{if basename($image->altUrl) != "error.jpg"}<img src="{$image->altUrl}" crossorigin="use-credentials" onerror="retryCross(this)"/><br>
 <ul>
 <li><a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=640">max 640 px</a>{/if}</li>
 </ul>
@@ -272,7 +272,7 @@ Note that we have two versions for this image, which differ slightly. This is li
 <h3>Stamped image preview</h3>
 
 <a href="{$tile_host}/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&download=1" id="stamp_link">
-<img src="{$tile_host}/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}" loading="lazy" id="stamp_preview" style="max-width:100%" crossorigin onload="this.style.opacity=1;" onerror="retryCross(this)"></a>
+<img src="{$tile_host}/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}" loading="lazy" id="stamp_preview" style="max-width:100%" crossorigin="use-credentials" onload="this.style.opacity=1;" onerror="retryCross(this)"></a>
 
 <ul>
 <li>To download the image either:
