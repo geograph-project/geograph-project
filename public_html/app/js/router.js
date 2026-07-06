@@ -198,6 +198,19 @@ getMappedUrl(modulePath) {
      * Initializes the router on page load
      */
     init() {
+        const params = new URLSearchParams(window.location.search);
+
+        // Check if the URL has a 'transfer_id' parameter
+        if (params.has('transfer_id')) {
+            //we have to send to the /app/uploaded page, because need to provide additional metadata to submit page
+            this.handleNavigation('/app/uploaded', {
+                message: JSON.stringify({
+                    transfer_id: params.get('transfer_id')
+                })
+            });
+            return; // Stop execution here so it doesn't load the default pathname
+        }
+
         this.handleNavigation(window.location.pathname);
     }
 }

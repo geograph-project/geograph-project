@@ -1,5 +1,5 @@
 import AppState from '/app/js/app-state.js';
-import { escapeHTML } from '/app/js/utils.js';
+import { escapeHTML, navigateTo } from '/app/js/utils.js';
 
 export function render() {
     return `
@@ -31,7 +31,7 @@ export function render() {
 let currentData = [];
 let isDeleteMode = false;
 
-export async function onMount() {
+export async function onMount(options) {
     const gridContainer = document.getElementById('uploads-grid');
     const sortSelect = document.getElementById('sort-select');
     const deleteToggle = document.getElementById('toggle-delete-mode');
@@ -61,6 +61,23 @@ export async function onMount() {
             }
             return;
         }
+
+        // Check if the URL has a 'transfer_id' parameter
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('transfer_id')) {
+	    const transferId = params.get('transfer_id');
+
+            // Find the specific item within the freshly fetched API array
+            const matchedItem = currentData.find(item => item.transfer_id == transferId);
+
+            if (matchedItem) {
+                // Forward the full API metadata payload to the submit view
+                navigateTo('/app/submit', {
+                    message: JSON.stringify(matchedItem)
+                });
+                return; // Prevent any further UI initialization on this page
+            }
+	}
 
     } catch (error) {
         // Log the error for debugging

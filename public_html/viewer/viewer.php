@@ -67,8 +67,18 @@ let hashes_url = <? echo json_encode($hashesUrl); ?>;
 	</head>
 	<body>
 		<form enctype="multipart/form-data" name="theForm" onsubmit="return false">
-			File(s): <input type=file name="files" multiple accept="image/jpeg">
-			and/or Folder: <input type=file name="folder" multiple accept="image/jpeg" webkitdirectory> (on some browsers)<br>
+
+			<!-- File Input Group -->
+			<input type="file" name="files" id="file-input" multiple accept="image/jpeg" class="hidden-input">
+			<label for="file-input" class="upload-btn">Add File(s)</label>
+
+			<!-- Folder Input Group -->
+			<span id="folder-upload-group">
+				or:
+			  <input type="file" name="folder" id="folder-input" multiple accept="image/jpeg" webkitdirectory class="hidden-input">
+			  <label for="folder-input" class="upload-btn">Add Folder</label>
+			</span>
+			- files are processed in browser.<br>
 
 			Mode: <select name="mode" onchange="updateViewer()">
 				<option value="table">Table</option>
@@ -105,6 +115,7 @@ let hashes_url = <? echo json_encode($hashesUrl); ?>;
 				<option value="submit">Submit v1</option>
 				<option value="submit2">Submit v2</option>
 				<option value="submit2_tabs">Submit v2 (tabs)</option>
+				<option value="app">Geograph App</option>
 				<option value="close">Upload only (Submit Later)</option>
 			</select>
 
@@ -129,7 +140,7 @@ let hashes_url = <? echo json_encode($hashesUrl); ?>;
 					<li>If <b>some</b> image(s) DON'T have coordinates, can click the 'Guess' button above, to add square from the image closest in time.
 					Not perfect (can be mistakes) but in general it can deal pretty well if just a small number of images are missing location, but have good timestamps.
 					This is intended for when only a few images are missing location
-					<li>Currently if dont have location for any of the images, this function will load the images, but matching on date alone (or the image itself) is not currently supported
+					<li>Currently if dont have location for any of the images, this function will load the images, but matching on date alone is not currently supported
 				</ul>
 				<li>Date/Time is loaded from EXIF, not the modfication of the file itself
 				<li>When the grid-reference is shown in Yellow, means you dont appear to have submitted to that square

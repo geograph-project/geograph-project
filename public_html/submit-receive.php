@@ -52,6 +52,7 @@ if (empty($_POST['src'])) {
 ######################################
 
 $url = "/submit2.php?transfer_id={$upload_id}";
+$appurl = "/app/?transfer_id={$upload_id}";
 
 if (!empty($_POST['auto'])) {
         if ($_POST['auto'] == 'submit2') {
@@ -60,6 +61,10 @@ if (!empty($_POST['auto'])) {
 
         } elseif ($_POST['auto'] == 'submit2_tabs') {
                 header("Location: $url&display=tabs");
+                exit;
+
+        } elseif ($_POST['auto'] == 'app') {
+                header("Location: $appurl");
                 exit;
 
         } elseif ($_POST['auto'] == 'close') { ?>
@@ -105,6 +110,9 @@ print "<b><a href=\"$url\"\>with Submit v2</a></b>";
 print " -or- ";
 
 print "<a href=\"$url&amp;display=tabs\"\>with Submit v2 (Tabs)</a>";
+
+print " -or- <a href=\"$appurl\"\>Via Geograph App</a>";
+
 
 ?><br><br>
 

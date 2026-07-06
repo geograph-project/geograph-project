@@ -31,6 +31,18 @@ jQuery(function() {
 	                        updateViewer(true);
                 });
 	}
+
+
+  // Check if webkitdirectory is supported by the browser
+  const isFolderUploadSupported = 'webkitdirectory' in HTMLInputElement.prototype;
+
+  if (!isFolderUploadSupported) {
+    const folderGroup = document.getElementById('folder-upload-group');
+    if (folderGroup) {
+      folderGroup.classList.add('hide-supported');
+    }
+  }
+
 })
 
 function updateViewer(updateorder) {
