@@ -38,44 +38,53 @@
         }
 
 //////////////////////////////////////////////////////////
+// alternate demo that provides decoding of the raw data rows.
 
 	/**
-	 * Fetches images from Geograph API and flattens the Sphinx-style response
+	 * Fetches geographically nearby images from the Geograph API and formats them.
+	 *
+	 * By default, retrieves up to 20 images sorted by closest distance, maps the raw
+	 * API rows into a clean, standardized data structure, and converts coordinates
+	 * from radians to degrees.
+	 *
+	 * @param {number} lat - The latitude of the center point.
+	 * @param {number} lng - The longitude of the center point.
+	 * @param {number} [dist=300] - The search radius/distance metric from the center point.
+	 * @param {Object} [options={}] - Additional API query parameters or overrides (e.g., limit, sort).
+	 * @returns {Promise<Array<Object>>} A promise that resolves to an array of formatted image objects,
+	 *                                    or an empty array if no results are found or an error occurs.
 	 */
 	async function getGeographImages(lat, lng, dist = 300, options = {}) {
 
-	    const baseUrl = "https://api.geograph.org.uk/api-facet.php";
+	    const baseUrl = "https://api.geograph.org.uk/api-facetql.php";
 	    try {
 		const response = await fetch(`${baseUrl}?${new URLSearchParams({
-		    geo: `${lat},${lng},${dist}`,
-		    select: 'id,user_id,realname,grid_reference,title,hash,takenday,width,height',
+		    geo: `${lat},${lng},${dist}`, //sets up the 'geodist' attribute automatically, as well as optimizing to use tile based index
+		    select: 'id,user_id,realname,grid_reference,title,hash,takenday,width,height,wgs84_lat,wgs84_long',
 		    limit: 20,
-		    sort: '@geodist asc',
+		    sort: 'geodist asc',
 		    ...options // This allows the caller to override 'limit' or 'sort' (or add other options)
 		})}`);
 	        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
 	        const data = await response.json();
 
-	        if (!data.matches || Object.keys(data.matches).length === 0) {
+	        if (!data.rows || data.rows.length === 0) {
 	            return [];
 	        }
 
-	        // Sphinx returns matches as an object keyed by ID
-	        // We map Object.values to get a clean array
-	        return Object.values(data.matches).map(match => {
-	            const row = match.attrs;
+	        // Convert the rows array, we map to a clean list
+	        return data.rows.map(row => {
 	            return {
-	                id: row.id,
+			...row, //start by providing the raw row, but then add/replace fields we can help format...
 	                url: `https://www.geograph.org.uk/photo/${row.id}`,
-	                title: row.title,
-	                realname: row.realname,
 	                profile_url: `https://www.geograph.org.uk/profile/${row.user_id}`,
 	                taken: formatTakenDate(space_date(row.takenday)),
 	                image: getGeographUrl(row.id, row.hash, 'full'),
 	                thumbnail: getGeographUrl(row.id, row.hash, 'med'),
-	                size: [row.width, row.height],
-	                distance: row['@geodist'] // Included since you are sorting by distance
+	                size: [row.width, row.height], //the size of the 'full' image.
+			lat: rad2deg(row.wgs84_lat ?? 0), lng: rad2deg(row.wgs84_long ?? 0),
+	                distance: row['geodist'] // Included since you are sorting by distance
 	            };
 	        });
 
