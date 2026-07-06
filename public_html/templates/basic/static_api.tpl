@@ -53,7 +53,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 
 <br/><br/>
 
-	 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+	 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px; max-width:min(60em,60vw)">
 	 <img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
 	 <b>All exports include the photographer credit/name, which under the CC licence MUST be displayed alongside any use of the image. Also the fact the image is CC licenced needs to be mentioned.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="{$self_host}/photo/[id]" rel="nofollow">{$self_host}/photo/[id]</a>.<br/><br/> <i>Thank you for your attention in this matter.</i>
 	 </div>
@@ -63,8 +63,8 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 		{external title="Geograph Archive Database Dump" href="http://data.geograph.org.uk/dumps/" text="data.geograph.org.uk/dumps"} for details.</p>
 	
 	 <h3 style="border:1px solid #cccccc;background-color:pink; padding:10px; clear:both;margin-top:30px;"><a name="api"></a>API-key</h3> 
-	 <p>If you haven't got one you will need to obtain a unique API-key, which
-		gives you access to the feeds below, simply <a href="/admin/apikey.php">request a key</a>,
+	 <p>If you haven't got one you will need to <b>obtain a unique API-key</b>, which
+		gives you access to the feeds below, <b>simply <a href="/admin/apikey.php">request a key</a></b>,
 		 with a brief outline of your project, please include the URL so we can
 		take a look.</p> 
 	 <p>Once you have a API-key simply replace [apikey] in the examples below to
