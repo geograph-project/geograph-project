@@ -1,76 +1,104 @@
 {assign var="page_title" value="API"}
 {include file="_std_begin.tpl"}
 
-<div class="interestBox" style="background-color:yellow; color:black; border:2px solid red; padding:10px;margin:20px">
+<h2>Geograph API Documentation</h2>
 
-<b>Please Note: This page is not complete.</b> We have many other APIs available, that we havn't got round to documenting.<br><br>
+<!-- Table of Contents -->
+<nav aria-label="Table of contents" style="float:right; padding:10px; background:#dddddd; position:relative; font-size:0.8em; max-width:200px;">
+    <strong>Contents</strong>
+    <ul style="margin-top:5px; margin-left:0; padding:0 0 0 1.2em; list-style-type: disc;">
+        <li><a href="#database-dumps">Database Dumps</a></li>
+        <li><a href="#api-authentication">API KEY</a></li>
+        <li><a href="#alternative-apis">Image APIs</a></li>
+        <li>
+            <a href="#rss">Syndicator/RSS API</a>
+            <ul style="padding-left:1em; list-style-type: circle;">
+                <li><a href="#rss_param">Types</a>, <a href="#rss_options">Options</a>, <a href="#rss_format">Formats</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#rest">Details API</a>
+            <ul style="padding-left:1em; list-style-type: circle;">
+                <li><a href="#rest_services">Services</a></li>
+                <li><a href="#rest_format">Formats</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#csv">CSV Export</a>
+            <ul style="padding-left:1em; list-style-type: circle;">
+                <li><a href="#csv_param">Parameters</a>, <a href="#columns">Columns</a>, <br><a href="#extra">Returning Extra Columns</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#building">Building a Search Query</a>
+            <ul style="padding-left:1em; list-style-type: circle;">
+                <li><a href="#places">Places to use an i number</a></li>
+            </ul>
+        </li>
+        <li><a href="#alternative-apis">Other Places to get information</a></li>
+        <li><a href="#finally">and finally...</a></li>
+    </ul>
+</nav>
 
-For a general overview, please see: <a href="/article/Geograph-Image-APIs">Geograph Images APIs</a> Article, suggest new visitors start there. <br><br>
+<main style="max-width:60em;">
 
-If you are looking for a API for specific purpose, please <a href="/contact.php">contact us</a>. We probably have one! If not can build it. 
-We would much perfer to work with you to find a suitable API, than forcing you to scrape, or spider the website. Spidering sucks.
-</div>
+    <!-- Introduction -->
+    <section id="introduction">
+        <p>
+            The Geograph Application Programming Interface (API) allows third-party developers to access and build applications using data sourced from Geograph in an efficient, structured manner.
+        </p>
 
+	<p>
+            The Geograph API is continuously evolving based on developer needs. If you are looking for alternative data access or have a specific use case, we have a variety of other APIs available that are not yet fully documented here. Please <a href="/contact">contact us</a> with your feedback, feature requests, or custom requirements &mdash; we are always happy to help you find the right solution or build a custom endpoint rather than having you scrape the website.
+        </p>
+    </section>
 
-	 <h2>Geograph API Documentation <sub>(last updated 1st May 2012)</sub></h2> 
+    <!-- License & Attribution Requirements -->
+    <section id="license-requirements">
+        <h2>Data License &amp; Attribution Requirements</h2>
+        <p>
+            All data exports include the photographer's name and credit. To comply with our Creative Commons (CC) licensing, you <strong>must</strong> adhere to the following conditions:
+        </p>
+        <ul>
+            <li>Display the photographer's credit alongside any use of the image.</li>
+            <li>Explicitly state that the image is Creative Commons licensed.</li>
+        </ul>
+        <p>Ideally, provide a link back to the original photo page using either the supplied URL or the format: <code>https://www.geograph.org.uk/photo/[id]</code>.</p>
+    </section>
 
-	 <div
-	  style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;"><b>Contents</b><br/>
-		<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;"> 
-		  <li><a href="#dumps">Database Dumps</a></li> 
-		  <li><a href="#rss">Images API</a> 
-			 <ul> 
-				<li><a href="#rss_param">Types</a>, <a href="#rss_options">Options</a>, <a href="#rss_format">Formats</a></li> 
-			 </ul></li> 
-		  <li><a href="#rest">Details API</a> 
-			 <ul> 
-				<li><a href="#rest_services">Services</a></li> 
-				<li><a href="#rest_format">Formats</a></li> 
-			 </ul></li> 
-		  <li><a href="#csv">CSV Export</a> 
-			 <ul> 
-				<li><a href="#csv_param">Parameters</a>, <a href="#columns">Columns</a>, <br/><a href="#extra">Returning Extra Columns</a></li> 
-			 </ul></li> 
-		  <li><a href="#building">Building a Search Query</a> 
-			 <ul> 
-				<li><a href="#places">Places to use an i number</a></li> 
-			 </ul></li> 
-		  <li><a href="#others">Other Places to get information</a> 
-		  <li><a href="#finally">and finally...</a></li> 
-		</ul></div> 
+    <!-- Database Dumps -->
+    <section id="database-dumps">
+        <h2>Database Dumps (Bulk Data Download)</h2>
+        <p>
+            For heavy data requirements, we provide a raw <code>mysqldump</code> snapshot of the database. For download details and access, please visit <a href="https://data.geograph.org.uk/dumps">data.geograph.org.uk/dumps</a>.
+        </p>
+        <p>
+            We also offer a number of predefined image datasets curated specifically for machine learning and AI applications (with some packages also available directly via Kaggle). For more details, please see <a href="https://data.geograph.org.uk/datasets.html">data.geograph.org.uk/datasets.html</a>.
+        </p>
+    </section>
 
-	 <p>Geograph's <b>Application Programming Interface</b> (API) allows third
-		party developers to create applications using data sourced from Geograph,
-		in a friendly and polite way.</p> 
-	 <p>Chances are you have come to this page because you are a developer
-		looking to get access to some of the data. Well, you've come to the right place,
-		below you will find brief details of what's available and how to get it...</p>
-	 <p>Please note that the API is still in its early stages, these are the possibilities that 
-		the developers needed, or felt would be useful, if you have any special requests then
-		don't be shy, just <a href="/contact.php">let us know</a>.</p>
+    <!-- API Key Authentication -->
+    <section id="api-authentication">
+        <h2>Authentication &amp; API Keys</h2>
+        <p>
+            To access the live feeds documented below, you will need a unique API key. You can <a href="/admin/apikey.php">request a key here</a>.
+        </p>
+        <p>
+            Once you have received your key, simply replace the <code>[apikey]</code> placeholder in the following examples to authenticate your requests.
+        </p>
+    </section>
 
-	<p>&middot; Looking for Inspiration? The <a href="http://www.geograph.org/links/?tag=uses:geograph-api">Links Directory has a listing of API powered websites</a>.</p>
+    <!-- Alternative APIs Link Section -->
+    <section id="alternative-apis">
+        <h3 style="border:1px solid #cccccc; background-color:#dddddd; padding:10px;">Other APIs</h3>
+        <p>
+            Please see the <a href="/article/Geograph-Image-APIs">Geograph Images APIs Article</a> for information regarding other available APIs, including several options not fully detailed on this page.
+        </p>
+    </section>
 
-<br/><br/>
-
-	 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px; max-width:min(60em,60vw)">
-	 <img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
-	 <b>All exports include the photographer credit/name, which under the CC licence MUST be displayed alongside any use of the image. Also the fact the image is CC licenced needs to be mentioned.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="{$self_host}/photo/[id]" rel="nofollow">{$self_host}/photo/[id]</a>.<br/><br/> <i>Thank you for your attention in this matter.</i>
-	 </div>
-
-	 <h3 style="border:1px solid #cccccc;background-color:lightgreen; padding:10px; clear:both;margin-top:30px;"><a name="dumps"></a>Database Dumps - Bulk Data download</h3> 
-	 <p>We have created a mysqldump snapshot of the database and made it available for download, see 
-		{external title="Geograph Archive Database Dump" href="http://data.geograph.org.uk/dumps/" text="data.geograph.org.uk/dumps"} for details.</p>
-	
-	 <h3 style="border:1px solid #cccccc;background-color:pink; padding:10px; clear:both;margin-top:30px;"><a name="api"></a>API-key</h3> 
-	 <p>If you haven't got one you will need to <b>obtain a unique API-key</b>, which
-		gives you access to the feeds below, <b>simply <a href="/admin/apikey.php">request a key</a></b>,
-		 with a brief outline of your project, please include the URL so we can
-		take a look.</p> 
-	 <p>Once you have a API-key simply replace [apikey] in the examples below to
-		obtain your feed.</p> 
+    <!-- Syndicator/RSS API -->
 		
-	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rss"></a>Images API</h3> 
+	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rss"></a>Syndicator/RSS API</h3> 
 	 <p>This API accesses the Images database, allowing a wide variety of output formats, and filtering options. 
 		Include RSS style outputs (can be used directly as a RSS feed), but also supports various XML, KML, JSON and HTML outputs. The feed lives at<br/><br/>
 	 <a title="Geograph RSS feed"
@@ -799,20 +827,21 @@ Note:the distance should be 10km or below.
 		  	href="{$api_host}/syndicator.php?key=[apikey]&amp;format=GPX&amp;i=12345" rel="nofollow">{$api_host}/syndicator.php?key=[apikey]&amp;format=GPX&amp;i=12345</a></td>
 		</tr> 
 	 </table> 
+
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="others"></a>Other Ways to download information</h3> 
 	 <ul>
 		<li><a href="/gpx.php">GPX Exports</a></li>
-		<li>100x100km CheckSheets (<a href="{$self_host}/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX" rel="nofollow">example</a>) <small>- nice easy parsable listing, could be used for creating coverage maps</small></li>
-		<li>sitemap.xml - see {external href="http://www.sitemaps.org"}</li>
-		<li><a href="http://www.geourl.org/" style="text-decoration: line-through">geourl.org</a> (Coming soon)</li>
 		<li>We can also create coverage CSVs on demand, (listing squares currently with images)</li>
+		<li>We can provide Leaflet Map Tiles, showing either explicit photo locations, or gridded coverage layers</li>
 		<li>{external title="Geograph Archive Database Dump" href="http://data.geograph.org.uk/dumps/" text="data.geograph.org.uk/dumps"}<br/><br/></li>
 		<li>Please DON'T use the <tt>/list/</tt> and/or <tt>/sitemap/</tt> namespace as they are to help Search Engines crawlers.</li>
 	 </ul>
+
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="finally"></a>Finally</h3> 
 	 <p>We wish you luck in you project and look forward to seeing the results! If you have any 
 		problems using the API, then please do get in <a href="/contact.php">contact</a>.</p>
 
+</main>
 
 <br/><hr/>
 
