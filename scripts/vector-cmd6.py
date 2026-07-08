@@ -414,6 +414,26 @@ def insert_from_mysql(
             continue # Retry the batch
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
+
+            error_code = e.response['Error']['Code']
+
+            #An unexpected error occurred: An error occurred (NotFoundException) when calling the PutVectors operation: The specified index could not be found
+            if error_code == 'NotFoundException':
+                print(f"\nIndex '{index_name}' not found.")
+
+                if embedding_np is not None and len(embedding_np) > 50:
+                    if False and arg.auto_create and len(embedding_np):
+                        response = s3vectors.create_index(VectorBucketName=vector_bucket_name, IndexName=index_name, DataType='float32', Dimension=len(embedding_np), DistanceMetric='cosine')
+                        print("Index creation initiated.")
+                    else:
+                        print()
+                        print("Command to run..")
+                        print('aws s3vectors create-index --region',s3vectors.meta.region_name, '--vector-bucket-name',vector_bucket_name, '--index-name',index_name, '--data-type float32', '--dimension',len(embedding_np), '--distance-metric','cosine' )
+                        print()
+                else:
+                    print("The embedding is empty or invalid.")
+                    print("Cannot determine index dimension. Aborting.")
+
             break # Exit on other errors
 
     # Final cleanup
@@ -625,7 +645,7 @@ def main():
     parser.add_argument(
         "-m", "--model",
         default="clip",
-        choices=["clip", "pe", "titan", "mpnet", "minilm", "bgesmall"],
+        choices=["clip", "pe", "titan", "mpnet", "minilm", "bgesmall", "gemini2"],
         help="The embedding model to use: 'clip' (default) or 'titan'."
     )
 
@@ -723,7 +743,8 @@ def main():
 
     args = parser.parse_args()
 
-    if args.index == 'image-pe' or args.index == 'tags-bgesmall' or args.index == 'snippet-bgesmall':
+	#todo, should invert this logic, going foward will only be image-clip, NOT in eu-west-1
+    if args.index == 'image-pe' or args.model == 'bgesmall' or args.model == 'gemini2':
         print("Switching to eu-west-1")
         s3vectors = boto3.client('s3vectors', region_name='eu-west-1') # s3vector can be tested in eu-west-1 now! (we've started putting some indexes there)
 
