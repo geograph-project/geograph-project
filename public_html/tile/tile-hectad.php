@@ -21,6 +21,10 @@ $b = $g->getTileRect();
 
 $xd = $b->width/64;
 $yd = $b->height/64;
+if ($_GET['z'] >= 10) {
+	$xd*=2;
+	$yd*=2;
+}
 $bounds = array();
 $bounds[] = $b->x-$xd;
 $bounds[] = $b->y-$yd;
