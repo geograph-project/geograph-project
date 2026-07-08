@@ -62,6 +62,7 @@
         <ul>
             <li>Display the photographer's credit alongside any use of the image.</li>
             <li>Explicitly state that the image is Creative Commons licensed.</li>
+	    <li>If you adapt the image, rather than just copying it &ldquo;as is&rdquo;, your new work must also be Creative Commons licensed (the ShareAlike clause).</li>
         </ul>
         <p>Ideally, provide a link back to the original photo page using either the supplied URL or the format: <code>https://www.geograph.org.uk/photo/[id]</code>.</p>
     </section>
