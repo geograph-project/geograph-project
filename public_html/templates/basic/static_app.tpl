@@ -3,28 +3,45 @@
 
 <section id="geograph-app-landing" style="max-width:60em">
     <h2>The Geograph App</h2>
-    
-    <p class="intro">Our app allows you to take, upload, and submit photos to <b>Geograph Britain and Ireland</b>, review your recent submissions, view maps, and search for images 
-        directly from your device.</p>
 
-    {dynamic}
-    {if $user->registered}
-        <div class="user-status interestBox" style=" border-radius:9px">
-            As you are already registered, you can simply log in with your existing credentials when you first open the app.
-        </div><br>
-    {else}
-        <div id="post-reg-notice" style="display:none; background: #fffde7; border: 1px solid #ffd54f; padding: 1em; margin: 1em 0;  border-radius:9px">
-            <h3 style="margin-top:0">Registration received!</h3>
-            <p>Please check your email and follow the confirmation link to activate your account. Once confirmed, you will be able to use your new login details in the app.</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: start;">
+        <div style="flex: 1; min-width: 250px;">
+            <p class="intro">Our app allows you to take, upload, and submit photos to <b>Geograph Britain and Ireland</b>, review your recent submissions, view maps, and search for images 
+                directly from your device.</p>
+
+            {dynamic}
+            {if $user->registered}
+                <div class="user-status interestBox" style=" border-radius:9px">
+                    As you are already registered, you can simply log in with your existing credentials when you first open the app.
+                </div><br>
+            {else}
+                <div id="post-reg-notice" style="display:none; background: #fffde7; border: 1px solid #ffd54f; padding: 1em; margin: 1em 0;  border-radius:9px">
+                    <h3 style="margin-top:0">Registration received!</h3>
+                    <p>Please check your email and follow the confirmation link to activate your account. Once confirmed, you will be able to use your new login details in the app.</p>
+                </div>
+
+                <div id="registration-notice" style="border: 1px solid #ccc; padding: 1em; margin: 1em 0; background-color:#e4e4fc;  border-radius:9px">
+                    <h3 style="margin-top:0">Before you start</h3>
+                    <p>To use the app, you must have a Geograph account. Registration is not yet available inside the app, so please create your account here first.</p>
+                    &#128073; <a href="/register.php?redir=/help/app%3Fregistered"><strong>Register for Geograph</strong></a>
+                </div>
+            {/if}
+            {/dynamic}
         </div>
 
-        <div id="registration-notice" style="border: 1px solid #ccc; padding: 1em; margin: 1em 0; background-color:#e4e4fc;  border-radius:9px">
-            <h3 style="margin-top:0">Before you start</h3>
-            <p>To use the app, you must have a Geograph account. Registration is not yet available inside the app, so please create your account here first.</p>
-            &#128073; <a href="/register.php?redir=/help/app%3Fregistered"><strong>Register for Geograph</strong></a>
+        <div style="flex: 0 0 150px; text-align: center; margin: 0 auto;">
+            <a href="https://youtu.be/C97gJzp-Cy8" style="position: relative; display: inline-block; text-decoration: none;">
+                <img src="https://i3.ytimg.com/vi/C97gJzp-Cy8/mqdefault.jpg" width="120" alt="Watch introduction on YouTube" style="display: block; border-radius: 4px;">
+                
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; bg: rgba(0,0,0,0.7); background: rgba(229, 9, 20, 0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                    <div style="width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 10px solid white; margin-left: 3px;"></div>
+                </div>
+            </a>
+            <br>
+            <span style="font-size: 0.9em; color: #555; display: inline-block; margin-top: 8px;">Watch introduction<br> on YouTube.</span>
         </div>
-    {/if}
-    {/dynamic}
+
+    </div>
 
     <div id="app-instructions">
         <h2 id="platform-heading">Get the App</h2>
@@ -496,6 +513,7 @@
 <g transform="translate(810,108)" fill="#000000"><g transform="scale(13.5)"><rect width="6" height="6"></rect></g></g>
 <g transform="translate(108,810)" fill="#000000"><g transform="scale(13.5)"><rect width="6" height="6"></rect></g></g></g>
 </svg>
+
 </div>
 
             <p>The Geograph App is not found in the Google Play or Apple App Stores. Instead, you access it directly via your web browser, but can also install it to function like a 
