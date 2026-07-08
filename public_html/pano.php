@@ -322,7 +322,7 @@ if (empty($json["haov"]) || $json["vaov"] == 360) { ?>
 let pano = pannellum.viewer('panorama', <? print json_encode($json); ?>);
 function updH(that,method,id) {
 	pano[method](that.value);
-	document.getElementById(id).innerHTML = id+':'+that.value;
+	document.getElementById(id).innerHTML = id.replace(/^pout/','')+':'+that.value;
 }
 </script>
 
