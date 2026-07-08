@@ -161,7 +161,9 @@ if (!empty($_GET['tag']) && preg_match('/^\/tagged\/([^\?]+)/',$_SERVER['REQUEST
 }
 
 
-init_session();
+//init_session();
+init_session_or_cache(3600*24, 3600);
+
 
 $smarty = new GeographPage;
 
@@ -176,7 +178,7 @@ $cacheid = md5(serialize($_GET));
 
 if (empty($_GET) || !empty($_GET['homepage'])) {
 	$template = 'tags_homepage.tpl';
-	customExpiresHeader(3600,false,true);
+//	customExpiresHeader(3600,false,true);
 	if ($smarty->caching) {
 		 $smarty->caching = 2; // lifetime is per cache
 		 $smarty->cache_lifetime = 3600*3;
