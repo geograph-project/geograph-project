@@ -1,0 +1,232 @@
+        :root {
+            --bg-main: #f4f6f8;
+            --bg-panel: #eeeeee;
+            --border-color: #dcdfe3;
+            --text-main: #2d3748;
+            --primary: #2b6cb0;
+            --primary-hover: #2c5282;
+            --accent-error: #e53e3e;
+            --bg-pill: #e2e8f0;
+            --text-pill: #4a5568;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        /* Responsive Layout Engine */
+        .workspace {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 2px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 900px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Panel Styling */
+        .panel {
+            background: var(--bg-panel);
+            padding: 5px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
+
+        .form-group {
+            margin-bottom: 3px;
+        }
+
+        .form-group.conditional {
+            background: #f7fafc;
+            --padding: 10px;
+            --border-left: 3px solid var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            background: #fff;
+        }
+
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            background: #f7fafc;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+            font-size: 0.88rem;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+/* Base state: Hide engine-conditional checkboxes by default */
+.options-grid .checkbox-label.for-tag,
+.options-grid .checkbox-label.for-snippet {
+    display: none;
+}
+
+/* Scoped activation states based on parent data attribute */
+[data-active-engine="tag"] .options-grid .checkbox-label.for-tag {
+    display: flex;
+}
+
+[data-active-engine="snippet"] .options-grid .checkbox-label.for-snippet {
+    display: flex;
+}
+
+        /* Search Results Panel Components */
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-container input {
+            font-size: 1.1rem;
+            border: 2px solid var(--primary);
+        }
+
+        .results-section-header {
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #718096;
+            margin: 25px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .results-list {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            max-height: max(80svh, 400px);
+            overflow-y: auto;
+        }
+
+        .result-row {
+            padding: 3px 3px;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-row:hover {
+            background: #f7fafc;
+        }
+
+        .result-main {
+            flex-grow: 1;
+
+display:flex;
+gap: 10px;
+
+        }
+
+        .result-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .result-meta {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 3px;
+        }
+
+        .result-metrics {
+            text-align: right;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            font-family: monospace;
+            color: #4a5568;
+        }
+
+        /* Edge Case Item Treatments */
+        .long-distance {
+            background: #fff5f5;
+        }
+        .long-distance .result-title {
+            color: var(--accent-error);
+        }
+
+        .status-msg {
+            padding: 15px;
+            color: #718096;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .error-msg {
+            padding: 15px;
+            color: #c53030;
+            background: #fff5f5;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .preview-link {
+            text-decoration: none;
+            margin-left: 6px;
+            display: inline-block;
+        }
+
+.hidden {
+    display: none !important;
+}
+

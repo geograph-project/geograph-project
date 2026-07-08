@@ -131,8 +131,18 @@ class LLMBatchProcessor {
             print "{$this->systemPrompt}\n\n";
         }
 
+        if (!empty($this->params['explain'])) {
+		print "$sql;\n";
+		$rows = $this->db->getAll("EXPLAIN $sql");
+		print implode("\t",array_keys($rows[0]))."\n";
+		foreach($rows as $row)
+			print implode("\t",array_values($row))."\n";
+		exit;
+	}
+
         $rs = $this->db->Execute($sql);
         if (!$rs || $rs->EOF) {
+	    print "-- No Rows to Process\n";
             if ($this->params['print']) print "$sql;\n";
             return;
         }

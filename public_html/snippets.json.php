@@ -60,7 +60,104 @@ if (isset($_GET['term'])) {
 	$sql['columns'] = "snippet_id,s.title,s.comment,s.grid_reference,s.user_id,u.realname";
 }
 
-if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
+
+if (!empty($_GET['vector'])) {
+        customExpiresHeader(3600*24);
+
+	//to mimic what would be done in sphinx index!
+	$sql['columns'] .= ",s.wgs84_lat/57.29577951308232 as wgs84_lat,s.wgs84_long/57.29577951308232 as wgs84_long";
+
+        //dont use mode to signify vector, because vector itselt supports different modes!
+
+        require_once("geograph/vectors.inc.php");
+
+        if (empty($filesystem))
+                $filesystem = new FileSystem(); //sets up S3 configuation automagically - needed for s3Vectors!
+
+        ##########################
+
+        // new model is in the local zone, no longer need to use the US preview
+        $awsRegion = $CONF['s3_region'] ?? "eu-west-1";
+	$index = 'snippet-bgesmall'; // Hardcoded for now
+	$model = 'snippet';
+	$filter = null;
+
+$index = 'snippet2-gemini2';
+$model = 'gemini2';
+//$filter = array(array('type'=>'i'));
+
+
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+                $json_raw = file_get_contents('php://input');
+
+                $data = json_decode($json_raw, true);
+
+                if (isset($data['embeddings'])) {
+                    $b64_string = $data['embeddings'];
+                    $binary_data = base64_decode($b64_string);
+                    $vector = unpack('f*', $binary_data);
+                    $vector = array_values($vector);
+                }
+
+	} elseif ($model == 'gemini2') {
+
+		//because we doing via openrouter, it in a our llm libary
+
+		require_once "3rdparty/llm-providers.inc.php";
+
+		//todo, could try sending the title+desc as a 'siliarity' match, rather than query
+		$vector = getEmbeddingViaOpenRouter(array(
+		        'type'=>'query', //automatically compoes the right template!
+		        'query'=>latin1_to_utf8($_GET['q']),
+	                  //'image'=>$path,
+		), 'google/gemini-embedding-2', 1536);
+
+        } else {
+                $vector = getTextEmbedding($_GET['q'], 'bgesmall');
+        }
+
+        if (!empty($vector)) {
+
+                $limit = min(intval($_GET['limit'] ?? 20), 100);
+
+                $queryPayload = [
+                    'vectorBucketName' => $CONF['s3_vector_bucket'],
+                    'indexName' => $index,
+                    'queryVector' => ['float32' => $vector],
+                    'topK' => $limit,
+                    'returnDistance' => true,
+                    'returnMetadata' => true, //we can get title/gridef/user_id/realname, but WONT get the full description. BUT on gemini2 need the metadata to get the snippet_id!!
+                ];
+
+		if (!empty($filter)) //might end up a empty array, which s3 does not like!
+       			$queryPayload['filter'] = $filter;
+
+                $start  = microtime(true);
+                $result = queryS3Vectors($queryPayload, $awsRegion);
+                $end    = microtime(true);
+
+                $distances = array();
+                foreach ($result['vectors'] as $i => $vector) {
+		    $id = $vector['metadata']['snippet_id'] ?? intval($vector['key']);
+                    $ids[] = $id;
+                    $distances[$id] = round($vector['distance'],6);
+                    //if (!empty($vector['metadata'])) {
+                }
+
+                $idstr = join(",",$ids);
+                $where = "snippet_id IN(".join(",",$ids).")";
+
+                $sql['wheres'] = array("`snippet_id` IN ($idstr)");
+                $sql['order'] = "FIELD(`snippet_id`,$idstr)";
+                $sql['limit'] = count($ids);
+        } else {
+		//will default to every SD!
+		$sql['wheres'] = array("`snippet_id` = 0");
+	}
+
+#########################################################
+
+} elseif (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
 	init_session();
 	customExpiresHeader(30,false,true);
 
@@ -319,6 +416,12 @@ if (!empty($_GET['deb']))
 			$data[$idx]['images'] = $sphinx->res['matches'][$row['snippet_id']]['attrs']['images'];
 		}
 	}
+	if (!empty($distances)) {
+		foreach ($data as $idx => $row) {
+			$data[$idx]['distance'] = $distances[$row['snippet_id']] ?? null;
+		}
+    }
+
 
 if (!empty($fallback) && !empty($data)) {
 	array_unshift($data, array(

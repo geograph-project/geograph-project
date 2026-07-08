@@ -27,9 +27,20 @@ function getLLMResponse($prompt, $user, $provider = 'cloudflare', $model = 'gpt-
         } elseif ($provider=='nvidia') {
 		return callNvidia($prompt, $user, $model, $max_tokens);
 
-        } else {
+        } elseif ($provider=='moondream' && $model == 'moondream/moondream3-preview') {
+		//extract from our 'standard' image format!
+		$userText = $user[0]['text'] ?? null;
+		$image_url = $user[1]['image_url']['url'] ?? null;
+		if (empty($userText) || empty($image_url))
+			die("moondream only supports image prompt currently\n");
+		//technically probably could ask a text query, wihtout image, but ignore that for now!
+		return queryMoondream($image_url, "$prompt\n$userText");
+
+        } elseif ($provider=='local') {
                 return getLLMLocalResponse($prompt, $user, /* $model = */ 'gemma270m'); //for now, doesnt support other models anyway!
-        }
+        } else {
+		die("unknown provider\n");
+	}
 }
 
 ######################################
@@ -328,7 +339,7 @@ function getEmbeddingViaOpenRouter($input, $model = 'google/gemini-embedding-2',
     // Case 2: Structured array input
     elseif (is_array($input)) {
         $type = $input['type'] ?? 'document';
-	if (empty($input['query'])) $type='query';
+	if (!empty($input['query'])) $type='query';
 
         // 1. Process Text Context depending on the task intent
         if ($type === 'query') {
@@ -616,6 +627,103 @@ if (empty($responseData['choices'][0]['message']['content'])) {
     return null;
 }
 
+######################################
+
+/**
+ * Queries an image with a specific text question using the Moondream API.
+ * - the usage is very differnt to using multimodal LLM
+ *
+ * @param string $imagePathOrUrl Local file path, web URL, or base64 data URI of the image.
+ * @param string $question       The question you want to ask about the image.
+ * @return string                The generated answer from the model.
+ * @throws Exception             If the image cannot be processed or the API request fails.
+ */
+function queryMoondream(string $imagePathOrUrl, string $question): string
+{
+	global $CONF;
+
+    $apiUrl = 'https://api.moondream.ai/v1/query';
+    $apiKey = $CONF['moondream_api_key'];
+    $imageData = '';
+
+    // 1. Handle image input types and convert to Base64 if necessary
+    if (strpos($imagePathOrUrl, 'data:image/') === 0) {
+        // Already a base64 data URI
+        $imageData = $imagePathOrUrl;
+
+    } elseif (filter_var($imagePathOrUrl, FILTER_VALIDATE_URL)) {
+        ini_set('user_agent', 'Internal Request');
+
+        // It's a web URL. Fetch the content and convert to base64.
+        $imageContent = @file_get_contents($imagePathOrUrl);
+        if ($imageContent === false) {
+            throw new Exception("Failed to fetch image from URL: $imagePathOrUrl");
+        }
+
+        // Try to guess the mime type from the URL extension (fallback to jpeg)
+        $extension = strtolower(pathinfo(parse_url($imagePathOrUrl, PHP_URL_PATH), PATHINFO_EXTENSION));
+        $mimeType = in_array($extension, ['png', 'gif', 'webp']) ? "image/{$extension}" : 'image/jpeg';
+
+        $imageData = 'data:' . $mimeType . ';base64,' . base64_encode($imageContent);
+
+    } elseif (file_exists($imagePathOrUrl)) {
+        // It's a local file. Read and convert to base64.
+        $imageContent = @file_get_contents($imagePathOrUrl);
+        if ($imageContent === false) {
+            throw new Exception("Failed to read local file: $imagePathOrUrl");
+        }
+        $mimeType = mime_content_type($imagePathOrUrl) ?: 'image/jpeg';
+        $imageData = 'data:' . $mimeType . ';base64,' . base64_encode($imageContent);
+
+    } else {
+        throw new Exception("Invalid image source provided. Must be a valid local path, URL, or Base64 data URI.");
+    }
+
+    // 2. Prepare payload for the query endpoint
+    $payload = json_encode([
+        'image_url' => $imageData,
+        'question'  => $question,
+        'stream'    => false
+    ]);
+
+    // 3. Initialize and configure cURL
+    $ch = curl_init($apiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'X-Moondream-Auth: ' . $apiKey
+    ]);
+
+    // Execute the request
+    $response = curl_exec($ch);
+
+    // Check for cURL connection errors
+    if (curl_errno($ch)) {
+        $errorMsg = curl_error($ch);
+        curl_close($ch);
+        throw new Exception("cURL Error: " . $errorMsg);
+    }
+
+    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    // Decode the response
+    $responseData = json_decode($response, true);
+
+    // 4. Handle API response and return answer
+    if ($statusCode !== 200) {
+        $errorMessage = $responseData['error'] ?? 'Unknown API Error';
+        throw new Exception("Moondream API Error (Status $statusCode): " . $errorMessage);
+    }
+
+    if (!isset($responseData['answer'])) {
+        throw new Exception("Invalid API response structure. 'answer' field is missing.");
+    }
+
+    return $responseData['answer'];
+}
 
 ######################################
 

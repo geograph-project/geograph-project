@@ -1,0 +1,112 @@
+<?php
+/**
+ * $Project: GeoGraph $
+ * $Id: xmas.php 6235 2009-12-24 12:33:07Z barry $
+ * 
+ * GeoGraph geographic photo archive project
+ * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+require_once('geograph/global.inc.php');
+init_session();
+
+//$USER->mustHavePerm("basic");
+if (!$USER->hasPerm("basic")) {
+        //return a nice JSON error!
+	$data = array('error'=>'login required');
+	outputJSON($data); //uses pass-by-ref;
+	exit;
+}
+
+if (!empty($_GET['since'])) {
+	$db = GeographDatabaseConnection(false); //this is a small refresh, so go direct to master
+
+	$crit = "g.gridimage_id > ".intval($_GET['since']);
+	$crit .= " order by g.gridimage_id asc limit 1000";
+
+} elseif (!empty($_GET['images'])) {
+	$db = GeographDatabaseConnection(3600);
+	$limit = min(100,$_GET['images']);
+
+	$crit = "1 order by g.gridimage_id desc limit $limit";
+} else {
+	$db = GeographDatabaseConnection(3600);
+
+	$crit = "g.submitted > date_sub(now(),interval 3 day)";
+}
+
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+$crit = str_replace('order by','group by',$crit);
+
+
+//needs to use gridimage/gridsquare because may be pending images. but join in gridimage_search, as may already be moderated, which case have the lat/long ready to use!
+$sql = "select gridimage_id,g.submitted,gs.grid_reference,g.title,g.comment,nateastings,natnorthings,natgrlen,gs.reference_index,wgs84_lat,wgs84_long,g.imagetaken, g.user_id, g.moderation_status, gs.x, gs.y, tags
+,GROUP_CONCAT(gridimage_snippet.snippet_id) as snippets
+	from gridimage g
+inner join gridimage_snippet using (gridimage_id)
+		inner join gridsquare gs using (gridsquare_id)
+		left join gridimage_search gi using (gridimage_id)
+	where g.user_id IN ({$USER->user_id}) and g.moderation_status != 'rejected'
+	and $crit";
+
+
+require_once('geograph/conversions.class.php');
+$conv = new Conversions;
+
+
+
+//the dataset can be big, so streaming!
+
+header("Content-Type:application/json");
+print "[";
+
+$sep = '';
+$recordSet = $db->Execute($sql);
+
+if ($count = $recordSet->RecordCount()) {
+        while (!$recordSet->EOF)
+        {
+                $r =& $recordSet->fields;
+
+		$r['title'] = latin1_to_utf8($r['title']);
+		if (!empty($r['comment']))
+			$r['comment'] = latin1_to_utf8($r['comment']);
+
+		if (!empty($_GET['thumbs'])) {
+	                $image = new GridImage;
+        	        $image->fastInit($r);
+	                $r['thumbnail'] = $image->getThumbnail(213,160,true);
+		}
+
+		if (empty($r['wgs84_lat']) || $r['wgs84_lat'] < 1) {
+			if (empty($r['nateastings'])) {
+				// because if 4fig subject, doesnt have nateastings!
+				list($r['nateastings'],$r['natnorthings'],$reference_index) = $conv->internal_to_national($r['x'],$r['y']);
+			}
+		        list($r['wgs84_lat'],$r['wgs84_long']) = $conv->national_to_wgs84($r['nateastings'],$r['natnorthings'],$r['reference_index']);
+		}
+
+                print $sep.json_encode($recordSet->fields,JSON_PARTIAL_OUTPUT_ON_ERROR);
+                $sep = ',';
+                $recordSet->MoveNext();
+        }
+        $recordSet->Close();
+}
+
+print "]";
+
