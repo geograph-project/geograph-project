@@ -21,7 +21,7 @@
  */
 
 //these are the arguments we expect
-$param=array('debug'=>false, 'limit'=> 10);
+$param=array('debug'=>false, 'limit'=> 10, 'buffer'=>0, 'days'=>false);
 
 $debug = (posix_isatty(STDOUT) || $param['debug']);
 
@@ -38,15 +38,19 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
 // 1. Grab all active prefixes
-$prefixes = $db->GetAll("SELECT * FROM gridprefix WHERE imagecount > 0 LIMIT {$param['limit']}");
+if (!empty($param['days'])) {
+	$prefixes = $db->GetAll("SELECT * FROM gridprefix WHERE imagecount > 0 AND last_timestamp > date_sub(now(), interval {$param['days']} day) LIMIT {$param['limit']}");
+} else {
+	$prefixes = $db->GetAll("SELECT * FROM gridprefix WHERE imagecount > 0 LIMIT {$param['limit']}");
+}
 $done = 0;
 
 foreach ($prefixes as $prefix) {
     $ri     = (int)$prefix['reference_index'];
-    $left   = (int)$prefix['origin_x'];
-    $right  = (int)$prefix['origin_x'] +$prefix['width']-1;
-    $top    = (int)$prefix['origin_y'] +$prefix['height']-1;
-    $bottom = (int)$prefix['origin_y'];
+    $left   = (int)$prefix['origin_x']-$param['buffer'];
+    $right  = (int)$prefix['origin_x'] +$prefix['width']-1+$param['buffer'];
+    $top    = (int)$prefix['origin_y'] +$prefix['height']-1+$param['buffer'];
+    $bottom = (int)$prefix['origin_y']-$param['buffer'];
 
     // 2. Build the Well-Known Text (WKT) string for the region envelope
     $wkt = "POLYGON(($left $bottom, $right $bottom, $right $top, $left $top, $left $bottom))";
