@@ -129,9 +129,10 @@ function upsertEmbeddingProgress(
             max_id BIGINT UNSIGNED NOT NULL,
             done TINYINT(1) NULL DEFAULT NULL,
             PRIMARY KEY (`$groupByCol`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='FROM $sourceTable WHERE type=$type AND model=$model GROUP BY $groupByExpr'
-    ";
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT=".$db->Quote("FROM $sourceTable WHERE type=$type AND model=$model GROUP BY $groupByExpr");
 	//the ocmment isnt valid SQL, just aiming to recoud the source!
+	print "--Create (will run)\n";
+
 	print_r("$createTableSql;\n");
 
     if (!$db->Execute($createTableSql)) {
@@ -168,7 +169,7 @@ $db->Execute("SELECT @max_done := COALESCE(MAX(max_id), 0) FROM $progressTable")
             MAX(seq_id) AS new_max_id,
             NULL AS done
         FROM
-            `$sourceTable`
+            $sourceTable
         WHERE
             $whereSql
         GROUP BY
@@ -180,6 +181,7 @@ $db->Execute("SELECT @max_done := COALESCE(MAX(max_id), 0) FROM $progressTable")
     ";
 
 if (empty($param['execute'])) {
+	print "--Query (not run)\n";
 	print_r(emulate_adodb_query_for_debug($db, $sql,$params).";\n");
 	exit;
 }
