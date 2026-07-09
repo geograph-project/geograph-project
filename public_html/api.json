@@ -1,0 +1,907 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Geograph API",
+    "description": "The Geograph Application Programming Interface (API) allows third-party developers to access and build applications using data sourced from Geograph in an efficient, structured manner.",
+    "version": "2026.07"
+  },
+  "servers": [
+    {
+      "url": "{api_host}",
+      "variables": {
+        "api_host": {
+          "default": "https://api.geograph.org.uk",
+          "description": "The API host domain"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/api-facetql.php": {
+      "get": {
+        "summary": "FacetQL / SphinxQL Wrapper API",
+        "description": "The most complex API providing a direct JSON wrapper around SphinxQL Queries. To utilize this API effectively, it is highly recommended to understand searching mechanics in Sphinx (in particular the SPH_MATCH_EXTENDED format). Note can do both general queries for image rows, but can also do aggregation queries using SphinxQL 'GROUP BY', including \"GROUP n\", and grouping by MVA's.\n\n**Fields vs. Attributes Note:**\nSphinx treats search parameters in two distinct ways:\n* **Fields:** Used for full-text string searching (e.g., matching text query words inside `match`).\n* **Attributes:** Used for filtering (`where`), sorting (`order`), grouping (`group`), and retrieval (`select`).\nOften data is stored as an attribute and indexed as a field by the same name. In other cases, a property is optimized as an attribute for sorting/filtering but has a completely different field representation for human keyword searches. The programmatic `describe=1` JSON endpoint provides a raw reference list of these field and attribute names, while the HTML reference page explains what they actually contain.\n\n**FAQ - Fetching the Actual Image URL:**\nTo build the complete image URL, you must include both the `id` and `hash` fields inside your `select` parameter statement. These values can then be parsed on the client side using the `getGeographUrl(id, hash, size)` helper utility found in our [Geograph API JavaScript Library](https://www.geograph.org.uk/js/geograph-api-libs.js).\n\n**Schema & Attributes Reference:**\nYou can find the full list of fields and attributes dynamically via:\n* Programmatic JSON format: https://api.geograph.org.uk/api-facetql.php?describe=1\n* Human-readable HTML page: https://www.geograph.org.uk/stuff/describe.php?index=sample8 (Note: The active production index perfectly matches this original sample8 schema layout!)",
+        "externalDocs": {
+          "description": "Sphinx Search Reference Guide",
+          "url": "http://sphinxsearch.com/docs/2.0.1/searching.html"
+        },
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "required": true,
+            "description": "Your unique application credential authentication token key. For Client-side requests use your domain name rather than private key.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "match",
+            "in": "query",
+            "required": false,
+            "description": "The full-text query expression formatted in Sphinx SPH_MATCH_EXTENDED standard syntax. Note: on Geograph we have a custom query syntax, to map a 'user-entered' query to formal SPH_MATCH_EXTENDED syntax, we provide the getTextQuery reference implementation at https://www.geograph.org.uk/js/geograph-api-libs.js",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "callback",
+            "in": "query",
+            "required": false,
+            "description": "Specifies a client-side wrapper callback function identifier name to support JSONP workflows. DEPRECATED. We now support CORS requests.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "where",
+            "in": "query",
+            "required": false,
+            "description": "General SQL-style WHERE expression clause used to filter on **attributes** (e.g., 'user_id = 123').",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "geo",
+            "in": "query",
+            "required": false,
+            "description": "Performs a geographically centered radius search matching the format: lat,long,radius(m) (e.g., '56.333,-4.2342,200').",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bounds",
+            "in": "query",
+            "required": false,
+            "description": "Executes a geographical bounding box search mapping directly from standard Google Maps API map.getBounds().toString() structures.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "olbounds",
+            "in": "query",
+            "required": false,
+            "description": "Executes a geographical bounding box search conforming to OpenLayers notation, or bounds.toBBoxString() in Leaflet.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "description": "Configures sorting priority rule criteria when handling grouped results pipelines (e.g., 'WEIGHT() DESC, id DESC'). Note Geo-Queries use 'geodist ASC, id ASC' by default.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "group",
+            "in": "query",
+            "required": false,
+            "description": "Identifies the specific search index attribute name to target for result categorization and grouping operations.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "within",
+            "in": "query",
+            "required": false,
+            "description": "Specifies inline sorting ordering conditions applied explicitly within individual localized groups.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Determines the total count threshold ceiling of documents returned.",
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Specifies paging offset indices. Max matches constraint applies: the combined sum of limit + offset must remain below 1000.",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "select",
+            "in": "query",
+            "required": true,
+            "description": "Explicit declaration of desired field attributes to return in the row layout array. Set to '*' to fetch all available parameters. Remember to explicitly request 'id' and 'hash' if you intend to resolve complete image URLs with the getGeographUrl helper from geograph-api-libs.js.",
+            "schema": {
+              "type": "string",
+              "default": "id"
+            }
+          },
+          {
+            "name": "describe",
+            "in": "query",
+            "required": false,
+            "description": "Set to 1 to programmatically return the raw schema definition mappings containing available full-text query fields and selectable output response attributes. Note: This output only provides raw reference names; consult the human-readable HTML documentation page to understand exactly what each field indexes or what each attribute contains.",
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of filtered documents accompanied by query execution metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "rows": {
+                      "type": "array",
+                      "description": "Contains matched item records. The schema fields present within each object vary based on the fields requested via the 'select' query parameter.",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string"
+                        },
+                        "example": {
+                          "id": "163742",
+                          "user_id": "2798",
+                          "realname": "Nigel Cox",
+                          "title": "River Thames: Richmond-upon-Thames railway bridge",
+                          "grid_reference": "TQ1774"
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "description": "Search execution engine diagnostics, processing metrics, and keyword analytics details.",
+                      "properties": {
+                        "total": { "type": "string", "description": "total ACCESSSIBLE records, subject to max_matches. Use this total for pagination", "example": "763" },
+                        "total_found": { "type": "string", "description": "total matching records. useful to show a total to users", "example": "763" },
+                        "time": { "type": "string", "example": "0.005" },
+                        "cpu_time": { "type": "string", "example": "9.413" }
+                      },
+                      "additionalProperties": {
+                        "type": "string",
+                        "description": "Dynamic properties reporting keyword, hit count, and document search analysis performance indicators."
+                      },
+                      "example": {
+                        "total": "763",
+                        "total_found": "763",
+                        "time": "0.005",
+                        "cpu_time": "9.413",
+                        "keyword[0]": "bridg",
+                        "docs[0]": "1408",
+                        "hits[0]": "2745"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api-wallpaper.php": {
+      "get": {
+        "summary": "High Resolution Wallpaper Feed",
+        "description": "Good For: Screensavers, demos, source of inspiring images. Pros: Very simple API, provides direct access to high-resolution stamped images (so easy to reuse). Has a range of filtering options. Cons: Only offers pre-curated selections.",
+        "externalDocs": {
+          "description": "Wallpaper Feed Documentation",
+          "url": "https://www.geograph.org.uk/wallpaper/"
+        },
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "description": "The output format of the feed.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "GeoRSS",
+              "enum": [
+                "RSS0.91",
+                "RSS1.0",
+                "RSS2.0",
+                "GeoRSS",
+                "GeoPhotoRSS",
+                "GPX",
+                "OPML",
+                "HTML",
+                "JS",
+                "PHP",
+                "KML",
+                "JSON"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful feed response matching the requested high-resolution wallpaper format curation."
+          }
+        }
+      }
+    },
+    "/api/oembed": {
+      "get": {
+        "summary": "oEmbed API",
+        "description": "Good For: Getting information for a known image URL. Pros: Very simple interface, multiple formats. Cons: No query capabilities, one specific purpose.",
+        "externalDocs": {
+          "description": "oEmbed Standard Specification",
+          "url": "https://oembed.com/"
+        },
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "description": "The URL of the Geograph photo page to look up (e.g., http://www.geograph.org.uk/photo/123).",
+            "schema": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "description": "The response format.",
+            "schema": {
+              "type": "string",
+              "default": "json",
+              "enum": ["json", "xml"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The oEmbed response containing the photo representation metadata structure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/syndicator.php": {
+      "get": {
+        "summary": "Syndicator / RSS API",
+        "description": "Accesses the Images database, allowing a wide variety of output formats and filtering options. Most searches via this system can only access the first 1,000 images matching the query. format=JSON highly recommended for programmatic access unless require a specific format.",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "required": true,
+            "description": "Your unique application credential authentication token key.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "i",
+            "in": "query",
+            "description": "Runs a predefined search ID.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Return a specific page of results.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "u",
+            "in": "query",
+            "description": "Limit results to a particular user ID.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Text or location search string (e.g., 'bridge near TQ7054' or 'lat,long').",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "description": "Returns matching images within a specified distance of a location (grid reference, postcode, or decimal lat/long).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "text",
+            "in": "query",
+            "description": "Returns only images matching this text search string.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "distance",
+            "in": "query",
+            "description": "Limit results to within this distance in km (used with q or location).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 20
+            }
+          },
+          {
+            "name": "perpage",
+            "in": "query",
+            "description": "Number of results per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "description": "If present (set to 1), includes the thumbnail of the image in the description as HTML (not applicable to KML).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "The output format of the feed.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "GeoRSS",
+              "enum": [
+                "RSS0.91",
+                "RSS1.0",
+                "RSS2.0",
+                "GeoRSS",
+                "GeoPhotoRSS",
+                "GPX",
+                "OPML",
+                "HTML",
+                "JS",
+                "PHP",
+                "KML",
+                "JSON"
+              ]
+            }
+          },
+          {
+            "name": "callback",
+            "in": "query",
+            "description": "Wraps the output in a function call. Only works with format=JSON. DEPRECATED.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "simple",
+            "in": "query",
+            "description": "If present (set to 1) and format=KML, includes styling to hide the picture label unless hovering.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful feed response matching requested format."
+          }
+        }
+      }
+    },
+    "/stuff/description.json.php": {
+      "get": {
+        "summary": "Photo Description Polyfill Utility",
+        "description": "A lightweight companion utility designed explicitly to fetch the raw text description and any associated shared reusable text snippets for a single photograph by its ID.\n\n**CRITICAL USAGE NOTE:** This endpoint is a specialized polyfill for the FacetQL API (where description text is an unselectable search field). It is **NOT** intended for bulk harvesting, scraping, or high-volume sequential lookups. If you require descriptions for multiple images at once, utilize `/syndicator.php` or the bulk CSV engine instead.",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "required": true,
+            "description": "Your unique application credential authentication token key.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "The unique numeric ID of the Geograph photograph.",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 163742
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The raw comment and cross-referenced shared description snippets payload mapping for the requested photo ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "comment": {
+                      "type": "string",
+                      "description": "The primary description text block for the image, which may contain bracketed references matching entries in the snippets array.",
+                      "example": "This is the top lake [1] of Ffestiniog Pumped Storage Scheme. The bottom lake and the power station [2] can be seen at the bottom of the mountain. Taken from the south ridge leading up Moelwyn Mawr [4]."
+                    },
+                    "snippets": {
+                      "type": "array",
+                      "description": "An array of reusable shared description snippet objects referenced by the primary comment text block.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "snippet_id": { "type": "string", "example": "3" },
+                          "user_id": { "type": "string", "example": "3" },
+                          "title": { "type": "string", "example": "Llyn Stwlan" },
+                          "comment": { "type": "string", "description": "The contextual text fragment of the shared snippet.", "example": "The top reservoir of Ffestiniog Pumped Storage Scheme, which is held in place by Stwlan Dam, a highly visible local landmark (when it&#039;s not foggy)." },
+                          "reference_index": { "type": "string", "description": "The identifier matching the bracketed index in the parent comment text.", "example": "1" },
+                          "grid_reference": { "type": "string", "example": "SH6644" },
+                          "wgs84_lat": { "type": "string", "example": "52.980243" },
+                          "wgs84_long": { "type": "string", "example": "-3.991341" },
+                          "has_dup": { "type": "string", "example": "1" },
+                          "realname": { "type": "string", "example": "Barry Hunter" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/photo/{photo_id}/{api_key}": {
+      "get": {
+        "summary": "Details API: Photo Details",
+        "description": "Returns details about a particular photograph.",
+        "parameters": [
+          {
+            "name": "photo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The unique numeric ID of the photo."
+          },
+          {
+            "name": "api_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Your unique API Key (or public domain name if using client-side JSONP requests)."
+          },
+          {
+            "name": "output",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "xml",
+              "enum": ["xml", "json"]
+            },
+            "description": "The alternative output configuration parameter."
+          },
+          {
+            "name": "callback",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "JSONP callback function name (applicable if output=json). DEPRECATED."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Photo information details map metadata layer."
+          }
+        }
+      }
+    },
+    "/api/Gridref/{gridref}/{api_key}": {
+      "get": {
+        "summary": "Details API: Grid Square Details",
+        "description": "Returns information about a specific 4-figure grid square reference.",
+        "parameters": [
+          {
+            "name": "gridref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Four-figure OS Grid Reference (e.g., SD1234)."
+          },
+          {
+            "name": "api_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Details about the given grid square."
+          }
+        }
+      }
+    },
+    "/api/latlong/{distance}km/{lat_long}/{api_key}": {
+      "get": {
+        "deprecated": true,
+        "summary": "Details API: Search Nearby (Deprecated)",
+        "description": "Returns surrounding images within a specified distance. Note: using syndicator.php is recommended instead of this endpoint.",
+        "parameters": [
+          {
+            "name": "distance",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 10
+            },
+            "description": "Distance radius threshold in km (should be 10km or below)."
+          },
+          {
+            "name": "lat_long",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated latitude and longitude decimal values (e.g., 50.64163,-1.94978)."
+          },
+          {
+            "name": "api_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Surrounding image dataset payload mappings."
+          }
+        }
+      }
+    },
+    "/export.csv.php": {
+      "get": {
+        "deprecated": true,
+        "summary": "CSV Export Engine (Deprecated)",
+        "description": "Suited for bulk synchronization tasks. Note: These CSV exports only return up to 1,000 records without prior layout arrangement. We now provide bulk exports seperately at https://data.geograph.org.uk/",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "required": true,
+            "description": "Your unique application credential authentication token key.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "description": "Returns all images submitted or modified on or after this date (YYYY-MM-DD).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "last",
+            "in": "query",
+            "description": "Returns records modified within a relative backframe delta window (e.g., '7 day', '6 hour').",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Returns the latest specified number of records in descending date order.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "ri",
+            "in": "query",
+            "description": "Limits results to a specific National Grid system.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1, 2]
+            }
+          },
+          {
+            "name": "i",
+            "in": "query",
+            "description": "Runs a predefined search query ID. Note: Can't be combined with 'since', 'last', 'limit', or 'ri'.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "count",
+            "in": "query",
+            "description": "Overrides page size layout constraints for predefined query configurations (use -1 for biggest max default, usually 1000).",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Returns a specific page index of paginated records context.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "encoding",
+            "in": "query",
+            "description": "Explicit text charset setting. Fallback sets standard latin1 defaults.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["utf8"]
+            }
+          },
+          {
+            "name": "taken",
+            "in": "query",
+            "description": "Includes taken date attributes when enabled.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "en",
+            "in": "query",
+            "description": "Adds Eastings, Northings, and Precision column flags. Cannot be used alongside ll or tags.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "coords",
+            "in": "query",
+            "description": "Enforces calculation details payload context properties mapping resolution overrides for 4-figure grid entries when paired with en=1.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "ll",
+            "in": "query",
+            "description": "Adds WGS84 Latitude and Longitude columns.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "thumb",
+            "in": "query",
+            "description": "Appends full 120x120 pixel thumbnail URI location paths.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "desc",
+            "in": "query",
+            "description": "Includes standard raw text photo description body arrays.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "dir",
+            "in": "query",
+            "description": "Appends camera view field direction angle maps.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "ppos",
+            "in": "query",
+            "description": "Includes Eastings, Northings, and Precision vectors explicitly tracking camera source parameters. Cannot be combined with ll or tags parameters.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "submitted",
+            "in": "query",
+            "description": "Includes file upload timeline metadata entries.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "hits",
+            "in": "query",
+            "description": "Includes tracking interaction count metrics views indexes.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Includes moderation verification workflow values data profiles.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "description": "Includes user profile attribution indexing values markers.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "points",
+            "in": "query",
+            "description": "Includes point structure distribution score attributes lists.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Appends question mark delimited taxonomy tag lists. Cannot be combined with en or ppos parameters.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [1]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A CSV file payload payload data stream configuration."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "key",
+        "description": "The unique application credential token key assigned string."
+      }
+    },
+    "x-helper-libraries": {
+      "geograph-api-libs": {
+        "description": "Official client-side JavaScript helper library containing URL generation utilities like getGeographUrl() and custom query format standard conversions like getTextQuery().",
+        "url": "https://www.geograph.org.uk/js/geograph-api-libs.js"
+      }
+    }
+  }
+}

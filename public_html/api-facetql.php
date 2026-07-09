@@ -44,13 +44,15 @@ sphinx</a></p>
 <tr><td align="right">?match=</td><td><input name="match" value="bridge"></td><td>The full-text query (in SPH_MATCH_EXTENDED format)</td></tr>
 <tr><td align="right">&amp;callback=</td><td><input name="callback"></td><td>callback function name for JSONP</td></tr>
 <tr><td align="right">&amp;where=</td><td><input name="where" value="user_id = 93"></td><td>General WHERE clause for filtering attributes</td></tr>
+<tr><td align="right">&amp;geo=</td><td><input name="geo" value=""></td><td>Do a geographical centered query (geo=56.333,-4.2342,200 :: lat,long,radius(m))</td></tr>
+<tr><td align="right">&amp;bounds=</td><td><input name="bounds" value=""></td><td>Do a geographical BBOX query (direct from map.getBounds().toString() in Google Maps API!)</td></tr>
+<tr><td align="right">&amp;olbounds=</td><td><input name="olbounds" value=""></td><td>Do a geographical BBOX query (OpenLayers format, OR direct from bounds.toBBoxString() in Leaflet!)</td></tr>
 <tr><td align="right">&amp;order=</td><td><input name="order" value="WEIGHT() DESC, id DESC"></td><td>ORDER BY (When grouping)</td></tr>
 <tr><td align="right">&amp;group=</td><td><input name="group"></td><td>Group by (attribute name) - see <a href="?q=&limit=1&select=*&attrs=list">list</a></td></tr>
 <tr><td align="right">&amp;within=</td><td><input name="within" value=""></td><td>Within Group ORDER</td></tr>
 <tr><td align="right">&amp;limit=</td><td><input name="limit" value="15"></td><td>Number of results</td></tr>
 <tr><td align="right">&amp;offset=</td><td><input name="offset" value="0"></td><td>Offset (max_matches=1000 so limit+offset must be under 1000)</td></tr>
-<tr><td align="right">&amp;select=</td><td><input name="select" value="user_id"></td><td>List of <a href="?describe=1">attributes</a> to return - can use "*" to get all</td></tr>
-<tr><td align="right">&amp;pretty=1</td><td><input type=checkbox name="pretty" value="1"></td><td>Pretty print the json - ONLY use for testing purposes</td></tr>
+<tr><td align="right">&amp;select=</td><td><input name="select" value="user_id"></td><td>List of <a href="https://api.geograph.org.uk/api-facetql.php?describe=1">attributes</a> to return - can use "*" to get all</td></tr>
 </table>
 <input type=submit>
 (All fields - except select - are optional)
@@ -60,9 +62,9 @@ There are some other params, includeing filter,filterrange,exclude,geo,bounds,ol
 
 Example Queries:
 <ul>
-	<li><a href="?select=id,user_id,realname,title,grid_reference&match=@title+bridge&pretty=1">Basic full-text query - in json format</a>
-	<li><a href="?select=id,user_id,realname,title,grid_reference&match=@title+bridgebridge&callback=my_function&pretty=1">Basic full-text query - in jsonp format (for accessing in a webpage)</a>
-	<li><a href="?match=@title+bridge&group=user_id&select=id,user_id,count(*)+as+count&pretty=1">Group by user_id - to get counts per contributor for facets</a>
+	<li><a href="?select=id,user_id,realname,title,grid_reference&match=@title+bridge">Basic full-text query - in json format</a>
+	<li><a href="?select=id,user_id,realname,title,grid_reference&match=@title+bridgebridge&callback=my_function">Basic full-text query - in jsonp format (for accessing in a webpage)</a>
+	<li><a href="?match=@title+bridge&group=user_id&select=id,user_id,count(*)+as+count">Group by user_id - to get counts per contributor for facets</a>
 </ul>
 
 <hr/>
@@ -85,11 +87,11 @@ Example Queries:
 
 
 	if (!empty($_GET['describe'])) {
-		$res['rows'] = getAll("DESCRIBE ".SPHINX_INDEX);
+		$res['rows'] = getAllWithUTF("DESCRIBE ".SPHINX_INDEX);
 		if (!empty($res['rows']) && !empty($res['rows'][0]['Agent']) && $res['rows'][0]['Type'] == 'local') {
 			//in the case of distributed index, sphinx tells us the component indexes, lets instead return result for the compoentn index.
 			// Users care about teh fields/attributes available, not how its built by the server
-			$res['rows'] = getAll("DESCRIBE ".$res['rows'][0]['Agent']);
+			$res['rows'] = getAllWithUTF("DESCRIBE ".$res['rows'][0]['Agent']);
 		}
 	} elseif (!empty($_GET['select'])) {
 
@@ -361,7 +363,7 @@ if (function_exists("call_with_results")) {
         call_with_results($res);
 }
 
-if (empty($res['meta'])) {
+if (empty($res['meta']) && empty($_GET['describe'])) {
 	$res['meta'] = array('error'=>'Unable to obtain results');
 }
 
@@ -379,12 +381,8 @@ if (empty($res['meta'])) {
 		header('Content-type: application/json');
 	}
 
-	if (!empty($_GET['pretty'])) {
-		print indent(json_encode($res));
+	print str_replace('-INF','0',json_encode($res));
 
-	} else {
-		print str_replace('-INF','0',json_encode($res));
-	}
 	if (!empty($callback))
 		print ");";
 

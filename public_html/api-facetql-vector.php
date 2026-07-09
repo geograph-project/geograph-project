@@ -9,7 +9,7 @@ if (!isset($ABORT_GLOBAL_EARLY))
 require_once('geograph/global.inc.php');
 
 //the gridimage_embedding is only on DEV instance for now!
-$CONF['manticorert_host'] = "manticorert-worker-svc.dev.svc.cluster.local"; //test instance!
+//$CONF['manticorert_host'] = "manticorert-worker-svc.dev.svc.cluster.local"; //test instance!
 
 require_once('3rdparty/facet-functions.php');
 
@@ -195,7 +195,6 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 	} else {
 		//no results
 		//todo, if due to error, add customExpiresHeader(10,true); //maybe? (to REDUCE the caching)
-		
 
 		$res['rows'] = false;
 		$res['meta'] = array('total_found'=>0, 'total'=>0, 'time' => $end-$start);
@@ -203,11 +202,14 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 
 ###########################################
 
-} elseif (!empty($_GET['match'])) {
+} elseif (true) { // for now point all other queries to original index, the RT index is offline.
+
+//} elseif (!empty($_GET['match'])) {
 	//this is tricky, if making a match query, must be trying to use this scripts ability to fetch image_vector
 	//but dont have a index available yet, use sample8 and add missing detail later!
 
 	$SPHINX_INDEX = 'sample8';
+	if (!empty($_GET['select']))
 	$_GET['select'] = str_replace(",image_vector",",0 as image_vector", $_GET['select']); //this attribute doesnt exist, will have to fetch from database later!
 
 
@@ -241,12 +243,14 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 if (empty($res)) { //filled directly above!!!
 
 	if (!empty($_GET['describe'])) {
-		$res['rows'] = getAll("DESCRIBE $SPHINX_INDEX");
+		$res['rows'] = getAllWithUTF("DESCRIBE $SPHINX_INDEX");
 		if (!empty($res['rows']) && !empty($res['rows'][0]['Agent']) && $res['rows'][0]['Type'] == 'local') {
 			//in the case of distributed index, sphinx tells us the component indexes, lets instead return result for the compoentn index.
 			// Users care about teh fields/attributes available, not how its built by the server
-			$res['rows'] = getAll("DESCRIBE ".$res['rows'][0]['Agent']);
+			$res['rows'] = getAllWithUTF("DESCRIBE ".$res['rows'][0]['Agent']);
 		}
+		$res['rows'][] = array('Field'=>'image_vector', 'Type'=>'string');
+
 	} elseif (!empty($_GET['select'])) {
 
 		$threads = getAssoc("SHOW THREADS"); //alas no quick way to just get count.
@@ -409,7 +413,7 @@ if (function_exists("call_with_results")) {
         call_with_results($res);
 }
 
-if (empty($res['meta'])) {
+if (empty($res['meta']) && empty($_GET['describe'])) {
 	$res['meta'] = array('error'=>'Unable to obtain results');
 }
 
