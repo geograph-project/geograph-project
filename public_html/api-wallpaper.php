@@ -257,7 +257,7 @@ for ($i=0; $i<$cnt; $i++) {
 	}
 
 	$item->date = strtotime($images->images[$i]->submitted);
-	$item->dateUpdated = strtotime($images->images[$i]->upd_timestamp);
+	//$item->dateUpdated = strtotime($images->images[$i]->upd_timestamp);
 	$item->source = $baselink.preg_replace('/^\//','',$images->images[$i]->profile_link);
 	$item->author = $images->images[$i]->realname;
 	if (!empty($images->images[$i]->tags))
@@ -281,6 +281,7 @@ for ($i=0; $i<$cnt; $i++) {
 		$srcw = $images->images[$i]->original_width;
 		$srch = $images->images[$i]->original_height;
 		$maxw = $minsize;
+		$maxh = $minsize;
 
                                                         if ($srcw>$srch)
                                                         {
