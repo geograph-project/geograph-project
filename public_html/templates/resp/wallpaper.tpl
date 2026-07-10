@@ -52,6 +52,7 @@ div#preview div.json i {
 <option value="">Any Aspect Ratio</option>
 <option value="l">Any Landscape</option>
 <option value="p">Any Portrait</option>
+<option value="w">Any Panorama</option>
 <option value="1.0">Square</option>
 </select>
 </span>
@@ -82,6 +83,7 @@ div#preview div.json i {
 <select name=geo id=geo>
 <option value="1">Geograph Images</option>
 <option value="2">Geograph+CrossGrids</option>
+<option value="3">Aerial Images</option>
 <option value="0">Non Geograph</option>
 <option value="">Mixed Images</option>
 </select>
@@ -130,7 +132,7 @@ var endpoint = "https://api.geograph.org.uk/api-wallpaper.php?format=JSON";
 $(function() {
   loadImages();
 
-  var list = '1024x768,1200x800,1366x768,1440x900,1600x900,1680x1050,1920x1080,1920x1200';
+  var list = '1024x768,1200x800,1366x768,1440x900,1600x900,1680x1050,1920x1080,1920x1200,2000x1000';
   var ratios = new Object(); //use a 'associative array' to deduplicate
   $.each(list.split(/,/), function(index,value) {
      var bits = value.split(/x/);

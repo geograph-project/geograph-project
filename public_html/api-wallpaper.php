@@ -91,10 +91,14 @@ if (!empty($_GET['ratio'])) {
 		$where['ratio'] = "(original_width/original_height) BETWEEN 1.3 and 3";
 	elseif ($_GET['ratio'] == 'p')
 		$where['ratio'] = "(original_width/original_height) BETWEEN 0.6 and 0.8";
+	elseif ($_GET['ratio'] == 'w')
+		$where['ratio'] = "(original_width/original_height) > 3";
 }
 
 if (isset($_GET['geo'])) {
-	if ($_GET['geo'] == 2)
+	if ($_GET['geo'] == 3)
+		$where[] = "moderation_status = 'accepted' AND tags LIKE '%type:Aerial%'";
+	elseif ($_GET['geo'] == 2)
 		$where[] = "(moderation_status = 'geograph' OR tags LIKE '%type:Cross Grid%')";
 	elseif ($_GET['geo'] == 1)
 		$where[] = "moderation_status = 'geograph'";
