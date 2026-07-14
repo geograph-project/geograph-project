@@ -79,10 +79,10 @@
     </section>
 
     <!-- API Key Authentication -->
-    <section id="api-authentication">
-        <h2>Authentication &amp; API Keys</h2>
+    <section id="api-authentication" style="background-color:#fbfbd2;padding:10px">
+        <h2><span style="font-size:1.5em;font-weight:normal">&#9888;</span> Authentication &amp; API Keys</h2>
         <p>
-            To access the live feeds documented below, you will need a unique API key. You can <a href="/admin/apikey.php">request a key here</a>.
+            To access the live feeds documented below, you will need a unique API key. <b>You can <a href="/admin/apikey.php">request a key here</a></b>.
         </p>
         <p>
             Once you have received your key, simply replace the <code>[apikey]</code> placeholder in the following examples to authenticate your requests.
