@@ -183,6 +183,7 @@
                and then transition to blue (active) for the remainder up to max.
             */
             background: linear-gradient(to right, #ccc 0%, #ccc var(--pct, 50%), #007bff var(--pct, 50%), #007bff 100%);
+            margin-top:10px;
         }
 
         /* Styling the thumb (the draggable knob) */
@@ -226,23 +227,22 @@
 
             <!-- Vector Filter Input -->
             <div class="input-group">
-		<div style="display: flex; align-items: center; gap: 8px;"
-	                <label for="filterInput">2. Similarity Filter</label>
-			<label style=" cursor: pointer;">(   <input type="checkbox" id="invertCbx"> Invert )</label>
-		</div>
-
+	            <label for="filterInput">2. Similarity Filter</label>
                 <input type="text" id="filterInput" value="Mountain" placeholder="e.g., Mountain Landscape">
             </div>
 
             <!-- Distance Threshold Slider -->
             <div class="slider-group">
                 <div class="slider-header">
-                    <span>Distance Threshold</span>
+                    <span>Threshold</span>
+                    <label style=" cursor: pointer;">( <input type="checkbox" id="invertCbx"> Invert)</label>
                     <span id="thresholdVal">0.80</span>
                 </div>
                 <input type="range" id="thresholdSlider" min="0" max="1" step="0.001" value="0.8">
-		<span id="distMsg"></span>
+                <span id="distMsg"></span>
             </div>
+
+
 
             <!-- Action Button -->
             <div>
@@ -343,8 +343,9 @@
                     allImages.push({
                         id: image.id,
                         hash: image.hash,
-                        title: image.title || 'Untitled',
-                        realname: image.realname || 'Unknown',
+                        gridref: image.grid_reference,
+                        title: escapeHTML(image.title) || 'Untitled',
+                        realname: escapeHTML(image.realname) || 'Unknown',
                         thumb: imageUrl,
                         vector: vectorObj
                     });
@@ -397,7 +398,9 @@
 			}
 
                 card.innerHTML = `
-                    <img src="${image.thumb}" alt="Geograph image ${image.id}" loading="lazy">
+                    <a href="/photo/${image.id}" title="${image.gridref} :: ${image.title} - click to view" target="_blank">
+                        <img src="${image.thumb}" alt="Geograph image ${image.id}" loading="lazy">
+                    </a>
                     <div class="card-body">
                         <h4 class="card-title" title="${image.title}">${image.title}</h4>
                         <div class="card-meta">By: ${image.realname}</div>
@@ -520,6 +523,10 @@
             // Pass the percentage to the CSS variable
             slider.style.setProperty('--pct', pct + '%');
         }
+       function escapeHTML(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
 
 </script>
 
