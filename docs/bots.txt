@@ -1,0 +1,29 @@
+
+
+Identifiable User-Agents: accesses from agents using a non 'browser' useragent, includes all sorts of 'automated' acceses, includding geninue search engine crawlers.
+Notable include most API traffic, as API users typically not using a standard browser. But does NOT include 'steath' crawlers, and natrually shouldnt include normal users.
+
+API Analyser: All accesses to mainstream APIs (minor ones excluded), both with a key and without. Includes all accesses to these APIs, including by general crawlers, and even 
+stealth ones.
+
+Stealth Crawlers: This will attempt to idenify steath crawlers/scrapers, that use a fake user agent (or are driving a real headless browser). Not fully developed yet.
+
+Image Harvesting: This will attempt to identify bulk access of the images directly. Will likly include geninua API and crawlers, and ideally steath crawlers. Just will aim to 
+exclude normal usage of images within our own site. Will will include hotlinking images onto tother sites. (hopefulyl with the different type of usage sperated)
+
+
+Internal Tool Classifications & Scopes
+Identifiable User-Agents (bots.php)
+Tracks requests from clients providing a non-standard or non-browser User-Agent header. This capture pool consists of identifiable automated scrapers, indexers, and genuine search engine crawlers. While it inherently captures a large portion of API traffic (as API developers rarely mimic desktop browsers), it is limited to self-reported signatures. It explicitly excludes standard browser traffic from genuine human visitors and does not capture stealth operations that aggressively mask their identity.
+
+API Analyzer (bots-api.php)
+Monitors all computational volume routed specifically to primary API endpoints, isolating metadata querying from regular web layout rendering. It aggregates traffic regardless of client intent or identity, capturing explicit key holders, traditional crawlers, and masked stealth operations hitting the endpoints. Requests containing active tracking keys are analyzed independently, while keyless entry requests are clustered using a composite structural footprint (combining User-Agent, IP address, and Referer) to isolate distinct anonymous operations.
+
+Monitors all computational volume routed specifically to primary API endpoints, isolating metadata querying from regular web layout rendering. It aggregates traffic regardless of client intent or identity, capturing explicit key holders, traditional crawlers, and masked stealth operations hitting the endpoints. Requests containing active tracking keys are analyzed independently. For keyless traffic, the system employs a hybrid clustering model it uses background regex heuristics to catch and normalize unclassified traffic into shared signature fragments (e.g., extracting specific bot strings), while dynamically falling back to the composite User-Agent/IP/Referer footprint for ungrouped, anonymous entities.
+
+Stealth Crawlers (bots-stealth.php — In Development)
+Designed to intercept and expose malicious or uncooperative scrapers attempting to bypass tracking filters. It focuses strictly on entities utilizing spoofed, mainstream desktop User-Agents or orchestrating real automation frameworks (such as headless browser runtimes) to masquerade as human traffic. Detection paradigms will rely on behavioral patterns, request anomalies, and structural client footprints rather than literal header strings.
+
+Image Harvesting (bots-images.php — In Development)
+Isolates and monitors high-volume extraction targeting physical image assets directly, completely bypassing text/metadata queries. This view targets automated download loops and bulk sync operations, which means it will naturally capture overlapping volume from authorized API consumers, traditional indexers, and stealth scrapers alike. The engine's core goal is to filter out legitimate in-line image requests from our own web domains while separating, categorizing, and tracking hotlinked asset utilization across third-party properties.
+
