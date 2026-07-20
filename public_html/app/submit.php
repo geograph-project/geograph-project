@@ -3178,7 +3178,6 @@ async function loadPlaceNames(eastings, northings, ri) {
 }
 
 function insertAtCursor(el, textToInsert) {
-
     // Validate that it's an input or textarea
     if (!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA')) {
         console.warn('No valid input focused');
@@ -3187,21 +3186,49 @@ function insertAtCursor(el, textToInsert) {
 
     const cursorPosition = el.selectionStart;
     const textBeforeCursor = el.value.slice(0, cursorPosition);
-
-    // 1. Find the start of the current "partial word"
-    // We search backwards for the last space (or newline)
-    const lastSpaceIndex = textBeforeCursor.lastIndexOf(' ');
-    const lastNewlineIndex = textBeforeCursor.lastIndexOf('\n');
-    const lastBreakIndex = Math.max(lastSpaceIndex, lastNewlineIndex);
-    const wordStart = lastBreakIndex === -1 ? 0 : lastBreakIndex + 1;
-
-    // 2. Build the new value:
-    // Everything before the partial word + the full suggestion + rest of text
     const textAfterCursor = el.value.slice(el.selectionEnd);
-    el.value = el.value.slice(0, wordStart) + textToInsert + ' ' + textAfterCursor;
 
-    // 3. Update cursor position (placed after the inserted word and the space we added)
-    const newCursorPos = wordStart + textToInsert.length + 1;
+    // Helper to normalize text for comparison
+    const normalize = (str) => str.toLowerCase().replace(/[-/]/g, ' ');
+
+    const lowerBefore = textBeforeCursor.toLowerCase();
+    const trimmedBefore = lowerBefore.trimEnd();
+
+    const normBefore = normalize(trimmedBefore);
+    const normInsert = normalize(textToInsert);
+
+    let overlapLength = 0;
+    const maxPossibleOverlap = Math.min(normBefore.length, normInsert.length);
+    
+    // 1. Try to find a structural overlap first
+    for (let i = maxPossibleOverlap; i > 0; i--) {
+        if (normBefore.endsWith(normInsert.slice(0, i))) {
+            overlapLength = i;
+            break;
+        }
+    }
+
+    let cutIndex;
+
+    if (overlapLength > 0) {
+        // Strategy A: Overlap found, cut from the start of the overlap
+        cutIndex = trimmedBefore.length - overlapLength;
+    } else {
+        // Strategy B: No overlap found. Fall back to removing the current partial word.
+        const lastSpaceIndex = textBeforeCursor.lastIndexOf(' ');
+        const lastNewlineIndex = textBeforeCursor.lastIndexOf('\n');
+        const lastBreakIndex = Math.max(lastSpaceIndex, lastNewlineIndex);
+        
+        // Cut back to the last space/newline, or 0 if it's the first word
+        cutIndex = lastBreakIndex === -1 ? 0 : lastBreakIndex + 1;
+    }
+
+    // Build the new value and append a trailing space for the next word
+    el.value = textBeforeCursor.slice(0, cutIndex) + textToInsert + ' ';
+    el.value += textAfterCursor;
+
+    // Update cursor position right after the inserted word and its trailing space
+    const newCursorPos = cutIndex + textToInsert.length + 1;
     el.setSelectionRange(newCursorPos, newCursorPos);
 
     el.focus();
