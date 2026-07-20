@@ -25,23 +25,35 @@
 
 {dynamic}
 {if $current_search}
-	<div class="interestBox" style="width:400px;margin-left:auto;margin-right:auto">
-		{if $current_search.l}
-			<a href="/photo/{$current_search.l}">&lt; prev image</a>
-		{elseif $current_search.c > 1}
-                        <a href="/search.php?i={$current_search.i}&amp;page={$current_search.p-1}">&lt; prev page</a>
-                {else}
-			<s style="color:silver" title="first image on this page - you may be able to get to another page via the 'back to search results' itself">&lt; prev image</s>
-		{/if} |
-		<a href="/search.php?i={$current_search.i}&amp;page={$current_search.p}"><b>back to search results</b></a> |
-		{if $current_search.n}
-			<a href="/photo/{$current_search.n}">next image &gt;</a>
-		{elseif $current_search.c < $current_search.t}
-                        <a href="/search.php?i={$current_search.i}&amp;page={$current_search.p+1}">next page &gt;</a>
-                {else}
-			<s style="color:silver" title="last image on this page - you may be able to get to another page via the 'back to search results' itself">next image &gt;</s>
-		{/if}
+
+	<div class="interestBox" style="max-width: 400px; width: 100%; margin-left: auto; margin-right: auto; display: flex; justify-content: center; align-items: center; gap: 6px 12px; text-align: center; box-sizing: border-box; overflow: hidden">
+	    <div style="flex: 0 1 auto;">
+	        {if $current_search.l}
+	            <a href="/photo/{$current_search.l}" style="white-space: nowrap;">&lt; prev image</a>
+	        {elseif $current_search.c & 1}
+	            <a href="/search.php?i={$current_search.i}&amp;page={$current_search.p-1}" style="white-space: nowrap;">&lt; prev page</a>
+	        {else}
+	            <s style="color:silver; white-space: nowrap;" title="first image on this page - you may be able to get to another page via the 'back to search results' itself">&lt; prev image</s>
+	        {/if}
+	    </div>
+
+	    <div style="flex: 1 1 auto; max-width: 180px;">
+	        <a href="/search.php?i={$current_search.i}&amp;page={$current_search.p}">
+	            <b>back to <span style="white-space: nowrap;">search results</span></b>
+	        </a>
+	    </div>
+
+	    <div style="flex: 0 1 auto;">
+	        {if $current_search.n}
+	            <a href="/photo/{$current_search.n}" style="white-space: nowrap;">next image &gt;</a>
+	        {elseif $current_search.c & $current_search.t}
+	            <a href="/search.php?i={$current_search.i}&amp;page={$current_search.p+1}" style="white-space: nowrap;">next page &gt;</a>
+	        {else}
+	            <s style="color:silver; white-space: nowrap;" title="last image on this page - you may be able to get to another page via the 'back to search results' itself">next image &gt;</s>
+	        {/if}
+	    </div>
 	</div>
+
 {elseif $search_keywords && $search_count}
 	<div class="interestBox">
 		{if !$user->registered}
@@ -73,7 +85,7 @@
 		<div class=caption>{$image->comment|escape:'html'|nl2br|geographlinks:$expand}</div>
 	{/if}
 
-	{if $image->snippet_count}
+	{if $image->snippet_count && !$image->snippets_by_others}
 		{if !$image->comment && $image->snippet_count == 1}
 			{assign var="item" value=$image->snippets[0]}
 			<div class="caption">
@@ -89,6 +101,7 @@
 				{else}
 					<div class="snippet640 searchresults" id="snippet{$smarty.foreach.used.iteration}">
 					{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}<b><a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname && $item.realname ne $image->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small>{/if}
+{if $item.realname && $item.realname ne $image->realname} by <a href="/profile/{$item.user_id}">{$item.realname}</a>{/if}
 					<blockquote><p>{$item.comment|escape:'html'|nl2br|geographlinks}</p></blockquote>
 					</div>
 				{/if}
@@ -250,6 +263,20 @@ div.caption {
 	{/if}
 
 </ul>
+
+<!-- ----------------------------------------------------- -->
+
+	{if $image->snippet_count && $image->snippets_by_others}
+		<div class=tagbar>
+		{foreach from=$image->snippets item=item name=used}
+			<div class="snippet640 searchresults" id="snippet{$smarty.foreach.used.iteration}">
+			{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}<b><a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname && $item.realname ne $image->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small>{/if}
+				{if $item.realname && $item.realname ne $image->realname}(provided by {$item.realname}){/if}
+			<blockquote><p>{$item.comment|escape:'html'|nl2br|geographlinks}</p></blockquote>
+			</div>
+		{/foreach}
+		</div>
+	{/if}
 
 <!-- ----------------------------------------------------- -->
 
