@@ -32,6 +32,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 // ============================================================================
 
 $filter_key_status = $_GET['key_status'] ?? 'all'; // 'all', 'has_key', 'no_key'
+$filter_device     = $_GET['device'] ?? '';
 $filter_apikey     = $_GET['apikey'] ?? '';
 $filter_ident      = $_GET['ident'] ?? '';
 $sort_order        = $_GET['sort'] ?? 'recent'; 
@@ -66,6 +67,14 @@ if ($filter_key_status === 'has_key') {
     $base_wheres[] = "(apikey IS NULL OR apikey = '')";
 }*/
 
+if ($view_mode === 'ident') {
+    if ($filter_device !== '') {
+        $base_wheres[] = "device = " . $db->qstr($filter_device);
+    } elseif (isset($_GET['device'])) {
+        $base_wheres[] = "(device = '')"; //NOT null, because that will be all the unclassified stuff!
+    }
+}
+
 if ($filter_apikey !== '') {
     $base_wheres[] = "apikey = " . $db->qstr($filter_apikey);
 }
@@ -78,6 +87,23 @@ if ($filter_ident !== '') {
 $having_clause = "";
 if ($filter_min_hits > 0) {
     $having_clause = " HAVING total_hits >= " . (int)$filter_min_hits;
+}
+
+// ============================================================================
+// FETCH SIDEBAR COUNTS (Dynamic pill counts for labels)
+// ============================================================================
+$device_counts = [];
+
+if ($view_mode === 'ident') {
+    // Fetch distinct devices with counts based on current filters (except device itself)
+    $dev_wheres = ["device IS NOT NULL"]; //NOT null, because that will be all the unclassified stuff!
+
+    $dev_res = $db->Execute("SELECT device, COUNT(*) as cnt FROM api_all_time WHERE " . implode(" AND ", $dev_wheres) . " GROUP BY device");
+    if ($dev_res) {
+        while ($row = $dev_res->FetchRow()) {
+            $device_counts[$row['device'] ?? 'NULL'] = $row['cnt'];
+        }
+    }
 }
 
 // ============================================================================
@@ -129,7 +155,7 @@ if ($view_mode === 'ident') {
         	//make a fake table as though it only loking at last 2 days
 	        $main_sql = "WITH api_all_time AS (
         	        SELECT a.id,ident,fragment,SUM(h.hits) AS hits, COUNT(*) AS hours,
-                	        min(hour) AS first_hour, max(hour) as last_hour
+                	        min(hour) AS first_hour, max(hour) as last_hour, device
 	                FROM api_all_time a INNER JOIN api_by_hour h USING (ident)
         	        WHERE hour > date(date_sub(now(),interval 2 day)) AND h.ident IS NOT NULL GROUP BY ident
 	        )
@@ -299,6 +325,21 @@ $results = $db->Execute($main_sql);
             <?php endif; ?>
         </div>
         <?php endif; ?>
+
+        <!-- Device Filter -->
+	<?php if ($view_mode === 'ident'): ?>
+        <div class="control-group">
+            <span class="control-label">Device Filter:</span>
+            <a href="<?= makeUrl(['device' => null]) ?>" class="pill <?= empty($filter_device) ? 'active' : '' ?>">ALL</a>
+            <?php foreach ($device_counts as $dev => $count): ?>
+                <?php $label = ($dev === 'NULL' || $dev === '') ? 'Unspecified' : $dev; ?>
+                <a href="<?= makeUrl(['device' => $dev === 'NULL' ? '' : $dev]) ?>" class="pill <?= $filter_device === ($dev === 'NULL' ? '' : $dev) ? 'active' : '' ?>">
+                    <?= htmlspecialchars($label, ENT_QUOTES) ?>
+                    <span class="count">(<?= $count ?>)</span>
+                </a>
+            <?php endforeach; ?>
+        </div>
+	<?php endif; ?>
 
         <!-- Minimum Hits Filter -->
         <div class="control-group">
