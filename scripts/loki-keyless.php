@@ -203,13 +203,21 @@ if (empty($param['save'])) {
 	exit;
 }
 
-$debug = true;
+$debug = false;
 
 $hours_total = 0; $affected_total = 0;
-foreach (range(-14,-1) as $offset) {
+foreach (range(-14,0) as $offset) {
         $d = date('Y-m-d',strtotime($offset.' day'));
 
-        foreach (range(0,23) as $hour) {
+	$last = 23;
+	if ($offset == 0) { //today!
+		$current = date('G');
+		if ($current < 3)
+			break;
+		$last = max(0, $current-3); //to allow for timezone?
+	}
+
+        foreach (range(0,$last) as $hour) {
                 $key = sprintf('%s %02d:00:00', $d, $hour);
 
                 //if getcount(key) continue;
@@ -268,9 +276,22 @@ foreach (range(-14,-1) as $offset) {
 
 print "Saved $hours_total hours with $affected_total row\n";
 
+$db->Execute("INSERT INTO api_all_time (apikey,ident,first_hour,last_hour,hours,hits,created)
+SELECT apikey,ident, min(hour) as first_hour,max(hour) as last_hour,count(*) hours, sum(hits) hits, NOW() AS created
+FROM api_by_hour WHERE ident IS NOT NULL GROUP BY ident
+on duplicate key update last_hour = VALUES(last_hour), hours=VALUES(hours), hits = VALUES(hits)");
+
+$affected = $db->Affected_Rows();
+print "$affected Affected updating api_all_time\n";
+
+#######################
+
 function myquote($in) {
         if (is_numeric($in))
                 return $in;
         global $db;
         return $db->Quote($in);
 }
+
+
+
