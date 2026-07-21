@@ -436,7 +436,7 @@ window.onbeforeunload=unloadMess;
 	</form>
 
 	<div style="position:fixed;left:1px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:138px" id="hidePreview">
-	<div id="previewInner"></div></div>
+	<div id="previewInner" style="overflow-wrap: anywhere;"></div></div>
 
 
 

@@ -382,7 +382,7 @@ function clearSubmission() {
 	</form>
 
 	<div style="display:none;" id="hidePreview">
-	<div id="previewInner"></div></div>
+	<div id="previewInner" style="overflow-wrap: anywhere;"></div></div>
 
 
 
