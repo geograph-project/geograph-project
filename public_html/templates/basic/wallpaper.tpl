@@ -16,8 +16,7 @@ div#preview > div {
 
 div#preview img {
    max-width:calc( 50vw - 100px );
-   max-height:60vh;
-   min-height:200px;
+   max-height:auto;
    border: 1px solid black;
 }
 div#preview div, div#preview a{
@@ -53,6 +52,7 @@ div#preview div.json i {
 <option value="">Any Aspect Ratio</option>
 <option value="l">Any Landscape</option>
 <option value="p">Any Portrait</option>
+<option value="w">Any Panorama</option>
 <option value="1.0">Square</option>
 </select>
 </span>
@@ -83,6 +83,7 @@ div#preview div.json i {
 <select name=geo id=geo>
 <option value="1">Geograph Images</option>
 <option value="2">Geograph+CrossGrids</option>
+<option value="3">Aerial Images</option>
 <option value="0">Non Geograph</option>
 <option value="">Mixed Images</option>
 </select>
@@ -107,7 +108,7 @@ View JSON: <input type=checkbox id=json>
 <br><br>
 
 Feed URL: (<b id="count"></b>)<br>
-<input type=text id=urlDisplay readonly size=120 style=max-width:100% style=background-color:cream><br>
+<input type=text id=urlDisplay readonly size=120 style=max-width:95% style=background-color:cream><br>
 <small><i>These are low resolution 640px previews, the feed provides the high resolution image URL! Can omit the format param, to get <a href="https://en.wikipedia.org/wiki/Media_RSS">Media RSS/XML format</a> but JSON is recommended.</i></small>
 </form>
 
@@ -129,9 +130,8 @@ var endpoint = "https://api.geograph.org.uk/api-wallpaper.php?format=JSON";
 //_call_cors_api(endpoint,data,uniquename,success,error)
 
 $(function() {
-  loadImages();
 
-  var list = '1024x768,1200x800,1366x768,1440x900,1600x900,1680x1050,1920x1080,1920x1200';
+  var list = '1024x768,1200x800,1366x768,1440x900,1600x900,1680x1050,1920x1080,1920x1200,2000x1000';
   var ratios = new Object(); //use a 'associative array' to deduplicate
   $.each(list.split(/,/), function(index,value) {
      var bits = value.split(/x/);
@@ -155,6 +155,9 @@ $(function() {
      $('#taken').append('<option value="'+(index+1)+'">in '+value+'</option>');
   });
 
+  syncDropdownsFromURL($('form#filters').get(0));
+  loadImages();
+
   $('form#filters select').change(function() {
      loadImages();
   });
@@ -162,6 +165,26 @@ $(function() {
      loadImages();
   });
 });
+
+function syncDropdownsFromURL(form) {
+  // Resolve form element if an ID string was passed
+  const formEl = typeof form === 'string' ? document.getElementById(form) : form;
+  if (!formEl) return;
+
+  // Read current URL query parameters
+  const params = new URLSearchParams(window.location.search);
+
+  // Loop through all <select> elements in the form
+  const selects = formEl.querySelectorAll('select');
+  selects.forEach(select => {
+    const paramValue = params.get(select.name);
+    
+    // If a matching parameter exists in the URL, update the dropdown
+    if (paramValue !== null) {
+      select.value = paramValue;
+    }
+  });
+}
 
 function loadImages() {
   var data = {};
