@@ -26,7 +26,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$USER->hasPerm("director") || ($USER->user_id == 93) || ($USER->user_id == 20032) || $USER->mustHavePerm("admin");
+$USER->hasPerm("director") || ($USER->user_id == 93) || $USER->mustHavePerm("admin");
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
@@ -35,8 +35,10 @@ if (!empty($_GET['t'])) {
 
 	$a = json_decode($value,true);
 	print renderArrayAsHtml($a);
+	if (empty($_GET['json']))
+		exit;
 
-	print "<pre>";
+	print "<hr><pre>";
 	foreach (explode("\n",print_r(json_decode($value,true),true)) as $line) {
 		if (empty($line) || preg_match('/^\s*([(){}]|Array)\s*$/',$line))
 			continue;
@@ -323,6 +325,9 @@ function renderArrayAsHtml(array $data, int $depth = 0): string
     $html = '<ul style="list-style-type: none; padding-left: 20px; border-left: 1px solid #ccc; margin-left: 5px;">';
     
     foreach ($data as $key => $value) {
+	if ($key == 'sendingAccountId' || $key == 'callerIdentity' || $key == 'sourceArn')
+		continue;
+
         $html .= '<li style="margin-bottom: 5px;">';
         
         $key_display = is_numeric($key) && !$is_assoc ? '' : '<strong style="color: #333;">' . htmlspecialchars((string)$key) . '</strong>: ';
