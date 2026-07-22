@@ -177,39 +177,15 @@
             height: 8px;
             border-radius: 4px;
             outline: none;
-            /* 
-               The Magic: 
-               We start with gray (background) up to the current percentage, 
-               and then transition to blue (active) for the remainder up to max.
-            */
             background: linear-gradient(to right, #ccc 0%, #ccc var(--pct, 50%), #007bff var(--pct, 50%), #007bff 100%);
             margin-top:10px;
         }
 
-        /* Styling the thumb (the draggable knob) */
-	/* ... actully dont want to change this
-        .inverted-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #007bff;
-            cursor: pointer;
-            border: 2px solid #fff;
-            box-shadow: 0 0 2px rgba(0,0,0,0.4);
+        /* Load More Section */
+        .load-more-container {
+            margin-top: 24px;
+            text-align: center;
         }
-
-        .inverted-slider::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #007bff;
-            cursor: pointer;
-            border: 2px solid #fff;
-            box-shadow: 0 0 2px rgba(0,0,0,0.4);
-        }*/
-
     </style>
 	<script src="/js/vector.class.js?<?php echo filemtime("../js/vector.class.js"); ?>"></script>
 	<script src="/js/geograph-api-libs.js?<?php echo filemtime("../js/geograph-api-libs.js"); ?>"></script>
@@ -242,8 +218,6 @@
                 <span id="distMsg"></span>
             </div>
 
-
-
             <!-- Action Button -->
             <div>
                 <button type="submit" id="searchBtn">Search &amp; Filter</button>
@@ -253,13 +227,17 @@
 		<label><input type=checkbox id="recentCbx"> Recent First</label>
             </div>
 
-
         </form>
     </div>
 
     <div class="status-bar" id="statusMsg">Ready to search. Enter keywords above to load initial dataset.</div>
 
     <div class="results-grid" id="resultsGrid"></div>
+
+    <!-- Load More Button Container -->
+    <div class="load-more-container">
+        <button id="loadMoreBtn" style="display: none;" title="drag the slider to set right threshold first" disabled>Load More Results</button> <span id="loadMessage"></span>
+    </div>
 </div>
 
 <script>
@@ -269,6 +247,11 @@
     let isServerSideKNN = false;
     let datasetMinDist = null;
     let datasetMaxDist = null;
+    let currentOffset = 0;
+    let totalResults = 0;
+    let totalMatches = 0;
+    let hasAdjustedSlider = false;
+    let shownCount = 0;
     const model = 'pe';
 
     // UI Elements
@@ -278,14 +261,16 @@
     const thresholdSlider = document.getElementById('thresholdSlider');
     const thresholdVal = document.getElementById('thresholdVal');
     const statusMsg = document.getElementById('statusMsg');
+    const loadMsg = document.getElementById('loadMessage');
     const distMsg = document.getElementById('distMsg');
     const resultsGrid = document.getElementById('resultsGrid');
     const searchBtn = document.getElementById('searchBtn');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
     const invertCbx = document.getElementById('invertCbx');
     const recentCbx = document.getElementById('recentCbx');
 
     // 1. Fetch Initial Keyword Results
-    async function fetchResults(query) {
+    async function fetchResults(query, offset = 0) {
         const params = new URLSearchParams({
             match: query,
             select: 'id,hash,grid_reference,realname,title,image_vector,place',
@@ -294,12 +279,17 @@
             limit: 100,
             model: model
         });
-	if (recentCbx.checked)
-		params.set('order','id desc');
+        if (offset > 0) {
+            params.set('offset', offset);
+        }
+        if (recentCbx.checked)
+            params.set('order','id desc');
 
         try {
             const response = await fetch(`/api-facetql-vector.php?${params.toString()}`);
             const data = await response.json();
+            totalResults = data.meta ? data.meta.total : 0;
+            totalMatches = data.meta ? data.meta.total_found: 0;
             return data.rows || [];
         } catch (error) {
             console.error("Error fetching images:", error);
@@ -311,7 +301,7 @@
     async function fetchSimilarityResults(label) {
         const params = new URLSearchParams({
             label: label,
-            select: 'id,hash,grid_reference,realname,title', // No image_vector requested (k is still provided regardless!)
+            select: 'id,hash,grid_reference,realname,title',
             long: 1,
             utf: 1,
             limit: 100,
@@ -323,6 +313,8 @@
         try {
             const response = await fetch(`/api-facetql-vector.php?${params.toString()}`);
             const data = await response.json();
+		totalResults = data.rows.length;
+		totalMatches = data.rows.length;
             return data.rows || [];
         } catch (error) {
             console.error("Error fetching similarity images:", error);
@@ -345,7 +337,6 @@
             const result = await response.json();
             
             if (result && result[cleanLabel]) {
-                // Decode and normalize vector array
                 return new EmbeddingVector(result[cleanLabel]).normalize();
             }
         } catch (error) {
@@ -355,8 +346,8 @@
     }
 
     // 3. Process API Rows into State
-    function readRows(rows) {
-        allImages = []; // Reset previous dataset
+    function parseRows(rows) {
+        const parsedImages = [];
         rows.forEach(image => {
             if (image.image_vector || image.k) {
                 try {
@@ -369,35 +360,84 @@
                         realname: escapeHTML(image.realname) || 'Unknown',
                         thumb: imageUrl,
                         vector: null,
-                        k: image.k !== undefined ? parseFloat(image.k) : null // Read distance direct from server
+                        k: image.k !== undefined ? parseFloat(image.k) : null
                     };
          		    if (image.image_vector)
 	                    imgData.vector = new EmbeddingVector(image.image_vector).normalize();
-                    allImages.push(imgData);
+                    parsedImages.push(imgData);
                 } catch (e) {
                     console.error("Error parsing vector for image ID " + image.id, e);
                 }
             }
         });
+        return parsedImages;
     }
 
-    // 4. Render Images based on Threshold (Preserving Original Order)
+    // Recalculates Min/Max and updates Slider parameters
+    function updateDatasetRange() {
+        if (allImages.length > 0 && (anchorVec || isServerSideKNN)) {
+            let min = Infinity;
+            let max = -Infinity;
+
+            allImages.forEach(image => {
+                const d = isServerSideKNN ? image.k : (image.vector ? image.vector.distance(anchorVec) : null);
+                if (d !== null) {
+                    if (d < min) min = d;
+                    if (d > max) max = d;
+                }
+            });
+
+            datasetMinDist = min;
+            datasetMaxDist = max;
+
+            const minStr = datasetMinDist !== Infinity ? datasetMinDist.toFixed(4) : 'N/A';
+            const maxStr = datasetMaxDist !== -Infinity ? datasetMaxDist.toFixed(4) : 'N/A';
+            distMsg.innerHTML = `<span style="font-size: 0.85rem; margin-top: 4px; display: inline-block;">Range &mdash; Min: <strong>${minStr}</strong>, Max: <strong>${maxStr}</strong></span>`;
+            
+            let threshold = parseFloat(thresholdSlider.value);
+            if (threshold > datasetMaxDist || threshold < datasetMinDist) {
+                thresholdSlider.value = (datasetMinDist + datasetMinDist + datasetMaxDist) / 3;
+                thresholdVal.textContent = parseFloat(thresholdSlider.value).toFixed(3);
+                thresholdSlider.style.setProperty('--pct', '33%');
+            }
+
+            thresholdSlider.min = datasetMinDist;
+            thresholdSlider.max = datasetMaxDist;
+            thresholdSlider.step = 0.001;
+        }
+    }
+
+    // Helper to evaluate visibility of the "Load More" button
+    function updateLoadMoreUI() {
+        if (!isServerSideKNN && allImages.length+100 < totalResults && shownCount <= 300) {
+            loadMoreBtn.style.display = 'inline-block';
+            loadMoreBtn.disabled = !hasAdjustedSlider;
+        } else {
+            loadMoreBtn.style.display = 'none';
+        }
+	loadMsg.textContent = `Loaded ${allImages.length}/${totalResults}`;
+	if (totalResults < totalMatches)
+		loadMsg.textContent += ` of ${totalMatches}`;
+	if (shownCount)
+		loadMsg.textContent += ` = ${shownCount} once filtered`;
+    }
+
+    // 4. Render Images based on Threshold
     function renderImages() {
         resultsGrid.innerHTML = '';
         const threshold = parseFloat(thresholdSlider.value);
-        let shownCount = 0;
+        shownCount = 0;
 
-			    const min = parseFloat(thresholdSlider.min)*0.95;
-			    const max = parseFloat(thresholdSlider.max)*1.05;
-			    const range = max - min;
+        const min = parseFloat(thresholdSlider.min) * 0.95;
+        const max = parseFloat(thresholdSlider.max) * 1.05;
+        const range = max - min;
 
         allImages.forEach(image => {
             let dist = null;
             let show = true;
 
-            // Compute distance if a filter vector exists
             if (anchorVec) {
-                dist = image.vector.distance(anchorVec);
+                dist = image.vector ? image.vector.distance(anchorVec) : null;
             } else {
                 dist = image.k;
             }
@@ -415,17 +455,12 @@
                 const card = document.createElement('div');
                 card.className = 'image-card';
 
-			let distBadge = ''; //`<div class="badge">No Filter Applied</div>`;
-
-			if (dist !== null && range > 0) {
-			    // Prevent division by zero if min and max happen to be identical
-			    let  distPerc = (1 - ((dist - min) / range)) * 100;
-
-			    // Clamp between 0 and 100 just in case floating point math wobbles
-			    distPerc = Math.max(0, Math.min(100, distPerc));
-
-			    distBadge = `<div class="badge">Dist: ${dist.toFixed(3)} (~${distPerc.toFixed(1)}%)</div>`;
-			}
+                let distBadge = '';
+                if (dist !== null && range > 0) {
+                    let distPerc = (1 - ((dist - min) / range)) * 100;
+                    distPerc = Math.max(0, Math.min(100, distPerc));
+                    distBadge = `<div class="badge">Dist: ${dist.toFixed(3)} (~${distPerc.toFixed(1)}%)</div>`;
+                }
 
                 card.innerHTML = `
                     <a href="/photo/${image.id}" title="${image.gridref} :: ${image.title} - click to view" target="_blank">
@@ -446,15 +481,15 @@
             statusMsg.textContent = "No results found.";
         } else if (anchorVec || isServerSideKNN) {
             const relationSymbol = invertCbx.checked ? '>' : '<';
-            const filterTypeDesc = invertCbx.checked ? 'further than' : 'closer than';
-
             statusMsg.textContent = `Showing ${shownCount} of ${allImages.length} images (Filtered by distance ${relationSymbol} ${threshold.toFixed(3)}).`;
         } else {
             statusMsg.textContent = `Showing all ${allImages.length} images (No vector filter active).`;
         }
+
+        updateLoadMoreUI();
     }
 
-    // Event Listener: Form Submission (Fetch Data & Apply Filter)
+    // Event Listener: Form Submission (Fetch Initial Data)
     searchForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const keyword = keywordInput.value.trim();
@@ -466,7 +501,9 @@
         searchBtn.textContent = "Loading...";
         statusMsg.textContent = "Fetching images and computing vectors...";
 
-        // Reset distance bounds
+        // Reset global states
+        currentOffset = 0;
+        hasAdjustedSlider = false;
         datasetMinDist = null;
         datasetMaxDist = null;
     	thresholdSlider.min = 0;
@@ -476,54 +513,21 @@
             let rows = [];
 
             if (filterQuery && !keyword) {
-                // PURE KNN SIMILARITY (Server calculates distances, no client anchor vector required)
                 isServerSideKNN = true;
                 anchorVec = null;
                 rows = await fetchSimilarityResults(filterQuery);
             } else {
-                // HYBRID OR KEYWORD ONLY (Client-side distance calculation)
                 isServerSideKNN = false;
                 const [fetchedRows, vector] = await Promise.all([
-                    fetchResults(keyword),
+                    fetchResults(keyword, currentOffset),
                     fetchLabelVector(filterQuery || keyword)
                 ]);
                 rows = fetchedRows;
                 anchorVec = vector;
             }
 
-            readRows(rows);
-
-            // Calculate min/max distances across the newly loaded dataset if vector filtering is active
-            if (allImages.length > 0 && (anchorVec || isServerSideKNN)) {
-                let min = Infinity;
-                let max = -Infinity;
-
-                allImages.forEach(image => {
-                    const d = isServerSideKNN ? image.k : (image.vector ? image.vector.distance(anchorVec) : null);
-                    if (d < min) min = d;
-                    if (d > max) max = d;
-                });
-
-                datasetMinDist = min;
-                datasetMaxDist = max;
-
-                const minStr = datasetMinDist !== null ? datasetMinDist.toFixed(4) : 'N/A';
-                const maxStr = datasetMaxDist !== null ? datasetMaxDist.toFixed(4) : 'N/A';
-                distMsg.innerHTML = `<span style="font-size: 0.85rem; margin-top: 4px; display: inline-block;">Range &mdash; Min: <strong>${minStr}</strong>, Max: <strong>${maxStr}</strong></span>`;
-                let threshold = parseFloat(thresholdSlider.value);
-                if (threshold > datasetMaxDist || threshold < datasetMinDist) {
-                    thresholdSlider.value = (datasetMinDist+datasetMinDist+datasetMaxDist)/3;
-                    thresholdVal.textContent = parseFloat(thresholdSlider.value).toFixed(3);
-
-                    thresholdSlider.style.setProperty('--pct', '33%');
-
-                }
-                //think best to set this after, not sure if how setting value directly is affected by min/max
-                thresholdSlider.min = datasetMinDist;
-                thresholdSlider.max = datasetMaxDist;
-                thresholdSlider.step = 0.001; //needs more granility now zoomed in. 
-            }
-
+            allImages = parseRows(rows);
+            updateDatasetRange();
             renderImages();
         } catch (err) {
             statusMsg.textContent = "An error occurred while fetching results.";
@@ -534,41 +538,62 @@
         }
     });
 
-    // Event Listener: Live Slider Adjustment (No API calls needed!)
+    // Event Listener: Load More Button Click
+    loadMoreBtn.addEventListener('click', async () => {
+        const keyword = keywordInput.value.trim();
+        if (!keyword || isServerSideKNN) return;
+
+        loadMoreBtn.disabled = true;
+        loadMoreBtn.textContent = "Loading more...";
+
+        currentOffset += 100; // Advance offset to fetch next page
+
+        try {
+            const newRows = await fetchResults(keyword, currentOffset);
+            const parsedNewImages = parseRows(newRows);
+            allImages = allImages.concat(parsedNewImages);
+
+            updateDatasetRange();
+            renderImages();
+        } catch (err) {
+            console.error("Error loading more results:", err);
+        } finally {
+            loadMoreBtn.textContent = "Load More Results";
+            //updateLoadMoreUI(); render images will do it (it knows how many shown!)
+        }
+    });
+
+    // Event Listener: Live Slider Adjustment
     thresholdSlider.addEventListener('input', (e) => {
+        hasAdjustedSlider = true; // Mark slider as interacted with
         thresholdVal.textContent = parseFloat(e.target.value).toFixed(3);
 
-	updateSlider(thresholdSlider); //update the variable for the inverted styling
+        updateSlider(thresholdSlider);
 
-        // Only re-render if we already have data loaded
         if (allImages.length > 0) {
             renderImages();
         }
     });
 
-	invertCbx.addEventListener('change', () => {
-            thresholdSlider.classList.toggle('inverted-slider',invertCbx.checked);
-	    updateSlider(thresholdSlider);
+    invertCbx.addEventListener('change', () => {
+        thresholdSlider.classList.toggle('inverted-slider', invertCbx.checked);
+        updateSlider(thresholdSlider);
 
-	    if (allImages.length > 0) {
-	        renderImages();
-	    }
-	});
-
-        function updateSlider(slider) {
-            // Calculate percentage based on min, max, and current value
-            const min = slider.min || 0;
-            const max = slider.max || 100;
-            const pct = ((slider.value - min) / (max - min)) * 100;
-            
-            // Pass the percentage to the CSS variable
-            slider.style.setProperty('--pct', pct + '%');
+        if (allImages.length > 0) {
+            renderImages();
         }
-       function escapeHTML(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
+    });
 
+    function updateSlider(slider) {
+        const min = slider.min || 0;
+        const max = slider.max || 100;
+        const pct = ((slider.value - min) / (max - min)) * 100;
+        slider.style.setProperty('--pct', pct + '%');
+    }
 
+    function escapeHTML(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
 </script>
 
 </body>
