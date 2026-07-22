@@ -222,7 +222,7 @@
             <!-- Primary Keyword Search Input -->
             <div class="input-group">
                 <label for="keywordInput">1. Keyword Search (Initial Dataset)</label>
-                <input type="text" id="keywordInput" value="Lake" placeholder="e.g., lake, castle, forest" required>
+                <input type="text" id="keywordInput" value="Lake" placeholder="e.g., lake, castle, forest">
             </div>
 
             <!-- Vector Filter Input -->
@@ -266,6 +266,7 @@
     // Global Application State
     let allImages = [];
     let anchorVec = null;
+    let isServerSideKNN = false;
     let datasetMinDist = null;
     let datasetMaxDist = null;
     const model = 'pe';
@@ -306,13 +307,35 @@
         }
     }
 
+    // 1b. Fetch Server-Side Pure Similarity Results (No keywords)
+    async function fetchSimilarityResults(label) {
+        const params = new URLSearchParams({
+            label: label,
+            select: 'id,hash,grid_reference,realname,title', // No image_vector requested (k is still provided regardless!)
+            long: 1,
+            utf: 1,
+            limit: 100,
+            model: model
+        });
+        if (recentCbx.checked)
+            params.set('order','id desc');
+
+        try {
+            const response = await fetch(`/api-facetql-vector.php?${params.toString()}`);
+            const data = await response.json();
+            return data.rows || [];
+        } catch (error) {
+            console.error("Error fetching similarity images:", error);
+            return [];
+        }
+    }
+
     // 2. Fetch Vector Embedding for Second Filter Label
     async function fetchLabelVector(label) {
         if (!label || !label.trim()) return null;
         const cleanLabel = label.trim();
         
         const params = new URLSearchParams({
-            live: '3',
             labels: cleanLabel,
             model: model
         });
@@ -335,20 +358,22 @@
     function readRows(rows) {
         allImages = []; // Reset previous dataset
         rows.forEach(image => {
-            if (image.image_vector) {
+            if (image.image_vector || image.k) {
                 try {
-                    const vectorObj = new EmbeddingVector(image.image_vector).normalize();
                     const imageUrl = getGeographUrl(image.id, image.hash, 'med');
-
-                    allImages.push({
+         		    const imgData = {
                         id: image.id,
                         hash: image.hash,
                         gridref: image.grid_reference,
                         title: escapeHTML(image.title) || 'Untitled',
                         realname: escapeHTML(image.realname) || 'Unknown',
                         thumb: imageUrl,
-                        vector: vectorObj
-                    });
+                        vector: null,
+                        k: image.k !== undefined ? parseFloat(image.k) : null // Read distance direct from server
+                    };
+         		    if (image.image_vector)
+	                    imgData.vector = new EmbeddingVector(image.image_vector).normalize();
+                    allImages.push(imgData);
                 } catch (e) {
                     console.error("Error parsing vector for image ID " + image.id, e);
                 }
@@ -373,11 +398,16 @@
             // Compute distance if a filter vector exists
             if (anchorVec) {
                 dist = image.vector.distance(anchorVec);
+            } else {
+                dist = image.k;
+            }
+
+            if (dist !== null) {
                 if (invertCbx.checked) {
 	                if (dist < threshold) { show = false; }
-		        } else {
+       	        } else {
 	                if (dist > threshold) { show = false; }
-        		}
+                }
             }
 
             if (show) {
@@ -413,8 +443,8 @@
 
         // Update UI status
         if (allImages.length === 0) {
-            statusMsg.textContent = "No results found for the initial keyword query.";
-        } else if (anchorVec) {
+            statusMsg.textContent = "No results found.";
+        } else if (anchorVec || isServerSideKNN) {
             const relationSymbol = invertCbx.checked ? '>' : '<';
             const filterTypeDesc = invertCbx.checked ? 'further than' : 'closer than';
 
@@ -430,7 +460,7 @@
         const keyword = keywordInput.value.trim();
         const filterQuery = filterInput.value.trim() || keyword;
 
-        if (!keyword) return;
+        if (!keyword && !filterQuery) return;
 
         searchBtn.disabled = true;
         searchBtn.textContent = "Loading...";
@@ -443,22 +473,33 @@
 	    thresholdSlider.max = 1;
 
         try {
-            // Execute both API fetches in parallel for speed
-            const [rows, vector] = await Promise.all([
-                fetchResults(keyword),
-                fetchLabelVector(filterQuery)
-            ]);
+            let rows = [];
 
-            anchorVec = vector;
+            if (filterQuery && !keyword) {
+                // PURE KNN SIMILARITY (Server calculates distances, no client anchor vector required)
+                isServerSideKNN = true;
+                anchorVec = null;
+                rows = await fetchSimilarityResults(filterQuery);
+            } else {
+                // HYBRID OR KEYWORD ONLY (Client-side distance calculation)
+                isServerSideKNN = false;
+                const [fetchedRows, vector] = await Promise.all([
+                    fetchResults(keyword),
+                    fetchLabelVector(filterQuery || keyword)
+                ]);
+                rows = fetchedRows;
+                anchorVec = vector;
+            }
+
             readRows(rows);
 
             // Calculate min/max distances across the newly loaded dataset if vector filtering is active
-            if (anchorVec && allImages.length > 0) {
+            if (allImages.length > 0 && (anchorVec || isServerSideKNN)) {
                 let min = Infinity;
                 let max = -Infinity;
 
                 allImages.forEach(image => {
-                    const d = image.vector.distance(anchorVec);
+                    const d = isServerSideKNN ? image.k : (image.vector ? image.vector.distance(anchorVec) : null);
                     if (d < min) min = d;
                     if (d > max) max = d;
                 });
