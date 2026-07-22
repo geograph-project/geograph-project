@@ -39,6 +39,7 @@ $sort_order        = $_GET['sort'] ?? 'recent';
 $view_mode         = $_GET['view_mode'] ?? 'apikey'; // 'apikey' or 'ident'
 $page_size         = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
 $filter_min_hits = isset($_GET['min_hits']) ? (int)$_GET['min_hits'] : 0;
+$days            = isset($_GET['days']) ? (int)$_GET['days'] : 0;
 
 if (!in_array($page_size, [10, 100, 1000, 10000])) {
     $page_size = 10;
@@ -120,7 +121,6 @@ switch ($sort_order) {
         $orderby = "ORDER BY SUM(hits)/SUM(hours) DESC";
         break;
     case 'most_active':
-    case '48_hours':
         $orderby = "ORDER BY SUM(hits) DESC";
         break;
     case 'recent':
@@ -151,13 +151,13 @@ if ($view_mode === 'ident') {
                  $orderby
                  LIMIT $page_size";
 
-	if ($sort_order == '48_hours') {
+	if (!empty($days)) {
         	//make a fake table as though it only loking at last 2 days
 	        $main_sql = "WITH api_all_time AS (
         	        SELECT a.id,ident,fragment,SUM(h.hits) AS hits, COUNT(*) AS hours,
                 	        min(hour) AS first_hour, max(hour) as last_hour, device
 	                FROM api_all_time a INNER JOIN api_by_hour h USING (ident)
-        	        WHERE hour > date(date_sub(now(),interval 2 day)) AND h.ident IS NOT NULL GROUP BY ident
+        	        WHERE hour > date(date_sub(now(),interval $days day)) AND h.ident IS NOT NULL GROUP BY ident
 	        )
         	$main_sql";
 	}
@@ -179,13 +179,13 @@ if ($view_mode === 'ident') {
                  $orderby
                  LIMIT $page_size";
 
-	if ($sort_order == '48_hours') {
+	if (!empty($days)) {
         	//make a fake table as though it only loking at last 2 days
 	        $main_sql = "WITH api_all_time AS (
         	        SELECT a.id,apikey,SUM(h.hits) AS hits, COUNT(*) AS hours,
                 	        min(hour) AS first_hour, max(hour) as last_hour
 	                FROM api_all_time a INNER JOIN api_by_hour h USING (apikey)
-        	        WHERE hour > date(date_sub(now(),interval 2 day)) AND h.apikey IS NOT NULL GROUP BY apikey
+        	        WHERE hour > date(date_sub(now(),interval $days day)) AND h.apikey IS NOT NULL GROUP BY apikey
 	        )
         	$main_sql";
 	}
@@ -296,7 +296,6 @@ $results = $db->Execute($main_sql);
             <a href="<?= makeUrl(['sort' => 'new_activity']) ?>" class="pill <?= $sort_order === 'new_activity' ? 'active' : '' ?>">New Activity</a>
             <a href="<?= makeUrl(['sort' => 'avg_usage']) ?>" class="pill <?= $sort_order === 'avg_usage' ? 'active' : '' ?>">Avg Usage (Hits/Hr)</a>
             <a href="<?= makeUrl(['sort' => 'most_active']) ?>" class="pill <?= $sort_order === 'most_active' ? 'active' : '' ?>">Most Active Hits</a>
-            <a href="<?= makeUrl(['sort' => '48_hours']) ?>" class="pill <?= $sort_order === '48_hours' ? 'active' : '' ?>">Last 2 Days</a>
         </div>
 
         <!-- Key Status Filter -->
@@ -349,6 +348,14 @@ $results = $db->Execute($main_sql);
             <a href="<?= makeUrl(['min_hits' => 100]) ?>" class="pill <?= $filter_min_hits === 100 ? 'active' : '' ?>">&gt;= 100 Hits</a>
             <a href="<?= makeUrl(['min_hits' => 1000]) ?>" class="pill <?= $filter_min_hits === 1000 ? 'active' : '' ?>">&gt;= 1,000 Hits</a>
             <a href="<?= makeUrl(['min_hits' => 10000]) ?>" class="pill <?= $filter_min_hits === 10000 ? 'active' : '' ?>">&gt;= 10,000 Hits</a>
+        </div>
+
+        <div class="control-group">
+            <span class="control-label">Days:</span>
+            <a href="<?= makeUrl(['days' => null]) ?>" class="pill <?= !$days ? 'active' : '' ?>">All Time</a>
+            <?php foreach ([2, 7, 10, 30, 60, 90] as $size): ?>
+                <a href="<?= makeUrl(['days' => $size]) ?>" class="pill <?= $days === $size ? 'active' : '' ?>"><?= $size ?></a>
+            <?php endforeach; ?>
         </div>
 
         <!-- Page Limit Sizes -->

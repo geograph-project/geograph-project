@@ -37,6 +37,7 @@ $filter_bot      = isset($_GET['bot']) && $_GET['bot'] !== '' ? (int)$_GET['bot'
 $sort_order      = $_GET['sort'] ?? 'recent'; 
 $view_mode       = $_GET['view_mode'] ?? 'individual'; // 'individual' or 'fragment_group'
 $page_size       = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+$days            = isset($_GET['days']) ? (int)$_GET['days'] : 0;
 
 // Optional column display states (defaulting to 0/hidden to keep view clean, togglable via UI)
 $show_version    = isset($_GET['show_version']) ? (int)$_GET['show_version'] : 0;
@@ -198,6 +199,16 @@ if ($sort_order == '30_days') {
 		WHERE hour > date_sub(now(),interval 30 day) AND useragent != '-' GROUP BY useragent
 	)
 	$main_sql";
+
+} elseif ($days > 0) {
+	//make a fake table as though it only loking at last 30 days!
+	$main_sql = "WITH agents_all_time AS (
+		SELECT a.id,fragment,useragent,SUM(h.hits) AS hits, COUNT(*) AS hours,
+			min(hour) AS first_hour, max(hour) as last_hour, device, purpose, version, website, url,email,headless,bot
+		FROM agents_all_time a INNER JOIN agents_by_hour h USING (useragent)
+		WHERE hour > date(date_sub(now(),interval $days day)) AND useragent != '-' GROUP BY useragent
+	)
+	$main_sql";
 }
 
 //print "<pre>".htmlentities($main_sql).";</pre>";
@@ -294,7 +305,6 @@ $results = $db->Execute($main_sql);
             <a href="<?= makeUrl(['sort' => 'new_agents']) ?>" class="pill <?= $sort_order === 'new_agents' ? 'active' : '' ?>">New Agents</a>
             <a href="<?= makeUrl(['sort' => 'avg_usage']) ?>" class="pill <?= $sort_order === 'avg_usage' ? 'active' : '' ?>">Avg Usage (Hits/Hr)</a>
             <a href="<?= makeUrl(['sort' => 'most_active']) ?>" class="pill <?= $sort_order === 'most_active' ? 'active' : '' ?>">Most Active Hits</a>
-            <a href="<?= makeUrl(['sort' => '30_days']) ?>" class="pill <?= $sort_order === '30_days' ? 'active' : '' ?>">Last 30 days Hits</a>
         </div>
 
         <!-- Bot Flags Filter -->
@@ -350,6 +360,15 @@ $results = $db->Execute($main_sql);
             <a href="<?= makeUrl(['show_url' => $show_url ? 0 : 1]) ?>" class="pill <?= $show_url ? 'active' : '' ?>">URL</a>
             <a href="<?= makeUrl(['show_email' => $show_email ? 0 : 1]) ?>" class="pill <?= $show_email ? 'active' : '' ?>">Email</a>
             <a href="<?= makeUrl(['show_headless' => $show_headless ? 0 : 1]) ?>" class="pill <?= $show_headless ? 'active' : '' ?>">Headless</a>
+        </div>
+
+        <!-- Page Limit Sizes -->
+        <div class="control-group">
+            <span class="control-label">Days:</span>
+            <a href="<?= makeUrl(['days' => null]) ?>" class="pill <?= !$days ? 'active' : '' ?>">All Time</a>
+            <?php foreach ([2, 7, 10, 30, 60, 90] as $size): ?>
+                <a href="<?= makeUrl(['days' => $size]) ?>" class="pill <?= $days === $size ? 'active' : '' ?>"><?= $size ?></a>
+            <?php endforeach; ?>
         </div>
 
         <!-- Page Limit Sizes -->
