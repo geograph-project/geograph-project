@@ -3,10 +3,15 @@
 
 <h2>I didn't know that possible!</h2>
 
-<p>Click to expand...</p>
+<p>Click an item to expand...</p>
 
 <style>{literal}
 
+h3 {
+	background-color:#eee;
+	padding:10px;
+	border-radius:10px;
+}
 .faq-view {
     padding: 10px;
 }
@@ -21,7 +26,7 @@
     text-align:center;
 }
 div.faq-item {
-        border-bottom: 1px solid silver; padding: 15px 0;
+        padding: 15px 0;
 }
 button.faq-button {
         background: none; border: none; width: 100%; text-align: left; font-size: 1rem; cursor: pointer; padding: 0;
@@ -46,16 +51,22 @@ div.faq-content ul, div.faq-content ol {
 
 </style>{/literal}
 
+<div style="max-width:60em">
+{assign var="last" value=""}
 {foreach from=$items key=key item=item}
+	{if $last != $item.category}
+		<h3>{$item.category|escape:'html'}</h3>
+		{assign var="last" value=$item.category}
+	{/if}
             <div class="faq-item">
                 <button class="faq-button" onclick="this.nextElementSibling.classList.toggle('hidden')">
-                    {$item.title}
+                    &middot; {$item.title}
                 </button>
                 <div class="faq-content hidden">
                     {$item.content}
                 </div>
             </div>
 {/foreach}
-
+</div>
 
 {include file="_std_end.tpl"}

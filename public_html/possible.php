@@ -30,12 +30,16 @@ $smarty = new GeographPage;
 $smarty->caching = 0; //explicitly disable caching!
 
 $db = GeographDatabaseConnection(true);
-$items = $db->getAll("SELECT * FROM possible WHERE enabled = 1 and LENGTH(content)>10");
+$items = $db->getAll("SELECT * FROM possible WHERE enabled = 1 and LENGTH(content)>10 ORDER BY category,possible_id DESC");
 
 foreach ($items as $idx => &$item) {
+	$item['category'] = trim($item['category'], ' _+');
 	$item['title'] = str_replace(array('[',']'),array('<b>','</b>'), htmlentities2($item['title']));
 
 	$text = str_replace("\r",'',htmlentities2($item['content']));
+
+	$text = preg_replace('/\*\*(.+?)\*\*/', "<b>$1</b>", $text);
+	$text = preg_replace('/\*(.+?)\*/', "<i>$1</i>", $text);
 
 	$text = preg_replace('/^# (.+)$/m', '<ol><li>$1</li></ol>', $text);
 	$text = preg_replace('/<\/ol>\n<ol>/', "\n", $text);
@@ -43,17 +47,20 @@ foreach ($items as $idx => &$item) {
 	$text = preg_replace('/^\* (.+)$/m', '<ul><li>$1</li></ul>', $text);
 	$text = preg_replace('/<\/ul>\n<ul>/', "\n", $text);
 
-	$text = preg_replace('/\*\*(.+?)\*\*/', "<b>$1</b>", $text);
-	$text = preg_replace('/\*(.+?)\*/', "<i>$1</i>", $text);
-
-$text = preg_replace(
-    '/\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)/i',
-    '<a href="$2" target=_blank>$1</a>',
-    $text
-);
+	$text = preg_replace(
+	    '/\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)/i',
+	    '<a href="$2" target=_blank>$1</a>',
+	    $text
+	);
 
 	$text = nl2br($text);
+
+	//the normal newlines around lists are a bit much!
+	$text = str_replace("<br />\n<ol>",'<ol>',$text);
+	$text = str_replace("<br />\n<ul>",'<ul>',$text);
 	$text = str_replace('</li><br />','</li>',$text);
+	$text = str_replace('</ol><br />','</ol>',$text);
+	$text = str_replace('</ul><br />','</ul>',$text);
 
 	$item['content'] = $text;
 }
