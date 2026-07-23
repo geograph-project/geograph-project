@@ -111,6 +111,12 @@ if ($view_mode === 'ident') {
 // DETERMINING SORT ORDER
 // ============================================================================
 switch ($sort_order) {
+    case 'key_age':
+	if ($view_mode === 'apikey') {
+	        $orderby = "ORDER BY COALESCE(k.crt_timestamp,first_hour) DESC";
+        	break;
+	}
+	//otherwise falls though... 
     case 'normalized_week':
         $orderby = "ORDER BY (SUM(hits) / GREATEST(1, TIMESTAMPDIFF(HOUR, MIN(first_hour), MAX(last_hour)))) * 168 DESC";
         break;
@@ -166,6 +172,7 @@ if ($view_mode === 'ident') {
     // Mode B: Group by API Key
     $main_sql = "SELECT
                     apikey,
+		    DATEDIFF(NOW(), k.crt_timestamp) AS key_age_days,
                     SUM(hits) AS total_hits,
                     SUM(hours) AS total_hours,
                     AVG(hits/hours) AS avg_usage,
@@ -173,6 +180,7 @@ if ($view_mode === 'ident') {
                     MAX(last_hour) AS latest_seen,
                     (SUM(hits) / GREATEST(1, TIMESTAMPDIFF(HOUR, MIN(first_hour), MAX(last_hour)))) * 168 AS hits_per_week
                  FROM api_all_time
+		 LEFT JOIN apikeys k USING (apikey)
                  $where_clause AND apikey IS NOT NULL
                  GROUP BY apikey
 		 $having_clause
@@ -292,6 +300,9 @@ $results = $db->Execute($main_sql);
         <div class="control-group">
             <span class="control-label">Sort By Order:</span>
             <a href="<?= makeUrl(['sort' => 'recent']) ?>" class="pill <?= $sort_order === 'recent' ? 'active' : '' ?>">Recent Active</a>
+            <?php if ($view_mode === 'apikey'): ?>
+                <a href="<?= makeUrl(['sort' => 'key_age']) ?>" class="pill <?= $sort_order === 'key_age' ? 'active' : '' ?>">Key Age (Newest)</a>
+            <?php endif; ?>
             <a href="<?= makeUrl(['sort' => 'normalized_week']) ?>" class="pill <?= $sort_order === 'normalized_week' ? 'active' : '' ?>">Sustained Vol (Hits/Week)</a>
             <a href="<?= makeUrl(['sort' => 'new_activity']) ?>" class="pill <?= $sort_order === 'new_activity' ? 'active' : '' ?>">New Activity</a>
             <a href="<?= makeUrl(['sort' => 'avg_usage']) ?>" class="pill <?= $sort_order === 'avg_usage' ? 'active' : '' ?>">Avg Usage (Hits/Hr)</a>
@@ -382,6 +393,7 @@ $results = $db->Execute($main_sql);
                     <th style="width: 8%;">Latest Seen</th>
                 <?php else: ?>
                     <th style="width: 15%;">API Key</th>
+                    <th style="width: 8%;">Key Age</th>
                     <th style="width: 8%;">Sum (Hits)</th>
                     <th style="width: 10%;">Hits / Week</th>
                     <th style="width: 10%;">Sum (Hours)</th>
@@ -412,6 +424,11 @@ $results = $db->Execute($main_sql);
                                 <a href="<?= makeUrl(['view_mode' => 'ident', 'apikey' => $row['apikey']]) ?>" title="Drill into footprints using this key">
                                     <strong style="font-family: monospace;"><?= htmlspecialchars($row['apikey'] ?: '-empty-', ENT_QUOTES) ?></strong>
                                 </a>
+                            </td>
+                            <td align="right">
+                                <span class="text-muted">
+                                    <?= isset($row['key_age_days']) ? number_format($row['key_age_days']) . ' days' : '' ?>
+                                </span>
                             </td>
                             <td align="right"><span class="badge" style="background:#e8f5e9; color:#2e7d32; font-weight:bold;"><?= number_format($row['total_hits']) ?></span></td>
                             <td align="right"><span style="color: #6200ea; <? if ($row['total_hits'] > $row['hits_per_week']) { echo ';font-weight:bold'; } ?>"><?= number_format($row['hits_per_week']) ?></span></td>
