@@ -261,6 +261,12 @@ abbr {
 .tagbar > * {
 	white-space:nowrap;
 }
+.tagbar > p {
+	white-space:normal;
+}
+.tagbar div.snippet640 {
+	white-space:normal;
+}
 
 /* -------------------- */
 /* move to simpler style for the rastermap */
