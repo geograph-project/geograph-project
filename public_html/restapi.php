@@ -304,7 +304,21 @@ class RestAPI
 		global $CONF;
 
 		$gridimage_id=intval($this->params[0]);
-		$_GET['key'] = @$this->params[1];
+		if (empty($_GET['key']))
+			$_GET['key'] = $this->params[1] ?? '';
+
+		if (empty($_GET['key']) && $_SERVER['HTTP_USER_AGENT'] == "Mozilla/4.0 (compatible; Win32; WinHttp.WinHttpRequest.5)" && rand(0,9) > 5) {
+			header('HTTP/1.1 429 Too Many Requests');
+			header('Content-Type: application/json; charset=utf-8');
+
+			echo json_encode([
+			    'status'  => 429,
+			    'error'   => 'Rate Limit Exceeded',
+			    'message' => 'You have reached the maximum allowed requests for keyless usage. Please sign up for an API key to upgrade your quota.',
+			    'docs'    => 'https://www.geograph.org.uk/help/api'
+			]);
+			exit;
+		}
 
 		$image=new GridImage;
 		if ($image->loadFromId($gridimage_id,1))
@@ -954,35 +968,4 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 
 $api=new RestAPI();
 $api->dispatch();
-
-
-
-if (!empty($CONF['redis_host']))
-{
-        if (empty($redis)) {
-		$redis = new Redis();
-                $redis->connect($CONF['redis_host'], $CONF['redis_port']);
-        }
-        if (!empty($CONF['redis_api_db']))
-                $redis->select($CONF['redis_api_db']);
-
-        $bits = array();
-        $bits[] = $_GET['key'] ?? '';
-        $bits[] = getRemoteIP();
-        if (!empty($_SERVER['HTTP_REFERER'])) {
-                $ref = @parse_url($_SERVER['HTTP_REFERER']);
-                $bits[] = $ref['host'];
-        } else {
-                $bits[] = '';
-        }
-        if (!empty($_SERVER['HTTP_USER_AGENT'])) {
-                $bits[] = preg_replace('/[^\w]+/','_',$_SERVER['HTTP_USER_AGENT']);
-        }
-
-        $identy = implode('|',$bits);
-
-        #hIncrBy($key, $field, $increment)
-        $redis->hIncrBy('restapi',$identy,1);
-        $redis->hIncrBy('r|'.$identy,date("Y-m-d H"),1);
-}
 
