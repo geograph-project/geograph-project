@@ -22,6 +22,9 @@
 
 19     2       * * *   /usr/bin/php /var/www/geograph/scripts/loki-agents-save.php --min=100
 
+19     8       * * *   /usr/bin/php /var/www/geograph/scripts/loki-keys-grouped.php --save
+29     8       * * *   /usr/bin/php /var/www/geograph/scripts/loki-keyless.php --save
+
 ##############################
 # AI related
 
