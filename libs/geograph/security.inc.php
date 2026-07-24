@@ -167,6 +167,7 @@ function rate_limiting($slug, $per_minute = 5, $enforce = false) {
 			exit;
 		}
 	}
+	return $counter;
 }
 
 
@@ -332,3 +333,42 @@ function appearsToBePerson() {
 }
 
 
+/**
+ * Lightweight gatekeeper to validate if an incoming search query contains 
+ * any indexed terms before committing to heavy application logic.
+ * * Primarily used to short-circuit automated dictionary attacks, scrapers, 
+ * or out-of-bounds character sets (e.g., Japanese/Cyrillic bots hitting a 
+ * localized regional database) by querying the lightweight Manticore/Sphinx index dictionary.
+ *
+ * @param string $input The raw search query string to validate.
+ * @return bool True if at least one token exists within the search index dataset; false otherwise.
+ */
+function hasValidTokens($input) {
+    global $sph;
+
+    $input = trim($input);
+    if ($input === '') {
+        return false;
+    }
+
+    // Lazy-load the SphinxQL connection if it hasn't been initialized yet
+    if (empty($sph)) {
+        $sph = GeographSphinxConnection('sphinxql', true);
+    }
+
+    // Tokenize the raw UTF-8 string against the index configuration.
+    // Flag '1' forces the engine to return token statistics ('docs' and 'hits').
+    $quoted_text = $sph->Quote($input);
+    $keywords = $sph->getAll("CALL KEYWORDS({$quoted_text}, 'sample8', 1)");
+
+    if (!empty($keywords)) {
+        foreach ($keywords as $token) {
+            // If even a single token has a physical footprint in our index, consider it valid
+            if (isset($token['docs']) && $token['docs'] > 0) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}

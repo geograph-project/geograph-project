@@ -62,39 +62,6 @@ require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 
-
-###################################################################
-// step -1 - log in refis
-
-if (!empty($CONF['redis_host']))
-{
-        if (empty($redis)) {
-                $redis = new Redis();
-                $redis->connect($CONF['redis_host'], $CONF['redis_port']);
-        }
-        if (!empty($CONF['redis_api_db']))
-                $redis->select($CONF['redis_api_db']);
-
-	$bits = array();
-	$bits[] = @$_GET['key'];
-	$bits[] = getRemoteIP();
-	if (!empty($_SERVER['HTTP_REFERER']) && strlen($_SERVER['HTTP_REFERER']) > 2) {
-		$ref = @parse_url($_SERVER['HTTP_REFERER']);
-		$bits[] = $ref['host'];
-	} else {
-		$bits[] = '';
-	}
-	if (!empty($_SERVER['HTTP_USER_AGENT'])) {
-		$bits[] = preg_replace('/[^\w]+/','_',$_SERVER['HTTP_USER_AGENT']);
-	}
-
-	$identy = implode('|',$bits);
-
-	#hIncrBy($key, $field, $increment)
-	$redis->hIncrBy('syndicator',$identy,1);
-	$redis->hIncrBy('s|'.$identy,date("Y-m-d H"),1);
-}
-
 ###################################################################
 // step 0 - validate the format requested
 
@@ -125,6 +92,34 @@ if ($format == 'KML') {
 }
 
 $format_extension = strtolower(str_replace('.','_',$format));
+
+###################################################################
+// basic protection against gibberish requests
+
+if (!empty($_GET['text']) && mb_detect_encoding($_GET['text'], 'UTF-8, ISO-8859-1') == "UTF-8") {
+        if (!hasValidTokens($_GET['text'])) {
+                header("HTTP/1.0 404 Not Found");
+                header("Status: 404 Not Found");
+
+		//so the result should be roughly in the right format!
+		$rss = new UniversalFeedCreator();
+
+		$item = new FeedItem();
+		$item->title = "No Results";
+		$item->description = "No results";
+		$item->date = time();
+		$item->author = "Geograph";
+
+		$rss->addItem($item);
+		//$rss->saveFeed($format, $rssfile);
+		//write directly to avoid clobbering the cache!
+		$strContent = $rss->createFeed($format);
+		header("Content-Type: ".$rss->contentType."; charset=".$rss->encoding);
+		header('Content-Length: '.strlen($strContent));
+		echo $strContent;
+		exit;
+	}
+}
 
 ###################################################################
 // step 1 - figure out a cache token, to potentially short circuit further processing

@@ -34,7 +34,7 @@ if (empty($_SERVER['HTTP_USER_AGENT'])
 
 require_once('geograph/global.inc.php');
 
-rate_limiting('restapi.php');
+$requests_per_min = rate_limiting('restapi.php');
 
 require_once('geograph/gridimage.class.php');
 require_once('geograph/imagelist.class.php');
@@ -307,7 +307,11 @@ class RestAPI
 		if (empty($_GET['key']))
 			$_GET['key'] = $this->params[1] ?? '';
 
-		if (empty($_GET['key']) && $_SERVER['HTTP_USER_AGENT'] == "Mozilla/4.0 (compatible; Win32; WinHttp.WinHttpRequest.5)" && rand(0,9) > 5) {
+		if ($_GET['key'] == '[apikey]' || $_GET['key'] == 'apikey' || $_GET['key'] == '%5Bapikey%5D')
+		         $_GET['key'] = '';
+
+		global $requests_per_min;
+		if (empty($_GET['key']) && $requests_per_min > 30) {
 			header('HTTP/1.1 429 Too Many Requests');
 			header('Content-Type: application/json; charset=utf-8');
 
