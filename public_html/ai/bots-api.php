@@ -292,8 +292,8 @@ $results = $db->Execute($main_sql);
         <!-- View Mode Filter -->
         <div class="control-group">
             <span class="control-label">View Style:</span>
-            <a href="<?= makeUrl(['view_mode' => 'apikey', 'key_status' => 'has_key']) ?>" class="pill <?= $view_mode === 'apikey' ? 'active' : '' ?>">Group By API Key</a>
-            <a href="<?= makeUrl(['view_mode' => 'ident', 'key_status' => 'no_key']) ?>" class="pill <?= $view_mode === 'ident' ? 'active' : '' ?>">Keyless Requests</a>
+            <a href="<?= makeUrl(['view_mode' => 'apikey', 'key_status' => 'has_key']) ?>" class="pill <?= $view_mode === 'apikey' ? 'active' : '' ?>">API Keys</a>
+            <a href="<?= makeUrl(['view_mode' => 'ident', 'key_status' => 'no_key']) ?>" class="pill <?= $view_mode === 'ident' ? 'active' : '' ?>">Keyless Requests (AutoGrouped)</a>
         </div>
 
         <!-- Sort Rule Engine -->
