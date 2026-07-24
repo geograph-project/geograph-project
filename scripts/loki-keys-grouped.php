@@ -81,7 +81,7 @@ function getallrows($start, $end) {
 			$query .= " | status!=\"$id\"";
 	}
 
-	print "q=$query\n";
+//	print "q=$query\n";
 
 	$generator = getgroups($query, $grouper, 'count_over_time', $period = '1h', $fp = null, $start, $end);
 	foreach ($generator as $line) {
@@ -113,7 +113,7 @@ if (empty($param['save'])) {
 
 ########################################################################################
 
-$debug = true;
+$debug = $param['debug'];
 
 $hours_total = 0; $affected_total = 0;
 foreach (range(-14,0) as $offset) {

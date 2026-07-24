@@ -167,7 +167,7 @@ function getallrows($start, $end) {
 		$query .= ' | key=""';
 	}
 
-		print "q=$query\n";
+//		print "q=$query\n";
 	//continue;
 
 		$generator = getgroups($query, $grouper, 'count_over_time', $period = '1h', $fp = null, $start, $end, $as_array=true); //treat key as arrays, os can be mutliple
@@ -283,6 +283,28 @@ on duplicate key update last_hour = VALUES(last_hour), hours=VALUES(hours), hits
 
 $affected = $db->Affected_Rows();
 print "$affected Affected updating api_all_time\n";
+
+#######################
+// we can also 'propogate' already known fragment to new rows!
+
+$db->Execute("UPDATE api_all_time AS target SET target.fragment = (
+	SELECT source.fragment
+	FROM api_all_time AS source
+	WHERE source.fragment IS NOT NULL
+	AND target.ident LIKE CONCAT('%', source.fragment, '%')
+	ORDER BY LENGTH(source.fragment) DESC
+	LIMIT 1
+) WHERE target.fragment IS NULL
+AND EXISTS (
+	SELECT 1
+	FROM api_all_time AS source
+	WHERE source.fragment IS NOT NULL
+	AND target.ident LIKE CONCAT('%', source.fragment, '%')
+)");
+
+$affected = $db->Affected_Rows();
+print "$affected with fragments\n";
+
 
 #######################
 
