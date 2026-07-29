@@ -37,7 +37,7 @@ L.GeographClickLayer = L.FeatureGroup.extend({
     options: {
         touch: false,
         endpoint: "https://api.geograph.org.uk/api-facetql.php",
-        apiKey: 'geograph_demo',
+        apiKey: window.location.hostname || '',
         domain: "https://www.geograph.org.uk",
         bi_bounds: L.latLngBounds([49.863788, -13.688451], [60.860395, 1.795260]),
         ci_bounds: L.latLngBounds([49.150211, -2.702359], [49.731385, -2.005734]),
