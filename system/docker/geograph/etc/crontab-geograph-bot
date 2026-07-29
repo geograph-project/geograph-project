@@ -25,6 +25,8 @@
 19     8       * * *   /usr/bin/php /var/www/geograph/scripts/loki-keys-grouped.php --save
 29     8       * * *   /usr/bin/php /var/www/geograph/scripts/loki-keyless.php --save
 
+1/31   *       * * *   /usr/bin/php /var/www/geograph/scripts/cf-asn.php --insert
+
 ##############################
 # AI related
 
