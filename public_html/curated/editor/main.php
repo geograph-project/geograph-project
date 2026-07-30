@@ -83,6 +83,7 @@ $smarty->display('_std_begin.tpl');
                     <label><input type="checkbox" id="map-show-shortlisted" checked> Show Shortlisted (Yellow)</label>
                     <label><input type="checkbox" id="map-show-confirmed" checked> Show Confirmed (Green)</label>
                     <label><input type="checkbox" id="map-show-outliers"> Highlight Outliers Only (>10km away)</label>
+                    <label id="map-live-update-container" style="color: var(--accent-color); font-weight: bold;"><input type="checkbox" id="map-live-update"> Live Update (OS Bounds)</label>
                 </div>
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <button class="btn btn-secondary btn-sm" id="map-fit-bounds-btn">Show All (Fit to Markers)</button>

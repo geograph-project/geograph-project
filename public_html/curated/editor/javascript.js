@@ -24,7 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
         shortlistedList: [],   // Array of shortlisted items
         currentUnassignedIndex: 0,
         currentHotNotIndex: 0,
-        selectedCandidateId: null // currently highlighted card in Column 1
+        selectedCandidateId: null, // currently highlighted card in Column 1
+        totalFound: 0          // total matching candidates found in raw search
     };
 
     // DOM Elements Cache
@@ -48,8 +49,20 @@ document.addEventListener('DOMContentLoaded', function() {
         mapShowShortlisted: document.getElementById('map-show-shortlisted'),
         mapShowConfirmed: document.getElementById('map-show-confirmed'),
         mapShowOutliers: document.getElementById('map-show-outliers'),
-        mapMarkerCount: document.getElementById('map-marker-count')
+        mapMarkerCount: document.getElementById('map-marker-count'),
+        mapLiveUpdate: document.getElementById('map-live-update'),
+        mapLiveUpdateContainer: document.getElementById('map-live-update-container')
     };
+
+    function updateLiveUpdateVisibility() {
+        if (!el.mapLiveUpdateContainer) return;
+        if (el.aiVectorCheckbox && el.aiVectorCheckbox.checked) {
+            el.mapLiveUpdateContainer.style.display = 'none';
+            if (el.mapLiveUpdate) el.mapLiveUpdate.checked = false;
+        } else {
+            el.mapLiveUpdateContainer.style.display = 'inline-block';
+        }
+    }
 
     // Toggle AI Vector Model Selection Visibility
     if (el.aiVectorCheckbox) {
@@ -59,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 el.aiVectorModel.style.display = 'none';
             }
+            updateLiveUpdateVisibility();
         });
     }
 
@@ -253,6 +267,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const fullUrl = `${url}?${new URLSearchParams(params).toString()}`;
             const res = await fetch(fullUrl);
             const data = await res.json();
+
+            if (data.meta) {
+                state.totalFound = parseInt(data.meta.total_found || data.meta.total || 0);
+            } else {
+                state.totalFound = 0;
+            }
 
             if (data.rows && data.rows.length > 0) {
                 // Map API rows into structured candidate array, converting coordinates
@@ -786,6 +806,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (fitBtn) {
                 fitBtn.addEventListener('click', fitMapToMarkers);
             }
+
+            // Set up Leaflet map moveend event for Live Update feature
+            map.on('moveend', handleMapMoveEnd);
         }
 
         // Delay invalidation so container displays properly
@@ -997,6 +1020,80 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (markerCount > 0 && bounds.isValid()) {
             map.fitBounds(bounds, { maxZoom: 14, padding: [20, 20] });
+        }
+    }
+
+    // Handle Map MoveEnd to fetch additional images inside the current viewport
+    async function handleMapMoveEnd() {
+        if (!map) return;
+        if (!el.mapLiveUpdate || !el.mapLiveUpdate.checked) return;
+        if (el.aiVectorCheckbox && el.aiVectorCheckbox.checked) return;
+
+        // Only load if there are more results than currently loaded in state.rawCandidates
+        if (state.totalFound <= state.rawCandidates.length) {
+            console.log("Map Live Update skipped: all matching candidates already loaded.");
+            return;
+        }
+
+        const query = el.rawSearchInput.value.trim();
+        if (!query) return;
+
+        const bounds = map.getBounds();
+        const olbounds = bounds.toBBoxString();
+
+        // Prepare lists of excluded/confirmed/shortlisted IDs to pass to Sphinx `not in` query
+        const excludedOrConfirmedIds = Array.from(state.curatedMap.values())
+            .filter(item => item.active === 0 || item.active === 2)
+            .map(item => item.id);
+
+        let params = {
+            select: 'id,user_id,realname,grid_reference,title,hash,wgs84_lat,wgs84_long',
+            utf: '1',
+            limit: '150',
+            match: query,
+            order: 'sequence asc',
+            olbounds: olbounds
+        };
+
+        if (excludedOrConfirmedIds.length > 0) {
+            params['where'] = `id not in (${excludedOrConfirmedIds.join(',')})`;
+        }
+
+        try {
+            const fullUrl = `/api-facetql.php?${new URLSearchParams(params).toString()}`;
+            const res = await fetch(fullUrl);
+            const data = await res.json();
+
+            if (data.rows && data.rows.length > 0) {
+                const existingIds = new Set(state.rawCandidates.map(c => c.id));
+                let addedCount = 0;
+
+                data.rows.forEach(row => {
+                    const id = parseInt(row.id);
+                    if (!existingIds.has(id)) {
+                        state.rawCandidates.push({
+                            id: id,
+                            user_id: parseInt(row.user_id),
+                            realname: row.realname,
+                            title: row.title,
+                            hash: row.hash,
+                            lat: rad2deg(row.wgs84_lat ?? 0),
+                            lng: rad2deg(row.wgs84_long ?? 0)
+                        });
+                        existingIds.add(id);
+                        addedCount++;
+                    }
+                });
+
+                if (addedCount > 0) {
+                    console.log(`Live update loaded ${addedCount} new candidates in view.`);
+                    // Refresh both triage and map views
+                    renderRawCandidates();
+                    renderMapMarkers();
+                }
+            }
+        } catch (e) {
+            console.error('Error in map live update', e);
         }
     }
 
