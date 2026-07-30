@@ -758,6 +758,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Leaflet Map Curation Object
     let map = null;
     let markerLayerGroup = null;
+    let isFirstMapLoad = true;
 
     function initOrUpdateMap() {
         const mapContainer = document.getElementById('curation-map');
@@ -779,6 +780,12 @@ document.addEventListener('DOMContentLoaded', function() {
             mapFilters.forEach(f => {
                 if (f) f.addEventListener('change', renderMapMarkers);
             });
+
+            // Set up manual Show All / Fit Bounds button
+            const fitBtn = document.getElementById('map-fit-bounds-btn');
+            if (fitBtn) {
+                fitBtn.addEventListener('click', fitMapToMarkers);
+            }
         }
 
         // Delay invalidation so container displays properly
@@ -953,6 +960,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (el.mapMarkerCount) el.mapMarkerCount.textContent = markerCount;
+
+        // Only call fitBounds automatically the very first time markers are loaded to avoid losing user's focus/zoom
+        if (isFirstMapLoad && markerCount > 0 && bounds.isValid()) {
+            map.fitBounds(bounds, { maxZoom: 14, padding: [20, 20] });
+            isFirstMapLoad = false;
+        }
+    }
+
+    // Explicitly fit map to markers on user click
+    function fitMapToMarkers() {
+        if (!map) return;
+        const bounds = L.latLngBounds();
+        let markerCount = 0;
+
+        getConfirmedItems().forEach(item => {
+            if (item.lat && item.lng) {
+                bounds.extend([item.lat, item.lng]);
+                markerCount++;
+            }
+        });
+
+        getShortlistedItems().forEach(item => {
+            if (item.lat && item.lng) {
+                bounds.extend([item.lat, item.lng]);
+                markerCount++;
+            }
+        });
+
+        state.rawCandidates.forEach(item => {
+            if (item.lat && item.lng) {
+                bounds.extend([item.lat, item.lng]);
+                markerCount++;
+            }
+        });
 
         if (markerCount > 0 && bounds.isValid()) {
             map.fitBounds(bounds, { maxZoom: 14, padding: [20, 20] });
