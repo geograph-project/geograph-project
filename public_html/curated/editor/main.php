@@ -42,16 +42,16 @@ $smarty->display('_std_begin.tpl');
                 <!-- Column 1: Raw Search Results -->
                 <div class="triage-col raw-candidates-col">
                     <div class="col-header">
-                        <h2>1. Raw Candidates (Sphinx Engine)</h2>
+                        <h2>Raw Candidates</h2>
                         <div class="search-form">
                             <input type="text" id="raw-search-input" value="<?php echo htmlentities($label); ?>" placeholder="Search query...">
                             <button class="btn btn-primary" id="raw-search-btn">Search</button>
                         </div>
                         <div class="search-options">
-                            <label><input type="checkbox" id="ai-vector-checkbox"> AI Vector Search</label>
+                            <label><input type="checkbox" id="ai-vector-checkbox"> AI "Looks Like" Search</label>
                             <select id="ai-vector-model" class="form-select" style="display:none;">
                                 <option value="clip">CLIP Model</option>
-                                <option value="pe">Perception Encoder</option>
+                                <option value="pe" selected>Perception Encoder</option>
                             </select>
                         </div>
                     </div>
@@ -63,8 +63,8 @@ $smarty->display('_std_begin.tpl');
                 <!-- Column 2: Pending Shortlist / Feature Assignment -->
                 <div class="triage-col shortlist-col">
                     <div class="col-header">
-                        <h2>2. Pending Shortlist / Feature Resolver</h2>
-                        <div class="bulk-actions" style="margin-bottom: 10px;">
+                        <h2>Pending Shortlist</h2>
+                        <div class="bulk-actions" style="margin-bottom: 10px; display:none">
                             <button class="btn btn-secondary btn-sm" id="clear-shortlist-btn">Clear Shortlist</button>
                         </div>
                     </div>
@@ -80,10 +80,10 @@ $smarty->display('_std_begin.tpl');
             <div class="map-controls" style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; background-color: var(--header-bg); padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);">
                 <div class="filter-group" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
                     <label><input type="checkbox" id="map-show-raw" checked> Show Raw Candidates (Red)</label>
+                    (<label><input type="checkbox" id="map-show-outliers"> Highlight Outliers Only (>1km away)</label>)
                     <label><input type="checkbox" id="map-show-shortlisted" checked> Show Shortlisted (Yellow)</label>
                     <label><input type="checkbox" id="map-show-confirmed" checked> Show Confirmed (Green)</label>
-                    <label><input type="checkbox" id="map-show-outliers"> Highlight Outliers Only (>10km away)</label>
-                    <label id="map-live-update-container" style="color: var(--accent-color); font-weight: bold;"><input type="checkbox" id="map-live-update"> Live Update (OS Bounds)</label>
+                    <label id="map-live-update-container" style="color: var(--accent-color); font-weight: bold;"><input type="checkbox" id="map-live-update"> Live Update (Load More as zoom)</label>
                 </div>
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <button class="btn btn-secondary btn-sm" id="map-fit-bounds-btn">Show All (Fit to Markers)</button>
@@ -143,7 +143,7 @@ $smarty->display('_std_begin.tpl');
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <!-- Curation App stylesheet -->
-<link rel="stylesheet" href="<?php echo smarty_modifier_revision("/curated/editor/styles.css"); ?>">
+<link rel="stylesheet" href="<?php echo smarty_modifier_revision("/curated/editor/styles.css"); ?>?<?= filemtime('styles.css'); ?>">
 
 <!-- Geograph and Curation dependencies -->
 <script src="<?php echo smarty_modifier_revision("/js/geograph-api-libs.js"); ?>"></script>
@@ -155,7 +155,7 @@ $smarty->display('_std_begin.tpl');
 </script>
 
 <!-- Curation App scripts -->
-<script src="<?php echo smarty_modifier_revision("/curated/editor/javascript.js"); ?>"></script>
+<script src="<?php echo smarty_modifier_revision("/curated/editor/javascript.js"); ?>?<?= filemtime('javascript.js'); ?>"></script>
 
 <?php
 $smarty->display('_std_end.tpl');

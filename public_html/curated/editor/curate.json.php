@@ -48,8 +48,8 @@ if (empty($label)) {
 switch ($action) {
     case 'get_curation_summary':
         // Get all curation items for this label along with image metadata
-        $sql = "SELECT c.curated_id, c.gridimage_id, c.active, c.feature, c.region, c.caption, c.user_id,
-                       gi.title, gi.hash, gi.wgs84_lat, gi.wgs84_long
+        $sql = "SELECT c.curated_id, c.gridimage_id, c.active, c.feature, c.region, c.caption, c.user_id as curated_user_id,
+                       gi.user_id, gi.realname, gi.grid_reference, gi.title, gi.wgs84_lat, gi.wgs84_long
                 FROM curated c
                 INNER JOIN gridimage_search gi USING (gridimage_id)
                 WHERE c.label = ?
@@ -58,15 +58,19 @@ switch ($action) {
 
         $curated_list = array();
         foreach ($rows as $row) {
+	    $image = new GridImage();
+	    $image->fastInit($row);
+
             $curated_list[] = array(
                 'id' => intval($row['gridimage_id']),
                 'active' => intval($row['active']),
                 'feature' => latin1_to_utf8($row['feature']),
                 'region' => latin1_to_utf8($row['region']),
                 'caption' => latin1_to_utf8($row['caption']),
-                'user_id' => intval($row['user_id']),
+                'user_id' => intval($row['curated_user_id']),
                 'title' => latin1_to_utf8($row['title']),
-                'hash' => $row['hash'],
+                'realname' => latin1_to_utf8($row['realname']),
+                'hash' => $image->_getAntiLeechHash(),
                 'lat' => floatval($row['wgs84_lat']),
                 'lng' => floatval($row['wgs84_long'])
             );
@@ -133,7 +137,10 @@ switch ($action) {
         $lng_max = $lng + $lng_delta;
 
         $sql = "SELECT DISTINCT c.feature, gi.wgs84_lat, gi.wgs84_long,
-                       (ABS(gi.wgs84_lat - ?) + ABS(gi.wgs84_long - ?)) AS dist
+		    ST_Distance_Sphere(
+			        POINT(gi.wgs84_long, gi.wgs84_lat),
+			        POINT(?, ?)
+		    ) AS dist
                 FROM curated c
                 INNER JOIN gridimage_search gi USING (gridimage_id)
                 WHERE c.label = ? AND c.active = 2 AND c.feature != ''
@@ -141,7 +148,7 @@ switch ($action) {
                   AND gi.wgs84_long BETWEEN ? AND ?
                 ORDER BY dist ASC
                 LIMIT 10";
-        $rows = $db->getAll($sql, array($lat, $lng, $label, $lat_min, $lat_max, $lng_min, $lng_max));
+        $rows = $db->getAll($sql, array($lng, $lat, $label, $lat_min, $lat_max, $lng_min, $lng_max));
 
         $suggestions = array();
         foreach ($rows as $row) {
@@ -156,7 +163,7 @@ switch ($action) {
         break;
 
     case 'get_unassigned_queue':
-        $sql = "SELECT c.curated_id, c.gridimage_id, c.active, gi.title, gi.hash, gi.wgs84_lat, gi.wgs84_long
+        $sql = "SELECT c.curated_id, c.gridimage_id, c.active, gi.user_id, gi.title, gi.wgs84_lat, gi.wgs84_long
                 FROM curated c
                 INNER JOIN gridimage_search gi USING (gridimage_id)
                 WHERE c.label = ? AND c.active IN (1, 2) AND c.feature = ''
@@ -165,11 +172,13 @@ switch ($action) {
 
         $queue = array();
         foreach ($rows as $row) {
+            $image = new GridImage();
+            $image->fastInit($row);
             $queue[] = array(
                 'id' => intval($row['gridimage_id']),
                 'active' => intval($row['active']),
                 'title' => latin1_to_utf8($row['title']),
-                'hash' => $row['hash'],
+                'hash' => $image->_getAntiLeechHash(),
                 'lat' => floatval($row['wgs84_lat']),
                 'lng' => floatval($row['wgs84_long'])
             );

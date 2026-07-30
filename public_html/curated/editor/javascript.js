@@ -68,7 +68,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (el.aiVectorCheckbox) {
         el.aiVectorCheckbox.addEventListener('change', function() {
             if (this.checked) {
-                el.aiVectorModel.style.display = 'inline-block';
+		//stick with one model for now
+                //el.aiVectorModel.style.display = 'inline-block';
             } else {
                 el.aiVectorModel.style.display = 'none';
             }
@@ -156,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 event.preventDefault();
                 skipUnassignedImage();
             }
-        } else if (event.code === 'KeyC' || event.code === 'Enter') {
+        } else if (!event.ctrlKey && !event.metaKey && (event.code === 'KeyC' || event.code === 'Enter')) {
             // Confirm/Save
             const activeTab = document.querySelector('.nav-btn.active') ? document.querySelector('.nav-btn.active').dataset.tab : '';
             if (activeTab === 'hot-not') {
@@ -202,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Call REST API to update curation state
-    async function updateCurationState(gridimage_id, active, feature = '', region = '', caption = '') {
+    async function updateCurationState(gridimage_id, active, feature = '', region = '') {
         try {
             const formData = new FormData();
             formData.append('action', 'save_state');
@@ -211,7 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('active', active);
             formData.append('feature', feature);
             formData.append('region', region);
-            formData.append('caption', caption);
 
             const res = await fetch(API_BASE, {
                 method: 'POST',
@@ -311,7 +311,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     active: 1,
                     feature: '',
                     region: '',
-                    caption: raw.title,
                     title: raw.title,
                     hash: raw.hash,
                     lat: raw.lat,
@@ -335,15 +334,14 @@ document.addEventListener('DOMContentLoaded', function() {
     async function excludeImage(id) {
         const raw = state.rawCandidates.find(item => item.id === id) || state.curatedMap.get(id);
         if (raw) {
-            const ok = await updateCurationState(id, 0, '', '', raw.title || raw.caption || '');
+            const ok = await updateCurationState(id, 0, '', '');
             if (ok) {
                 state.curatedMap.set(id, {
                     id: id,
                     active: 0,
                     feature: '',
                     region: '',
-                    caption: raw.title || raw.caption || '',
-                    title: raw.title || raw.caption || '',
+                    title: raw.title || '',
                     hash: raw.hash,
                     lat: raw.lat,
                     lng: raw.lng
@@ -370,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const ok = await updateCurationState(id, 2, finalFeature, item.region, item.caption);
+            const ok = await updateCurationState(id, 2, finalFeature, item.region);
             if (ok) {
                 item.active = 2;
                 item.feature = finalFeature;
@@ -499,7 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <img src="${url}" crossorigin onerror="retryCross(this)" loading="lazy">
                 </div>
                 <div class="image-details">
-                    <h4 class="image-title"><a href="https://www.geograph.org.uk/photo/${item.id}" target="_blank">${escapeHtml(item.caption || item.title)}</a></h4>
+                    <h4 class="image-title"><a href="https://www.geograph.org.uk/photo/${item.id}" target="_blank">${escapeHtml(item.title)}</a></h4>
                     <div class="resolver-input-group" style="display:flex; gap: 8px; margin-top:5px;">
                         <input type="text" class="form-control feature-resolver-input" style="flex:1; padding:5px;" value="${escapeHtml(item.feature)}" placeholder="Assign Feature/Place Name...">
                         <button class="btn btn-sm btn-success confirm-feature-btn">Confirm</button>
@@ -515,10 +513,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             `;
-
+setTimeout(function() {
             // Proximity Suggestions computation
             fetchProximitySuggestions(item.lat, item.lng, `proximity-tags-${item.id}`, card);
-
+}, 10);
             // Inputs / Actions listeners
             const input = card.querySelector('.feature-resolver-input');
             input.addEventListener('change', function() {
@@ -553,6 +551,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const tag = document.createElement('span');
                     tag.className = 'proximity-tag';
                     tag.textContent = s.feature;
+                    tag.title = `${Math.round(s.dist)} meters`;
                     tag.addEventListener('click', function() {
                         const input = cardEl.querySelector('.feature-resolver-input');
                         if (input) {
@@ -617,12 +616,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="sequential-right">
                     <div class="sequential-details">
                         <div class="queue-progress" style="font-weight:bold; margin-bottom: 10px;">Queue Progress: Image ${state.currentUnassignedIndex + 1} of ${unassigned.length}</div>
-                        <h3><a href="https://www.geograph.org.uk/photo/${item.id}" target="_blank">${escapeHtml(item.title || item.caption)}</a></h3>
+                        <h3>${escapeHtml(item.title)}</h3>
+			<a href="https://www.geograph.org.uk/photo/${item.id}" target="_blank">View Photo Page</a>
                         <p style="font-size:13px; color:#666;">Coordinates: ${item.lat.toFixed(6)}, ${item.lng.toFixed(6)}</p>
 
                         <div style="margin-top:20px;">
                             <label style="font-weight:bold; display:block; margin-bottom:8px;">Assign Feature Name (F):</label>
-                            <input type="text" id="seq-feature-input" class="form-control" style="width:100%; padding:10px; font-size:15px;" value="${escapeHtml(item.feature)}" placeholder="Durdle Door, London Bridge...">
+                            <input type="text" id="seq-feature-input" class="form-control feature-resolver-input" style="width:100%; padding:10px; font-size:15px;" value="${escapeHtml(item.feature)}" placeholder="{enter name here}">
                         </div>
 
                         <div class="proximity-assist" style="margin-top: 15px;">
@@ -710,7 +710,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="sequential-right">
                     <div class="sequential-details">
                         <div class="queue-progress" style="font-weight:bold; margin-bottom: 10px;">Review Progress: Image ${state.currentHotNotIndex + 1} of ${activeQueue.length}</div>
-                        <h3><a href="https://www.geograph.org.uk/photo/${item.id}" target="_blank">${escapeHtml(item.title || item.caption)}</a></h3>
+                        <h3><a href="https://www.geograph.org.uk/photo/${item.id}" target="_blank">${escapeHtml(item.title)}</a></h3>
                         <p style="font-size:14px; margin-top:20px; line-height: 1.6;">
                             This image was shortlisted/suggested by users for the target label <b>${escapeHtml(CURRENT_LABEL)}</b>.<br>
                             Review the details and confirm if this is a correct, valid example.
@@ -759,7 +759,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     tr.innerHTML = `
                         <td style="font-weight:600;">${escapeHtml(row.feature)}</td>
                         <td><span class="badge" style="background-color: var(--success-color);">${row.total_curated}</span></td>
-                        <td><span style="color:green; font-weight:bold;">✓ Active Curation</span></td>
+                        <td><span style="color:green; font-weight:bold;">Active Curation</span></td>
                     `;
                     el.reportTableBody.appendChild(tr);
                 });
@@ -848,7 +848,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const popupHtml = `
                         <div>
                             <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" crossorigin onerror="retryCross(this)">
-                            <div class="map-popup-title">${escapeHtml(item.title || item.caption)}</div>
+                            <div class="map-popup-title">${escapeHtml(item.title)}</div>
                             <div style="font-size:12px; margin-bottom:5px;">Feature: <b>${escapeHtml(item.feature)}</b></div>
                             <button class="btn btn-sm btn-primary expand-search-btn" data-lat="${item.lat}" data-lng="${item.lng}">Expand Feature Search (2km)</button>
                         </div>
@@ -887,7 +887,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const popupHtml = `
                         <div>
                             <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" crossorigin onerror="retryCross(this)">
-                            <div class="map-popup-title">${escapeHtml(item.title || item.caption)}</div>
+                            <div class="map-popup-title">${escapeHtml(item.title)}</div>
                             <div style="margin-top:5px; display:flex; gap:5px;">
                                 <button class="btn btn-sm btn-success map-confirm-btn" data-id="${item.id}">Confirm</button>
                                 <button class="btn btn-sm btn-danger map-exclude-btn" data-id="${item.id}">Exclude</button>
@@ -924,12 +924,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             rawItems.forEach(item => {
                 if (item.lat && item.lng) {
-                    // Check if outlier (distance > 10km to any confirmed item)
+                    // Check if outlier (distance > 1km to any confirmed item)
                     let isOutlier = true;
                     if (confirmedItems.length > 0) {
                         for (const confirmed of confirmedItems) {
                             const d = computeDistance(item.lat, item.lng, confirmed.lat, confirmed.lng);
-                            if (d <= 10) {
+                            if (d <= 1) {
                                 isOutlier = false;
                                 break;
                             }
@@ -955,7 +955,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div>
                             <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" crossorigin onerror="retryCross(this)">
                             <div class="map-popup-title">${escapeHtml(item.title)}</div>
-                            ${isOutlier ? '<div style="color:magenta; font-weight:bold; margin-bottom:5px;">⚠️ Potential Outlier (>10km)</div>' : ''}
+                            ${isOutlier ? '<div style="color:magenta; font-weight:bold; margin-bottom:5px;">Potential Outlier (>1km)</div>' : ''}
                             <div style="margin-top:5px; display:flex; gap:5px;">
                                 <button class="btn btn-sm btn-primary map-shortlist-btn" data-id="${item.id}">Shortlist</button>
                                 <button class="btn btn-sm btn-danger map-exclude-btn" data-id="${item.id}">Exclude</button>
@@ -1146,6 +1146,10 @@ document.addEventListener('DOMContentLoaded', function() {
         renderShortlisted();
         renderUnassignedSequential();
         renderHotNotSlideshow();
+
+        const mapContainer = document.getElementById('curation-map');
+	if (isVisible(mapContainer))
+            renderMapMarkers();
     }
 
     // Global Search trigger
@@ -1169,3 +1173,16 @@ document.addEventListener('DOMContentLoaded', function() {
     })();
 
 });
+
+function isVisible(element) {
+  if (!element) return false;
+
+  // Handles elements, parents with display: none, and elements not in the DOM
+  return !!(
+    element.offsetWidth ||
+    element.offsetHeight ||
+    element.getClientRects().length
+  );
+}
+
+
