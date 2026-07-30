@@ -77,15 +77,18 @@ $smarty->display('_std_begin.tpl');
 
         <!-- TAB 2: SPATIAL MAP -->
         <div class="tab-pane" id="tab-spatial-map">
-            <div class="map-controls">
-                <div class="filter-group">
+            <div class="map-controls" style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; background-color: var(--header-bg); padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);">
+                <div class="filter-group" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
                     <label><input type="checkbox" id="map-show-raw" checked> Show Raw Candidates (Red)</label>
                     <label><input type="checkbox" id="map-show-shortlisted" checked> Show Shortlisted (Yellow)</label>
                     <label><input type="checkbox" id="map-show-confirmed" checked> Show Confirmed (Green)</label>
                     <label><input type="checkbox" id="map-show-outliers"> Highlight Outliers Only (>10km away)</label>
                 </div>
-                <div class="map-stats">
-                    Total Map Markers: <span id="map-marker-count">0</span>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button class="btn btn-secondary btn-sm" id="map-fit-bounds-btn">Show All (Fit to Markers)</button>
+                    <div class="map-stats" style="font-weight: 600;">
+                        Total Map Markers: <span id="map-marker-count">0</span>
+                    </div>
                 </div>
             </div>
             <div id="curation-map" style="height: 650px; width: 100%; border-radius: 8px; border: 1px solid #ccc; margin-top: 10px;"></div>
