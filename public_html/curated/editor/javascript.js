@@ -239,14 +239,14 @@ document.addEventListener('DOMContentLoaded', function() {
             url = '/api-facetql-vector.php';
             params['label'] = query;
             params['model'] = el.aiVectorModel.value;
+            // Note: api-facetql-vector.php does not support 'where' exclusions, so they will be filtered client-side.
         } else {
             url = '/api-facetql.php';
             params['match'] = query;
-        }
-
-        // Inject ID exclusion clause so Sphinx filters out already curated items!
-        if (excludedOrConfirmedIds.length > 0) {
-            params['where'] = `id not in (${excludedOrConfirmedIds.join(',')})`;
+            // Inject ID exclusion clause so Sphinx filters out already curated items!
+            if (excludedOrConfirmedIds.length > 0) {
+                params['where'] = `id not in (${excludedOrConfirmedIds.join(',')})`;
+            }
         }
 
         try {
