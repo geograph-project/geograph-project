@@ -123,7 +123,7 @@ body.dark-mode, body.dark-theme {
 .triage-col {
     flex: 1;
     min-width: 300px;
-    border: 1px solid var(--border-color);
+    --border: 1px solid var(--border-color);
     border-radius: 6px;
     background-color: var(--header-bg);
     padding: 15px;
@@ -224,7 +224,7 @@ body.dark-mode, body.dark-theme {
 /* Image Card Styling */
 .image-card {
     background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
+    --border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 10px;
     display: flex;
@@ -251,7 +251,7 @@ body.dark-mode, body.dark-theme {
     height: 160px;
     overflow: hidden;
     border-radius: 4px;
-    border: 1px solid var(--border-color);
+    --border: 1px solid var(--border-color);
     background-color: #000;
     flex-shrink: 0;
 }
@@ -318,7 +318,7 @@ body.dark-mode, body.dark-theme {
 
 .proximity-tag {
     background-color: var(--hover-bg);
-    border: 1px solid var(--border-color);
+    --border: 1px solid var(--border-color);
     padding: 3px 8px;
     border-radius: 12px;
     font-size: 11px;

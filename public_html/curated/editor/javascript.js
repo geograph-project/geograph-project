@@ -256,10 +256,25 @@ document.addEventListener('DOMContentLoaded', function() {
             // Note: api-facetql-vector.php does not support 'where' exclusions, so they will be filtered client-side.
         } else {
             url = '/api-facetql.php';
-            params['match'] = query;
-            // Inject ID exclusion clause so Sphinx filters out already curated items!
-            if (excludedOrConfirmedIds.length > 0) {
-                params['where'] = `id not in (${excludedOrConfirmedIds.join(',')})`;
+
+            // Check if the search query is a specific ID or comma-separated list of IDs
+		    if (query.match(/^(id:)?\d+(,\d+)*$/i)) {
+                // Parse requested IDs and remove any that are already excluded/confirmed
+                const rawIds = query.replace(/^id:/i, '').split(',').map(id => id.trim());
+                const validRequestedIds = rawIds.filter(id => !excludedOrConfirmedIds.includes(Number(id)) && !excludedOrConfirmedIds.includes(id));
+
+                if (validRequestedIds.length > 0) {
+                    params['where'] = `id in (${validRequestedIds.join(',')})`;
+                } else {
+                    // All requested IDs are excluded; match impossible condition to return 0 results
+                    params['where'] = "id in (0)";
+                }
+            } else {
+                params['match'] = query;
+                // Inject ID exclusion clause so Sphinx filters out already curated items!
+                if (excludedOrConfirmedIds.length > 0) {
+                    params['where'] = `id not in (${excludedOrConfirmedIds.join(',')})`;
+                }
             }
         }
 
@@ -494,7 +509,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             card.innerHTML = `
                 <div class="image-thumbnail-wrapper">
-                    <img src="${url}" crossorigin onerror="retryCross(this)" loading="lazy">
+                    <img src="${url}" loading="lazy">
                 </div>
                 <div class="image-details">
                     <h4 class="image-title"><a href="https://www.geograph.org.uk/photo/${item.id}" target="_blank">${escapeHtml(item.title)}</a></h4>
@@ -847,7 +862,7 @@ setTimeout(function() {
                     // Popup with details & Feature Expansion option
                     const popupHtml = `
                         <div>
-                            <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" crossorigin onerror="retryCross(this)">
+                            <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" loading="lazy">
                             <div class="map-popup-title">${escapeHtml(item.title)}</div>
                             <div style="font-size:12px; margin-bottom:5px;">Feature: <b>${escapeHtml(item.feature)}</b></div>
                             <button class="btn btn-sm btn-primary expand-search-btn" data-lat="${item.lat}" data-lng="${item.lng}">Expand Feature Search (2km)</button>
@@ -886,7 +901,7 @@ setTimeout(function() {
 
                     const popupHtml = `
                         <div>
-                            <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" crossorigin onerror="retryCross(this)">
+                            <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" loading="lazy">
                             <div class="map-popup-title">${escapeHtml(item.title)}</div>
                             <div style="margin-top:5px; display:flex; gap:5px;">
                                 <button class="btn btn-sm btn-success map-confirm-btn" data-id="${item.id}">Confirm</button>
@@ -953,7 +968,7 @@ setTimeout(function() {
 
                     const popupHtml = `
                         <div>
-                            <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" crossorigin onerror="retryCross(this)">
+                            <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" loading="lazy">
                             <div class="map-popup-title">${escapeHtml(item.title)}</div>
                             ${isOutlier ? '<div style="color:magenta; font-weight:bold; margin-bottom:5px;">Potential Outlier (>1km)</div>' : ''}
                             <div style="margin-top:5px; display:flex; gap:5px;">

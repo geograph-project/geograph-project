@@ -121,7 +121,7 @@ $smarty->display('_std_begin.tpl');
                         <thead>
                             <tr>
                                 <th>Feature / Place Name</th>
-                                <th>Total Confirmed Photos (active=2)</th>
+                                <th>Total Confirmed Photos</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
