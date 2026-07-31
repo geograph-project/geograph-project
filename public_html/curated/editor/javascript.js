@@ -987,6 +987,8 @@ setTimeout(function() {
                     <input type="text" id="edit-feat-name-${uniq}" class="form-control" style="width:100%; padding:5px; box-sizing:border-box;" value="${escapeHtml(feat.name)}">
                 </div>
 
+                <button class="btn btn-sm btn-primary" id="edit-feat-nearby-btn-${uniq}" style="width: 100%; margin-bottom: 10px;">View Nearby Images</button>
+
                 <div id="edit-feat-selected-img-wrapper-${uniq}" style="margin-bottom: 10px; display: none; text-align: center;">
                     <div style="font-weight:bold; margin-bottom:4px; text-align:left;">Assigned Image:</div>
                     <img id="edit-feat-selected-img-${uniq}" class="map-popup-image" style="width: 100%; height: 120px; object-fit: contain; margin-bottom: 5px; background: #eee; border-radius: 4px;">
@@ -1075,6 +1077,32 @@ setTimeout(function() {
                         currentGridimageId = null;
                     }
                     updateAssignedImageDisplay();
+                });
+            }
+
+            // View Nearby Images Button
+            const nearbyBtn = document.getElementById(`edit-feat-nearby-btn-${uniq}`);
+            if (nearbyBtn) {
+                nearbyBtn.addEventListener('click', function() {
+                    const hectad = convertLLtoHectad(feat.lat, feat.lng);
+                    if (hectad) {
+                        if (el.rawSearchInput) {
+                            el.rawSearchInput.value = "hectad:" + hectad;
+                        }
+                        if (el.aiVectorCheckbox) {
+                            el.aiVectorCheckbox.checked = false;
+                        }
+                        if (el.aiVectorModel) {
+                            el.aiVectorModel.style.display = 'none';
+                        }
+                        if (el.mapLiveUpdate) {
+                            el.mapLiveUpdate.checked = true;
+                        }
+                        performRawSearch();
+                        renderMapMarkers();
+                    } else {
+                        alert("Could not compute hectad for coordinates.");
+                    }
                 });
             }
 
@@ -1596,4 +1624,12 @@ function isVisible(element) {
   );
 }
 
+function convertLLtoHectad(lat,lng) {
+    var wgs84 = new GT_WGS84();
+    wgs84.setDegrees(lat, lng);
+    let gridref = wgs84.getGridRef(1); //one digit!
+    if (gridref)
+        return gridref.replace(/ /g,''); //naturaulyl reurns GRs with spaces!
+    return false;
+}
 
