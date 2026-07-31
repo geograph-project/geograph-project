@@ -11,6 +11,7 @@ $USER->mustHavePerm("basic");
 customNoCacheHeader();
 
 $label = $_GET['label'] ?? 'Sea Arches';
+$feature_type_id = isset($_GET['feature_type_id']) ? intval($_GET['feature_type_id']) : null;
 
 $smarty->display('_std_begin.tpl');
 ?>
@@ -84,6 +85,7 @@ $smarty->display('_std_begin.tpl');
                     <label><input type="checkbox" id="map-show-shortlisted" checked> Show Shortlisted (Yellow)</label>
                     <label><input type="checkbox" id="map-show-confirmed" checked> Show Confirmed (Green)</label>
                     <label id="map-live-update-container" style="color: var(--accent-color); font-weight: bold;"><input type="checkbox" id="map-live-update"> Live Update (Load More as zoom)</label>
+                    <label id="map-show-features-container" style="display:none;"><input type="checkbox" id="map-show-features" checked> Show Known Features (Pins)</label>
                 </div>
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <button class="btn btn-secondary btn-sm" id="map-fit-bounds-btn">Show All (Fit to Markers)</button>
@@ -152,6 +154,7 @@ $smarty->display('_std_begin.tpl');
 <!-- Inline variables declaration -->
 <script>
     window.CURRENT_LABEL = <?php echo json_encode($label); ?>;
+    window.FEATURE_TYPE_ID = <?php echo json_encode($feature_type_id); ?>;
 </script>
 
 <!-- Curation App scripts -->

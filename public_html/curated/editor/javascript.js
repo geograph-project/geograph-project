@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
         currentUnassignedIndex: 0,
         currentHotNotIndex: 0,
         selectedCandidateId: null, // currently highlighted card in Column 1
-        totalFound: 0          // total matching candidates found in raw search
+        totalFound: 0,          // total matching candidates found in raw search
+        knownFeatures: []      // Array of known feature items
     };
 
     // DOM Elements Cache
@@ -51,7 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
         mapShowOutliers: document.getElementById('map-show-outliers'),
         mapMarkerCount: document.getElementById('map-marker-count'),
         mapLiveUpdate: document.getElementById('map-live-update'),
-        mapLiveUpdateContainer: document.getElementById('map-live-update-container')
+        mapLiveUpdateContainer: document.getElementById('map-live-update-container'),
+        mapShowFeatures: document.getElementById('map-show-features'),
+        mapShowFeaturesContainer: document.getElementById('map-show-features-container')
     };
 
     function updateLiveUpdateVisibility() {
@@ -199,6 +202,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (e) {
             console.error('Error fetching curation summary', e);
+        }
+    }
+
+    async function fetchKnownFeatures() {
+        const FEATURE_TYPE_ID = window.FEATURE_TYPE_ID;
+        if (!FEATURE_TYPE_ID) return;
+        try {
+            const res = await fetch(`${API_BASE}?action=get_features&feature_type_id=${FEATURE_TYPE_ID}&label=${encodeURIComponent(CURRENT_LABEL)}`);
+            const data = await res.json();
+            if (data.features) {
+                state.knownFeatures = data.features;
+            }
+        } catch (e) {
+            console.error('Error fetching known features', e);
         }
     }
 
@@ -557,7 +574,7 @@ setTimeout(function() {
         if (!container) return;
 
         try {
-            const res = await fetch(`${API_BASE}?action=get_proximity_suggestions&label=${encodeURIComponent(CURRENT_LABEL)}&lat=${lat}&lng=${lng}`);
+            const res = await fetch(`${API_BASE}?action=get_proximity_suggestions&label=${encodeURIComponent(CURRENT_LABEL)}&lat=${lat}&lng=${lng}&feature_type_id=${window.FEATURE_TYPE_ID || ''}`);
             const data = await res.json();
 
             if (data.suggestions && data.suggestions.length > 0) {
@@ -794,6 +811,7 @@ setTimeout(function() {
     let map = null;
     let markerLayerGroup = null;
     let isFirstMapLoad = true;
+    let tempAddMarker = null;
 
     function initOrUpdateMap() {
         const mapContainer = document.getElementById('curation-map');
@@ -810,8 +828,13 @@ setTimeout(function() {
 
             markerLayerGroup = L.layerGroup().addTo(map);
 
+            // Show Features layer toggle container if FEATURE_TYPE_ID is present
+            if (window.FEATURE_TYPE_ID && el.mapShowFeaturesContainer) {
+                el.mapShowFeaturesContainer.style.display = 'inline-block';
+            }
+
             // Listen to checkbox filter changes
-            const mapFilters = [el.mapShowRaw, el.mapShowShortlisted, el.mapShowConfirmed, el.mapShowOutliers];
+            const mapFilters = [el.mapShowRaw, el.mapShowShortlisted, el.mapShowConfirmed, el.mapShowOutliers, el.mapShowFeatures];
             mapFilters.forEach(f => {
                 if (f) f.addEventListener('change', renderMapMarkers);
             });
@@ -824,6 +847,11 @@ setTimeout(function() {
 
             // Set up Leaflet map moveend event for Live Update feature
             map.on('moveend', handleMapMoveEnd);
+
+            // Setup new pin placement click listener
+            if (window.FEATURE_TYPE_ID) {
+                map.on('click', handleMapClick);
+            }
         }
 
         // Delay invalidation so container displays properly
@@ -831,6 +859,277 @@ setTimeout(function() {
             map.invalidateSize();
             renderMapMarkers();
         }, 100);
+    }
+
+    async function handleMapClick(e) {
+        // Ignore map click if clicking on a marker
+        if (e.originalEvent && e.originalEvent.target && e.originalEvent.target.classList.contains('leaflet-marker-icon')) {
+            return;
+        }
+
+        if (tempAddMarker) {
+            map.removeLayer(tempAddMarker);
+        }
+
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+
+        // Fetch nearby curated images within 1km
+        let nearbyImages = [];
+        try {
+            const res = await fetch(`${API_BASE}?action=get_nearby_curated_images&label=${encodeURIComponent(CURRENT_LABEL)}&lat=${lat}&lng=${lng}`);
+            const data = await res.json();
+            nearbyImages = data.images || [];
+        } catch (err) {
+            console.error('Error fetching nearby curated images', err);
+        }
+
+        // Build the dropdown options
+        let optionsHtml = '<option value="">-- No Image Selected --</option>';
+        nearbyImages.forEach(img => {
+            optionsHtml += `<option value="${img.id}">${escapeHtml(img.title)} (ID: ${img.id}, Dist: ${Math.round(img.dist)}m)</option>`;
+        });
+
+        // Use standard Leaflet marker for the new pin
+        tempAddMarker = L.marker([lat, lng]).addTo(map);
+
+        const popupContent = `
+            <div class="add-feature-popup" style="min-width: 250px;">
+                <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">Add New Known Feature</h4>
+                <div style="margin-bottom: 10px;">
+                    <label style="display:block; font-weight:bold; margin-bottom:4px;">Feature Name:</label>
+                    <input type="text" id="new-feat-name" class="form-control" style="width:100%; padding:5px; box-sizing:border-box;" placeholder="Enter name...">
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label style="display:block; font-weight:bold; margin-bottom:4px;">Select Image (within 1km):</label>
+                    <select id="new-feat-image" class="form-select" style="width:100%; padding:5px; box-sizing:border-box;">
+                        ${optionsHtml}
+                    </select>
+                </div>
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button class="btn btn-sm btn-secondary" id="btn-cancel-add-feat">Cancel</button>
+                    <button class="btn btn-sm btn-success" id="btn-save-add-feat">Create</button>
+                </div>
+            </div>
+        `;
+
+        tempAddMarker.bindPopup(popupContent).openPopup();
+
+        tempAddMarker.on('popupopen', function() {
+            // Cancel button
+            document.getElementById('btn-cancel-add-feat').addEventListener('click', function() {
+                if (tempAddMarker) {
+                    map.removeLayer(tempAddMarker);
+                    tempAddMarker = null;
+                }
+            });
+
+            // Save/Create button
+            document.getElementById('btn-save-add-feat').addEventListener('click', async function() {
+                const name = document.getElementById('new-feat-name').value.trim();
+                const gridimage_id = document.getElementById('new-feat-image').value;
+
+                if (!name && !gridimage_id) {
+                    alert('Please enter a feature name or select an image!');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('action', 'insert_feature');
+                formData.append('label', CURRENT_LABEL);
+                formData.append('feature_type_id', window.FEATURE_TYPE_ID);
+                formData.append('name', name);
+                formData.append('wgs84_lat', lat);
+                formData.append('wgs84_long', lng);
+                formData.append('gridimage_id', gridimage_id || '');
+
+                try {
+                    const res = await fetch(API_BASE, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        if (tempAddMarker) {
+                            map.removeLayer(tempAddMarker);
+                            tempAddMarker = null;
+                        }
+                        await fetchKnownFeatures();
+                        renderMapMarkers();
+                    }
+                } catch (err) {
+                    console.error('Error inserting feature', err);
+                    alert('An error occurred while creating the feature.');
+                }
+            });
+        });
+
+        tempAddMarker.on('popupclose', function() {
+            setTimeout(() => {
+                if (tempAddMarker && !tempAddMarker.isPopupOpen()) {
+                    map.removeLayer(tempAddMarker);
+                    tempAddMarker = null;
+                }
+            }, 100);
+        });
+    }
+
+    function bindFeatureEditPopup(marker, feat) {
+        const uniq = feat.id;
+
+        const initialPopupContent = `
+            <div class="edit-feature-popup" id="edit-feat-container-${uniq}" style="min-width: 280px;">
+                <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">Edit Known Feature</h4>
+                <div style="margin-bottom: 10px;">
+                    <label style="display:block; font-weight:bold; margin-bottom:4px;">Feature Name:</label>
+                    <input type="text" id="edit-feat-name-${uniq}" class="form-control" style="width:100%; padding:5px; box-sizing:border-box;" value="${escapeHtml(feat.name)}">
+                </div>
+
+                <div id="edit-feat-selected-img-wrapper-${uniq}" style="margin-bottom: 10px; display: none; text-align: center;">
+                    <div style="font-weight:bold; margin-bottom:4px; text-align:left;">Assigned Image:</div>
+                    <img id="edit-feat-selected-img-${uniq}" class="map-popup-image" style="width: 100%; height: 120px; object-fit: contain; margin-bottom: 5px; background: #eee; border-radius: 4px;">
+                    <button class="btn btn-sm btn-danger" id="edit-feat-unassign-btn-${uniq}" style="width: 100%;">Unassign Image</button>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <label style="display:block; font-weight:bold; margin-bottom:4px;">Select Image (within 1km):</label>
+                    <select id="edit-feat-image-select-${uniq}" class="form-select" style="width:100%; padding:5px; box-sizing:border-box;">
+                        <option value="">Loading nearby images...</option>
+                    </select>
+                </div>
+
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button class="btn btn-sm btn-secondary" id="edit-feat-cancel-btn-${uniq}">Cancel</button>
+                    <button class="btn btn-sm btn-success" id="edit-feat-save-btn-${uniq}">Save</button>
+                </div>
+            </div>
+        `;
+
+        marker.bindPopup(initialPopupContent);
+
+        marker.on('popupopen', async function() {
+            const imgWrapper = document.getElementById(`edit-feat-selected-img-wrapper-${uniq}`);
+            const imgEl = document.getElementById(`edit-feat-selected-img-${uniq}`);
+            const unassignBtn = document.getElementById(`edit-feat-unassign-btn-${uniq}`);
+
+            let currentGridimageId = feat.gridimage_id;
+
+            function updateAssignedImageDisplay() {
+                if (currentGridimageId && currentGridimageId > 0) {
+                    imgWrapper.style.display = 'block';
+                    if (feat.gridimage_hash) {
+                        imgEl.src = getGeographUrl(currentGridimageId, feat.gridimage_hash, 'med');
+                    } else {
+                        imgEl.src = `https://www.geograph.org.uk/photo/${currentGridimageId}`;
+                    }
+                } else {
+                    imgWrapper.style.display = 'none';
+                    imgEl.src = '';
+                }
+            }
+
+            updateAssignedImageDisplay();
+
+            if (unassignBtn) {
+                unassignBtn.addEventListener('click', function() {
+                    currentGridimageId = null;
+                    updateAssignedImageDisplay();
+                    const selectEl = document.getElementById(`edit-feat-image-select-${uniq}`);
+                    if (selectEl) {
+                        selectEl.value = "";
+                    }
+                });
+            }
+
+            // Fetch nearby curated images within 1km
+            let nearbyImages = [];
+            try {
+                const res = await fetch(`${API_BASE}?action=get_nearby_curated_images&label=${encodeURIComponent(CURRENT_LABEL)}&lat=${feat.lat}&lng=${feat.lng}`);
+                const data = await res.json();
+                nearbyImages = data.images || [];
+            } catch (err) {
+                console.error('Error fetching nearby curated images', err);
+            }
+
+            // Populate select dropdown
+            const selectEl = document.getElementById(`edit-feat-image-select-${uniq}`);
+            if (selectEl) {
+                let optionsHtml = '<option value="">-- No Image Selected --</option>';
+                nearbyImages.forEach(img => {
+                    const isSelected = img.id === currentGridimageId ? 'selected' : '';
+                    optionsHtml += `<option value="${img.id}" ${isSelected}>${escapeHtml(img.title)} (ID: ${img.id}, Dist: ${Math.round(img.dist)}m)</option>`;
+                });
+                selectEl.innerHTML = optionsHtml;
+
+                selectEl.addEventListener('change', function() {
+                    const selectedVal = this.value;
+                    if (selectedVal) {
+                        currentGridimageId = parseInt(selectedVal);
+                        const selectedImg = nearbyImages.find(img => img.id === currentGridimageId);
+                        if (selectedImg) {
+                            feat.gridimage_hash = selectedImg.hash;
+                        }
+                    } else {
+                        currentGridimageId = null;
+                    }
+                    updateAssignedImageDisplay();
+                });
+            }
+
+            // Cancel Button
+            const cancelBtn = document.getElementById(`edit-feat-cancel-btn-${uniq}`);
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function() {
+                    marker.closePopup();
+                });
+            }
+
+            // Save Button
+            const saveBtn = document.getElementById(`edit-feat-save-btn-${uniq}`);
+            if (saveBtn) {
+                saveBtn.addEventListener('click', async function() {
+                    const newName = document.getElementById(`edit-feat-name-${uniq}`).value.trim();
+
+                    const formData = new FormData();
+                    formData.append('action', 'update_feature');
+                    formData.append('label', CURRENT_LABEL);
+                    formData.append('feature_item_id', feat.id);
+                    formData.append('name', newName);
+                    formData.append('gridimage_id', currentGridimageId !== null ? currentGridimageId : 'null');
+
+                    try {
+                        const res = await fetch(API_BASE, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await res.json();
+                        if (data.error) {
+                            alert(data.error);
+                        } else {
+                            feat.name = newName;
+                            feat.gridimage_id = currentGridimageId;
+                            if (currentGridimageId) {
+                                const selectedImg = nearbyImages.find(img => img.id === currentGridimageId);
+                                if (selectedImg) {
+                                    feat.gridimage_hash = selectedImg.hash;
+                                    feat.gridimage_title = selectedImg.title;
+                                }
+                            } else {
+                                feat.gridimage_hash = null;
+                                feat.gridimage_title = null;
+                            }
+                            marker.closePopup();
+                            bindFeatureEditPopup(marker, feat);
+                        }
+                    } catch (err) {
+                        console.error('Error updating feature', err);
+                        alert('An error occurred while saving the feature.');
+                    }
+                });
+            }
+        });
     }
 
     function renderMapMarkers() {
@@ -992,6 +1291,90 @@ setTimeout(function() {
 
                     markerLayerGroup.addLayer(marker);
                     bounds.extend([item.lat, item.lng]);
+                    markerCount++;
+                }
+            });
+        }
+
+        // 4. Plot Known Features (Default Pins, Blue/standard)
+        const showFeatures = el.mapShowFeatures ? el.mapShowFeatures.checked : true;
+        if (window.FEATURE_TYPE_ID && showFeatures) {
+            state.knownFeatures.forEach(feat => {
+                if (feat.lat && feat.lng) {
+                    // Use the default Leaflet pin by NOT passing custom divIcon/icon
+                    const marker = L.marker([feat.lat, feat.lng], {
+                        draggable: true
+                    });
+
+                    let originalLatLng = L.latLng(feat.lat, feat.lng);
+
+                    marker.on('dragend', function(e) {
+                        const newLatLng = marker.getLatLng();
+
+                        const confirmPopupContent = `
+                            <div class="confirm-move-popup" style="min-width: 200px;">
+                                <h5 style="margin: 0 0 10px 0;">Move Known Feature?</h5>
+                                <p style="font-size: 13px; margin: 0 0 12px 0;">Do you want to move <b>${escapeHtml(feat.name || '[Unnamed]')}</b> to this new location?</p>
+                                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                                    <button class="btn btn-sm btn-secondary" id="btn-cancel-move-${feat.id}">Cancel</button>
+                                    <button class="btn btn-sm btn-primary" id="btn-confirm-move-${feat.id}">Save Location</button>
+                                </div>
+                            </div>
+                        `;
+
+                        marker.bindPopup(confirmPopupContent).openPopup();
+
+                        setTimeout(() => {
+                            const btnCancel = document.getElementById(`btn-cancel-move-${feat.id}`);
+                            const btnConfirm = document.getElementById(`btn-confirm-move-${feat.id}`);
+
+                            if (btnCancel) {
+                                btnCancel.addEventListener('click', function() {
+                                    marker.setLatLng(originalLatLng);
+                                    marker.closePopup();
+                                    bindFeatureEditPopup(marker, feat);
+                                });
+                            }
+
+                            if (btnConfirm) {
+                                btnConfirm.addEventListener('click', async function() {
+                                    const formData = new FormData();
+                                    formData.append('action', 'update_feature_coords');
+                                    formData.append('label', CURRENT_LABEL);
+                                    formData.append('feature_item_id', feat.id);
+                                    formData.append('wgs84_lat', newLatLng.lat);
+                                    formData.append('wgs84_long', newLatLng.lng);
+
+                                    try {
+                                        const res = await fetch(API_BASE, {
+                                            method: 'POST',
+                                            body: formData
+                                        });
+                                        const data = await res.json();
+                                        if (data.error) {
+                                            alert(data.error);
+                                            marker.setLatLng(originalLatLng);
+                                        } else {
+                                            originalLatLng = newLatLng;
+                                            feat.lat = newLatLng.lat;
+                                            feat.lng = newLatLng.lng;
+                                            bindFeatureEditPopup(marker, feat);
+                                            marker.closePopup();
+                                        }
+                                    } catch (err) {
+                                        console.error('Error updating feature coords', err);
+                                        alert('An error occurred while moving the feature.');
+                                        marker.setLatLng(originalLatLng);
+                                    }
+                                });
+                            }
+                        }, 50);
+                    });
+
+                    bindFeatureEditPopup(marker, feat);
+
+                    markerLayerGroup.addLayer(marker);
+                    bounds.extend([feat.lat, feat.lng]);
                     markerCount++;
                 }
             });
@@ -1182,6 +1565,9 @@ setTimeout(function() {
     // Initial Workstation Load
     (async function init() {
         await fetchCurationState();
+        if (window.FEATURE_TYPE_ID) {
+            await fetchKnownFeatures();
+        }
         renderAllViews();
         // Run default search on active label on startup
         performRawSearch();
