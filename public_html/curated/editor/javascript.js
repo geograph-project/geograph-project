@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Call REST API to update curation state
-    async function updateCurationState(gridimage_id, active, feature = '', region = '') {
+    async function updateCurationState(gridimage_id, active, feature = '') {
         try {
             const formData = new FormData();
             formData.append('action', 'save_state');
@@ -228,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('gridimage_id', gridimage_id);
             formData.append('active', active);
             formData.append('feature', feature);
-            formData.append('region', region);
 
             const res = await fetch(API_BASE, {
                 method: 'POST',
@@ -287,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     params['where'] = "id in (0)";
                 }
             } else {
-                params['match'] = query;
+                params['match'] = getTextQuery(query);
                 // Inject ID exclusion clause so Sphinx filters out already curated items!
                 if (excludedOrConfirmedIds.length > 0) {
                     params['where'] = `id not in (${excludedOrConfirmedIds.join(',')})`;
@@ -335,14 +334,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Find in raw candidates if not already curated
         const raw = state.rawCandidates.find(item => item.id === id);
         if (raw) {
-            const ok = await updateCurationState(id, 1, '', '', raw.title);
+            const ok = await updateCurationState(id, 1, '');
             if (ok) {
                 // Update local state
                 state.curatedMap.set(id, {
                     id: id,
                     active: 1,
                     feature: '',
-                    region: '',
                     title: raw.title,
                     hash: raw.hash,
                     lat: raw.lat,
@@ -366,13 +364,12 @@ document.addEventListener('DOMContentLoaded', function() {
     async function excludeImage(id) {
         const raw = state.rawCandidates.find(item => item.id === id) || state.curatedMap.get(id);
         if (raw) {
-            const ok = await updateCurationState(id, 0, '', '');
+            const ok = await updateCurationState(id, 0);
             if (ok) {
                 state.curatedMap.set(id, {
                     id: id,
                     active: 0,
                     feature: '',
-                    region: '',
                     title: raw.title || '',
                     hash: raw.hash,
                     lat: raw.lat,
@@ -400,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const ok = await updateCurationState(id, 2, finalFeature, item.region);
+            const ok = await updateCurationState(id, 2, finalFeature);
             if (ok) {
                 item.active = 2;
                 item.feature = finalFeature;
@@ -913,7 +910,7 @@ setTimeout(function() {
             </div>
         `;
 
-        tempAddMarker.bindPopup(popupContent).openPopup();
+        tempAddMarker.bindPopup(popupContent);
 
         tempAddMarker.on('popupopen', function() {
             // Cancel button
@@ -965,6 +962,8 @@ setTimeout(function() {
                 }
             });
         });
+
+        tempAddMarker.openPopup();
 
         tempAddMarker.on('popupclose', function() {
             setTimeout(() => {
@@ -1084,11 +1083,14 @@ setTimeout(function() {
             const nearbyBtn = document.getElementById(`edit-feat-nearby-btn-${uniq}`);
             if (nearbyBtn) {
                 nearbyBtn.addEventListener('click', function() {
-                    const hectad = convertLLtoHectad(feat.lat, feat.lng);
-                    if (hectad) {
-                        if (el.rawSearchInput) {
-                            el.rawSearchInput.value = "hectad:" + hectad;
-                        }
+                    const hectads = getHectads(feat.lat, feat.lng, 250);
+		    if (hectads.length > 0 && el.rawSearchInput) {
+		        if (hectads.length === 1) {
+		            el.rawSearchInput.value = "hectad:" + hectads[0];
+		        } else {
+		            el.rawSearchInput.value = "hectad:(" + hectads.join('|') + ")";
+		        }
+
                         if (el.aiVectorCheckbox) {
                             el.aiVectorCheckbox.checked = false;
                         }
@@ -1098,8 +1100,10 @@ setTimeout(function() {
                         if (el.mapLiveUpdate) {
                             el.mapLiveUpdate.checked = true;
                         }
-                        performRawSearch();
-                        renderMapMarkers();
+                        //performRawSearch();
+                        //renderMapMarkers();
+			//actully just care about runing a 'live' fetch. while could maybe just run a live fetch, updating rawSearchInput allows continue to work as zoom!
+			handleMapMoveEnd();
                     } else {
                         alert("Could not compute hectad for coordinates.");
                     }
@@ -1484,7 +1488,7 @@ setTimeout(function() {
             select: 'id,user_id,realname,grid_reference,title,hash,wgs84_lat,wgs84_long',
             utf: '1',
             limit: '150',
-            match: query,
+            match: getTextQuery(query),
             order: 'sequence asc',
             olbounds: olbounds
         };
@@ -1551,13 +1555,16 @@ setTimeout(function() {
     // Feature Expansion: Radius query around confirmed item
     function runFeatureExpansion(lat, lng) {
         // Construct radius parameter (latitude, longitude, distance in meters)
-        const geoParam = `${lat},${lng},2000`; // 2km radius
+        //const geoParam = `${lat},${lng},2000`; // 2km radius
 
-//TODO< this needs to use convertLLtoHectad to work!
-
-        // Populate search box with spatial parameter and trigger search
-        if (el.rawSearchInput) {
-            el.rawSearchInput.value = `${CURRENT_LABEL}`;
+        // Populate search box with spatial parameter (for now dont have a geo support)
+        const hectads = getHectads(lat, lng, 250);
+        if (hectads.length > 0 && el.rawSearchInput) {
+            if (hectads.length === 1) {
+                el.rawSearchInput.value = CURRENT_LABEL + " hectad:" + hectads[0];
+            } else {
+                el.rawSearchInput.value = CURRENT_LABEL + " hectad:(" + hectads.join('|') + ")";
+            }
         }
         if (el.aiVectorCheckbox) {
             el.aiVectorCheckbox.checked = false; // standard search for spatial precision
@@ -1633,3 +1640,38 @@ function convertLLtoHectad(lat,lng) {
     return false;
 }
 
+/**
+ * Calculates unique hectads around a given coordinate by sampling offsets.
+ * 
+ * @param {number} lat - Latitude in degrees.
+ * @param {number} lng - Longitude in degrees.
+ * @param {number} [offsetMeters=250] - Sampling distance in meters around the point.
+ * @returns {string[]} Array of unique hectad identifiers.
+ */
+function getHectads(lat, lng, offsetMeters = 250) {
+    // 1 degree latitude ~ 111,000 meters
+    const latOffset = offsetMeters / 111000;
+    
+    // Adjust longitude offset for current latitude
+    const lngOffset = offsetMeters / (111000 * Math.cos(lat * Math.PI / 180));
+
+    // Sample Center, North, South, East, West
+    const samplePoints = [
+        [lat, lng],
+        [lat + latOffset, lng],
+        [lat - latOffset, lng],
+        [lat, lng + lngOffset],
+        [lat, lng - lngOffset]
+    ];
+
+    const uniqueHectads = new Set();
+
+    samplePoints.forEach(([sLat, sLng]) => {
+        const hectad = convertLLtoHectad(sLat, sLng);
+        if (hectad) {
+            uniqueHectads.add(hectad);
+        }
+    });
+
+    return Array.from(uniqueHectads);
+}

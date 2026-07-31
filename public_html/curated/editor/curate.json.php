@@ -88,8 +88,6 @@ switch ($action) {
         $gridimage_id = intval($_POST['gridimage_id'] ?? 0);
         $active = intval($_POST['active'] ?? 1);
         $feature = trim($_POST['feature'] ?? '');
-        $region = trim($_POST['region'] ?? '');
-        $caption = trim($_POST['caption'] ?? '');
 
         if ($gridimage_id <= 0) {
             $data['error'] = 'Invalid gridimage_id.';
@@ -97,22 +95,23 @@ switch ($action) {
         }
 
         // Check if row already exists for this label and image
-        $existing = $db->getRow("SELECT curated_id, user_id, active FROM curated WHERE label = ? AND gridimage_id = ?", array($label, $gridimage_id));
+        $existing = $db->getRow("SELECT curated_id, user_id, active, feature FROM curated WHERE label = ? AND gridimage_id = ?", array($label, $gridimage_id));
 
         if ($existing) {
             // Update existing row
-            // Enforce security scoping check by updating user_id to current user who approves/modifies it
+		if (empty($feature)) //dont remove it, if not provided in request
+			$feature = $existing['feature'];
             $sql = "UPDATE curated
-                    SET active = ?, feature = ?, region = ?, caption = ?, user_id = ?
+                    SET active = ?, feature = ?, user_id = ?
                     WHERE label = ? AND gridimage_id = ?";
-            $db->execute($sql, array($active, $feature, $region, $caption, $USER->user_id, $label, $gridimage_id));
+            $db->execute($sql, array($active, $feature, $USER->user_id, $label, $gridimage_id));
             $data['status'] = 'updated';
             $data['curated_id'] = intval($existing['curated_id']);
         } else {
             // Insert new row
-            $sql = "INSERT INTO curated (user_id, feature, label, region, gridimage_id, caption, created, active)
-                    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)";
-            $db->execute($sql, array($USER->user_id, $feature, $label, $region, $gridimage_id, $caption, $active));
+            $sql = "INSERT INTO curated (user_id, feature, label, gridimage_id, created, active)
+                    VALUES (?, ?, ?, ?, NOW(), ?)";
+            $db->execute($sql, array($USER->user_id, $feature, $label, $gridimage_id, $active));
             $data['status'] = 'inserted';
             $data['curated_id'] = intval($db->Insert_ID());
         }
