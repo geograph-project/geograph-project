@@ -333,12 +333,10 @@ body.dark-mode, body.dark-theme {
 
 /* Custom Pin Markers on Map */
 .pin {
-    width: 16px !important;
-    height: 16px !important;
+    /* size is defined by divIcon */
     border-radius: 50%;
     border: 2px solid white;
     box-shadow: 0 0 6px rgba(0,0,0,0.5);
-    transform: translate(-4px, -4px);
 }
 .pin-green { background-color: var(--success-color); }
 .pin-yellow { background-color: var(--warning-color); }

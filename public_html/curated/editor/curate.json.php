@@ -214,7 +214,7 @@ switch ($action) {
         }
 
         // Left join with gridimage_search to obtain hash and title of selected image
-        $sql = "SELECT f.feature_item_id, f.name, f.wgs84_lat, f.wgs84_long, f.gridimage_id, gi.hash AS gridimage_hash, gi.title AS gridimage_title
+        $sql = "SELECT f.feature_item_id, f.name, f.wgs84_lat, f.wgs84_long, f.gridimage_id, gi.title, gi.user_id
                 FROM feature_item f
                 LEFT JOIN gridimage_search gi USING (gridimage_id)
                 WHERE f.feature_type_id = ? AND f.status > 0";
@@ -222,14 +222,19 @@ switch ($action) {
 
         $features = array();
         foreach ($rows as $row) {
+    	    $image = null;
+	        if ($row['gridimage_id']) {
+                $image = new GridImage();
+                $image->fastInit($row);
+	        }
             $features[] = array(
                 'id' => intval($row['feature_item_id']),
                 'name' => latin1_to_utf8($row['name'] ?: ''),
                 'lat' => floatval($row['wgs84_lat']),
                 'lng' => floatval($row['wgs84_long']),
                 'gridimage_id' => $row['gridimage_id'] ? intval($row['gridimage_id']) : null,
-                'gridimage_hash' => $row['gridimage_hash'] ? latin1_to_utf8($row['gridimage_hash']) : null,
-                'gridimage_title' => $row['gridimage_title'] ? latin1_to_utf8($row['gridimage_title']) : null
+                'hash' => $image?$image->_getAntiLeechHash():null,
+                'title' => $row['title'] ? latin1_to_utf8($row['title']) : null
             );
         }
         $data['features'] = $features;
@@ -253,7 +258,7 @@ switch ($action) {
         $lng_min = $lng - $lng_delta;
         $lng_max = $lng + $lng_delta;
 
-        $sql = "SELECT DISTINCT gi.gridimage_id, gi.title, gi.wgs84_lat, gi.wgs84_long, gi.hash, c.active,
+        $sql = "SELECT DISTINCT gi.gridimage_id, gi.title, gi.wgs84_lat, gi.wgs84_long, gi.user_id, c.active,
 		    ST_Distance_Sphere(
 			        POINT(gi.wgs84_long, gi.wgs84_lat),
 			        POINT(?, ?)
@@ -270,12 +275,14 @@ switch ($action) {
 
         $images = array();
         foreach ($rows as $row) {
+            $image = new GridImage();
+            $image->fastInit($row);
             $images[] = array(
                 'id' => intval($row['gridimage_id']),
                 'title' => latin1_to_utf8($row['title']),
                 'lat' => floatval($row['wgs84_lat']),
                 'lng' => floatval($row['wgs84_long']),
-                'hash' => latin1_to_utf8($row['hash']),
+                'hash' => $image->_getAntiLeechHash(),
                 'active' => intval($row['active']),
                 'dist' => floatval($row['dist'])
             );

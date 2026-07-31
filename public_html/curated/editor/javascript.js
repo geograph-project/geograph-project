@@ -1019,8 +1019,8 @@ setTimeout(function() {
             function updateAssignedImageDisplay() {
                 if (currentGridimageId && currentGridimageId > 0) {
                     imgWrapper.style.display = 'block';
-                    if (feat.gridimage_hash) {
-                        imgEl.src = getGeographUrl(currentGridimageId, feat.gridimage_hash, 'med');
+                    if (feat.hash) {
+                        imgEl.src = getGeographUrl(currentGridimageId, feat.hash, 'med');
                     } else {
                         imgEl.src = `https://www.geograph.org.uk/photo/${currentGridimageId}`;
                     }
@@ -1069,7 +1069,7 @@ setTimeout(function() {
                         currentGridimageId = parseInt(selectedVal);
                         const selectedImg = nearbyImages.find(img => img.id === currentGridimageId);
                         if (selectedImg) {
-                            feat.gridimage_hash = selectedImg.hash;
+                            feat.hash = selectedImg.hash;
                         }
                     } else {
                         currentGridimageId = null;
@@ -1113,12 +1113,12 @@ setTimeout(function() {
                             if (currentGridimageId) {
                                 const selectedImg = nearbyImages.find(img => img.id === currentGridimageId);
                                 if (selectedImg) {
-                                    feat.gridimage_hash = selectedImg.hash;
-                                    feat.gridimage_title = selectedImg.title;
+                                    feat.hash = selectedImg.hash;
+                                    feat.title = selectedImg.title;
                                 }
                             } else {
-                                feat.gridimage_hash = null;
-                                feat.gridimage_title = null;
+                                feat.hash = null;
+                                feat.title = null;
                             }
                             marker.closePopup();
                             bindFeatureEditPopup(marker, feat);
@@ -1154,7 +1154,9 @@ setTimeout(function() {
                     const marker = L.marker([item.lat, item.lng], {
                         icon: L.divIcon({
                             className: 'pin pin-green',
-                            html: '<div class="pin-inner"></div>'
+                            html: '<div class="pin-inner"></div>',
+                            iconSize: [19, 19],   // 16px width + 4px total border
+                            iconAnchor: [11, 11]  // Center of the 20x20 icon
                         })
                     });
 
@@ -1194,7 +1196,9 @@ setTimeout(function() {
                     const marker = L.marker([item.lat, item.lng], {
                         icon: L.divIcon({
                             className: 'pin pin-yellow',
-                            html: '<div class="pin-inner"></div>'
+                            html: '<div class="pin-inner"></div>',
+                            iconSize: [19, 19],   // 16px width + 4px total border
+                            iconAnchor: [11, 11]  // Center of the 20x20 icon
                         })
                     });
 
@@ -1261,7 +1265,9 @@ setTimeout(function() {
                     const marker = L.marker([item.lat, item.lng], {
                         icon: L.divIcon({
                             className: markerClass,
-                            html: '<div class="pin-inner"></div>'
+                            html: '<div class="pin-inner"></div>',
+                            iconSize: [19, 19],   // 16px width + 4px total border
+                            iconAnchor: [11, 11]  // Center of the 20x20 icon
                         })
                     });
 
@@ -1435,6 +1441,8 @@ setTimeout(function() {
 
         const query = el.rawSearchInput.value.trim();
         if (!query) return;
+        // Check if the search query is a specific ID or comma-separated list of IDs
+        if (query.match(/^(id:)?\d+(,\d+)*$/i)) return;
 
         const bounds = map.getBounds();
         const olbounds = bounds.toBBoxString();
@@ -1516,6 +1524,8 @@ setTimeout(function() {
     function runFeatureExpansion(lat, lng) {
         // Construct radius parameter (latitude, longitude, distance in meters)
         const geoParam = `${lat},${lng},2000`; // 2km radius
+
+//TODO< this needs to use convertLLtoHectad to work!
 
         // Populate search box with spatial parameter and trigger search
         if (el.rawSearchInput) {
