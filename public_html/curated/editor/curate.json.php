@@ -121,6 +121,7 @@ switch ($action) {
     case 'get_proximity_suggestions':
         $lat = floatval($_GET['lat'] ?? 0);
         $lng = floatval($_GET['lng'] ?? 0);
+        $feature_type_id = isset($_GET['feature_type_id']) ? intval($_GET['feature_type_id']) : 0;
 
         if ($lat == 0 && $lng == 0) {
             $data['suggestions'] = array();
@@ -159,7 +160,202 @@ switch ($action) {
                 'dist' => floatval($row['dist'])
             );
         }
+
+        if ($feature_type_id > 0) {
+            $sql_fi = "SELECT DISTINCT name AS feature, wgs84_lat, wgs84_long,
+			ST_Distance_Sphere(
+				    POINT(wgs84_long, wgs84_lat),
+				    POINT(?, ?)
+			) AS dist
+                    FROM feature_item
+                    WHERE feature_type_id = ? AND name != '' AND status > 0
+                      AND wgs84_lat BETWEEN ? AND ?
+                      AND wgs84_long BETWEEN ? AND ?
+                    ORDER BY dist ASC
+                    LIMIT 10";
+            $rows_fi = $db->getAll($sql_fi, array($lng, $lat, $feature_type_id, $lat_min, $lat_max, $lng_min, $lng_max));
+            foreach ($rows_fi as $row) {
+                $suggestions[] = array(
+                    'feature' => latin1_to_utf8($row['feature']),
+                    'lat' => floatval($row['wgs84_lat']),
+                    'lng' => floatval($row['wgs84_long']),
+                    'dist' => floatval($row['dist'])
+                );
+            }
+
+            // Remove duplicate feature names, keeping the closer one
+            $temp = array();
+            foreach ($suggestions as $s) {
+                $name_key = strtolower(trim($s['feature']));
+                if (!isset($temp[$name_key]) || $s['dist'] < $temp[$name_key]['dist']) {
+                    $temp[$name_key] = $s;
+                }
+            }
+
+            $suggestions = array_values($temp);
+
+            // Sort by distance
+            usort($suggestions, function($a, $b) {
+                return $a['dist'] <=> $b['dist'];
+            });
+
+            // Limit to 10 suggestions
+            $suggestions = array_slice($suggestions, 0, 10);
+        }
+
         $data['suggestions'] = $suggestions;
+        break;
+
+    case 'get_features':
+        $feature_type_id = intval($_GET['feature_type_id'] ?? 0);
+        if ($feature_type_id <= 0) {
+            $data['features'] = array();
+            break;
+        }
+
+        // Left join with gridimage_search to obtain hash and title of selected image
+        $sql = "SELECT f.feature_item_id, f.name, f.wgs84_lat, f.wgs84_long, f.gridimage_id, gi.hash AS gridimage_hash, gi.title AS gridimage_title
+                FROM feature_item f
+                LEFT JOIN gridimage_search gi USING (gridimage_id)
+                WHERE f.feature_type_id = ? AND f.status > 0";
+        $rows = $db->getAll($sql, array($feature_type_id));
+
+        $features = array();
+        foreach ($rows as $row) {
+            $features[] = array(
+                'id' => intval($row['feature_item_id']),
+                'name' => latin1_to_utf8($row['name'] ?: ''),
+                'lat' => floatval($row['wgs84_lat']),
+                'lng' => floatval($row['wgs84_long']),
+                'gridimage_id' => $row['gridimage_id'] ? intval($row['gridimage_id']) : null,
+                'gridimage_hash' => $row['gridimage_hash'] ? latin1_to_utf8($row['gridimage_hash']) : null,
+                'gridimage_title' => $row['gridimage_title'] ? latin1_to_utf8($row['gridimage_title']) : null
+            );
+        }
+        $data['features'] = $features;
+        break;
+
+    case 'get_nearby_curated_images':
+        $lat = floatval($_GET['lat'] ?? 0);
+        $lng = floatval($_GET['lng'] ?? 0);
+
+        if ($lat == 0 && $lng == 0) {
+            $data['images'] = array();
+            break;
+        }
+
+        // Bounding box of approx 1km (latitude is ~111km per deg, longitude is ~70km per deg at 51N)
+        $lat_delta = 0.009;
+        $lng_delta = 0.014;
+
+        $lat_min = $lat - $lat_delta;
+        $lat_max = $lat + $lat_delta;
+        $lng_min = $lng - $lng_delta;
+        $lng_max = $lng + $lng_delta;
+
+        $sql = "SELECT DISTINCT gi.gridimage_id, gi.title, gi.wgs84_lat, gi.wgs84_long, gi.hash, c.active,
+		    ST_Distance_Sphere(
+			        POINT(gi.wgs84_long, gi.wgs84_lat),
+			        POINT(?, ?)
+		    ) AS dist
+                FROM curated c
+                INNER JOIN gridimage_search gi USING (gridimage_id)
+                WHERE c.label = ? AND c.active IN (1, 2)
+                  AND gi.wgs84_lat BETWEEN ? AND ?
+                  AND gi.wgs84_long BETWEEN ? AND ?
+                HAVING dist <= 1000
+                ORDER BY dist ASC
+                LIMIT 50";
+        $rows = $db->getAll($sql, array($lng, $lat, $label, $lat_min, $lat_max, $lng_min, $lng_max));
+
+        $images = array();
+        foreach ($rows as $row) {
+            $images[] = array(
+                'id' => intval($row['gridimage_id']),
+                'title' => latin1_to_utf8($row['title']),
+                'lat' => floatval($row['wgs84_lat']),
+                'lng' => floatval($row['wgs84_long']),
+                'hash' => latin1_to_utf8($row['hash']),
+                'active' => intval($row['active']),
+                'dist' => floatval($row['dist'])
+            );
+        }
+        $data['images'] = $images;
+        break;
+
+    case 'insert_feature':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('HTTP/1.0 405 Method Not Allowed');
+            $data['error'] = 'POST method required for insert_feature.';
+            break;
+        }
+
+        $feature_type_id = intval($_POST['feature_type_id'] ?? 0);
+        $name = trim($_POST['name'] ?? '');
+        $lat = floatval($_POST['wgs84_lat'] ?? 0);
+        $lng = floatval($_POST['wgs84_long'] ?? 0);
+        $gridimage_id = isset($_POST['gridimage_id']) && $_POST['gridimage_id'] !== '' && $_POST['gridimage_id'] !== 'null' ? intval($_POST['gridimage_id']) : null;
+
+        if ($feature_type_id <= 0) {
+            $data['error'] = 'Invalid feature_type_id.';
+            break;
+        }
+        if ($name === '' && empty($gridimage_id)) {
+            $data['error'] = 'Please enter a name or select an image.';
+            break;
+        }
+
+        $sql = "INSERT INTO feature_item (feature_type_id, name, wgs84_lat, wgs84_long, gridimage_id, status, user_id, point_ll)
+                VALUES (?, ?, ?, ?, ?, 1, ?, POINT(0,0))";
+        $db->execute($sql, array($feature_type_id, $name, $lat, $lng, $gridimage_id, $USER->user_id));
+        $data['status'] = 'inserted';
+        $data['feature_item_id'] = intval($db->Insert_ID());
+        break;
+
+    case 'update_feature':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('HTTP/1.0 405 Method Not Allowed');
+            $data['error'] = 'POST method required for update_feature.';
+            break;
+        }
+
+        $feature_item_id = intval($_POST['feature_item_id'] ?? 0);
+        $name = trim($_POST['name'] ?? '');
+        $gridimage_id = isset($_POST['gridimage_id']) && $_POST['gridimage_id'] !== '' && $_POST['gridimage_id'] !== 'null' ? intval($_POST['gridimage_id']) : null;
+
+        if ($feature_item_id <= 0) {
+            $data['error'] = 'Invalid feature_item_id.';
+            break;
+        }
+
+        $sql = "UPDATE feature_item
+                SET name = ?, gridimage_id = ?, user_id = ?
+                WHERE feature_item_id = ? AND (user_id = ? OR 1=1)";
+        $db->execute($sql, array($name, $gridimage_id, $USER->user_id, $feature_item_id, $USER->user_id));
+        $data['status'] = 'updated';
+        break;
+
+    case 'update_feature_coords':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('HTTP/1.0 405 Method Not Allowed');
+            $data['error'] = 'POST method required for update_feature_coords.';
+            break;
+        }
+
+        $feature_item_id = intval($_POST['feature_item_id'] ?? 0);
+        $lat = floatval($_POST['wgs84_lat'] ?? 0);
+        $lng = floatval($_POST['wgs84_long'] ?? 0);
+
+        if ($feature_item_id <= 0) {
+            $data['error'] = 'Invalid feature_item_id.';
+            break;
+        }
+
+        $sql = "UPDATE feature_item
+                SET wgs84_lat = ?, wgs84_long = ?, user_id = ?
+                WHERE feature_item_id = ? AND (user_id = ? OR 1=1)";
+        $db->execute($sql, array($lat, $lng, $USER->user_id, $feature_item_id, $USER->user_id));
+        $data['status'] = 'updated';
         break;
 
     case 'get_unassigned_queue':
