@@ -149,6 +149,22 @@ Example Queries:
 ###########################################
 # extra filters
 
+	if (!empty($_GET['exclude_label'])) {
+	    if (empty($link))
+		    $link = mysql_database();
+	    // Fetch IDs as integers - fetch ALL statues, as want exclude them
+	    $sql = "SELECT gridimage_id FROM curated WHERE label = '" . mysqli_real_escape_string($link, $_GET['exclude_label'])."'";
+            $result = mysqli_query($link,$sql) or die ("Couldn't select query : $sql " . mysqli_error($link) . "\n");
+
+	    if (mysqli_num_rows($result) > 0) {
+	        // Sanitize to safe ints just in case
+		$curated_ids = array();
+		while($row = mysqli_fetch_row($result))
+		        $curated_ids[] = intval($row[0]);
+	        $where[] = "id NOT IN (" . implode(",", $curated_ids) . ")";
+	    }
+	}
+
         if (!empty($_GET['filter'])) {
                 foreach ($_GET['filter'] as $key => $value) {
                         if (!is_array($value)) {

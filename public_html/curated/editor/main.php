@@ -13,6 +13,11 @@ customNoCacheHeader();
 $label = $_GET['label'] ?? 'Sea Arches';
 $feature_type_id = isset($_GET['feature_type_id']) ? intval($_GET['feature_type_id']) : null;
 
+//TODO it need to allow feature_type_id as optional, but if present need to ensure it right. Later will check it via `feature_type` table
+if ($feature_type_id !== null && !($feature_type_id === 7 && $label === 'Sea Arches'))
+	die('mismatch');
+
+
 $smarty->display('_std_begin.tpl');
 ?>
 

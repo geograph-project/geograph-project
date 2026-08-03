@@ -289,7 +289,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 params['match'] = getTextQuery(query);
                 // Inject ID exclusion clause so Sphinx filters out already curated items!
                 if (excludedOrConfirmedIds.length > 0) {
-                    params['where'] = `id not in (${excludedOrConfirmedIds.join(',')})`;
+                    //params['where'] = `id not in (${excludedOrConfirmedIds.join(',')})`;
+                    //exclude server side, to avoid URL length limits
+                    params['exclude_label'] = CURRENT_LABEL;
                 }
             }
         }
@@ -823,6 +825,20 @@ setTimeout(function() {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(map);
 
+// Default markerPane has z-index 600.
+// Create custom panes higher than default:
+map.createPane('rawPane');
+map.getPane('rawPane').style.zIndex = 610;
+
+map.createPane('shortlistedPane');
+map.getPane('shortlistedPane').style.zIndex = 620;
+
+map.createPane('confirmedPane');
+map.getPane('confirmedPane').style.zIndex = 630;
+
+map.createPane('featuresPane');
+map.getPane('featuresPane').style.zIndex = 640;
+
             markerLayerGroup = L.layerGroup().addTo(map);
 
             // Show Features layer toggle container if FEATURE_TYPE_ID is present
@@ -1184,6 +1200,7 @@ setTimeout(function() {
             confirmedItems.forEach(item => {
                 if (item.lat && item.lng) {
                     const marker = L.marker([item.lat, item.lng], {
+                        pane: 'confirmedPane',
                         icon: L.divIcon({
                             className: 'pin pin-green',
                             html: '<div class="pin-inner"></div>',
@@ -1226,6 +1243,7 @@ setTimeout(function() {
             getShortlistedItems().forEach(item => {
                 if (item.lat && item.lng) {
                     const marker = L.marker([item.lat, item.lng], {
+                        pane: 'shortlistedPane',
                         icon: L.divIcon({
                             className: 'pin pin-yellow',
                             html: '<div class="pin-inner"></div>',
@@ -1295,6 +1313,7 @@ setTimeout(function() {
                     const markerClass = `pin pin-red ${isOutlier ? 'pin-outlier' : ''}`;
 
                     const marker = L.marker([item.lat, item.lng], {
+                        pane: 'rawPane',
                         icon: L.divIcon({
                             className: markerClass,
                             html: '<div class="pin-inner"></div>',
@@ -1341,6 +1360,7 @@ setTimeout(function() {
                 if (feat.lat && feat.lng) {
                     // Use the default Leaflet pin by NOT passing custom divIcon/icon
                     const marker = L.marker([feat.lat, feat.lng], {
+                        pane: 'featuresPane',
                         draggable: true
                     });
 
