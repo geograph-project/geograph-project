@@ -36,6 +36,8 @@ if (empty($label)) {
     exit;
 }
 
+include(__DIR__."/features.inc.php");
+
 switch ($action) {
     case 'get_curation_summary':
         // Get all curation items for this label along with image metadata
@@ -302,11 +304,17 @@ switch ($action) {
             break;
         }
 
-        $sql = "INSERT INTO feature_item (feature_type_id, name, wgs84_lat, wgs84_long, gridimage_id, status, user_id, point_ll)
-                VALUES (?, ?, ?, ?, ?, 1, ?, POINT(0,0))";
-        $db->execute($sql, array($feature_type_id, $name, $lat, $lng, $gridimage_id, $USER->user_id));
+        $newId = insertFeatureItem($db, [
+            'feature_type_id' => $feature_type_id,
+            'name'            => $name,
+            'wgs84_lat'       => $lat,
+            'wgs84_long'      => $lng,
+            'gridimage_id'    => $gridimage_id,
+            'user_id'         => $USER->user_id,
+            'status'          => 1,
+        ], $USER->user_id);
         $data['status'] = 'inserted';
-        $data['feature_item_id'] = intval($db->Insert_ID());
+        $data['feature_item_id'] = intval($newId);
         break;
 
     case 'update_feature':
@@ -325,10 +333,10 @@ switch ($action) {
             break;
         }
 
-        $sql = "UPDATE feature_item
-                SET name = ?, gridimage_id = ?, user_id = ?
-                WHERE feature_item_id = ? AND (user_id = ? OR 1=1)";
-        $db->execute($sql, array($name, $gridimage_id, $USER->user_id, $feature_item_id, $USER->user_id));
+        updateFeatureItem($db, (int)$feature_item_id, [
+            'name'          => $name,
+            'gridimage_id'  => $gridimage_id,
+        ], $USER->user_id);
         $data['status'] = 'updated';
         break;
 
@@ -348,10 +356,10 @@ switch ($action) {
             break;
         }
 
-        $sql = "UPDATE feature_item
-                SET wgs84_lat = ?, wgs84_long = ?, user_id = ?
-                WHERE feature_item_id = ? AND (user_id = ? OR 1=1)";
-        $db->execute($sql, array($lat, $lng, $USER->user_id, $feature_item_id, $USER->user_id));
+        updateFeatureItem($db, (int)$feature_item_id, [
+           'wgs84_lat'  => $lat,
+           'wgs84_long' => $lng,
+        ], $USER->user_id);
         $data['status'] = 'updated';
         break;
 
