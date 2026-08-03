@@ -1211,7 +1211,7 @@ map.getPane('featuresPane').style.zIndex = 640;
     	let openPopupEntityId = null;
 
     	// Check if map has an active popup before wiping layers
-    	if (map._popup && map._popup._source) {
+    	if (map._popup && map._popup._source &&  map._popup._map) { //need to check map, to see if still attached (ie open)
     	    // map._popup._source gives you the Marker object the popup is attached to
     	    const activeMarker = map._popup._source;
 
@@ -1479,6 +1479,7 @@ map.getPane('featuresPane').style.zIndex = 640;
                                             feat.lng = newLatLng.lng;
                                             bindFeatureEditPopup(marker, feat);
                                             marker.closePopup();
+                                            openPopupEntityId = null;
                                         }
                                     } catch (err) {
                                         console.error('Error updating feature coords', err);
