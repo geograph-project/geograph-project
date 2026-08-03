@@ -6,15 +6,6 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-// Fallback definition for outputJSON if not already defined in Geograph functions
-if (!function_exists('outputJSON')) {
-    function outputJSON(&$data) {
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($data);
-        exit;
-    }
-}
-
 $data = array();
 customNoCacheHeader();
 
