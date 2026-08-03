@@ -157,4 +157,6 @@ $REVISIONS['/js/company-message.js']=63039136;
 $REVISIONS['/app/js/suggestions.libs.js']=59650308;
 $REVISIONS['/js/submit-suggestions.js']=53834762;
 $REVISIONS['/challanged.html']=1234;
+$REVISIONS['/curated/editor/styles.css']=69081308;
+$REVISIONS['/curated/editor/javascript.js']=88969781;
 ?>
