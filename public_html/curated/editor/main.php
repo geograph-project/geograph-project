@@ -150,7 +150,7 @@ $smarty->display('_std_begin.tpl');
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <!-- Curation App stylesheet -->
-<link rel="stylesheet" href="<?php echo smarty_modifier_revision("/curated/editor/styles.css"); ?>?<?= filemtime('styles.css'); ?>">
+<link rel="stylesheet" href="<?php echo smarty_modifier_revision("/curated/editor/styles.css"); ?>">
 
 <!-- Geograph and Curation dependencies -->
 <script src="<?php echo smarty_modifier_revision("/js/geograph-api-libs.js"); ?>"></script>
@@ -163,7 +163,7 @@ $smarty->display('_std_begin.tpl');
 </script>
 
 <!-- Curation App scripts -->
-<script src="<?php echo smarty_modifier_revision("/curated/editor/javascript.js"); ?>?<?= filemtime('javascript.js'); ?>"></script>
+<script src="<?php echo smarty_modifier_revision("/curated/editor/javascript.js"); ?>"></script>
 
 <?php
 $smarty->display('_std_end.tpl');
