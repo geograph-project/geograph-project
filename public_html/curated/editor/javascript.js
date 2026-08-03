@@ -884,8 +884,9 @@ map.getPane('featuresPane').style.zIndex = 640;
             map.removeLayer(tempAddMarker);
         }
 
-        const lat = e.latlng.lat;
-        const lng = e.latlng.lng;
+        //these can be updated if dragged
+        let lat = e.latlng.lat;
+        let lng = e.latlng.lng;
 
         // Fetch nearby curated images within 1km
         let nearbyImages = [];
@@ -904,7 +905,8 @@ map.getPane('featuresPane').style.zIndex = 640;
         });
 
         // Use standard Leaflet marker for the new pin
-        tempAddMarker = L.marker([lat, lng]).addTo(map);
+        tempAddMarker = L.marker([lat, lng], {draggable: true}).addTo(map);
+        let isDragging = false;
 
         const popupContent = `
             <div class="add-feature-popup" style="min-width: 250px;">
@@ -919,6 +921,7 @@ map.getPane('featuresPane').style.zIndex = 640;
                         ${optionsHtml}
                     </select>
                 </div>
+                <p>Drag the pin, if want to tweak the location.</p>
                 <div style="display:flex; gap:10px; justify-content:flex-end;">
                     <button class="btn btn-sm btn-secondary" id="btn-cancel-add-feat">Cancel</button>
                     <button class="btn btn-sm btn-success" id="btn-save-add-feat">Create</button>
@@ -938,7 +941,7 @@ map.getPane('featuresPane').style.zIndex = 640;
             });
 
             // Save/Create button
-            document.getElementById('btn-save-add-feat').addEventListener('click', async function() {
+            document.getElementById('btn-save-add-feat').onclick = async function() { //use onclick to avoid stacking
                 const name = document.getElementById('new-feat-name').value.trim();
                 const gridimage_id = document.getElementById('new-feat-image').value;
 
@@ -976,13 +979,35 @@ map.getPane('featuresPane').style.zIndex = 640;
                     console.error('Error inserting feature', err);
                     alert('An error occurred while creating the feature.');
                 }
-            });
+            };
+        });
+
+        // 1. Set the flag when dragging starts
+        tempAddMarker.on('dragstart', function() {
+            isDragging = true;
+        });
+
+        // 2. Re-open popup when drag finishes and reset flag
+        tempAddMarker.on('dragend', function() {
+            const newPos = this.getLatLng();
+            lat = newPos.lat;
+            lng = newPos.lng;
+
+            // Re-open popup at the new position
+            this.openPopup();
+
+            // Reset flag on next event tick so popupclose from drag doesn't trigger cleanup
+            setTimeout(() => {
+                isDragging = false;
+            }, 50);
         });
 
         tempAddMarker.openPopup();
 
         tempAddMarker.on('popupclose', function() {
             setTimeout(() => {
+                if (isDragging) return; // Skip removal if popup closed due to dragging
+
                 if (tempAddMarker && !tempAddMarker.isPopupOpen()) {
                     map.removeLayer(tempAddMarker);
                     tempAddMarker = null;
@@ -1183,6 +1208,17 @@ map.getPane('featuresPane').style.zIndex = 640;
     function renderMapMarkers() {
         if (!map || !markerLayerGroup) return;
 
+    	let openPopupEntityId = null;
+
+    	// Check if map has an active popup before wiping layers
+    	if (map._popup && map._popup._source) {
+    	    // map._popup._source gives you the Marker object the popup is attached to
+    	    const activeMarker = map._popup._source;
+
+    	    // Assuming your markers store their unique item/feature ID in an option or custom property
+    	    openPopupEntityId = activeMarker.options.entityId;
+    	}
+
         markerLayerGroup.clearLayers();
         const bounds = L.latLngBounds();
         let markerCount = 0;
@@ -1201,6 +1237,7 @@ map.getPane('featuresPane').style.zIndex = 640;
                 if (item.lat && item.lng) {
                     const marker = L.marker([item.lat, item.lng], {
                         pane: 'confirmedPane',
+                        entityId: item.id,
                         icon: L.divIcon({
                             className: 'pin pin-green',
                             html: '<div class="pin-inner"></div>',
@@ -1212,7 +1249,8 @@ map.getPane('featuresPane').style.zIndex = 640;
                     // Popup with details & Feature Expansion option
                     const popupHtml = `
                         <div>
-                            <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" loading="lazy">
+                            <a href="https://www.geograph.org.uk/photo/${item.id}" target="_blank">
+                            <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" loading="lazy"></a>
                             <div class="map-popup-title">${escapeHtml(item.title)}</div>
                             <div style="font-size:12px; margin-bottom:5px;">Feature: <b>${escapeHtml(item.feature)}</b></div>
                             <button class="btn btn-sm btn-primary expand-search-btn" data-lat="${item.lat}" data-lng="${item.lng}">Expand Feature Search (2km)</button>
@@ -1234,6 +1272,12 @@ map.getPane('featuresPane').style.zIndex = 640;
                     markerLayerGroup.addLayer(marker);
                     bounds.extend([item.lat, item.lng]);
                     markerCount++;
+
+                    // Restore popup if this item was previously open
+                    if (openPopupEntityId && item.id === openPopupEntityId) {
+                        // Re-open on next tick to ensure layer is rendered
+                        setTimeout(() => marker.openPopup(), 0);
+                    }
                 }
             });
         }
@@ -1244,6 +1288,7 @@ map.getPane('featuresPane').style.zIndex = 640;
                 if (item.lat && item.lng) {
                     const marker = L.marker([item.lat, item.lng], {
                         pane: 'shortlistedPane',
+                        entityId: item.id,
                         icon: L.divIcon({
                             className: 'pin pin-yellow',
                             html: '<div class="pin-inner"></div>',
@@ -1254,7 +1299,8 @@ map.getPane('featuresPane').style.zIndex = 640;
 
                     const popupHtml = `
                         <div>
-                            <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" loading="lazy">
+                            <a href="https://www.geograph.org.uk/photo/${item.id}" target="_blank">
+                            <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" loading="lazy"></a>
                             <div class="map-popup-title">${escapeHtml(item.title)}</div>
                             <div style="margin-top:5px; display:flex; gap:5px;">
                                 <button class="btn btn-sm btn-success map-confirm-btn" data-id="${item.id}">Confirm</button>
@@ -1278,6 +1324,12 @@ map.getPane('featuresPane').style.zIndex = 640;
                     markerLayerGroup.addLayer(marker);
                     bounds.extend([item.lat, item.lng]);
                     markerCount++;
+
+                    // Restore popup if this item was previously open
+                    if (openPopupEntityId && item.id === openPopupEntityId) {
+                        // Re-open on next tick to ensure layer is rendered
+                        setTimeout(() => marker.openPopup(), 0);
+                    }
                 }
             });
         }
@@ -1314,6 +1366,7 @@ map.getPane('featuresPane').style.zIndex = 640;
 
                     const marker = L.marker([item.lat, item.lng], {
                         pane: 'rawPane',
+                        entityId: item.id,
                         icon: L.divIcon({
                             className: markerClass,
                             html: '<div class="pin-inner"></div>',
@@ -1324,7 +1377,8 @@ map.getPane('featuresPane').style.zIndex = 640;
 
                     const popupHtml = `
                         <div>
-                            <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" loading="lazy">
+                            <a href="https://www.geograph.org.uk/photo/${item.id}" target="_blank">
+                            <img class="map-popup-image" src="${getGeographUrl(item.id, item.hash, 'med')}" loading="lazy"></a>
                             <div class="map-popup-title">${escapeHtml(item.title)}</div>
                             ${isOutlier ? '<div style="color:magenta; font-weight:bold; margin-bottom:5px;">Potential Outlier (>1km)</div>' : ''}
                             <div style="margin-top:5px; display:flex; gap:5px;">
@@ -1349,6 +1403,12 @@ map.getPane('featuresPane').style.zIndex = 640;
                     markerLayerGroup.addLayer(marker);
                     bounds.extend([item.lat, item.lng]);
                     markerCount++;
+
+                    // Restore popup if this item was previously open
+                    if (openPopupEntityId && item.id === openPopupEntityId) {
+                        // Re-open on next tick to ensure layer is rendered
+                        setTimeout(() => marker.openPopup(), 0);
+                    }
                 }
             });
         }
@@ -1361,6 +1421,7 @@ map.getPane('featuresPane').style.zIndex = 640;
                     // Use the default Leaflet pin by NOT passing custom divIcon/icon
                     const marker = L.marker([feat.lat, feat.lng], {
                         pane: 'featuresPane',
+                        entityId: feat.id,
                         draggable: true
                     });
 
@@ -1434,6 +1495,12 @@ map.getPane('featuresPane').style.zIndex = 640;
                     markerLayerGroup.addLayer(marker);
                     bounds.extend([feat.lat, feat.lng]);
                     markerCount++;
+
+                    // Restore popup if this item was previously open
+                    if (openPopupEntityId && feat.id === openPopupEntityId) {
+                        // Re-open on next tick to ensure layer is rendered
+                        setTimeout(() => marker.openPopup(), 0);
+                    }
                 }
             });
         }
