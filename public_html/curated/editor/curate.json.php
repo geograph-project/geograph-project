@@ -140,7 +140,7 @@ switch ($action) {
                   AND gi.wgs84_lat BETWEEN ? AND ?
                   AND gi.wgs84_long BETWEEN ? AND ?
                 ORDER BY dist ASC
-                LIMIT 10";
+                LIMIT 30";
         $rows = $db->getAll($sql, array($lng, $lat, $label, $lat_min, $lat_max, $lng_min, $lng_max));
 
         $suggestions = array();
@@ -164,7 +164,7 @@ switch ($action) {
                       AND wgs84_lat BETWEEN ? AND ?
                       AND wgs84_long BETWEEN ? AND ?
                     ORDER BY dist ASC
-                    LIMIT 10";
+                    LIMIT 30";
             $rows_fi = $db->getAll($sql_fi, array($lng, $lat, $feature_type_id, $lat_min, $lat_max, $lng_min, $lng_max));
             foreach ($rows_fi as $row) {
                 $suggestions[] = array(
@@ -174,28 +174,26 @@ switch ($action) {
                     'dist' => floatval($row['dist'])
                 );
             }
-
-            // Remove duplicate feature names, keeping the closer one
-            $temp = array();
-            foreach ($suggestions as $s) {
-                $name_key = strtolower(trim($s['feature']));
-                if (!isset($temp[$name_key]) || $s['dist'] < $temp[$name_key]['dist']) {
-                    $temp[$name_key] = $s;
-                }
-            }
-
-            $suggestions = array_values($temp);
-
-            // Sort by distance
-            usort($suggestions, function($a, $b) {
-                return $a['dist'] <=> $b['dist'];
-            });
-
-            // Limit to 10 suggestions
-            $suggestions = array_slice($suggestions, 0, 10);
         }
 
-        $data['suggestions'] = $suggestions;
+        // Remove duplicate feature names, keeping the closer one
+        $temp = array();
+        foreach ($suggestions as $s) {
+            $name_key = strtolower(trim($s['feature']));
+            if (!isset($temp[$name_key]) || $s['dist'] < $temp[$name_key]['dist']) {
+                $temp[$name_key] = $s;
+            }
+        }
+
+        $suggestions = array_values($temp);
+
+        // Sort by distance
+        usort($suggestions, function($a, $b) {
+            return $a['dist'] <=> $b['dist'];
+        });
+
+        // Limit to 10 suggestions
+        $data['suggestions'] = array_slice($suggestions, 0, 10);
         break;
 
     case 'get_features':
