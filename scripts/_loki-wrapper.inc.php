@@ -147,10 +147,17 @@ function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) 
 	if ($param['debug'])
 		print_r($json);
 
+        $r = array();
+        $r['count']=0;
+        $r['max']=0;
+        $r['status'] = @$json['status'];
+
 	if (!empty($json['data']) && !empty($json['data']['result'])) {
 		//split into multiple streams
 		foreach ($json['data']['result'] as $idx => $result) {
+			$r['count']+=count($result['values']);
                         foreach ($result['values'] as $line) {
+				$r['max'] = max($r['max'],$line[0]);
                                 $str = $line[1];
                                 if ($str[0] == '{') { //for some reasons our logs have become json encoded
                                         $d = json_decode($str,true);
@@ -164,6 +171,8 @@ function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) 
                         }
 		}
 	}
+	//we can't 'return' this, as we can work as a generator!
+	$GLOBALS['loki_status'] = $r;
 }
 
 ############################################
@@ -223,8 +232,9 @@ function getgroups($query, $grouper, $funct = 'rate', $period = '10m',  $fp = nu
 				$group = $result['metric'];
 			} else {
 				if (!isset( $result['metric'][$grouper])) {
-					print_r($result);
-				}
+					//print_r($result);
+					$group = '';
+				} else
 				$group = $result['metric'][$grouper];
 			}
                         foreach ($result['values'] as $line) {

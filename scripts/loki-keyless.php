@@ -26,7 +26,7 @@ $param = array('debug'=>0, 'stream' => 'stdout', 'limit' => 5000, 'date' => '', 
 chdir(__DIR__);
 require "./_loki-wrapper.inc.php";
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 
 ############################################
 //this is is just testing, it provides queries to manually execute, so need to manaually copy paste (AFTER checking hte query is good!) 

@@ -26,7 +26,7 @@ $param = array('debug'=>0, 'stream' => 'stdout', 'limit' => 5000, 'date' => '', 
 chdir(__DIR__);
 require "./_loki-wrapper.inc.php";
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 
 $skip = array(301,302,304,307,204,403,405);
 
@@ -56,7 +56,7 @@ function getallrows($start, $end) {
 			$query .= " | status!=\"$id\"";
 	}
 
-	print "q=$query\n";
+	//print "q=$query\n";
 
 	$generator = getgroups($query, $grouper, 'count_over_time', $period = '1h', $fp = null, $start, $end);
 	foreach ($generator as $line) {
