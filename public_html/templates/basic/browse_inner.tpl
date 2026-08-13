@@ -47,11 +47,12 @@
 
 		{if $by eq 'centi' || $by eq 'viewcenti' }
 			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6 figure grid reference.</small></p>
+
 	<table border="0" cellspacing="0" cellpadding="2">
-		<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}&amp;by={$by}" target="_blank">NW</a></td>
-		<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}&amp;by={$by}" target="_blank">N</a></td>
-		<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}&amp;by={$by}" target="_blank">NE</a></td></tr>
-		<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}&amp;by={$by}" target="_blank">W</a></td>
+		<tr><td><a href="/gridref/{$square->nearbyGridref(-1,1)}?by={$by}{$extra}">NW</a></td>
+		<td align="center"><a href="/gridref/{$square->nearbyGridref(0,1)}?by={$by}{$extra}">N</a></td>
+		<td><a href="/gridref/{$square->nearbyGridref(1,1)}?by={$by}{$extra}">NE</a></td></tr>
+		<tr><td><a href="/gridref/{$square->nearbyGridref(-1,0)}?by={$by}{$extra}">W</a></td>
 		<td>	
 			{if $rastermap->enabled && $rastermap->mapurl}
 				<div style="position:relative; width:330px; height:330px">
@@ -90,12 +91,13 @@
 					</div>
 				</div>
 			{/if}
-	</td>
-		<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}&amp;by={$by}" target="_blank">E</a></td></tr>
-		<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}&amp;by={$by}" target="_blank">SW</a></td>
-		<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}&amp;by={$by}" target="_blank">S</a></td>
-		<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}&amp;by={$by}" target="_blank">SE</a></td></tr>
+		</td>
+		<td align="right"><a href="/gridref/{$square->nearbyGridref(1,0)}?by={$by}{$extra}">E</a></td></tr>
+		<tr><td><a href="/gridref/{$square->nearbyGridref(-1,-1)}?by={$by}{$extra}">SW</a></td>
+		<td align="center"><a href="/gridref/{$square->nearbyGridref(0,-1)}?by={$by}{$extra}">S</a></td>
+		<td align="right"><a href="/gridref/{$square->nearbyGridref(1,-1)}?by={$by}{$extra}">SE</a></td></tr>
 	</table>
+
 			{if $breakdown.50.50.link}
 				<ul>
 				{if strpos($breakdown.50.50.link,'gridref') == 1}

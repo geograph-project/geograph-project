@@ -383,7 +383,7 @@ div.caption {
 
 		<dt>Grid Square</dt>
 			<dd class=numeric><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->subject_gridref|escape:'url'}" rel="nofollow" class="text">more nearby</a>
-				<a href="/browser/#!/loc={$image->subject_gridref|replace:' ':''|escape:'url'}/dist=2000" title="view area in Browser">&#128269;</a>)
+				<a href="/browser/#!/loc={$image->subject_gridref|replace:' ':''|escape:'url'}/dist=2000" rel="nofollow" title="view area in Browser">&#128269;</a>)
 			</dd>
 
 		{if $image->credit_realname}
@@ -407,15 +407,21 @@ div.caption {
 
 		<dt>Subject Location</dt>
 			<dd class=numeric>
-			{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->subject_gridref}/links">{$image->subject_gridref}</a> [{$image->subject_gridref_precision}m precision]<br/>
-			WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.5f"}">{$latdm}</abbr> <abbr class="longitude"
-			title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
+			{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/>
+			<a href="/gridref/{$image->subject_gridref}/links">{$image->subject_gridref}</a>
+			<button type="button" data-coords="{$image->subject_gridref}" onclick="copyCoords(this)" style="user-select:none;">Copy</button>
+			[{$image->subject_gridref_precision}m precision]<br/>
+			WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.5f"}">{$latdm}</abbr> <abbr class="longitude" title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
+			<button type="button" data-coords="{$lat|string_format:"%.6f"}, {$long|string_format:"%.6f"}" onclick="copyCoords(this)" style="user-select:none;">Copy</button>
 			</dd>
 
 		{if $image->photographer_gridref}
 			<dt>Camera Location</dt>
 				<dd class=numeric>
-				{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->photographer_gridref}/links">{$image->photographer_gridref}</a></dd>
+				{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/>
+				<a href="/gridref/{$image->photographer_gridref}/links">{$image->photographer_gridref}</a>
+				<button type="button" data-coords="{$image->photographer_gridref}" onclick="copyCoords(this)" style="user-select:none;">Copy</button>
+				</dd>
 		{/if}
 
 		{if $view_direction && $image->view_direction != -1}
@@ -431,19 +437,21 @@ div.caption {
 		<div class="overview" style="text-align:center">
 		        {include file="_overview.tpl"}
 
+			{if $image->grid_square->gridsquare != "MC"}
 			<div class="interestBox" style="display:inline-block;margin-top:15px">
 				<table border="0" cellspacing="0" cellpadding="2">
-					<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
-					<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}">N</a></td>
-					<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>
-					<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}">W</a></td>
+					<tr><td><a href="/gridref/{$image->grid_square->nearbyGridref(-1,1)}">NW</a></td>
+					<td align="center"><a href="/gridref/{$image->grid_square->nearbyGridref(0,1)}">N</a></td>
+					<td><a href="/gridref/{$image->grid_square->nearbyGridref(1,1)}">NE</a></td></tr>
+					<tr><td><a href="/gridref/{$image->grid_square->nearbyGridref(-1,0)}">W</a></td>
 					<td><b>Go</b></td>
-					<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}">E</a></td></tr>
-					<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}">SW</a></td>
-					<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}">S</a></td>
-					<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
+					<td align="right"><a href="/gridref/{$image->grid_square->nearbyGridref(1,0)}">E</a></td></tr>
+					<tr><td><a href="/gridref/{$image->grid_square->nearbyGridref(-1,-1)}">SW</a></td>
+					<td align="center"><a href="/gridref/{$image->grid_square->nearbyGridref(0,-1)}">S</a></td>
+					<td align="right"><a href="/gridref/{$image->grid_square->nearbyGridref(1,-1)}">SE</a></td></tr>
 				</table>
 			</div>
+			{/if}
 		</div>
 	{/if}
 </div>
@@ -624,6 +632,16 @@ function openShare(url,name,options) {
 	var newWin = window.open(url,name,options);             
 	if(!newWin || newWin.closed || typeof newWin.closed=='undefined') 
 		window.open(url,'_blank');
+}
+function copyCoords(btn) {
+  const coords = btn.getAttribute('data-coords');
+  navigator.clipboard.writeText(coords).then(() => {
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = originalText; }, 2000);
+  }).catch(err => {
+    console.error('Failed to copy: ', err);
+  });
 }
 </script>
 

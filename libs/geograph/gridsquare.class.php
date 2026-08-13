@@ -925,6 +925,133 @@ split_timer('gridsquare'); //starts the timer
 
 split_timer('gridsquare','updateCounts',"{$this->grid_reference},{$updates['imagecount']}"); //logs the wall time
 	}
+
+
+    /**
+     * Calculates an adjacent grid reference (OSGB or Irish Grid).
+     *
+     * @param int $dx Offset in X direction (easting grid units)
+     * @param int $dy Offset in Y direction (northing grid units)
+     * @return string The neighboring grid reference
+     * @throws InvalidArgumentException
+     */
+    function nearbyGridref(int $dx, int $dy, $gridref = null) {
+
+        // Clean and normalize input
+        $clean = strtoupper(preg_replace('/\s+/', '', $gridref ?? $this->grid_reference));
+
+        if (!preg_match('/^([A-Z]{1,2})(\d+)$/', $clean, $matches)) {
+            throw new InvalidArgumentException("Invalid grid reference format.");
+        }
+
+        $letters = $matches[1];
+        $digits  = $matches[2];
+        $digitLen = strlen($digits);
+
+        if ($digitLen % 2 !== 0) {
+            throw new InvalidArgumentException("Grid reference digits must be even.");
+        }
+
+        $halfLen = $digitLen / 2;
+        $localMax = 10 ** $halfLen; // Maximum value + 1 for local coordinates (e.g. 100 for 2 digits)
+
+        $eastingLocal  = (int)substr($digits, 0, $halfLen);
+        $northingLocal = (int)substr($digits, $halfLen);
+
+        // 5x5 grid letters (excluding 'I') used by both systems for 100km squares
+        $alphabet = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
+
+        if (strlen($letters) === 2) {
+            // OSGB (Ordnance Survey Great Britain) - 2 letters
+            $majorMap = [
+                'S' => [0, 0], 'T' => [1, 0],
+                'N' => [0, 1], 'O' => [1, 1],
+                'H' => [0, 2], 'J' => [1, 2]
+            ];
+
+            $majorChar = $letters[0];
+            $o100kChar = $letters[1];
+
+            if (!isset($majorMap[$majorChar])) {
+                throw new InvalidArgumentException("Invalid OSGB major grid letter.");
+            }
+
+            $idx100k = strpos($alphabet, $o100kChar);
+            if ($idx100k === false) {
+                throw new InvalidArgumentException("Invalid grid letter '$o100kChar'.");
+            }
+
+            // 100km square position inside the 500km major square
+            $local100kE = $idx100k % 5;
+            $local100kN = 4 - (int)floor($idx100k / 5);
+
+            // Calculate absolute 100km square offsets
+            $hundredKmE = $majorMap[$majorChar][0] * 5 + $local100kE;
+            $hundredKmN = $majorMap[$majorChar][1] * 5 + $local100kN;
+
+        } else {
+            // Irish National Grid - 1 letter
+            $idx = strpos($alphabet, $letters);
+            if ($idx === false) {
+                throw new InvalidArgumentException("Invalid Irish grid letter.");
+            }
+
+            $hundredKmE = $idx % 5;
+            $hundredKmN = 4 - (int)floor($idx / 5);
+        }
+
+        // Apply offset in total grid units
+        $totalEUnits = ($hundredKmE * $localMax) + $eastingLocal + $dx;
+        $totalNUnits = ($hundredKmN * $localMax) + $northingLocal + $dy;
+
+        // Convert back to 100km grid position and local remainder
+        $newHundredKmE = (int)floor($totalEUnits / $localMax);
+        $newHundredKmN = (int)floor($totalNUnits / $localMax);
+
+        $newEastingLocal  = (int)($totalEUnits - ($newHundredKmE * $localMax));
+        $newNorthingLocal = (int)($totalNUnits - ($newHundredKmN * $localMax));
+
+        // Reconstruct prefix letters
+        if (strlen($letters) === 2) {
+            $newMajorE = (int)floor($newHundredKmE / 5);
+            $newMajorN = (int)floor($newHundredKmN / 5);
+
+            $newLocal100kE = (int)($newHundredKmE - ($newMajorE * 5));
+            $newLocal100kN = (int)($newHundredKmN - ($newMajorN * 5));
+
+            // Find matching major square letter
+            $reverseMajorMap = [
+                '0,0' => 'S', '1,0' => 'T',
+                '0,1' => 'N', '1,1' => 'O',
+                '0,2' => 'H', '1,2' => 'J'
+            ];
+            $majorKey = "$newMajorE,$newMajorN";
+
+            if (!isset($reverseMajorMap[$majorKey])) {
+                throw new OutOfBoundsException("Resulting grid reference is out of valid OSGB bounds.");
+            }
+
+            $newMajorChar = $reverseMajorMap[$majorKey];
+            $idx100k = (4 - $newLocal100kN) * 5 + $newLocal100kE;
+            $new100kChar = $alphabet[$idx100k];
+
+            $newPrefix = $newMajorChar . $new100kChar;
+        } else {
+            if ($newHundredKmE < 0 || $newHundredKmE > 4 || $newHundredKmN < 0 || $newHundredKmN > 4) {
+                throw new OutOfBoundsException("Resulting grid reference is out of valid Irish Grid bounds.");
+            }
+
+            $idx = (4 - $newHundredKmN) * 5 + $newHundredKmE;
+            $newPrefix = $alphabet[$idx];
+        }
+
+        // Zero-pad and format the resulting digits
+        $formattedEasting  = str_pad((string)$newEastingLocal, $halfLen, '0', STR_PAD_LEFT);
+        $formattedNorthing = str_pad((string)$newNorthingLocal, $halfLen, '0', STR_PAD_LEFT);
+
+        return $newPrefix . $formattedEasting . $formattedNorthing;
+    }
+
 }
 
 

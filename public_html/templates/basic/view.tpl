@@ -426,19 +426,21 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 
 <div style="width:100%;position:absolute;top:0px;left:0px;height:0px">
+	{if $image->grid_square->gridsquare != "MC"}
 	<div class="interestBox" style="float: right; position:relative; padding:2px;">
 		<table border="0" cellspacing="0" cellpadding="2">
-		<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
-		<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}">N</a></td>
-		<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>
-		<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}">W</a></td>
+		<tr><td><a href="/gridref/{$image->grid_square->nearbyGridref(-1,1)}">NW</a></td>
+		<td align="center"><a href="/gridref/{$image->grid_square->nearbyGridref(0,1)}">N</a></td>
+		<td><a href="/gridref/{$image->grid_square->nearbyGridref(1,1)}">NE</a></td></tr>
+		<tr><td><a href="/gridref/{$image->grid_square->nearbyGridref(-1,0)}">W</a></td>
 		<td><b>Go</b></td>
-		<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}">E</a></td></tr>
-		<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}">SW</a></td>
-		<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}">S</a></td>
-		<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
+		<td align="right"><a href="/gridref/{$image->grid_square->nearbyGridref(1,0)}">E</a></td></tr>
+		<tr><td><a href="/gridref/{$image->grid_square->nearbyGridref(-1,-1)}">SW</a></td>
+		<td align="center"><a href="/gridref/{$image->grid_square->nearbyGridref(0,-1)}">S</a></td>
+		<td align="right"><a href="/gridref/{$image->grid_square->nearbyGridref(1,-1)}">SE</a></td></tr>
 		</table>
 	</div>
+	{/if}
 
 	<div class="interestBox" style="float:right;position:relative;width:20px;margin-right:2px;"><span  id="hideside"></span>
 		<img src="{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side');" alt="thumbs up icon"/>
