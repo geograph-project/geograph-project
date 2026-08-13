@@ -492,18 +492,20 @@ class GridImage
 	function assignToSmarty($smarty) {
 		global $CONF;
 
-split_timer('gridimage'); //starts the timer
+split_timer('gridimageA'); //starts the timer
 
                 if (!empty($this->imagetaken) && strpos($this->imagetaken,'0000') === FALSE) {
 			$smarty->assign('image_taken', $this->getFormattedTakenDate());
 			$smarty->assign('takenago', $this->getTakenAgo());
                 }
 
+split_timer('gridimageA','assign-Taken',$this->gridimage_id); //logs the wall time
+
 		//get the grid references
 		$this->getSubjectGridref(true);
 		$this->getPhotographerGridref(true);
 
-
+split_timer('gridimageA','assign-GridRefs',$this->gridimage_id); //logs the wall time
 
 		//remove grid reference from title
 		$this->bigtitle=trim(preg_replace("/^{$this->grid_reference}/", '', $this->title));
@@ -537,11 +539,15 @@ split_timer('gridimage'); //starts the timer
 		$mosaic=new GeographMapMosaic;
 		$smarty->assign('map_token', $mosaic->getGridSquareToken($this->grid_square));
 
+split_timer('gridimageA','assign-Token',$this->gridimage_id); //logs the wall time
+
 		$this->comment = preg_replace('/\s*NOTE.? This image has a detailed.+?To read it click on the image.?/is','',$this->comment);
 
 		//find a possible place within 25km
 		$place = $this->grid_square->findNearestPlace(75000);
 		$smarty->assign_by_ref('place', $place);
+
+split_timer('gridimageA','assign-Place',$this->gridimage_id); //logs the wall time
 
 		$smarty->assign('imageurl', $imageurl = $this->_getFullpath(false,true));
 
@@ -554,6 +560,8 @@ split_timer('gridimage'); //starts the timer
 				$this->comment = '';
 			}
 		}
+
+split_timer('gridimageA','assign-Discuss',$this->gridimage_id); //logs the wall time
 
 		$extra_meta = array();
 
@@ -603,7 +611,12 @@ split_timer('gridimage'); //starts the timer
 		$overview->reference_index = $this->grid_square->reference_index;
 		$overview->setCentre($this->grid_square->x,$this->grid_square->y); //does call setAlignedOrigin
 		$overview->assignToSmarty($smarty, 'overview');
+
+split_timer('gridimageA','assign-Overview',$this->gridimage_id); //logs the wall time
+
 		$smarty->assign('marker', $overview->getSquarePoint($this->grid_square));
+
+split_timer('gridimageA','assign-Point',$this->gridimage_id); //logs the wall time
 
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
@@ -615,6 +628,8 @@ split_timer('gridimage'); //starts the timer
 		list($latdm,$longdm) = $conv->wgs84_to_friendly($lat,$long);
 		$smarty->assign('latdm', $latdm);
 		$smarty->assign('longdm', $longdm);
+
+split_timer('gridimageA','assign-LatLng',$this->gridimage_id); //logs the wall time
 
 		//lets add an rastermap too
 		$rastermap = new RasterMap($this->grid_square,false);
@@ -629,6 +644,7 @@ split_timer('gridimage'); //starts the timer
 		}
 		$smarty->assign_by_ref('rastermap', $rastermap);
 
+split_timer('gridimageA','assign-Raster',$this->gridimage_id); //logs the wall time
 
 		$smarty->assign('x', $this->grid_square->x);
 		$smarty->assign('y', $this->grid_square->y);
@@ -646,7 +662,7 @@ split_timer('gridimage'); //starts the timer
 			$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square));
 		}
 
-split_timer('gridimage','assignToSmarty',$this->gridimage_id); //logs the wall time
+split_timer('gridimageA','assign-Main',$this->gridimage_id); //logs the wall time
 
 		if ($this->user_id == 1695) {
 			$smarty->assign('extra_meta','<meta name="robots" content="noindex" />');
@@ -673,12 +689,15 @@ split_timer('gridimage','assignToSmarty',$this->gridimage_id); //logs the wall t
 				//$this->comment .= "\n----\nNote: One or more links in this description no longer seem to be active.\nArchived version of pages may be available: ".implode("  ",$aa);
 			}
 		}
+
+split_timer('gridimageA','assign-Comment',$this->gridimage_id); //logs the wall time
+
 	}
 
 	function loadSnippets($gid = 0) {
 		global $memcache;
 
-split_timer('gridimage'); //starts the timer
+split_timer('gridimageS'); //starts the timer
 
 		if (empty($gid)) {
 			if (!empty($this->ext))
@@ -721,7 +740,7 @@ split_timer('gridimage'); //starts the timer
 					$this->snippets_by_others = true;
 		}
 
-split_timer('gridimage','loadSnippets',$this->gridimage_id); //logs the wall time
+split_timer('gridimageS','loadSnippets',$this->gridimage_id); //logs the wall time
 
 	}
 
@@ -740,7 +759,7 @@ split_timer('gridimage','loadSnippets',$this->gridimage_id); //logs the wall tim
 
 		$db=&$this->_getDB(30);
 
-split_timer('gridimage'); //starts the timer
+split_timer('gridimageC'); //starts the timer
 
 		if ($CONF['template'] == 'archive') {
 			//use a mataerialzed view. and dont bother caching (not used much)
@@ -830,7 +849,7 @@ split_timer('gridimage'); //starts the timer
 
 		$this->collections_count = count($this->collections);
 
-split_timer('gridimage','loadCollections',$this->gridimage_id); //logs the wall time
+split_timer('gridimageC','loadCollections',$this->gridimage_id); //logs the wall time
 
 	}
 

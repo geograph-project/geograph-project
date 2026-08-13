@@ -29,6 +29,8 @@ if (strpos($_SERVER['HTTP_USER_AGENT'], 'python-requests')!==FALSE)
 
 require_once('geograph/global.inc.php');
 
+split_timer('main'); //starts the timer
+
 if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'BingPreview/1.0b')!==FALSE) ) {
 
 	$db = GeographDatabaseConnection(true);
@@ -71,6 +73,9 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/mapmosaic.class.php');
 require_once('geograph/rastermap.class.php');
 
+split_timer('main','includes'); //logs the wall time
+
+
 if (!empty($_POST['style'])) {
 	session_cache_limiter('private_no_expire'); //this is just to override the default no-store that gets added (so user can use backbutton)
 
@@ -100,9 +105,14 @@ if (is_internet_archive() || !empty($_GET['a'])) {
         $CONF['forums'] = false;
 }
 
+split_timer('main','session'); //logs the wall time
+
 customGZipHandlerStart();
 
 $smarty = new GeographPage;
+
+split_timer('main','page'); //logs the wall time
+
 
 $template='view.tpl';
 $cacheid=0;
@@ -116,6 +126,8 @@ $image=new GridImage;
 
 if (isset($_GET['id']))
 	$image->loadFromId(intval($_GET['id']));
+
+split_timer('main','load'); //logs the wall time
 
 //do we have a valid image?
 if ($image->isValid())
@@ -159,6 +171,8 @@ if ($image->isValid())
 	}
 }
 
+split_timer('main','valid1'); //logs the wall time
+
 //do we have a valid image? - check again, because a rejected image may become invalid!
 if ($image->isValid())
 {
@@ -196,6 +210,8 @@ if ($image->isValid())
 	if ($image->grid_square && appearsToBePerson()) {
 		$image->grid_square->rememberInSession();
 	}
+
+	split_timer('main','loginsess'); //logs the wall time
 
 	//what style should we use?
 	$style = $USER->getStyle();
@@ -242,6 +258,8 @@ if ($image->isValid())
 	} else {
 		$smarty->assign('is_bot',true);
 	}
+
+	split_timer('main','person'); //logs the wall time
 
 	$ref = @parse_url($_SERVER['HTTP_REFERER']);
 	$ref_query = array();
@@ -292,6 +310,8 @@ if ($image->isValid())
 		}
 	}
 
+	split_timer('main','search'); //logs the wall time
+
 	if ($CONF['template']!='charcoal' && $CONF['template']!='archive') { //this is mainly to exclude schools!
 		//temporally patch, so that we can put set the margin, just like related.js WILL!
 		$smarty->assign('maincontentclass', 'content_photo'.$style.' photopage');
@@ -313,12 +333,20 @@ if ($image->isValid())
 			$image->hits = $db->getOne("SELECT hits+hits_archive+hits_gallery FROM gridimage_log WHERE gridimage_id = {$image->gridimage_id}");
 		//}
 
+		split_timer('main','counter'); //logs the wall time
+
 		$image->assignToSmarty($smarty);
 		$smarty->assign('larger',true);
+
+		split_timer('main','assigned'); //logs the wall time
+
 
 		$image->loadSnippets();
 		$image->loadCollections();
 		$image->loadTags(true); //request array format (same as loadSnippets used to do)
+
+		split_timer('main','supp'); //logs the wall time
+
 
 		//disable large image for [panorama: ] tagged images, needs to be done here, AFTER loadSnippets()!
 		if (!empty($image->tag_prefix_stat['panorama']))
@@ -342,6 +370,9 @@ if ($image->isValid())
 
 				if (!empty($image->collections))
 					$image->collections[] = array('url'=>$url,'title'=>$image->title." [$same]",'type'=>'Title Cluster');
+
+				split_timer('main','photoset'); //logs the wall time
+
 
 /*
 			} elseif (preg_match('/[^\w]+(\d{1,3})[^\w]$/', $image->title)) {
@@ -396,6 +427,8 @@ if ($image->isValid())
 
 if (!empty($mobile_browser))
          $smarty->assign("mobile_browser", 1);
+
+split_timer('main','finish'); //logs the wall time
 
 $smarty->display($template, $cacheid);
 

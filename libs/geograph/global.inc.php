@@ -944,6 +944,8 @@ function smarty_function_pageheader() {
 function smarty_function_pagefooter() {
 	global $mobile_browser,$mobile_url,$CONF,$memcache;
 
+split_timer('main','footer'); //logs the wall time
+
 	if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 		ob_start();
 		Profiler::render();
