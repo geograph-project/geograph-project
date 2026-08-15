@@ -247,7 +247,41 @@ class GridImage
 		
 		return $this->subject_gridref;
 	}
-	
+
+	function findNearestPlace($radius = 75000,$gazetteer = '') {
+		//0. startup
+		//todo, could could autofill grid_square (in particular if loaded via gridimage_search!)
+		if (empty($this->grid_square))
+			return false;
+
+		//this is needed both for findBySquare, but also findById
+		if (!isset($this->grid_square->nateastings))
+         		$this->grid_square->getNatEastings();
+
+		$gaz = new Gazetteer();
+		if (!empty($this->db))
+			$gaz->_setDb($this->db);
+
+		// -------------
+		// 1. Used cached value if possible.
+		if (!empty($this->placename_id) && empty($gazetteer)) { //only iuf want the default gazettter!
+			$place = $gaz->findById($this->placename_id, $this->grid_square); //grid_square used to compute distance!
+			if (!empty($place))
+				return $place;
+		}
+
+		// 2. if not, look it up live
+		//$place = $this->grid_square->findNearestPlace(75000);
+		$place = $gaz->findBySquare($this->grid_square,$radius,null,$gazetteer);
+
+		// 3. save it future!
+		if (!empty($place['pid']) && empty($gazetteer) && !empty($this->db) && empty($this->db->readonly)) {
+			$this->db->Execute("UPDATE gridimage SET placename_id = {$place['pid']},upd_timestamp = upd_timestamp WHERE gridimage_id = {$this->gridimage_id}");
+		}
+
+		return $place;
+	}
+
 	/**
 	 * clear all member vars
 	 * @access private
@@ -544,7 +578,7 @@ split_timer('assignToSmarty','Token',$this->gridimage_id); //logs the wall time
 		$this->comment = preg_replace('/\s*NOTE.? This image has a detailed.+?To read it click on the image.?/is','',$this->comment);
 
 		//find a possible place within 25km
-		$place = $this->grid_square->findNearestPlace(75000);
+		$place = $this->findNearestPlace();
 		$smarty->assign_by_ref('place', $place);
 
 split_timer('assignToSmarty','Place',$this->gridimage_id); //logs the wall time
