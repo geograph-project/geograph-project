@@ -578,7 +578,7 @@ split_timer('gridimageA','assign-Token',$this->gridimage_id); //logs the wall ti
 		$this->comment = preg_replace('/\s*NOTE.? This image has a detailed.+?To read it click on the image.?/is','',$this->comment);
 
 		//find a possible place within 25km
-		$place = $this->grid_square->findNearestPlace(75000);
+		$place = $this->findNearestPlace();
 		$smarty->assign_by_ref('place', $place);
 
 split_timer('gridimageA','assign-Place',$this->gridimage_id); //logs the wall time
