@@ -216,6 +216,8 @@ function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) 
 	if (!$reference_index) {
 		return array("",0);
 	}
+
+	/* Looking up 'the square via databae is unnessrary!
 	list($x,$y) = $this->national_to_internal($e,$n,$reference_index );
 
 	static $lookup = array();
@@ -230,7 +232,54 @@ function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) 
 		$prefix=$lookup[$key]=$db->GetOne($sql);
 	} else {
 		$prefix=$lookup[$key];
-	}
+	} */
+
+// Standard 5x5 grid sequence without 'I'
+$alphabet = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
+
+if ($reference_index == 1) {
+    // --- OSGB (British National Grid) ---
+    // Shift coordinates to account for the OSGB false origin (-1000km E, -500km N relative to grid origin SV)
+    $eShifted = $e + 1000000;
+    $nShifted = $n + 500000;
+
+    $e100k = (int)floor($eShifted / 100000);
+    $n100k = (int)floor($nShifted / 100000);
+
+    // Major 500km grid index
+    $majorE = (int)floor($e100k / 5);
+    $majorN = (int)floor($n100k / 5);
+
+    // Local 100km offsets (0..4)
+    $localE = $e100k % 5;
+    $localN = $n100k % 5;
+
+    // Calculate characters directly using grid math (Row 4 is top, Row 0 is bottom)
+    $idxMajor = (4 - $majorN) * 5 + $majorE;
+    $idxLocal = (4 - $localN) * 5 + $localE;
+
+    // Guard against out-of-bounds bounds if inputs stray outside standard BNG
+    if ($idxMajor < 0 || $idxMajor >= 25 || $idxLocal < 0 || $idxLocal >= 25) {
+        throw new InvalidArgumentException("Coordinates out of OSGB grid bounds.");
+    }
+
+    $prefix = $alphabet[$idxMajor] . $alphabet[$idxLocal];
+
+} else {
+    // --- Irish National Grid ---
+    $e100k = (int)floor($e / 100000);
+    $n100k = (int)floor($n / 100000);
+
+    // Irish grid uses a single 5x5 square mapped directly from 0..4
+    $idx100k = (4 - $n100k) * 5 + $e100k;
+
+    if ($idx100k < 0 || $idx100k >= 25) {
+        throw new InvalidArgumentException("Coordinates out of Irish Grid bounds.");
+    }
+
+    $prefix = $alphabet[$idx100k];
+}
+
 
 	$eastings = sprintf("%05d",($e+ 500000) % 100000); //cope with negative! (for Rockall...)
 	$northings = sprintf("%05d",$n % 100000);
