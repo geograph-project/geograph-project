@@ -721,18 +721,26 @@ split_timer('gridsquare','findNearby-failed',"$x,$y"); //logs the wall time
 			return false;
 		}
 	}
-	
+
 	function findNearestPlace($radius,$gazetteer = '') {
 		#require_once('geograph/gazetteer.class.php');
-		
+
 		if (!isset($this->nateastings))
 			$this->getNatEastings();
-			
+
 		$gaz = new Gazetteer();
-		
-		return $gaz->findBySquare($this,$radius,null,$gazetteer);	
+		if (!empty($this->db))
+		        $gaz->_setDb($this->db);
+
+		// gridsquare.placename_id is still using "OS" gaz (for sample8/browser) and 2) now have a new default gaz (OS250)
+		if (!empty($this->placename_id) && ($this->reference_index == 2 || $gazetteer === 'OS')) {
+			$place = $gaz->findById($this->placename_id, $this);
+			if (!empty($place))
+				return $place;
+		}
+
+		return $gaz->findBySquare($this,$radius,null,$gazetteer);
 	}
-	
 
 	function loadCollections() {
 		

@@ -46,6 +46,40 @@ class Gazetteer
 		return $this->findByNational($square->reference_index,$square->nateastings,$square->natnorthings,$radius,$f_codes,$gazetteer);
 	}
 
+	//supply square to get the distance as well
+	function findById($placename_id, $square = null) {
+		global $CONF;
+
+		$places = $this->findPlacename($placename_id); //actully returns a LIST!
+		if (empty($places))
+			return array();
+
+		$place = array_shift($places);
+
+		if (!empty($place['f_code']) && !in_array($place['f_code'],array('C','T','O'))) {
+			$db=&$this->_getDB();
+			$place['full_name'] .= ' ['.$db->getOne("select code_name from os_gaz_code where f_code = '".$place['f_code']."'")."]";
+		}
+
+
+		//use use findPlacename, but, actully want to mimkick findByNational closer, (so can be used smarty 
+		if (!empty($square) && !empty($place['e'])) {
+		        $place['direction'] = rad2deg(atan2( $square->nateastings-$place['e'], $square->natnorthings-$place['n'] ));
+
+		        $place['distance'] = round( sqrt( pow($place['e']-$square->nateastings ,2)
+                                                        + pow($place['n']-$square->natnorthings,2) ) /1000)+0.01;;
+		}
+
+		if (!empty($place['reference_index'])) {
+                	$place['reference_name'] = $CONF['references'][$place['reference_index']];
+		        if ($place['reference_index'] == 2 && $place['country'] == 'uk') {
+                	        $place['reference_name'] = "Northern Ireland";
+		        }
+		}
+
+		return $place;
+	}
+
 	function findListByNational($reference_index,$e,$n,$radius = 1005) {
 		global $CONF,$memcache;
 
@@ -144,7 +178,7 @@ split_timer('gazetteer','findListByNational',$mkey); //logs the wall time
 	}
 
 	function findByNational($reference_index,$e,$n,$radius = 25005,$f_codes = null,$gazetteer = '') {
-		global $CONF,$memcache;
+		global $CONF,$memcache,$sprt;
 
 		if (empty($gazetteer)) {
 			$gazetteer = $CONF['use_gazetteer'];
@@ -623,7 +657,8 @@ split_timer('gazetteer'); //starts the timer
 split_timer('gazetteer','findByNational',$mkey); //logs the wall time
 
 		//fails quickly if not using memcached!
-		$memcache->name_set('g',$mkey,$places,$memcache->compress,$memcache->period_long);
+		if (empty($GLOBALS['DISABLE_MEMCACHE_SAVING']))
+			$memcache->name_set('g',$mkey,$places,$memcache->compress,$memcache->period_long);
 
 		return $places;
 	}
@@ -652,13 +687,16 @@ split_timer('gazetteer'); //starts the timer
 		if (is_numeric($placename)) {
 			if ($placename > 3000000) {
 				$where = "id=".$db->Quote($placename-3000000);
-				$places = $db->GetAll("select name as full_name,e,n,2 as reference_index,(id+3000000) as id,county as dsg_name from ie_open_data where $where");
+				$places = $db->GetAll("select name as full_name,island_name,e,n,2 as reference_index,(id+3000000) as id,county as adm1_name,country from ie_open_data where $where");
+			} elseif ($placename > 2000000) {
+				$where = "seq=".$db->Quote($placename-2000000);
+				$places = $db->GetAll("select `def_nam` as full_name,island_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name,country from os_gaz_250 where $where");
 			} elseif ($placename > 1000000) {
 				$where = "seq=".$db->Quote($placename-1000000);
-				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where $where");
+				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name,f_code from os_gaz where $where");
 			} else {
 				$where = "id=".$db->Quote($placename);
-				$places = $db->GetAll("select full_name,dsg,e,n,loc_placenames.reference_index,loc_adm1.name as adm1_name from loc_placenames left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country) where $where");
+				$places = $db->GetAll("select full_name,dsg,e,n,loc_placenames.reference_index,loc_adm1.name as adm1_name,loc_placenames.country from loc_placenames left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country) where $where");
 			}
 
 	//try for a single
