@@ -280,6 +280,8 @@ function GeographDatabaseConnection($allow_readonly = false) {
 	global $ADODB_FETCH_MODE;
 	static $logged = 1;
 
+split_timer('db'); //starts the timer
+
                 if (isset($_GET['remote_profile'])) {
                         $start = microtime(true);
                         print "$start  :: GeographDatabaseConnection($allow_readonly)<br>";
@@ -293,9 +295,9 @@ function GeographDatabaseConnection($allow_readonly = false) {
 	//see if we can use a read only slave connection
 	if ($allow_readonly && !empty($GLOBALS['DSN_READ']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
 
-#		split_timer('db'); //starts the timer
 		$db=NewADOConnection($GLOBALS['DSN_READ']);
-#		split_timer('db','connect','readonly'); //logs the wall time
+
+split_timer('db','connect','readonly'); //logs the wall time
 
 		if ($db) {
 			//if the application dictates it needs currency
@@ -347,15 +349,18 @@ function GeographDatabaseConnection($allow_readonly = false) {
 
 		$db->Execute($ins);
 		$logged = 1;
+
+split_timer('db','logged1'); //logs the wall time
+
 	}
 
 			$db->readonly = true;
 			return $db;
 		} else {
 			//try and fallback and get a master connection
-			split_timer('db'); //starts the timer
 			$db=NewADOConnection($GLOBALS['DSN']);
-			split_timer('db','connect','master-fallback'); //logs the wall time
+
+split_timer('db','connect','master-fallback'); //logs the wall time
 
                 	//setting this, prevents future connections trying to to connect to slave.
         	        if (function_exists('apc_store'))
@@ -365,9 +370,9 @@ function GeographDatabaseConnection($allow_readonly = false) {
 		//otherwise just get a standard connection
 
 		//todo - we could add a 'curtail' feature here, to disable any page that needs write access - allowing some pages to still work without master online!
-#		split_timer('db'); //starts the timer
 		$db=NewADOConnection($GLOBALS['DSN']);
-#		split_timer('db','connect','master'); //logs the wall time
+
+split_timer('db','connect','master'); //logs the wall time
 	}
 	/* TOFIX, now using mysqli, which doesnt have an easy way of getting last error
 	if (!$db && mysql_error() == 'MySQL server has gone away') {
@@ -375,7 +380,7 @@ function GeographDatabaseConnection($allow_readonly = false) {
 		$db=NewADOConnection($GLOBALS['DSN'].(empty($CONF['db_persist'])?'?':'&')."new");
 	}*/
 	if (!$db) {
-		split_timer('db','connect','failed'); //just to log the failure!
+split_timer('db','connect','failed'); //just to log the failure!
 		//todo - show a 'smart' smarty error here... (probably check for existance of a global $smarty var)
 		header("HTTP/1.0 503 Service Unavailable");
 		die("Database connection failed");
@@ -392,7 +397,12 @@ function GeographDatabaseConnection($allow_readonly = false) {
 
 		$db->Execute($ins);
 		$logged = 1;
+
+		split_timer('db','logged2'); //logs the wall time
 	}
+
+
+split_timer('db','final'); //logs the wall time
 
 	$db->readonly = false;
 	return $db;
@@ -405,10 +415,16 @@ function GeographDatabaseConnection($allow_readonly = false) {
   */
 function GeographFileSystem() {
         global $filesystem;
+
+split_timer('fs'); //starts the timer
+
         if (empty($filesystem)) {
 		require_once("geograph/filesystem.class.php");
                 $filesystem = new FileSystem();
 	}
+
+split_timer('fs','final'); //logs the wall time
+
         return $filesystem;
 }
 
@@ -422,14 +438,20 @@ if (empty($CONF['sphinxql_dsn']) && !empty($CONF['sphinx_host']))
 function GeographSphinxConnection($type='sphinxql',$new = false) { //the new param is legacy and now ignored. all indexes are on the same host!
 	global $CONF;
 
+split_timer('sph'); //starts the timer
+
 	if ($type=='manticorert') {
 
 		$sph = NewADOConnection("{$CONF['db_driver']}://{$CONF['manticorert_host']}:{$CONF['sphinx_portql']}/") or die("unable to connect to search engine");
+split_timer('sph',$type); //logs the wall time
+
 		return $sph;
 
 	} if ($type=='sphinxql' || $type=='mysql') {
 
 		$sph = NewADOConnection("{$CONF['db_driver']}://{$CONF['sphinx_host']}:{$CONF['sphinx_portql']}/") or die("unable to connect to search engine");
+split_timer('sph',$type); //logs the wall time
+
 		if ($type=='mysql') {
 			return $sph->_connectionID;
 		}
@@ -441,6 +463,8 @@ function GeographSphinxConnection($type='sphinxql',$new = false) { //the new par
 
                 $client = new SphinxClient ();
                 $client->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
+
+split_timer('sph',$type); //logs the wall time
 
 		return $client;
         }
@@ -466,6 +490,8 @@ function get_memcache_ob(string $key): ?MultiServerMemcache
     global $CONF;
     static $instances = [];
     static $app_config_hash = null;
+
+split_timer('mco'); //starts the timer
 
     if (isset($instances[$key])) {
         return $instances[$key];
@@ -499,8 +525,12 @@ function get_memcache_ob(string $key): ?MultiServerMemcache
         return $instances['app'];
     }
 
+split_timer('mco','setup'); //logs the wall time
+
     // Create the new MultiServerMemcache instance.
     $instance = new MultiServerMemcache($CONF['memcache'], $key);
+
+split_timer('mco','connect'); //logs the wall time
 
     $instances[$key] = $instance;
     return $instance;
@@ -595,8 +625,12 @@ if (!empty($CONF['memcache']['adodb'])) {
 if (!empty($CONF['redis_host'])) {
 	//note, we have found  the dedicated, redis session handler is slightly bettern than using memcache (even redirected to redis!)
 
+split_timer('redis'); //starts the timer
+
 	require "3rdparty/RedisSessions.php"; // knows to use $CONF['redis_session_db'];
 	redis_session_install();
+
+split_timer('redis','session'); //logs the wall time
 
 } elseif (!empty($CONF['memcache']['sessions'])) {
 	$memcachesession = get_memcache_ob('sessions');
@@ -727,9 +761,11 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 //global page initialisation
 function init_session()
 {
-//	split_timer('app'); //starts the timer
+	split_timer('app'); //starts the timer
 
 	session_start();
+
+	split_timer('app','start'); //log wall time
 
 	//do we have a user object?
 	if (!isset($_SESSION['user']))
@@ -746,13 +782,20 @@ function init_session()
 				$_SESSION['session1'] = session_id(); //store the previous id for log purposes
 
 			session_regenerate_id();
+
+			split_timer('app','regemerate'); //log wall time
+
 		}
 
 		//create new user object - initially anonymous
 		$_SESSION['user'] = new GeographUser;
 
+		split_timer('app','user'); //log wall time
+
 		//give object a chance to auto-login via cookie
 		$_SESSION['user']->autoLogin();
+
+		split_timer('app','altologin'); //log wall time
 	}
 	if (isset($_SESSION['user']->about_yourself))
 		unset($_SESSION['user']->about_yourself);
@@ -865,7 +908,7 @@ function init_session()
 	}
 	*/
 
-//	split_timer('app','init_session',$GLOBALS['USER']->user_id); //logs the wall time
+	split_timer('app','init_session',$GLOBALS['USER']->user_id); //logs the wall time
 }
 
 #################################################
