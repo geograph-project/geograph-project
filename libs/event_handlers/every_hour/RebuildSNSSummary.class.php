@@ -53,12 +53,10 @@ class RebuildSNSSummary extends EventHandler
 		    JSON_VALUE(Message,'$.mail.destination[0]') as `email`,
 		    JSON_VALUE(Message,'$.mail.commonHeaders.subject') as `subject`,
 		    JSON_VALUE(Message,'$.mail.source') as `sender`,
-		    REGEXP_REPLACE(
-		        REGEXP_REPLACE(
-		            JSON_VALUE(Message,'$.mail.commonHeaders.subject'),
-		            '(Suggestion for|Forum topic updated:|Copy of message sent to) .*', '\\\\1 ...'
-		        ),
-		        '.* (contacting you via|is sending you an e-Card)', '... \\\\1'
+		    REGEXP_REPLACE( REGEXP_REPLACE( REGEXP_REPLACE( JSON_VALUE(Message,'$.mail.commonHeaders.subject'),
+		        '(Suggestion for|Forum topic updated:|Copy of message sent to) .*', '\\\\1 ...'),
+		        '.* (contacting you via|is sending you an e-Card)', '... \\\\1'),
+			'.+ #\\\\d+$', '... #ticket-id'
 		    ) AS normalized";
 
 		$columns = "email_md5, TimeStamp, type, email, subject, sender, normalized";

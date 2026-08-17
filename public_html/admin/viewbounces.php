@@ -89,7 +89,7 @@ if (!empty($_GET['summary'])) {
 
 	print "<table cellspacing=0 cellpadding=4 border=1 bordercolor=#eee>";
 	print "<tr>";
-	foreach(array('Sender','Subject','Bounces','Emails','Most Recent','7 Days') as $h)
+	foreach(array('Sender','Subject','Bounces','Emails','7 Days','Most Recent') as $h)
 		print "<th>$h</th>";
 	foreach($data as $row) {
 		$url = "?".http_build_query(array('sender'=>$row['sender'],'subject'=>$row['normalized']));
@@ -98,12 +98,12 @@ if (!empty($_GET['summary'])) {
 		print "<td><a href=\"$url\" style=\"text-decoration:none\">".preg_replace('/(\[geograph\])/i','<span style=color:silver>$1</span>',htmlentities($row['normalized']));
 		print "<td align=right><a href=\"$url\">".number_format($row['cnt'],0);
 		print "<td align=right>".number_format($row['emails'],0);
-		print "<td>".str_replace('T',' <span style=color:silver>',$row['latest'])."</span>";
 		if (!empty($row['7day'])) {
 			$url .= "&amp;recent=1";
 			print "<td align=right><a href=\"$url\">".number_format($row['7day'],0);
 		} else
 			print "<td align=right>0";
+		print "<td>".str_replace('T',' <span style=color:silver>',$row['latest'])."</span>";
 	}
 	print "</table>";
 
@@ -170,7 +170,9 @@ foreach ($filters as $name => $rows) {
 			if ($name == 'email') {
 				$where[] = "JSON_VALUE(Message,'$.mail.destination[0]') = ".$db->Quote($_GET[$name]);
 			} elseif ($name == 'subject') {
-				if (strpos($_GET[$name],'...') !== FALSE) {
+				if (strpos($_GET[$name],'#ticket-id') !== FALSE) {
+					$where[] = "JSON_VALUE(Message,'$.mail.commonHeaders.subject') REGEXP ".$db->Quote(" #[0-9]$");
+				} elseif (strpos($_GET[$name],'...') !== FALSE) {
 					$where[] = "JSON_VALUE(Message,'$.mail.commonHeaders.subject') LIKE ".$db->Quote(str_replace('...','%',$_GET[$name]));
 				} else {
 					$where[] = "JSON_VALUE(Message,'$.mail.commonHeaders.subject') = ".$db->Quote($_GET[$name]);
@@ -248,6 +250,8 @@ where ".implode(" AND ",$where)."
 group by $group
 order by TimeStamp DESC
 LIMIT $limit";
+
+print $sql;
 
 #################################################
 
