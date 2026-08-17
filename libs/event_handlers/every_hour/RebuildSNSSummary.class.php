@@ -39,27 +39,69 @@ class RebuildSNSSummary extends EventHandler
 	{
 		$db=&$this->_getDB();
 
-		$db->Execute("DROP TABLE IF EXISTS sns_summary_tmp");
+		// Extract the core query definition so it remains DRY across INSERT and CREATE paths
+		$selectFields = "
+		    md5(LOWER(TRIM(JSON_VALUE(Message,'$.mail.destination[0]')))) as email_md5,
+		    TimeStamp,
+		    CONCAT_WS(', ',
+		        JSON_VALUE(Message,'$.notificationType'),
+		        JSON_VALUE(Message,'$.bounce.bounceType'),
+		        NULLIF(JSON_VALUE(Message,'$.bounce.bounceSubType'),'General'),
+		        JSON_VALUE(Message,'$.complaint.complaintType'),
+		        NULLIF(JSON_VALUE(Message,'$.complaint.complaintSubType'),'null'),
+		        JSON_VALUE(Message,'$.complaint.complaintFeedbackType')) as type,
+		    JSON_VALUE(Message,'$.mail.destination[0]') as `email`,
+		    JSON_VALUE(Message,'$.mail.commonHeaders.subject') as `subject`,
+		    JSON_VALUE(Message,'$.mail.source') as `sender`,
+		    REGEXP_REPLACE(
+		        REGEXP_REPLACE(
+		            JSON_VALUE(Message,'$.mail.commonHeaders.subject'),
+		            '(Suggestion for|Forum topic updated:|Copy of message sent to) .*', '\\\\1 ...'
+		        ),
+		        '.* (contacting you via|is sending you an e-Card)', '... \\\\1'
+		    ) AS normalized";
 
-		$db->Execute("
-		create table sns_summary_tmp (UNIQUE(email_md5,TimeStamp))
-		IGNORE
-		select md5(LOWER(TRIM(JSON_VALUE(Message,'$.mail.destination[0]')))) as email_md5, TimeStamp,
-			CONCAT_WS(', ',
-		         JSON_VALUE(Message,'$.notificationType'),
-		         JSON_VALUE(Message,'$.bounce.bounceType'),
-		         NULLIF(JSON_VALUE(Message,'$.bounce.bounceSubType'),'General'),
-		         JSON_VALUE(Message,'$.complaint.complaintType'),
-		         NULLIF(JSON_VALUE(Message,'$.complaint.complaintSubType'),'null'),
-		         JSON_VALUE(Message,'$.complaint.complaintFeedbackType')) as type,
-			JSON_VALUE(Message,'$.mail.destination[0]') as `email`,
-			JSON_VALUE(Message,'$.mail.commonHeaders.subject') as `subject`
-		from sns_message
- 		where Type = 'Notification' and JSON_VALUE(Message,'$.mail.destination[0]') is not null
-		and block_cleared = 0");
+		$columns = "email_md5, TimeStamp, type, email, subject, sender, normalized";
 
-		$db->Execute("DROP TABLE IF EXISTS sns_summary");
-		$db->Execute("RENAME TABLE sns_summary_tmp TO sns_summary");
+		$whereClause = "
+		    Type = 'Notification'
+		    AND JSON_VALUE(Message,'$.mail.destination[0]') IS NOT NULL
+		    AND block_cleared = 0";
+
+		// Check if sns_summary already exists in the current schema
+		$tableExists = $db->getOne("SHOW TABLES LIKE 'sns_summary'");
+
+		if ($tableExists) {
+			$describe = $db->getAssoc("DESCRIBE sns_summary");
+			if (implode(', ',array_keys($describe)) != $columns) {
+			    // need to replace the table. Use REPLACE TABLE to get a nice atomic replace!
+			    $tableExists = false;
+			}
+		}
+
+		if ($tableExists) {
+		    // Fetch the latest timestamp to run an incremental delta insert
+		    $maxTimestamp = $db->GetOne("SELECT MAX(TimeStamp) FROM sns_summary");
+
+	    	    if ($maxTimestamp) {
+	        	$db->Execute("
+		            INSERT IGNORE INTO sns_summary ($columns)
+		            SELECT {$selectFields}
+		            FROM sns_message
+	        	    WHERE {$whereClause}
+		              AND TimeStamp > " . $db->Quote($maxTimestamp)
+		        );
+		    }
+		} else {
+		    // Initial run: Create table with unique key constraint and populate full set
+		    $db->Execute("
+		        CREATE OR REPLACE TABLE sns_summary (
+		            UNIQUE KEY (email_md5, TimeStamp)
+		        ) IGNORE SELECT {$selectFields}
+		        FROM sns_message
+		        WHERE {$whereClause}"
+		    );
+		}
 
 		//return true to signal completed processing
 		//return false to have another attempt later

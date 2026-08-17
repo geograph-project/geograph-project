@@ -30,6 +30,29 @@ $USER->hasPerm("director") || ($USER->user_id == 93) || $USER->mustHavePerm("adm
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
+#################################################
+
+print "<b>SES Bounces</b> &middot; ";
+
+if (!empty($_GET['summary'])) {
+	print "<b>Summary</b> &middot; ";
+} else {
+	print "<a href=?summary=1>Summary</a> &middot; ";
+}
+
+if (!empty($_GET)) {
+	print "<a href=?>Back to all</a> &middot; ";
+	if (empty($_GET['summary']))
+		print "<b>Filtered View</b> &middot; ";
+} else {
+	print "<b>All Reports</b> &middot; ";
+
+	print "<a href=?recent=1>Recent</a> &middot; ";
+}
+print "<hr>";
+
+#################################################
+
 if (!empty($_GET['t'])) {
 	$value = $db->getOne("SELECT Message FROM sns_message WHERE TimeStamp = ".$db->Quote($_GET['t']));
 
@@ -45,6 +68,48 @@ if (!empty($_GET['t'])) {
 		print htmlentities($line)."\n";
 	}
 	//print htmlentities(print_r(json_decode($value,true),true));
+	exit;
+}
+
+#################################################
+
+if (!empty($_GET['summary'])) {
+	$where = array();
+
+	$where[] = "sender LIKE '%@geograph.org.uk'";
+	$where[] = "email NOT like '%@simulator.amazonses.com%'";
+	$where[] = "email NOT in ('sample@email.tst','testing@example.com')";
+	if (empty($_GET['all']))
+		$where[] = "TimeStamp > date_sub(date(now()),interval 2 year)";
+
+	$where = implode(' AND ',$where);
+	$data = $db->getAll("SELECT sender,normalized,count(*) as cnt,count(distinct email_md5) as emails, max(TimeStamp) as latest
+	, sum(TimeStamp > date_sub(date(now()),interval 7 day)) as 7day
+	FROM sns_summary WHERE $where GROUP BY sender, normalized ORDER BY latest DESC LIMIT 50");
+
+	print "<table cellspacing=0 cellpadding=4 border=1 bordercolor=#eee>";
+	print "<tr>";
+	foreach(array('Sender','Subject','Bounces','Emails','Most Recent','7 Days') as $h)
+		print "<th>$h</th>";
+	foreach($data as $row) {
+		$url = "?".http_build_query(array('sender'=>$row['sender'],'subject'=>$row['normalized']));
+		print "<tr>";
+		print "<td>".htmlentities($row['sender']);
+		print "<td><a href=\"$url\" style=\"text-decoration:none\">".preg_replace('/(\[geograph\])/i','<span style=color:silver>$1</span>',htmlentities($row['normalized']));
+		print "<td align=right><a href=\"$url\">".number_format($row['cnt'],0);
+		print "<td align=right>".number_format($row['emails'],0);
+		print "<td>".str_replace('T',' <span style=color:silver>',$row['latest'])."</span>";
+		if (!empty($row['7day'])) {
+			$url .= "&amp;recent=1";
+			print "<td align=right><a href=\"$url\">".number_format($row['7day'],0);
+		} else
+			print "<td align=right>0";
+	}
+	print "</table>";
+
+	if (empty($_GET['all']))
+		print "Only showing last 2 years. <a href=?summary=1&amp;all=1>View All</a>";
+
 	exit;
 }
 
@@ -74,6 +139,7 @@ if (!empty($_GET['limit']))
 #################################################
 
 $filters = array();
+$filters['sender'] = $db->getCol("SELECT sender FROM sns_summary GROUP BY sender");
 $filters['notificationType'] = array('Bounce','Complaint');
 $filters['bounceType'] = array('Permanent','Transient');
 $filters['SubType'] = array('OnAccountSuppressionList','!OnAccountSuppressionList');
@@ -81,17 +147,34 @@ $filters['user_id'] = 'text';
 $filters['email'] = 'text';
 $filters['subject'] = 'text';
 
-//$filters[''] = array('','');
+$commonSubjects = $db->getCol("SELECT DISTINCT normalized FROM sns_summary ORDER BY normalized");
 
 print "<form method=get style=background-color:#eee;padding:5px>Filter:";
+
+// Render Subject Datalist
+if (!empty($commonSubjects)) {
+    print '<datalist id="commonsubject">';
+    foreach ($commonSubjects as $subj) {
+        printf('<option value="%s"></option>', htmlspecialchars($subj, ENT_QUOTES));
+    }
+    print '</datalist>';
+}
+
 foreach ($filters as $name => $rows) {
 	if ($rows == 'text') {
-		print "<input type=search name=$name value=\"".htmlentities(@$_GET[$name])."\" onkeyup=\"if (event.key == 'Enter') {this.form.submit(); }\" title=$name size=10 placeholder=$name>";
+		$listAttr = ($name === 'subject' && !empty($commonSubjects)) ? ' list="commonsubject"' : '';
+
+		print "<input type=search name=$name$listAttr value=\"".htmlentities(@$_GET[$name])."\" onkeyup=\"if (event.key == 'Enter') {this.form.submit(); }\" title=$name size=10 placeholder=$name>";
+
 		if (!empty($_GET[$name])) {
 			if ($name == 'email') {
 				$where[] = "JSON_VALUE(Message,'$.mail.destination[0]') = ".$db->Quote($_GET[$name]);
 			} elseif ($name == 'subject') {
-				$where[] = "JSON_VALUE(Message,'$.mail.commonHeaders.subject') = ".$db->Quote($_GET[$name]);
+				if (strpos($_GET[$name],'...') !== FALSE) {
+					$where[] = "JSON_VALUE(Message,'$.mail.commonHeaders.subject') LIKE ".$db->Quote(str_replace('...','%',$_GET[$name]));
+				} else {
+					$where[] = "JSON_VALUE(Message,'$.mail.commonHeaders.subject') = ".$db->Quote($_GET[$name]);
+				}
 			} else {
 				$where[] = "user.$name LIKE ".$db->Quote($_GET[$name]);
 			}
@@ -102,7 +185,9 @@ foreach ($filters as $name => $rows) {
 		foreach ($rows as $value) {
 			printf('<option value="%s"%s>%s</option>',$value, (@$_GET[$name] == $value)?' selected':'', $value);
 			if(@$_GET[$name] == $value) {
-				if (preg_match('/^!(\w+)/',$value,$m)) {
+				if ($name == 'sender') {
+					$where[] = "JSON_VALUE(Message,'$.mail.source') = ".$db->Quote($_GET[$name]);
+				} elseif (preg_match('/^!(\w+)/',$value,$m)) {
 					$where[] = "Message NOT LIKE ".$db->Quote("%{$name}\":\"{$m[1]}\"%");
 				} else {
 					$where[] = "Message LIKE ".$db->Quote("%{$name}\":\"{$value}\"%");
@@ -114,19 +199,19 @@ foreach ($filters as $name => $rows) {
 }
 
 $checked = empty($_GET['recent'])?'':' checked';
-print "<input type=checkbox name=recent$checked onclick=this.form.submit()>Recent Only";
+print "<label><input type=checkbox name=recent$checked onclick=this.form.submit()>Recent Only</label>";
 if (!empty($_GET['recent'])) {
 	$where[] = "TimeStamp > DATE(DATE_SUB(NOW(),INTERVAL 7 DAY))";
 }
 
 $checked = empty($_GET['active'])?'':' checked';
-print "<input type=checkbox name=active$checked onclick=this.form.submit()>Active";
+print "<label><input type=checkbox name=active$checked onclick=this.form.submit()>Active</label>";
 if (!empty($_GET['active'])) {
 	$where[] = "submitted > DATE(DATE_SUB(NOW(),INTERVAL 6 month))";
 }
 
 $checked = empty($_GET['grouped'])?'':' checked';
-print "<input type=checkbox name=grouped$checked onclick=this.form.submit()>Grouped";
+print "<label><input type=checkbox name=grouped$checked onclick=this.form.submit()>Grouped</label>";
 if (!empty($_GET['grouped'])) {
 	$group = "JSON_VALUE(Message,'$.mail.destination[0]'), JSON_VALUE(Message,'$.notificationType')";
 } else {
@@ -169,10 +254,10 @@ LIMIT $limit";
 //JSON_VALUE(Message,'$.mail.commonHeaders.replyTo[0]') as `reply`,
 
 print "<p style=max-width:60em> If a message is marked <b>OnAccountSuppressionList</b>, the email was blocked due to a previous, permanent bounce. The address was added to the
-suppression list to prevent future failed send attempts. Click the link to see the preceding bounce(s) that likely led to the suppression.";
+suppression list to prevent future failed send attempts. Click the link to see the preceding bounce(s) that likely led to the suppression.</p>";
 
 
-$count = dump_sql_table($sql,"Recent Bounce and/or Complaints");
+$count = dump_sql_table($sql); //"Recent Bounce and/or Complaints");
 
 if ($count == $limit) {
 	print "Last $limit Results";
@@ -181,12 +266,13 @@ if ($count == $limit) {
 }
 
 
-function dump_sql_table($sql,$title,$autoorderlimit = false) {
+function dump_sql_table($sql,$title = null) {
 	global $db;
 
-	$recordSet = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
+	$recordSet = $db->Execute($sql) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
-	print "<H3>$title</H3>";
+	if ($title)
+		print "<H3>$title</H3>";
 	if ($recordSet->EOF)
 		return;
 
@@ -215,6 +301,8 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 				//provide a link to view the preceding one!
 				$value = str_replace('OnAccountSuppressionList', "<a href=\"?email=".urlencode($row['to'])."&amp;SubType=%21OnAccountSuppressionList\">OnAccountSuppressionList</a>", $value);
 				print "<td>$value";
+			} elseif ($key == 'TimeStamp') {
+				 print "<TD>".str_replace('T',' <span style=color:silver>',$value)."</span>";
 			} elseif ($key != 'diagnosticCode' && $key != 'subject')
 				print "<TD ALIGN=$align>".htmlentities($value)."</TD>";
 		}

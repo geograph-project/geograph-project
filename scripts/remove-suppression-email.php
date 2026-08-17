@@ -85,14 +85,25 @@ if ($httpCode != 200) exit;
 
 $db = GeographDatabaseConnection(false);
 
+// 1. Delete rows directly from sns_summary using the pre-calculated MD5 hash
+$where = array();
+$where[] = "email_md5 = md5(LOWER(TRIM(".$db->Quote($param['email']).")))";
+
+$sql = "DELETE FROM sns_summary WHERE ".implode(' AND ',$where);
+print "$sql;\n\n";
+
+// 2. Clear blocks in main message log
 $set = "block_cleared = 1";
 $where = array();
 $where[] = "Type = 'Notification'";
 $where[] = "block_cleared = 0";
 $where[] = "JSON_VALUE(Message,'$.mail.destination[0]') = ".$db->Quote($param['email']);
 
-
 $sql = "UPDATE sns_message SET $set WHERE ".implode(' AND ',$where);
-
 print "$sql;\n\n";
+
+############################################
+
+
+
 
