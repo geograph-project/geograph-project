@@ -41,7 +41,7 @@ $agent = "Googlebot"; //for the log table!
 if (!empty($param['auto'])) {
 
 	$self = basename($argv[0]);
-        foreach (range(-15,-1) as $offset) { //loki only keeps 16 days, but cant use 16, and day 16 will be partial! (and loki hard errors, if outside its time!)
+        foreach (range(-14,-1) as $offset) { //loki only keeps 16 days, but cant use 16, and day 16 will be partial! (and loki hard errors, if outside its time!)
                $d = date('Y-m-d',strtotime($offset.' day'));
 
 		$c = $db->getOne("SELECT id FROM timings_by_day WHERE day = '$d' AND agent='$agent'");

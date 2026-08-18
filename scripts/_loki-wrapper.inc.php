@@ -250,3 +250,88 @@ function getgroups($query, $grouper, $funct = 'rate', $period = '10m',  $fp = nu
 		}
 	}
 }
+
+function get_timing_groups($query, $grouper = '', $unwrap_field = 'timing', $period = '1h', $fp = null, $start = null, $end = null, $as_array = false) {
+    global $param, $CONF;
+
+    // Convenience function to hide common noise/bots
+    if (empty($param['bot'])) {
+        $query .= ' != "Googlebot"';
+        $query .= ' != "bingbot/2.0"';
+        $query .= ' != "archive.org_bot"';
+        $query .= ' != "size=largest"';
+    }
+
+    // Stream selector handling
+    if (!empty($param['stream'])) {
+        $count = 0;
+        $query = preg_replace('/stream="\w+"/', 'stream="'.$param['stream'].'"', $query, -1, $count);
+        if ($count == 0) {
+            $query .= ' | json | stream="'.$param['stream'].'"';
+        }
+    }
+
+    // Pattern parser to extract the target field (e.g. timing)
+    $pattern = '| pattern `<ip> - <_> <_> "<_> <path> <_>" "<_>" <status> <_> "<_>" "<agent>" <'.$unwrap_field.'> http`';
+
+    // Build the query structure depending on whether grouping by a label or aggregating globally
+    if (!empty($grouper)) {
+        $query = "avg by ($grouper) (avg_over_time($query $pattern | unwrap $unwrap_field [$period]))";
+    } else {
+        $query = "avg(avg_over_time($query $pattern | unwrap $unwrap_field [$period]))";
+    }
+
+    if (!empty($param['debug'])) {
+        print "$query\n";
+    }
+
+    $data = array(
+        'query'     => $query,
+        'direction' => 'forward',
+        'step'      => $period, // Ensures 1 data point evaluated per period window
+    );
+    if (!empty($start)) $data['start'] = $start;
+    if (!empty($end))   $data['end']   = $end;
+
+    $url = "{$CONF['loki_address']}loki/api/v1/query_range?".http_build_query($data);
+    if (!empty($param['debug'])) {
+        print "$url\n";
+    }
+
+    if (isset($param['debug']) && $param['debug'] == '2') {
+        exit;
+    }
+
+    $data = file_get_contents($url);
+    $json = json_decode($data, true);
+
+    if (!empty($param['debug'])) {
+        print_r($json);
+    }
+
+    if (!empty($json['data']) && !empty($json['data']['result'])) {
+        foreach ($json['data']['result'] as $result) {
+            if ($as_array) {
+                $group = $result['metric'];
+            } else {
+                if (!empty($grouper) && isset($result['metric'][$grouper])) {
+                    $group = $result['metric'][$grouper];
+                } else {
+                    $group = 'all';
+                }
+            }
+
+            foreach ($result['values'] as $line) {
+                // $line[0] = Unix timestamp in nanoseconds, $line[1] = Average timing value
+                $str = array($group, $line[0], $line[1]);
+
+                if (!empty($fp)) {
+                    fputcsv($fp, $str);
+                } else {
+                    yield $str;
+                }
+            }
+        }
+    }
+}
+
