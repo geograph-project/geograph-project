@@ -24,6 +24,10 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+//mainly because of excessive crawling (despite being blocked in robots.txt)
+$USER->mustHavePerm("basic");
+
+
 require_once('geograph/searchcriteria.class.php');
 require_once('geograph/searchengine.class.php');
 require_once('geograph/searchenginebuilder.class.php');
