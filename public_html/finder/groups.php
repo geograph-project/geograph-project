@@ -30,6 +30,11 @@ foreach(array('group','page','gridref','skip') as $key)
 require_once('geograph/global.inc.php');
 init_session();
 
+
+//mainly because of excessive crawling (despite being blocked in robots.txt)
+$USER->mustHavePerm("basic");
+
+
 if (isset($_GET['mine'])) {
 	$_GET['q'] .= " user:user{$USER->user_id} by:{$USER->realname}";
 }

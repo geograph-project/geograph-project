@@ -35,6 +35,9 @@ rate_limiting('related.php');
 
 $smarty = new GeographPage;
 
+//mainly because of excessive crawling (despite being blocked in robots.txt)
+$USER->mustHavePerm("basic");
+
 #$smarty->display("sample8_unavailable.tpl");
 #exit;
 
@@ -79,7 +82,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	                $orig = $memcache;
         	        $memcache = false; //need to disable memcache with FileSystem!
 
-	                $filesystem = new FileSystem(); //sets up configuation automagically
+	                $filesystem = new FileSystem(); //sets up S3 configuation automagically
         	        //the vector lip needs S3 class setup already!
 
 	                require_once('geograph/imagelists3vector.class.php');

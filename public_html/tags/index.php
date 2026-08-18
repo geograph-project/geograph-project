@@ -169,6 +169,11 @@ $smarty = new GeographPage;
 
 pageMustBeHTTPS();
 
+if (!empty($_GET['exclude'])) {
+	//mainly because of excessive crawling (despite being blocked in robots.txt)
+	$USER->mustHavePerm("basic");
+}
+
 if (isset($_GET['tag']) && empty($_GET['tag'])) {
 	unset($_GET['tag']);
 }

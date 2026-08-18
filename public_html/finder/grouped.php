@@ -30,6 +30,8 @@ if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
 require_once('geograph/global.inc.php');
 init_session();
 
+//mainly because of excessive crawling (despite being blocked in robots.txt)
+$USER->mustHavePerm("basic");
 
 $smarty = new GeographPage;
 $template = 'finder_grouped.tpl';
