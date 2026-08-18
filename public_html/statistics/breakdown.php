@@ -24,6 +24,9 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+//mainly because of excessive crawling (despite being blocked in robots.txt)
+$USER->mustHavePerm("basic");
+
 $smarty = new GeographPage;
 
 $by = (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by']))?$_GET['by']:'myriad';
