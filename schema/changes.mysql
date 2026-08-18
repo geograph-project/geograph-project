@@ -2975,3 +2975,17 @@ alter table user modify   `submission_method` enum('submit','submit2','multi','s
 #################################################
 
 
+ALTER TABLE gridimage_ticket 
+MODIFY status enum('pending','open','closed') NOT NULL DEFAULT 'pending', 
+ADD INDEX idx_mod_status_def (status, moderator_id, deferred);
+
+
+alter table mapfix_log add index(old_percent_land, user_id);
+
+
+alter table category_primary add index(`top`,`sort_order`);
+
+
+#################################################
+
+

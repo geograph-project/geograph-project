@@ -55,8 +55,8 @@ if ($USER->hasPerm("director")) {
 
 if ($USER->hasPerm("ticketmod")) {
 
-	$smarty->assign('tickets_new', $db->GetOne("select count(*) from gridimage_ticket where moderator_id=0 and status<>'closed' and deferred < date_sub(NOW(),INTERVAL 24 HOUR)"));
-	$smarty->assign('tickets_yours', $db->GetOne("select count(*) from gridimage_ticket where moderator_id={$USER->user_id} and status<>'closed'"));
+	$smarty->assign('tickets_new', $db->GetOne("select count(*) from gridimage_ticket where moderator_id=0 and status in (1,2) and deferred < date_sub(NOW(),INTERVAL 24 HOUR)"));
+	$smarty->assign('tickets_yours', $db->GetOne("select count(*) from gridimage_ticket where moderator_id={$USER->user_id} and status in (1,2)"));
 }
 
 if ($USER->hasPerm("moderator")) {
