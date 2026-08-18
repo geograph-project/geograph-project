@@ -251,8 +251,6 @@ group by $group
 order by TimeStamp DESC
 LIMIT $limit";
 
-print $sql;
-
 #################################################
 
 //JSON_VALUE(Message,'$.mail.commonHeaders.replyTo[0]') as `reply`,
