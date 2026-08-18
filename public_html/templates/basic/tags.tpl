@@ -229,7 +229,7 @@
 				<div class="caption" style="clear:none;font-size:0.9em">Tags:
 				{foreach from=$image->tags item=item name=used}
 					<span class="tag">
-					{if $item.prefix}{$item.prefix|escape:'html'|lower}:{/if}<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink">{$item.tag|capitalizetag|escape:'html'}</a>{if $item.tag != $thetag}<a href="/tagged/{$thetag|escape:'urlplus'}?exclude={$item.tag|escape:'url'}" rel="nofollow" class="delete" title="Exclude this tag">X</a>{/if}
+					{if $item.prefix}{$item.prefix|escape:'html'|lower}:{/if}<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink">{$item.tag|capitalizetag|escape:'html'}</a>
 					</span>&nbsp;
 				{/foreach}
 				</div>
