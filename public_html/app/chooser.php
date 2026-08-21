@@ -50,6 +50,8 @@ if (!empty($count) && empty($_GET['ignore'])) {
 	}
 	?>
 
+<body style="background-color:white;color:black">
+
 	<div style="max-width:940px">
 
 	<p>You have <b><? echo number_format($count, 0); ?></b> images awaiting processing. We use "perceptual hashing" to visually match your submissions across different
