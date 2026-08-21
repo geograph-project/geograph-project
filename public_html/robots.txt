@@ -165,7 +165,7 @@ Disallow: /stuff/list.php?title=
 Disallow: /tagged/*?exact
 Disallow: /tagged/milestoneid
 Disallow: /*feed/recent.gpx
-Disallow: /tags/*output=
+Disallow: /tags/*&output=csv
 Disallow: /explore/calendar.php
 Allow: /tags/$
 Allow: /tags/prefix.php
