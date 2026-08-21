@@ -79,7 +79,7 @@
 	{/if}
 
 	<div class="interestBox">&middot;
-	<a href="{$script_name}?{foreach from=$extra key=name item=value}{$name|escape:'url'}={$value|escape:'url'}&amp;{/foreach}{if $ri}ri={$ri}&amp;{/if}{if $i}i={$i}&amp;{/if}{dynamic}{if $u}u={$u}&amp;{/if}{/dynamic}output=csv">Download this table as a CSV File</a></div>
+	<a href="{$script_name}?{foreach from=$extra key=name item=value}{$name|escape:'url'}={$value|escape:'url'}&amp;{/foreach}{if $ri}ri={$ri}&amp;{/if}{if $i}i={$i}&amp;{/if}{dynamic}{if $u}u={$u}&amp;{/if}{/dynamic}output=csv" rel=nofollow">Download this table as a CSV File</a></div>
 
 {else}
 	<p><i>No Results to Display</i></p>
