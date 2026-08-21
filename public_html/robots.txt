@@ -71,6 +71,7 @@ Disallow: /tagged/*exclude=
 Disallow: /tagged/*photo=
 Disallow: /faq-
 Disallow: /*/1000$
+Disallow: /earth.php
 
 
 User-Agent: Googlebot
@@ -167,6 +168,7 @@ Disallow: /tagged/milestoneid
 Disallow: /*feed/recent.gpx
 Disallow: /tags/*&output=csv
 Disallow: /explore/calendar.php
+Disallow: /earth.php
 Allow: /tags/$
 Allow: /tags/prefix.php
 Allow: /tags/primary.php

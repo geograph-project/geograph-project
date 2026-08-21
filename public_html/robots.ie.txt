@@ -78,6 +78,7 @@ Disallow: /faq-
 Disallow: /*/1000$
 Disallow: /blog/
 Disallow: /stuff/viewgaz
+Disallow: /earth.php
 
 User-Agent: Googlebot
 User-Agent: Slurp
@@ -178,6 +179,7 @@ Disallow: /explore/calendar.php
 Allow: /tags/$
 Disallow: /stuff/viewgaz
 Allow: /stuff/viewgaz3.php
+Disallow: /earth.php
 Disallow: /gridref/HP
 Disallow: /gridref/HT
 Disallow: /gridref/HU
